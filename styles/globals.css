@@ -26,3 +26,48 @@ body { font-family: 'Inter', system-ui, sans-serif; background: #F8FAFC; color: 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #F1F5F9; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+
+/* ── Scroll-triggered fade-in animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+/* Staggered delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+
+/* ── Logo ticker ── */
+@keyframes scroll-x {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.logo-ticker {
+  animation: scroll-x 30s linear infinite;
+}
+.logo-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* ── Gradient mesh for hero backgrounds ── */
+.hero-mesh {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(13,148,136,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 30%, rgba(124,58,237,0.08) 0%, transparent 70%),
+    linear-gradient(180deg, #0F2942 0%, #091E30 100%);
+}
