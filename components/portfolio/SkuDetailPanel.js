@@ -40,7 +40,7 @@ const FIELD_GROUPS = [
   {
     label: 'Channel Economics (P3)', color: 'text-amber-700', bg: 'bg-amber-50', fields: [
       { key: 'primary_channel',        label: 'Primary Channel',            type: 'select', required: true,  tip: 'Primary route-to-market for this SKU. Select the channel that accounts for the majority of volume.' },
-      { key: 'channel_revenue_split',  label: 'Channel Split %',            type: 'number', required: false, tip: 'What percentage of this SKU\u2019s total volume goes through the selected primary channel. Must sum to 100% across your portfolio.' },
+      { key: 'channel_revenue_split',  label: 'Primary Ch. Vol %',          type: 'number', required: false, tip: 'What percentage of this SKU\u2019s total volume flows through its primary channel. Each SKU is independent \u2014 rows do not need to sum to 100%.' },
       { key: 'distributor_name',       label: 'Distributor Name',           type: 'text',   required: false, tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
       { key: 'distributor_margin_pct', label: 'Distributor Margin (%)',     type: 'pct',    required: false, tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for Nigerian FMCG.' },
       { key: 'trade_rebate_pct',       label: 'Trade Rebate (%)',           type: 'pct',    required: false, tip: 'Retrospective rebate paid back to the trade at period-end, separate from the upfront distributor margin.' },

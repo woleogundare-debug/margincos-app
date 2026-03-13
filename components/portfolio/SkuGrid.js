@@ -39,7 +39,7 @@ const COLUMNS = [
   { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: 'Percentage of this SKU\u2019s COGS that is linked to foreign currency (imported raw materials, packaging, or machinery costs).' },
   // Channel P3
   { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-44',  tip: 'Primary route-to-market for this SKU. Select the channel that accounts for the majority of volume.' },
-  { key: 'channel_revenue_split', label: 'Ch. Split %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'What percentage of this SKU\u2019s total volume goes through the selected primary channel. Must sum to 100% across your portfolio.' },
+  { key: 'channel_revenue_split', label: 'Prim. Ch. Vol %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'What percentage of this SKU\u2019s total volume flows through its primary channel. Each SKU is independent \u2014 rows do not need to sum to 100%.' },
   { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
   { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for Nigerian FMCG.' },
   { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Retrospective rebate paid back to the trade at period-end, separate from the upfront distributor margin.' },
@@ -314,12 +314,14 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   const vertical = activePeriod?.vertical || 'FMCG';
   const visibleCols = COLUMNS.filter(c => visibleGroups.has(c.group));
 
-  // Channel split sum for validation (all active SKUs should total 100%)
-  const channelSplitSum = skuRows.reduce((sum, r) => {
+  // Primary channel volume % — portfolio-level average (rows are independent, NOT expected to sum to 100%)
+  const channelSplitValues = skuRows.map(r => {
     const v = pendingEdits.current[r.id || r._tempId]?.channel_revenue_split ?? r.channel_revenue_split;
-    return sum + (parseFloat(v) || 0);
-  }, 0);
-  const channelSplitOk = channelSplitSum === 100;
+    return parseFloat(v) || 0;
+  }).filter(v => v > 0);
+  const channelSplitAvg = channelSplitValues.length > 0
+    ? Math.round(channelSplitValues.reduce((s, v) => s + v, 0) / channelSplitValues.length)
+    : 0;
 
   // ── Single grid-level flush — saves ALL dirty rows at once ────────
   const flushPendingEdits = useCallback(() => {
@@ -503,8 +505,6 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
               const rowKey = row.id || row._tempId;
               const hasError = (row.active === 'Y' || row.active === true) && (!row.sku_id || !row.sku_name || !row.category);
               const cogsGtRrp = row.rrp && row.cogs_per_unit && parseFloat(row.cogs_per_unit) > parseFloat(row.rrp);
-              const rowSplit = parseFloat(pendingEdits.current[rowKey]?.channel_revenue_split ?? row.channel_revenue_split) || 0;
-              const splitWarning = rowSplit > 0 && !channelSplitOk;
               return (
                 <tr key={rowKey}
                   className={clsx(
@@ -530,11 +530,6 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                   {/* Actions */}
                   <td className="px-2 py-1 w-20">
                     <div className="flex items-center gap-1">
-                      {splitWarning && (
-                        <span className="inline-block px-1 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 whitespace-nowrap" title={`Channel splits total ${channelSplitSum}%, not 100%`}>
-                          ≠100
-                        </span>
-                      )}
                       <span className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => onRowClick(row)}
                           className="p-1 rounded text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors"
@@ -559,12 +554,11 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                 {visibleCols.map(col => (
                   <td key={col.key} className="px-2 py-2 text-xs">
                     {col.key === 'channel_revenue_split' ? (
-                      <span className={clsx('font-bold', channelSplitOk ? 'text-emerald-600' : 'text-red-600')}>
-                        {channelSplitSum}%{' '}
-                        <span className="font-normal">{channelSplitOk ? '✓' : '≠ 100'}</span>
+                      <span className="font-bold text-slate-600">
+                        {channelSplitAvg}% avg
                       </span>
                     ) : col.key === 'primary_channel' ? (
-                      <span className="font-semibold text-slate-400">Split total →</span>
+                      <span className="font-semibold text-slate-400">Primary channel coverage →</span>
                     ) : null}
                   </td>
                 ))}
@@ -575,7 +569,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         </table>
         {skuRows.length > 0 && visibleGroups.has('channel') && (
           <p className="px-5 py-2 text-[11px] text-slate-400 border-t border-slate-100">
-            <strong>What is channel split?</strong> Enter what % of this SKU&apos;s volume goes through each channel. The total across all your SKU rows should reach 100%.
+            <strong>Primary Ch. Vol %:</strong> Enter what percentage of this SKU&apos;s volume flows through its primary channel. Each SKU is independent — rows do not need to sum to 100%.
           </p>
         )}
       </div>
