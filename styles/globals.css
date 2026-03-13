@@ -5,24 +5,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --navy:        #0F2942;
-  --navy-light:  #1A3A5C;
-  --teal:        #0D9488;
-  --teal-dark:   #0F766E;
-  --teal-50:     #F0FDFA;
-  --red:         #DC2626;
-  --red-50:      #FEF2F2;
+  --navy:        #1B2A4A;
+  --navy-dark:   #111D33;
+  --navy-light:  #2A3F66;
+  --navy-50:     #E8EBF0;
+  --teal:        #0D8F8F;
+  --teal-light:  #11B3B3;
+  --teal-50:     #E6F5F5;
+  --red-brand:   #C0392B;
+  --red-light:   #E74C3C;
+  --red-50:      #FBEAE8;
+  --gold:        #D4A843;
+  --gold-light:  #E8C468;
+  --gold-50:     #FBF5E8;
   --amber:       #D97706;
-  --gold:        #E8C468;
-  --gold-50:     #FEFCE8;
   --purple:      #7C3AED;
   --purple-50:   #F5F3FF;
   --green-dark:  #065F46;
-  --slate:       #64748B;
+  --gray:        #8896A7;
+  --gray-100:    #E8ECF0;
+  --gray-text:   #5A6B80;
   --text-muted:  #94A3B8;
 }
 * { box-sizing: border-box; }
-body { font-family: 'Inter', system-ui, sans-serif; background: #F8FAFC; color: #1E293B; -webkit-font-smoothing: antialiased; }
+body { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background: #F8FAFC; color: #1E293B; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; letter-spacing: -0.02em; line-height: 1.15; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #F1F5F9; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
@@ -69,5 +76,5 @@ body { font-family: 'Inter', system-ui, sans-serif; background: #F8FAFC; color: 
   background:
     radial-gradient(ellipse 80% 60% at 20% 40%, rgba(13,148,136,0.15) 0%, transparent 70%),
     radial-gradient(ellipse 60% 50% at 80% 30%, rgba(124,58,237,0.08) 0%, transparent 70%),
-    linear-gradient(180deg, #0F2942 0%, #091E30 100%);
+    linear-gradient(180deg, #1B2A4A 0%, #111D33 100%);
 }
