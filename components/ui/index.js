@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useRef, useState, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
@@ -76,41 +76,62 @@ export function RagBadge({ status }) {
 }
 
 // ── Tooltip ────────────────────────────────────────────────────────────────
+// Uses position:fixed so the popup escapes ALL parent overflow containers
+// (e.g. overflow-x-auto on the grid scroll wrapper).
 export function Tooltip({ text, children }) {
   const triggerRef = useRef(null);
-  const [align, setAlign] = useState('center');
+  const [visible, setVisible] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [arrowLeft, setArrowLeft] = useState('50%');
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     const vw = window.innerWidth;
-    if (rect.left < 160) setAlign('left');
-    else if (rect.right > vw - 160) setAlign('right');
-    else setAlign('center');
-  };
+    const popupW = 320; // max-w-xs = 20rem = 320px
+    // Center the popup above the trigger
+    let left = rect.left + rect.width / 2 - popupW / 2;
+    // Clamp to viewport edges with 8px padding
+    if (left < 8) left = 8;
+    if (left + popupW > vw - 8) left = vw - popupW - 8;
+    const top = rect.top - 8; // 8px gap above trigger
+    // Arrow points to the trigger center
+    const triggerCenter = rect.left + rect.width / 2;
+    const arrowOffset = Math.max(12, Math.min(popupW - 12, triggerCenter - left));
+    setPos({ top, left });
+    setArrowLeft(`${arrowOffset}px`);
+    setVisible(true);
+  }, []);
 
-  const popupAlign = {
-    center: 'left-1/2 -translate-x-1/2',
-    left:   'left-0',
-    right:  'right-0',
-  }[align];
-
-  const arrowAlign = {
-    center: 'left-1/2 -translate-x-1/2',
-    left:   'left-3',
-    right:  'right-3',
-  }[align];
+  const handleMouseLeave = useCallback(() => setVisible(false), []);
 
   return (
-    <span className="group relative inline-flex flex-shrink-0" ref={triggerRef} onMouseEnter={handleMouseEnter}>
+    <span
+      className="inline-flex flex-shrink-0"
+      ref={triggerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {children || <QuestionMarkCircleIcon className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-help flex-shrink-0" />}
-      <span className={clsx(
-        'pointer-events-none absolute bottom-full mb-2 max-w-xs rounded-lg bg-navy px-3 py-2 text-xs text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50 leading-relaxed whitespace-normal break-words',
-        popupAlign
-      )}>
-        {text}
-        <span className={clsx('absolute top-full border-4 border-transparent border-t-navy', arrowAlign)} />
-      </span>
+      {visible && (
+        <span
+          className="pointer-events-none rounded-lg bg-navy px-3 py-2 text-xs text-white shadow-xl leading-relaxed whitespace-normal break-words"
+          style={{
+            position: 'fixed',
+            zIndex: 9999,
+            maxWidth: 320,
+            top: pos.top,
+            left: pos.left,
+            transform: 'translateY(-100%)',
+          }}
+        >
+          {text}
+          <span
+            className="border-4 border-transparent border-t-navy"
+            style={{ position: 'absolute', top: '100%', left: arrowLeft, transform: 'translateX(-50%)' }}
+          />
+        </span>
+      )}
     </span>
   );
 }

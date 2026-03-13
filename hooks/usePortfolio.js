@@ -58,20 +58,31 @@ export function usePortfolio(userId) {
 
   // ── Save single SKU row (upsert, optimistic) ─────────────────
   const saveSku = useCallback(async (row) => {
+    // Guard: don't attempt save without required context
+    if (!activePeriod?.id || !userId) {
+      console.error('[saveSku] Aborted — missing context:', { period_id: activePeriod?.id, user_id: userId });
+      return null;
+    }
     setSaving(true);
     const tempId = row._tempId;
     // Strip _tempId — it's a client-only key, not a DB column
     const { _tempId, ...rest } = row;
-    const payload = { ...rest, period_id: activePeriod?.id, user_id: userId };
+    const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
     // For new rows (no id yet), remove id so Supabase auto-generates it
     if (!payload.id) delete payload.id;
+    console.log('[saveSku] Upserting:', { id: payload.id || '(new)', sku_id: payload.sku_id, period_id: payload.period_id });
     const { data, error } = await sb
       .from('sku_rows')
       .upsert(payload, { onConflict: 'id' })
       .select()
       .single();
     setSaving(false);
-    if (error) { setError(error.message); return null; }
+    if (error) {
+      console.error('[saveSku] Supabase error:', error.message, error.details, error.hint);
+      setError(error.message);
+      return null;
+    }
+    console.log('[saveSku] Saved successfully:', data.id);
     setSkuRows(prev => {
       // Replace matching row — match on id OR _tempId for newly created rows
       const idx = prev.findIndex(r => r.id === data.id || (tempId && r._tempId === tempId));

@@ -39,7 +39,7 @@ const COLUMNS = [
   { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of COGS linked to FX/imported inputs. Decomposes absorbed inflation.' },
   // Channel P3
   { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-32',  tip: 'Primary route to market for this SKU.' },
-  { key: 'channel_revenue_split', label: 'Channel Split', group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'e.g. MT:60,OM:30,OT:10 — must total 100.' },
+  { key: 'channel_revenue_split', label: 'Ch. Split %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Revenue share % for this SKU (0–100). All SKUs in the period should total 100%.' },
   { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Named distributor. Powers M4 Distributor Scorecard.' },
   { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'Distributor margin as % of RRP.' },
   { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Distributor rebate % separate from margin. Used in net contribution calc.' },
@@ -122,17 +122,44 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
   );
   const [editingCell, setEditingCell] = useState(null); // { rowIdx, colKey }
   const pendingEdits = useRef({});
+  const saveTimers = useRef({});
+  // Stable refs so debounce callbacks always see current values
+  const skuRowsRef = useRef(skuRows);
+  const onSaveRef = useRef(onSave);
+  useEffect(() => { skuRowsRef.current = skuRows; }, [skuRows]);
+  useEffect(() => { onSaveRef.current = onSave; }, [onSave]);
 
   const vertical = activePeriod?.vertical || 'FMCG';
   const visibleCols = COLUMNS.filter(c => visibleGroups.has(c.group));
 
+  // Channel split sum for validation (all active SKUs should total 100%)
+  const channelSplitSum = skuRows.reduce((sum, r) => {
+    const v = pendingEdits.current[r.id || r._tempId]?.channel_revenue_split ?? r.channel_revenue_split;
+    return sum + (parseFloat(v) || 0);
+  }, 0);
+  const channelSplitOk = channelSplitSum === 100;
+
   const handleCellChange = useCallback((rowId, colKey, value) => {
     if (!pendingEdits.current[rowId]) pendingEdits.current[rowId] = {};
     pendingEdits.current[rowId][colKey] = value;
+    // Debounced autosave: persist to Supabase after 1.5s of inactivity.
+    // This ensures data survives navigation even if blur doesn't fire.
+    if (saveTimers.current[rowId]) clearTimeout(saveTimers.current[rowId]);
+    saveTimers.current[rowId] = setTimeout(() => {
+      const edits = pendingEdits.current[rowId];
+      if (!edits || Object.keys(edits).length === 0) return;
+      const row = skuRowsRef.current.find(r => r.id === rowId || r._tempId === rowId);
+      if (row) onSaveRef.current({ ...row, ...edits });
+    }, 1500);
   }, []);
 
   const handleCellBlur = useCallback((row, colKey) => {
     const key = row.id || row._tempId;
+    // Cancel debounce timer — we're flushing immediately on blur
+    if (saveTimers.current[key]) {
+      clearTimeout(saveTimers.current[key]);
+      delete saveTimers.current[key];
+    }
     const edits = pendingEdits.current[key];
     if (edits && Object.keys(edits).length > 0) {
       // Don't clear pendingEdits here — the async save hasn't resolved yet.
@@ -147,6 +174,21 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
   useEffect(() => {
     pendingEdits.current = {};
   }, [skuRows]);
+
+  // Flush any unsaved edits on unmount (e.g. user navigates away)
+  useEffect(() => {
+    return () => {
+      // Cancel all debounce timers
+      Object.values(saveTimers.current).forEach(t => clearTimeout(t));
+      // Flush pending edits immediately
+      Object.entries(pendingEdits.current).forEach(([key, edits]) => {
+        if (edits && Object.keys(edits).length > 0) {
+          const row = skuRowsRef.current.find(r => r.id === key || r._tempId === key);
+          if (row) onSaveRef.current({ ...row, ...edits });
+        }
+      });
+    };
+  }, []);
 
   const toggleGroup = (g) => {
     if (g === 'identity') return; // always visible
@@ -201,7 +243,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
                   </th>
                 );
               })}
-              <th className="w-16 border-r-0" />
+              <th className="w-20 border-r-0" />
             </tr>
             {/* Column headers */}
             <tr className="border-b-2 border-slate-200">
@@ -214,7 +256,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
                   </span>
                 </th>
               ))}
-              <th className="w-16" />
+              <th className="w-20" />
             </tr>
           </thead>
           <tbody>
@@ -229,6 +271,8 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
               const rowKey = row.id || row._tempId;
               const hasError = row.active && (!row.sku_id || !row.sku_name || !row.category);
               const cogsGtRrp = row.rrp && row.cogs_per_unit && parseFloat(row.cogs_per_unit) > parseFloat(row.rrp);
+              const rowSplit = parseFloat(pendingEdits.current[rowKey]?.channel_revenue_split ?? row.channel_revenue_split) || 0;
+              const splitWarning = rowSplit > 0 && !channelSplitOk;
               return (
                 <tr key={rowKey}
                   className={clsx(
@@ -252,24 +296,50 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
                     );
                   })}
                   {/* Actions */}
-                  <td className="px-2 py-1 w-16">
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => onRowClick(row)}
-                        className="p-1 rounded text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors"
-                        title="View / Edit detail">
-                        <ChevronRightIcon className="h-3.5 w-3.5" />
-                      </button>
-                      <button onClick={() => onDelete(rowKey)}
-                        className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                        title="Delete SKU">
-                        <TrashIcon className="h-3.5 w-3.5" />
-                      </button>
+                  <td className="px-2 py-1 w-20">
+                    <div className="flex items-center gap-1">
+                      {splitWarning && (
+                        <span className="inline-block px-1 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 whitespace-nowrap" title={`Channel splits total ${channelSplitSum}%, not 100%`}>
+                          ≠100
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => onRowClick(row)}
+                          className="p-1 rounded text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors"
+                          title="View / Edit detail">
+                          <ChevronRightIcon className="h-3.5 w-3.5" />
+                        </button>
+                        <button onClick={() => onDelete(rowKey)}
+                          className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                          title="Delete SKU">
+                          <TrashIcon className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
                     </div>
                   </td>
                 </tr>
               );
             })}
           </tbody>
+          {skuRows.length > 0 && visibleGroups.has('channel') && (
+            <tfoot>
+              <tr className="border-t-2 border-slate-200 bg-slate-50">
+                {visibleCols.map(col => (
+                  <td key={col.key} className="px-2 py-2 text-xs">
+                    {col.key === 'channel_revenue_split' ? (
+                      <span className={clsx('font-bold', channelSplitOk ? 'text-emerald-600' : 'text-red-600')}>
+                        {channelSplitSum}%{' '}
+                        <span className="font-normal">{channelSplitOk ? '✓' : '≠ 100'}</span>
+                      </span>
+                    ) : col.key === 'primary_channel' ? (
+                      <span className="font-semibold text-slate-400">Split total →</span>
+                    ) : null}
+                  </td>
+                ))}
+                <td className="w-20" />
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
     </div>
