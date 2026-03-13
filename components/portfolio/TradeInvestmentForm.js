@@ -22,12 +22,12 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
     PRIMARY_CHANNELS.forEach(ch => {
       const existing = tradeInvestment.find(r => r.channel === ch.code);
       m[ch.code] = {
-        id:                existing?.id || null,
-        listing_fees:      existing?.listing_fees      || '',
-        coop_spend:        existing?.coop_spend        || '',
-        activation_budget: existing?.activation_budget || '',
-        gondola_payments:  existing?.gondola_payments  || '',
-        other_trade_spend: existing?.other_trade_spend || '',
+        id:                existing?.id ?? null,
+        listing_fees:      existing?.listing_fees      ?? '',
+        coop_spend:        existing?.coop_spend        ?? '',
+        activation_budget: existing?.activation_budget ?? '',
+        gondola_payments:  existing?.gondola_payments  ?? '',
+        other_trade_spend: existing?.other_trade_spend ?? '',
       };
     });
     setMatrix(m);

@@ -59,7 +59,12 @@ export function usePortfolio(userId) {
   // ── Save single SKU row (upsert, optimistic) ─────────────────
   const saveSku = useCallback(async (row) => {
     setSaving(true);
-    const payload = { ...row, period_id: activePeriod?.id, user_id: userId };
+    const tempId = row._tempId;
+    // Strip _tempId — it's a client-only key, not a DB column
+    const { _tempId, ...rest } = row;
+    const payload = { ...rest, period_id: activePeriod?.id, user_id: userId };
+    // For new rows (no id yet), remove id so Supabase auto-generates it
+    if (!payload.id) delete payload.id;
     const { data, error } = await sb
       .from('sku_rows')
       .upsert(payload, { onConflict: 'id' })
@@ -68,8 +73,9 @@ export function usePortfolio(userId) {
     setSaving(false);
     if (error) { setError(error.message); return null; }
     setSkuRows(prev => {
-      const idx = prev.findIndex(r => r.id === data.id);
-      return idx >= 0 ? prev.map(r => r.id === data.id ? data : r) : [...prev, data];
+      // Replace matching row — match on id OR _tempId for newly created rows
+      const idx = prev.findIndex(r => r.id === data.id || (tempId && r._tempId === tempId));
+      return idx >= 0 ? prev.map((r, i) => i === idx ? data : r) : [...prev, data];
     });
     return data;
   }, [activePeriod, userId]);
@@ -114,7 +120,8 @@ export function usePortfolio(userId) {
 
   // ── Save trade investment row ─────────────────────────────────
   const saveTradeInvestment = useCallback(async (row) => {
-    const payload = { ...row, period_id: activePeriod?.id, user_id: userId };
+    const { _tempId, ...rest } = row;
+    const payload = { ...rest, period_id: activePeriod?.id, user_id: userId };
     const { data, error } = await sb
       .from('trade_investment')
       .upsert(payload, { onConflict: 'id' })

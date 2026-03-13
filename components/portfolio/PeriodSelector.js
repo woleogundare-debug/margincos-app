@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, PlusIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { Modal } from '../ui/index';
 import { Button } from '../ui/Button';
@@ -11,6 +11,19 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, load
   const [form,        setForm]        = useState({ label: '', vertical: 'FMCG', company_name: '' });
   const [creating,    setCreating]    = useState(false);
   const [error,       setError]       = useState('');
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
 
   const handleCreate = async () => {
     if (!form.label.trim()) { setError('Period label is required'); return; }
@@ -27,7 +40,7 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, load
     <>
       <div className="flex items-center gap-3">
         {/* Period switcher */}
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button onClick={() => setOpen(o => !o)}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-navy hover:border-teal transition-colors shadow-sm">
             <CalendarDaysIcon className="h-4 w-4 text-teal" />
