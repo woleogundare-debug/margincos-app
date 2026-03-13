@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { PlusIcon, TrashIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
@@ -64,7 +64,15 @@ const GROUP_LABELS = {
 };
 
 function CellInput({ col, value, onChange, onBlur, vertical }) {
+  // Local state so the input updates immediately on keystrokes.
+  // The parent is notified via onChange (writes to pendingEdits ref)
+  // but re-render is driven locally, not by the ref.
+  const [local, setLocal] = useState(value ?? '');
+  useEffect(() => { setLocal(value ?? ''); }, [value]);
+
   const { categories } = getTaxonomy(vertical || 'FMCG');
+
+  const handleChange = (v) => { setLocal(v); onChange(v); };
 
   if (col.type === 'select') {
     let options = [];
@@ -74,7 +82,7 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
     else if (col.key === 'region')     options = REGIONS;
 
     return (
-      <select value={value || ''} onChange={e => onChange(e.target.value)} onBlur={onBlur}
+      <select value={local || ''} onChange={e => handleChange(e.target.value)} onBlur={onBlur}
         className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5">
         <option value="">—</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
@@ -84,8 +92,8 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 
   if (col.type === 'bool') {
     return (
-      <select value={value === true || value === 'Y' ? 'true' : 'false'}
-        onChange={e => onChange(e.target.value === 'true')} onBlur={onBlur}
+      <select value={local === true || local === 'Y' ? 'true' : 'false'}
+        onChange={e => handleChange(e.target.value === 'true')} onBlur={onBlur}
         className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5">
         <option value="true">Yes</option>
         <option value="false">No</option>
@@ -95,9 +103,12 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 
   return (
     <input type={col.type === 'number' || col.type === 'pct' ? 'number' : 'text'}
-      value={value ?? ''}
+      value={local}
       step={col.type === 'pct' ? '0.01' : col.type === 'number' ? '1' : undefined}
-      onChange={e => onChange(col.type === 'number' || col.type === 'pct' ? parseFloat(e.target.value) || '' : e.target.value)}
+      onChange={e => {
+        const v = col.type === 'number' || col.type === 'pct' ? (e.target.value === '' ? '' : parseFloat(e.target.value)) : e.target.value;
+        handleChange(v);
+      }}
       onBlur={onBlur}
       placeholder={col.required ? '—' : ''}
       className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5 [appearance:textfield]"
@@ -141,7 +152,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
   const groups = [...new Set(COLUMNS.map(c => c.group))];
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-visible">
       {/* Toolbar */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-slate-50/60">
         <div className="flex items-center gap-2 flex-wrap">

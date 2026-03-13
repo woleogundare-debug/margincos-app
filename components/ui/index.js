@@ -78,8 +78,8 @@ export function RagBadge({ status }) {
 // ── Tooltip ────────────────────────────────────────────────────────────────
 export function Tooltip({ text, children }) {
   return (
-    <span className="group relative inline-flex">
-      {children || <QuestionMarkCircleIcon className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 cursor-help" />}
+    <span className="group relative inline-flex flex-shrink-0">
+      {children || <QuestionMarkCircleIcon className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-help flex-shrink-0" />}
       <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-lg bg-navy px-3 py-2 text-xs text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50 leading-relaxed">
         {text}
         <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-navy" />
