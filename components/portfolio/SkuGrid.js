@@ -132,13 +132,21 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
   }, []);
 
   const handleCellBlur = useCallback((row, colKey) => {
-    const edits = pendingEdits.current[row.id || row._tempId];
+    const key = row.id || row._tempId;
+    const edits = pendingEdits.current[key];
     if (edits && Object.keys(edits).length > 0) {
+      // Don't clear pendingEdits here — the async save hasn't resolved yet.
+      // If we clear now, CellInput re-renders with the stale row value before
+      // skuRows updates, causing the selected value to vanish (especially selects).
       onSave({ ...row, ...edits });
-      pendingEdits.current[row.id || row._tempId] = {};
     }
     setEditingCell(null);
   }, [onSave]);
+
+  // Clear pendingEdits once skuRows actually updates (save completed)
+  useEffect(() => {
+    pendingEdits.current = {};
+  }, [skuRows]);
 
   const toggleGroup = (g) => {
     if (g === 'identity') return; // always visible

@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
@@ -77,12 +77,39 @@ export function RagBadge({ status }) {
 
 // ── Tooltip ────────────────────────────────────────────────────────────────
 export function Tooltip({ text, children }) {
+  const triggerRef = useRef(null);
+  const [align, setAlign] = useState('center');
+
+  const handleMouseEnter = () => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const vw = window.innerWidth;
+    if (rect.left < 160) setAlign('left');
+    else if (rect.right > vw - 160) setAlign('right');
+    else setAlign('center');
+  };
+
+  const popupAlign = {
+    center: 'left-1/2 -translate-x-1/2',
+    left:   'left-0',
+    right:  'right-0',
+  }[align];
+
+  const arrowAlign = {
+    center: 'left-1/2 -translate-x-1/2',
+    left:   'left-3',
+    right:  'right-3',
+  }[align];
+
   return (
-    <span className="group relative inline-flex flex-shrink-0">
+    <span className="group relative inline-flex flex-shrink-0" ref={triggerRef} onMouseEnter={handleMouseEnter}>
       {children || <QuestionMarkCircleIcon className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-help flex-shrink-0" />}
-      <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-lg bg-navy px-3 py-2 text-xs text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50 leading-relaxed">
+      <span className={clsx(
+        'pointer-events-none absolute bottom-full mb-2 max-w-xs rounded-lg bg-navy px-3 py-2 text-xs text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50 leading-relaxed whitespace-normal break-words',
+        popupAlign
+      )}>
         {text}
-        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-navy" />
+        <span className={clsx('absolute top-full border-4 border-transparent border-t-navy', arrowAlign)} />
       </span>
     </span>
   );
