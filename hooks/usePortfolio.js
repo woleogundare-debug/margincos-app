@@ -21,7 +21,7 @@ export function usePortfolio(userId) {
       .from('periods')
       .select('*')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('id', { ascending: false }); // sku_rows has no created_at; periods may — use id for safe ordering
     if (error) {
       console.error('[loadPeriods] Supabase error:', error.message, error.details, error.hint, error.code);
     } else {
@@ -36,7 +36,7 @@ export function usePortfolio(userId) {
     console.log('[loadPeriodData] Fetching data for period:', periodId);
     setLoading(true);
     const [skuRes, tradeRes] = await Promise.all([
-      sb.from('sku_rows').select('*').eq('period_id', periodId).order('created_at'),
+      sb.from('sku_rows').select('*').eq('period_id', periodId),
       sb.from('trade_investment').select('*').eq('period_id', periodId),
     ]);
     if (skuRes.error) console.error('[loadPeriodData] SKU fetch error:', skuRes.error.message, skuRes.error.code);

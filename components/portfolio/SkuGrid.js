@@ -302,7 +302,8 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef(null);
   const pendingEdits = useRef({});
-  const saveTimers = useRef({});
+  const flushTimer = useRef(null);        // Single grid-level debounce timer
+  const savingKeys = useRef(new Set());    // Track which rows are mid-save
   // Stable refs so debounce callbacks always see current values
   const skuRowsRef = useRef(skuRows);
   const onSaveRef = useRef(onSave);
@@ -319,36 +320,46 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   }, 0);
   const channelSplitOk = channelSplitSum === 100;
 
+  // ── Single grid-level flush — saves ALL dirty rows at once ────────
+  const flushPendingEdits = useCallback(() => {
+    const pending = pendingEdits.current;
+    const keys = Object.keys(pending);
+    if (keys.length === 0) return;
+    keys.forEach(key => {
+      // Skip rows already mid-save to prevent duplicates
+      if (savingKeys.current.has(key)) return;
+      const edits = pending[key];
+      if (!edits || Object.keys(edits).length === 0) return;
+      const row = skuRowsRef.current.find(r => r.id === key || r._tempId === key);
+      if (!row) return;
+      savingKeys.current.add(key);
+      const merged = { ...row, ...edits };
+      onSaveRef.current(merged).then(() => {
+        savingKeys.current.delete(key);
+      }).catch(() => {
+        savingKeys.current.delete(key);
+      });
+    });
+  }, []);
+
+  const scheduleFlush = useCallback((delay = 2000) => {
+    if (flushTimer.current) clearTimeout(flushTimer.current);
+    flushTimer.current = setTimeout(flushPendingEdits, delay);
+  }, [flushPendingEdits]);
+
   const handleCellChange = useCallback((rowId, colKey, value) => {
     if (!pendingEdits.current[rowId]) pendingEdits.current[rowId] = {};
     pendingEdits.current[rowId][colKey] = value;
-    // Debounced autosave: persist to Supabase after 1.5s of inactivity.
-    // This ensures data survives navigation even if blur doesn't fire.
-    if (saveTimers.current[rowId]) clearTimeout(saveTimers.current[rowId]);
-    saveTimers.current[rowId] = setTimeout(() => {
-      const edits = pendingEdits.current[rowId];
-      if (!edits || Object.keys(edits).length === 0) return;
-      const row = skuRowsRef.current.find(r => r.id === rowId || r._tempId === rowId);
-      if (row) onSaveRef.current({ ...row, ...edits });
-    }, 1500);
-  }, []);
+    // Schedule a single grid-level flush after 2s of inactivity
+    scheduleFlush(2000);
+  }, [scheduleFlush]);
 
   const handleCellBlur = useCallback((row, colKey) => {
-    const key = row.id || row._tempId;
-    // Cancel debounce timer — we're flushing immediately on blur
-    if (saveTimers.current[key]) {
-      clearTimeout(saveTimers.current[key]);
-      delete saveTimers.current[key];
-    }
-    const edits = pendingEdits.current[key];
-    if (edits && Object.keys(edits).length > 0) {
-      // Don't clear pendingEdits here — the async save hasn't resolved yet.
-      // If we clear now, CellInput re-renders with the stale row value before
-      // skuRows updates, causing the selected value to vanish (especially selects).
-      onSave({ ...row, ...edits });
-    }
+    // On blur: shorten the flush delay to 500ms (don't fire immediately
+    // to let rapid tab-through settle, but flush sooner than 2s)
+    scheduleFlush(500);
     setEditingCell(null);
-  }, [onSave]);
+  }, [scheduleFlush]);
 
   // When skuRows updates (save completed), clear only the edits that
   // have been persisted. Any edits made while the save was in-flight
@@ -370,17 +381,10 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   // Flush any unsaved edits on unmount (e.g. user navigates away)
   useEffect(() => {
     return () => {
-      // Cancel all debounce timers
-      Object.values(saveTimers.current).forEach(t => clearTimeout(t));
-      // Flush pending edits immediately
-      Object.entries(pendingEdits.current).forEach(([key, edits]) => {
-        if (edits && Object.keys(edits).length > 0) {
-          const row = skuRowsRef.current.find(r => r.id === key || r._tempId === key);
-          if (row) onSaveRef.current({ ...row, ...edits });
-        }
-      });
+      if (flushTimer.current) clearTimeout(flushTimer.current);
+      flushPendingEdits(); // Immediate flush of everything remaining
     };
-  }, []);
+  }, [flushPendingEdits]);
 
   // ── CSV Import handlers ──────────────────────────────────────
   const handleFileSelect = useCallback((e) => {
