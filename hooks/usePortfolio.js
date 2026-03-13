@@ -1,0 +1,157 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getSupabaseClient } from '../lib/supabase/client';
+
+export function usePortfolio(userId) {
+  const [periods,          setPeriods]          = useState([]);
+  const [activePeriod,     setActivePeriod]     = useState(null);
+  const [skuRows,          setSkuRows]          = useState([]);
+  const [tradeInvestment,  setTradeInvestment]  = useState([]);
+  const [loading,          setLoading]          = useState(false);
+  const [saving,           setSaving]           = useState(false);
+  const [error,            setError]            = useState(null);
+  const saveTimerRef = useRef({});
+
+  const sb = getSupabaseClient();
+
+  // ── Load all periods for this user ────────────────────────────
+  const loadPeriods = useCallback(async () => {
+    if (!userId) return;
+    const { data, error } = await sb
+      .from('periods')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (!error) setPeriods(data || []);
+  }, [userId]);
+
+  // ── Load SKU rows + trade investment for a period ─────────────
+  const loadPeriodData = useCallback(async (periodId) => {
+    if (!periodId) return;
+    setLoading(true);
+    const [skuRes, tradeRes] = await Promise.all([
+      sb.from('sku_rows').select('*').eq('period_id', periodId).order('created_at'),
+      sb.from('trade_investment').select('*').eq('period_id', periodId),
+    ]);
+    setSkuRows(skuRes.data || []);
+    setTradeInvestment(tradeRes.data || []);
+    setLoading(false);
+  }, []);
+
+  // ── Switch active period ───────────────────────────────────────
+  const selectPeriod = useCallback(async (period) => {
+    setActivePeriod(period);
+    await loadPeriodData(period.id);
+  }, [loadPeriodData]);
+
+  // ── Create new period ─────────────────────────────────────────
+  const createPeriod = useCallback(async ({ label, vertical, company_name }) => {
+    const { data, error } = await sb.from('periods').insert({
+      user_id: userId, label, vertical,
+      company_name: company_name || null,
+      is_active: true,
+    }).select().single();
+    if (error) { setError(error.message); return null; }
+    await loadPeriods();
+    await selectPeriod(data);
+    return data;
+  }, [userId, loadPeriods, selectPeriod]);
+
+  // ── Save single SKU row (upsert, optimistic) ─────────────────
+  const saveSku = useCallback(async (row) => {
+    setSaving(true);
+    const payload = { ...row, period_id: activePeriod?.id, user_id: userId };
+    const { data, error } = await sb
+      .from('sku_rows')
+      .upsert(payload, { onConflict: 'id' })
+      .select()
+      .single();
+    setSaving(false);
+    if (error) { setError(error.message); return null; }
+    setSkuRows(prev => {
+      const idx = prev.findIndex(r => r.id === data.id);
+      return idx >= 0 ? prev.map(r => r.id === data.id ? data : r) : [...prev, data];
+    });
+    return data;
+  }, [activePeriod, userId]);
+
+  // ── Debounced save (for inline grid edits) ────────────────────
+  const debouncedSaveSku = useCallback((row, delay = 800) => {
+    const key = row.id || row._tempId;
+    if (saveTimerRef.current[key]) clearTimeout(saveTimerRef.current[key]);
+    // Optimistic update immediately
+    setSkuRows(prev => {
+      const idx = prev.findIndex(r => r.id === key || r._tempId === key);
+      return idx >= 0 ? prev.map(r => (r.id === key || r._tempId === key) ? { ...r, ...row } : r) : prev;
+    });
+    saveTimerRef.current[key] = setTimeout(() => saveSku(row), delay);
+  }, [saveSku]);
+
+  // ── Add new blank SKU ─────────────────────────────────────────
+  const addSku = useCallback(async () => {
+    const tempId = `temp_${Date.now()}`;
+    const blank = {
+      _tempId: tempId,
+      period_id: activePeriod?.id,
+      user_id: userId,
+      active: true,
+      sku_id: '', sku_name: '', category: '',
+      segment: '', business_unit: '',
+      rrp: null, cogs_per_unit: null, monthly_volume_units: null,
+    };
+    setSkuRows(prev => [...prev, blank]);
+    return tempId;
+  }, [activePeriod, userId]);
+
+  // ── Soft-delete SKU ───────────────────────────────────────────
+  const deleteSku = useCallback(async (id) => {
+    if (id.startsWith?.('temp_')) {
+      setSkuRows(prev => prev.filter(r => r._tempId !== id && r.id !== id));
+      return;
+    }
+    await sb.from('sku_rows').update({ active: false }).eq('id', id);
+    setSkuRows(prev => prev.filter(r => r.id !== id));
+  }, []);
+
+  // ── Save trade investment row ─────────────────────────────────
+  const saveTradeInvestment = useCallback(async (row) => {
+    const payload = { ...row, period_id: activePeriod?.id, user_id: userId };
+    const { data, error } = await sb
+      .from('trade_investment')
+      .upsert(payload, { onConflict: 'id' })
+      .select()
+      .single();
+    if (error) { setError(error.message); return null; }
+    setTradeInvestment(prev => {
+      const idx = prev.findIndex(r => r.id === data.id);
+      return idx >= 0 ? prev.map(r => r.id === data.id ? data : r) : [...prev, data];
+    });
+    return data;
+  }, [activePeriod, userId]);
+
+  // ── Init: load periods on mount ───────────────────────────────
+  useEffect(() => {
+    if (userId) loadPeriods();
+  }, [userId, loadPeriods]);
+
+  // ── Auto-select most recent period ───────────────────────────
+  useEffect(() => {
+    if (periods.length > 0 && !activePeriod) {
+      selectPeriod(periods[0]);
+    }
+  }, [periods, activePeriod, selectPeriod]);
+
+  // Stats for UI
+  const activeSkuCount   = skuRows.filter(r => r.active && !r._tempId).length;
+  const completeSkuCount = skuRows.filter(r =>
+    r.active && r.sku_id && r.sku_name && r.category && r.rrp && r.cogs_per_unit && r.monthly_volume_units
+  ).length;
+
+  return {
+    periods, activePeriod, skuRows, tradeInvestment,
+    loading, saving, error,
+    createPeriod, selectPeriod, loadPeriods,
+    saveSku, debouncedSaveSku, addSku, deleteSku,
+    saveTradeInvestment,
+    activeSkuCount, completeSkuCount,
+  };
+}
