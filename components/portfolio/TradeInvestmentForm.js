@@ -94,12 +94,12 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 w-36">Channel</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 w-56">Channel</th>
               {TRADE_SPEND_CATEGORIES.map(cat => (
                 <th key={cat.key} className="px-3 py-3 text-right text-xs font-semibold text-slate-500">
                   <span className="flex items-center justify-end gap-1">
                     {cat.label}
-                    <Tooltip text={`Monthly ${cat.label.toLowerCase()} spend for this channel (₦)`} />
+                    <Tooltip text={cat.tip} />
                   </span>
                 </th>
               ))}
@@ -112,10 +112,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
               return (
                 <tr key={ch.code} className={clsx('border-b border-slate-50', ri % 2 === 0 ? 'bg-white' : 'bg-slate-50/30')}>
                   <td className="px-4 py-2 font-semibold text-navy whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{ch.code}</span>
-                      {ch.label}
-                    </span>
+                    {ch.label}
                   </td>
                   {TRADE_SPEND_CATEGORIES.map(cat => (
                     <td key={cat.key} className="px-2 py-1">

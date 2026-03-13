@@ -19,36 +19,36 @@ const GROUP_COLORS = {
 // Column definitions
 const COLUMNS = [
   // Identity
-  { key: 'sku_id',        label: 'SKU ID',           group: 'identity', required: true,  type: 'text',   width: 'w-28',  tip: 'Unique identifier. No duplicates.' },
-  { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on pack.' },
-  { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-44',  tip: 'Select from your vertical\'s category list.' },
-  { key: 'segment',       label: 'Segment',          group: 'identity', required: false, type: 'select', width: 'w-32',  tip: 'Mass Market, Mid-Range, or Premium.' },
-  { key: 'business_unit', label: 'Business Unit',    group: 'identity', required: false, type: 'text',   width: 'w-32',  tip: 'Internal BU or division name.' },
+  { key: 'sku_id',        label: 'SKU ID',           group: 'identity', required: true,  type: 'text',   width: 'w-28',  tip: 'Your internal product code. Must be unique \u2014 no two rows can share the same SKU ID.' },
+  { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on-pack or in your ERP system.' },
+  { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-44',  tip: 'Product category from your vertical\u2019s standard taxonomy.' },
+  { key: 'segment',       label: 'Segment',          group: 'identity', required: false, type: 'select', width: 'w-32',  tip: 'Price positioning: Mass Market (volume-driven), Mid-Range, or Premium.' },
+  { key: 'business_unit', label: 'Business Unit',    group: 'identity', required: false, type: 'text',   width: 'w-32',  tip: 'Division or brand cluster this SKU belongs to (e.g. Flour, Pasta, Noodles).' },
   // Pricing P1
-  { key: 'rrp',                      label: 'RRP ₦',         group: 'pricing',  required: true,  type: 'number', width: 'w-24',  tip: 'Recommended retail price per unit in Naira.' },
-  { key: 'competitor_price',         label: 'Comp. Price ₦', group: 'pricing',  required: false, type: 'number', width: 'w-28',  tip: 'Nearest competitor\'s price per unit. Powers competitor gap analysis.' },
-  { key: 'target_margin_floor_pct',  label: 'Margin Floor %', group: 'pricing', required: false, type: 'pct',    width: 'w-28',  tip: 'Minimum acceptable gross margin %. Triggers breach alert if crossed.' },
-  { key: 'price_elasticity',         label: 'Elasticity',    group: 'pricing',  required: false, type: 'number', width: 'w-24',  tip: 'Price elasticity coefficient. Default -0.7 if blank.' },
-  { key: 'proposed_price_change_pct',label: 'Prop. Chg %',   group: 'pricing',  required: false, type: 'pct',    width: 'w-24',  tip: 'Proposed price change as a decimal (0.05 = 5%).' },
-  { key: 'wtp_premium_pct',          label: 'WTP Premium %', group: 'pricing',  required: false, type: 'pct',    width: 'w-28',  tip: 'Estimated willingness-to-pay premium above current RRP.' },
+  { key: 'rrp',                      label: 'RRP \u20a6',         group: 'pricing',  required: true,  type: 'number', width: 'w-24',  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, in Naira per unit.' },
+  { key: 'competitor_price',         label: 'Comp. Price \u20a6', group: 'pricing',  required: false, type: 'number', width: 'w-28',  tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, in \u20a6 per unit.' },
+  { key: 'target_margin_floor_pct',  label: 'Margin Floor %', group: 'pricing', required: false, type: 'pct',    width: 'w-28',  tip: 'The minimum gross margin percentage you will accept for this SKU before flagging it for repricing or rationalisation.' },
+  { key: 'price_elasticity',         label: 'Elasticity',    group: 'pricing',  required: false, type: 'number', width: 'w-24',  tip: 'How sensitive demand is to a price change. \u22121.5 means a 10% price rise reduces volume by 15%. Leave blank if unknown.' },
+  { key: 'proposed_price_change_pct',label: 'Prop. Chg %',   group: 'pricing',  required: false, type: 'pct',    width: 'w-24',  tip: 'The price increase or decrease you are considering. Enter as a percentage \u2014 e.g. 5 for a 5% increase.' },
+  { key: 'wtp_premium_pct',          label: 'WTP Premium %', group: 'pricing',  required: false, type: 'pct',    width: 'w-28',  tip: 'Willingness-to-pay premium: how much more (%) consumers are prepared to pay above current RRP before switching.' },
   // Cost P2
-  { key: 'cogs_per_unit',      label: 'COGS ₦',         group: 'cost', required: true,  type: 'number', width: 'w-24',  tip: 'Cost of goods sold per unit in Naira.' },
-  { key: 'cogs_prior_period',  label: 'Prior COGS ₦',   group: 'cost', required: false, type: 'number', width: 'w-28',  tip: 'COGS per unit last period. Used to compute actual vs. self-reported inflation.' },
-  { key: 'cogs_inflation_rate',label: 'COGS Infl. %',   group: 'cost', required: false, type: 'pct',    width: 'w-24',  tip: 'Input cost inflation rate. Overridden by Prior COGS if both present.' },
-  { key: 'pass_through_rate',  label: 'Pass-Through %', group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of cost inflation recovered via price. 1.0 = fully passed through.' },
-  { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of COGS linked to FX/imported inputs. Decomposes absorbed inflation.' },
+  { key: 'cogs_per_unit',      label: 'COGS \u20a6',         group: 'cost', required: true,  type: 'number', width: 'w-24',  tip: 'Cost of Goods Sold per unit \u2014 total landed cost including raw materials, packaging, and manufacturing.' },
+  { key: 'cogs_prior_period',  label: 'Prior COGS \u20a6',   group: 'cost', required: false, type: 'number', width: 'w-28',  tip: 'COGS per unit in the previous month or period. Used to calculate actual cost movement rather than relying on self-reported inflation rate.' },
+  { key: 'cogs_inflation_rate',label: 'COGS Infl. %',   group: 'cost', required: false, type: 'pct',    width: 'w-24',  tip: 'The annual rate at which this SKU\u2019s input costs are rising. Used to calculate cost absorption.' },
+  { key: 'pass_through_rate',  label: 'Pass-Through %', group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: 'Percentage of cost increases already passed on to the trade. 100% means full pass-through; 0% means fully absorbed.' },
+  { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: 'Percentage of this SKU\u2019s COGS that is linked to foreign currency (imported raw materials, packaging, or machinery costs).' },
   // Channel P3
-  { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-32',  tip: 'Primary route to market for this SKU.' },
-  { key: 'channel_revenue_split', label: 'Ch. Split %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Revenue share % for this SKU (0–100). All SKUs in the period should total 100%.' },
-  { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Named distributor. Powers M4 Distributor Scorecard.' },
-  { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'Distributor margin as % of RRP.' },
-  { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Distributor rebate % separate from margin. Used in net contribution calc.' },
-  { key: 'logistics_cost_per_unit',label: 'Logistics ₦',  group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Delivery/logistics cost per unit. Included in true net contribution margin.' },
-  { key: 'credit_days',           label: 'Credit Days',   group: 'channel', required: false, type: 'number', width: 'w-24',  tip: 'Standard credit days extended. Used in working capital cost calculation.' },
+  { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-44',  tip: 'Primary route-to-market for this SKU. Select the channel that accounts for the majority of volume.' },
+  { key: 'channel_revenue_split', label: 'Ch. Split %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'What percentage of this SKU\u2019s total volume goes through the selected primary channel. Must sum to 100% across your portfolio.' },
+  { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
+  { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for Nigerian FMCG.' },
+  { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Retrospective rebate paid back to the trade at period-end, separate from the upfront distributor margin.' },
+  { key: 'logistics_cost_per_unit',label: 'Logistics \u20a6',  group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Cost to deliver one unit to the trade (\u20a6) \u2014 includes freight, last-mile, and handling.' },
+  { key: 'credit_days',           label: 'Credit Days',   group: 'channel', required: false, type: 'number', width: 'w-24',  tip: 'Standard credit terms extended to distributors for this SKU \u2014 the number of days before payment is due.' },
   // Trade P4
-  { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-24',  tip: 'Monthly sales volume in units.' },
-  { key: 'promo_depth_pct',      label: 'Promo Depth %',group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Average promotional discount as % of RRP (0.15 = 15%).' },
-  { key: 'promo_lift_pct',       label: 'Promo Lift %', group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Volume uplift % during promotional period.' },
+  { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-24',  tip: 'Number of units sold or distributed in the period.' },
+  { key: 'promo_depth_pct',      label: 'Promo Depth %',group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'The discount percentage applied during a promotional period \u2014 e.g. 15 for a 15% promotional price cut.' },
+  { key: 'promo_lift_pct',       label: 'Promo Lift %', group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Expected volume uplift during the promotion as a percentage \u2014 e.g. 20 means you expect 20% more units sold.' },
   // Meta
   { key: 'region', label: 'Region', group: 'meta', required: false, type: 'select', width: 'w-32', tip: 'Primary geographic region for this SKU.' },
   { key: 'active', label: 'Active', group: 'meta', required: true,  type: 'bool',   width: 'w-20', tip: 'Include in analysis. Set to No to exclude without deleting.' },
@@ -76,16 +76,16 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 
   if (col.type === 'select') {
     let options = [];
-    if (col.key === 'category')        options = categories;
-    else if (col.key === 'segment')    options = SEGMENTS;
-    else if (col.key === 'primary_channel') options = PRIMARY_CHANNELS.map(c => c.code);
-    else if (col.key === 'region')     options = REGIONS;
+    if (col.key === 'category')        options = categories.map(c => ({ value: c, label: c }));
+    else if (col.key === 'segment')    options = SEGMENTS.map(s => ({ value: s, label: s }));
+    else if (col.key === 'primary_channel') options = PRIMARY_CHANNELS.map(c => ({ value: c.code, label: c.label }));
+    else if (col.key === 'region')     options = REGIONS.map(r => ({ value: r, label: r }));
 
     return (
       <select value={local || ''} onChange={e => handleChange(e.target.value)} onBlur={onBlur}
         className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5">
-        <option value="">—</option>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
+        <option value="">\u2014</option>
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     );
   }
@@ -341,6 +341,11 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
             </tfoot>
           )}
         </table>
+        {skuRows.length > 0 && visibleGroups.has('channel') && (
+          <p className="px-5 py-2 text-[11px] text-slate-400 border-t border-slate-100">
+            <strong>What is channel split?</strong> Enter what % of this SKU&apos;s volume goes through each channel. The total across all your SKU rows should reach 100%.
+          </p>
+        )}
       </div>
     </div>
   );

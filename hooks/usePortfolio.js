@@ -16,22 +16,32 @@ export function usePortfolio(userId) {
   // ── Load all periods for this user ────────────────────────────
   const loadPeriods = useCallback(async () => {
     if (!userId) return;
+    console.log('[loadPeriods] Fetching for user:', userId);
     const { data, error } = await sb
       .from('periods')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
-    if (!error) setPeriods(data || []);
+    if (error) {
+      console.error('[loadPeriods] Supabase error:', error.message, error.details, error.hint, error.code);
+    } else {
+      console.log('[loadPeriods] Found', (data || []).length, 'periods');
+      setPeriods(data || []);
+    }
   }, [userId]);
 
   // ── Load SKU rows + trade investment for a period ─────────────
   const loadPeriodData = useCallback(async (periodId) => {
     if (!periodId) return;
+    console.log('[loadPeriodData] Fetching data for period:', periodId);
     setLoading(true);
     const [skuRes, tradeRes] = await Promise.all([
       sb.from('sku_rows').select('*').eq('period_id', periodId).order('created_at'),
       sb.from('trade_investment').select('*').eq('period_id', periodId),
     ]);
+    if (skuRes.error) console.error('[loadPeriodData] SKU fetch error:', skuRes.error.message, skuRes.error.code);
+    if (tradeRes.error) console.error('[loadPeriodData] Trade fetch error:', tradeRes.error.message, tradeRes.error.code);
+    console.log('[loadPeriodData] Loaded', (skuRes.data || []).length, 'SKUs,', (tradeRes.data || []).length, 'trade rows');
     setSkuRows(skuRes.data || []);
     setTradeInvestment(tradeRes.data || []);
     setLoading(false);
@@ -45,12 +55,18 @@ export function usePortfolio(userId) {
 
   // ── Create new period ─────────────────────────────────────────
   const createPeriod = useCallback(async ({ label, vertical, company_name }) => {
+    console.log('[createPeriod] Inserting:', { user_id: userId, label, vertical });
     const { data, error } = await sb.from('periods').insert({
       user_id: userId, label, vertical,
       company_name: company_name || null,
       is_active: true,
     }).select().single();
-    if (error) { setError(error.message); return null; }
+    if (error) {
+      console.error('[createPeriod] Supabase error:', error.message, error.details, error.hint, error.code);
+      setError(error.message);
+      return null;
+    }
+    console.log('[createPeriod] Created:', data.id);
     await loadPeriods();
     await selectPeriod(data);
     return data;
@@ -125,20 +141,34 @@ export function usePortfolio(userId) {
       setSkuRows(prev => prev.filter(r => r._tempId !== id && r.id !== id));
       return;
     }
-    await sb.from('sku_rows').update({ active: false }).eq('id', id);
+    console.log('[deleteSku] Soft-deleting:', id);
+    const { error } = await sb.from('sku_rows').update({ active: false }).eq('id', id);
+    if (error) {
+      console.error('[deleteSku] Supabase error:', error.message, error.details, error.hint, error.code);
+    }
     setSkuRows(prev => prev.filter(r => r.id !== id));
   }, []);
 
   // ── Save trade investment row ─────────────────────────────────
   const saveTradeInvestment = useCallback(async (row) => {
+    if (!activePeriod?.id || !userId) {
+      console.error('[saveTradeInvestment] Aborted \u2014 missing context:', { period_id: activePeriod?.id, user_id: userId });
+      return null;
+    }
     const { _tempId, ...rest } = row;
-    const payload = { ...rest, period_id: activePeriod?.id, user_id: userId };
+    const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
+    console.log('[saveTradeInvestment] Upserting:', { channel: payload.channel, period_id: payload.period_id, user_id: payload.user_id });
     const { data, error } = await sb
       .from('trade_investment')
       .upsert(payload, { onConflict: 'id' })
       .select()
       .single();
-    if (error) { setError(error.message); return null; }
+    if (error) {
+      console.error('[saveTradeInvestment] Supabase error:', error.message, error.details, error.hint, error.code);
+      setError(error.message);
+      return null;
+    }
+    console.log('[saveTradeInvestment] Saved:', data.id);
     setTradeInvestment(prev => {
       const idx = prev.findIndex(r => r.id === data.id);
       return idx >= 0 ? prev.map(r => r.id === data.id ? data : r) : [...prev, data];
