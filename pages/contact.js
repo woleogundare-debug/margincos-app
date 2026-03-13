@@ -34,6 +34,7 @@ export default function ContactPage() {
   const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
   // Pre-fill plan from query string (e.g. /contact?plan=professional)
   const plan = router.query.plan || '';
@@ -41,25 +42,25 @@ export default function ContactPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setFormError('');
 
-    const form = e.target;
-    const data = new FormData(form);
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
 
     try {
-      await fetch('/', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data).toString(),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
-      setSubmitted(true);
+
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        setFormError('Something went wrong. Please try again or email us directly at info@margincos.com');
+      }
     } catch (err) {
-      // Fallback: if Netlify Forms isn't available, open mailto
-      const name = data.get('name');
-      const email = data.get('email');
-      const company = data.get('company');
-      const message = data.get('message') || '';
-      window.location.href = `mailto:info@margincos.com?subject=Diagnostic Request from ${company}&body=Name: ${name}%0AEmail: ${email}%0ACompany: ${company}%0A%0A${message}`;
-      setSubmitted(true);
+      setFormError('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -94,27 +95,22 @@ export default function ContactPage() {
               {/* Form — 3 cols */}
               <div className="lg:col-span-3">
                 {submitted ? (
-                  <div data-reveal className="opacity-0 bg-teal-50 border border-teal/20 rounded-2xl p-8 text-center">
-                    <div className="w-16 h-16 rounded-full bg-teal/20 flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-navy mb-2">Thank you</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                      We'll be in touch within 24 hours to schedule your diagnostic session.
-                    </p>
+                  <div className="bg-teal-50 border border-teal-200 rounded-xl p-8 text-center">
+                    <div className="text-4xl mb-4">&#10003;</div>
+                    <h3 className="text-xl font-bold text-navy mb-2">Request Received</h3>
+                    <p className="text-gray-text">Thank you. We'll be in touch within 24 hours to schedule your diagnostic session.</p>
                   </div>
                 ) : (
                   <form
-                    name="diagnostic-request"
-                    method="POST"
-                    data-netlify="true"
                     onSubmit={handleSubmit}
                     className="space-y-5"
                   >
-                    <input type="hidden" name="form-name" value="diagnostic-request" />
                     {plan && <input type="hidden" name="plan" value={plan} />}
+                    {formError && (
+                      <div className="bg-red-50 border border-red-brand/20 rounded-xl p-4 text-sm text-red-brand">
+                        {formError}
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
