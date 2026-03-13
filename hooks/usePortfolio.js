@@ -84,6 +84,9 @@ export function usePortfolio(userId) {
     // Strip _tempId — it's a client-only key, not a DB column
     const { _tempId, ...rest } = row;
     const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
+    // Normalize active to 'Y'/'N' text — DB column is text, not boolean
+    const a = payload.active;
+    payload.active = (a === true || a === 'Y' || a === 'y' || a === 'true' || a === 'Active') ? 'Y' : (a === false || a === 'N' || a === 'n' || a === 'false' || a === 'No' || a === 'Inactive') ? 'N' : 'Y';
     // For new rows (no id yet), remove id so Supabase auto-generates it
     if (!payload.id) delete payload.id;
     console.log('[saveSku] Upserting:', { id: payload.id || '(new)', sku_id: payload.sku_id, period_id: payload.period_id, user_id: payload.user_id, user_id_type: typeof payload.user_id });
@@ -126,7 +129,7 @@ export function usePortfolio(userId) {
       _tempId: tempId,
       period_id: activePeriod?.id,
       user_id: userId,
-      active: true,
+      active: 'Y',
       sku_id: '', sku_name: '', category: '',
       segment: '', business_unit: '',
       rrp: null, cogs_per_unit: null, monthly_volume_units: null,
@@ -142,7 +145,7 @@ export function usePortfolio(userId) {
       return;
     }
     console.log('[deleteSku] Soft-deleting:', id);
-    const { error } = await sb.from('sku_rows').update({ active: false }).eq('id', id);
+    const { error } = await sb.from('sku_rows').update({ active: 'N' }).eq('id', id);
     if (error) {
       console.error('[deleteSku] Supabase error:', error.message, error.details, error.hint, error.code);
     }
@@ -196,10 +199,11 @@ export function usePortfolio(userId) {
     }
   }, [periods, activePeriod, selectPeriod, userId]);
 
-  // Stats for UI
-  const activeSkuCount   = skuRows.filter(r => r.active && !r._tempId).length;
+  // Stats for UI — active is stored as text 'Y'/'N' in Supabase
+  const isActive = (r) => r.active === 'Y' || r.active === true || r.active === 'y';
+  const activeSkuCount   = skuRows.filter(r => isActive(r) && !r._tempId).length;
   const completeSkuCount = skuRows.filter(r =>
-    r.active && r.sku_id && r.sku_name && r.category && r.rrp && r.cogs_per_unit && r.monthly_volume_units
+    isActive(r) && r.sku_id && r.sku_name && r.category && r.rrp && r.cogs_per_unit && r.monthly_volume_units
   ).length;
 
   return {

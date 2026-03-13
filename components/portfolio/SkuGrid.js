@@ -268,12 +268,13 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
   }
 
   if (col.type === 'bool') {
+    const isYes = local === true || local === 'Y' || local === 'y' || local === 'true' || local === 'Active';
     return (
-      <select value={local === true || local === 'Y' ? 'true' : 'false'}
-        onChange={e => handleChange(e.target.value === 'true')} onBlur={onBlur}
+      <select value={isYes ? 'Y' : 'N'}
+        onChange={e => handleChange(e.target.value)} onBlur={onBlur}
         className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5">
-        <option value="true">Yes</option>
-        <option value="false">No</option>
+        <option value="Y">Yes</option>
+        <option value="N">No</option>
       </select>
     );
   }
@@ -500,7 +501,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
             )}
             {skuRows.map((row, ri) => {
               const rowKey = row.id || row._tempId;
-              const hasError = row.active && (!row.sku_id || !row.sku_name || !row.category);
+              const hasError = (row.active === 'Y' || row.active === true) && (!row.sku_id || !row.sku_name || !row.category);
               const cogsGtRrp = row.rrp && row.cogs_per_unit && parseFloat(row.cogs_per_unit) > parseFloat(row.rrp);
               const rowSplit = parseFloat(pendingEdits.current[rowKey]?.channel_revenue_split ?? row.channel_revenue_split) || 0;
               const splitWarning = rowSplit > 0 && !channelSplitOk;

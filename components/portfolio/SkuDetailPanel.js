@@ -82,12 +82,13 @@ function FieldInput({ field, value, onChange, vertical }) {
   }
 
   if (field.type === 'bool') {
+    const isYes = value === true || value === 'Y' || value === 'y' || value === 'true' || value === 'Active';
     return (
-      <select value={value === true || value === 'Y' ? 'true' : 'false'}
-        onChange={e => onChange(e.target.value === 'true')}
+      <select value={isYes ? 'Y' : 'N'}
+        onChange={e => onChange(e.target.value)}
         className={clsx(baseClass, 'bg-white')}>
-        <option value="true">Yes — include in analysis</option>
-        <option value="false">No — exclude from analysis</option>
+        <option value="Y">Yes — include in analysis</option>
+        <option value="N">No — exclude from analysis</option>
       </select>
     );
   }

@@ -50,7 +50,7 @@ export default function OverviewPage() {
               <p className="text-xs text-slate-400 mt-0.5">
                 {hasResults
                   ? `Last run: ${ranAt?.toLocaleTimeString()} · ${results?.skuCount} active SKUs`
-                  : `${skuRows.filter(r => r.active !== false).length} SKUs in portfolio`}
+                  : `${skuRows.filter(r => r.active === 'Y' || r.active === true).length} SKUs in portfolio`}
               </p>
             </div>
             <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>
