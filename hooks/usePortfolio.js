@@ -6,7 +6,7 @@ export function usePortfolio(userId) {
   const [activePeriod,     setActivePeriod]     = useState(null);
   const [skuRows,          setSkuRows]          = useState([]);
   const [tradeInvestment,  setTradeInvestment]  = useState([]);
-  const [loading,          setLoading]          = useState(false);
+  const [loading,          setLoading]          = useState(true);
   const [saving,           setSaving]           = useState(false);
   const [error,            setError]            = useState(null);
   const saveTimerRef = useRef({});
@@ -86,7 +86,7 @@ export function usePortfolio(userId) {
     const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
     // For new rows (no id yet), remove id so Supabase auto-generates it
     if (!payload.id) delete payload.id;
-    console.log('[saveSku] Upserting:', { id: payload.id || '(new)', sku_id: payload.sku_id, period_id: payload.period_id });
+    console.log('[saveSku] Upserting:', { id: payload.id || '(new)', sku_id: payload.sku_id, period_id: payload.period_id, user_id: payload.user_id, user_id_type: typeof payload.user_id });
     const { data, error } = await sb
       .from('sku_rows')
       .upsert(payload, { onConflict: 'id' })
@@ -178,15 +178,23 @@ export function usePortfolio(userId) {
 
   // ── Init: load periods on mount ───────────────────────────────
   useEffect(() => {
-    if (userId) loadPeriods();
+    if (userId) {
+      loadPeriods();
+    } else {
+      // No user yet (auth still resolving) — don't show "no data"
+      // loading will stay true until userId arrives
+    }
   }, [userId, loadPeriods]);
 
   // ── Auto-select most recent period ───────────────────────────
   useEffect(() => {
     if (periods.length > 0 && !activePeriod) {
       selectPeriod(periods[0]);
+    } else if (userId && periods.length === 0 && !activePeriod) {
+      // userId present but no periods found — stop loading spinner
+      setLoading(false);
     }
-  }, [periods, activePeriod, selectPeriod]);
+  }, [periods, activePeriod, selectPeriod, userId]);
 
   // Stats for UI
   const activeSkuCount   = skuRows.filter(r => r.active && !r._tempId).length;

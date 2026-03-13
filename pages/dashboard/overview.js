@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { requireAuth } from '../../lib/supabase/server';
@@ -15,6 +15,16 @@ export default function OverviewPage() {
   const { user } = useAuth();
   const { activePeriod, skuRows, tradeInvestment, loading: portfolioLoading } = usePortfolio(user?.id);
   const { results, running, ranAt, error, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
+  const autoRanRef = useRef(false);
+
+  // Auto-run analysis when portfolio data finishes loading.
+  // This handles the flow: Portfolio "Run Analysis →" link → navigate here → auto-run.
+  useEffect(() => {
+    if (!portfolioLoading && skuRows.length > 0 && !hasResults && !running && !autoRanRef.current) {
+      autoRanRef.current = true;
+      run();
+    }
+  }, [portfolioLoading, skuRows.length, hasResults, running, run]);
 
   const noData = !portfolioLoading && skuRows.length === 0;
 

@@ -36,6 +36,18 @@ export default function PortfolioPage() {
     }
   };
 
+  const handleBulkImport = async (rows) => {
+    // Save all valid CSV rows in parallel batches of 5
+    const batchSize = 5;
+    for (let i = 0; i < rows.length; i += batchSize) {
+      const batch = rows.slice(i, i + batchSize);
+      await Promise.all(batch.map(row => saveSku({
+        ...row,
+        _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      })));
+    }
+  };
+
   return (
     <>
       <Head>
@@ -96,6 +108,7 @@ export default function PortfolioPage() {
                 onAdd={handleAddSku}
                 onDelete={deleteSku}
                 onRowClick={setSelectedRow}
+                onBulkImport={handleBulkImport}
                 saving={saving}
                 activePeriod={activePeriod}
               />

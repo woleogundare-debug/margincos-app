@@ -71,7 +71,7 @@ function FieldInput({ field, value, onChange, vertical }) {
 
     return (
       <select value={value || ''} onChange={e => onChange(e.target.value)} className={clsx(baseClass, 'bg-white')}>
-        <option value="">— Select —</option>
+        <option value="">Select {field.label.toLowerCase()}…</option>
         {options.map(o => {
           const v = typeof o === 'string' ? o : o.value;
           const l = typeof o === 'string' ? o : o.label;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { PlusIcon, TrashIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, TrashIcon, ChevronRightIcon, ArrowUpTrayIcon, ArrowDownTrayIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
 import { getTaxonomy } from '../../lib/taxonomy/index';
@@ -63,6 +63,183 @@ const GROUP_LABELS = {
   meta:     'Meta',
 };
 
+// ── CSV Import helpers ────────────────────────────────────────────────────
+
+// CSV headers that map to column keys
+const CSV_FIELDS = COLUMNS.filter(c => c.key !== 'active').map(c => c.key);
+const NUMERIC_KEYS = new Set(
+  COLUMNS.filter(c => c.type === 'number' || c.type === 'pct').map(c => c.key)
+);
+
+function parseCSV(text) {
+  // Lightweight RFC 4180 parser: handles quoted fields, embedded commas, newlines
+  const rows = [];
+  let i = 0;
+  while (i < text.length) {
+    const row = [];
+    while (i < text.length) {
+      if (text[i] === '"') {
+        // Quoted field
+        i++;
+        let field = '';
+        while (i < text.length) {
+          if (text[i] === '"') {
+            if (text[i + 1] === '"') { field += '"'; i += 2; }
+            else { i++; break; }
+          } else { field += text[i]; i++; }
+        }
+        row.push(field);
+      } else {
+        // Unquoted field
+        let field = '';
+        while (i < text.length && text[i] !== ',' && text[i] !== '\n' && text[i] !== '\r') {
+          field += text[i]; i++;
+        }
+        row.push(field.trim());
+      }
+      if (text[i] === ',') { i++; continue; }
+      if (text[i] === '\r') i++;
+      if (text[i] === '\n') { i++; break; }
+      break;
+    }
+    if (row.length > 0 && !(row.length === 1 && row[0] === '')) rows.push(row);
+  }
+  return rows;
+}
+
+function validateCSVRows(rawRows) {
+  if (rawRows.length < 2) return { valid: [], errors: [{ row: 0, msg: 'File is empty or has no data rows' }] };
+  const headers = rawRows[0].map(h => h.trim().toLowerCase());
+  const keyMap = {};
+  headers.forEach((h, i) => { keyMap[h] = i; });
+  const valid = [];
+  const errors = [];
+  const seenIds = new Set();
+
+  for (let r = 1; r < rawRows.length; r++) {
+    const cells = rawRows[r];
+    const rowErrors = [];
+    const row = { active: true };
+
+    CSV_FIELDS.forEach(key => {
+      const idx = keyMap[key];
+      const raw = idx !== undefined ? (cells[idx] || '').trim() : '';
+      if (NUMERIC_KEYS.has(key)) {
+        row[key] = raw === '' ? null : parseFloat(raw);
+        if (raw !== '' && isNaN(row[key])) rowErrors.push(`${key}: "${raw}" is not a number`);
+      } else {
+        row[key] = raw || '';
+      }
+    });
+
+    // Required checks
+    if (!row.sku_id) rowErrors.push('sku_id is missing');
+    if (row.sku_id && seenIds.has(row.sku_id)) rowErrors.push(`Duplicate sku_id "${row.sku_id}"`);
+    if (row.sku_id) seenIds.add(row.sku_id);
+    if (row.rrp !== null && isNaN(row.rrp)) rowErrors.push('rrp must be a number');
+    if (row.cogs_per_unit !== null && isNaN(row.cogs_per_unit)) rowErrors.push('cogs_per_unit must be a number');
+
+    if (rowErrors.length > 0) {
+      errors.push({ row: r, sku: row.sku_id || `(row ${r})`, issues: rowErrors });
+    } else {
+      valid.push(row);
+    }
+  }
+  return { valid, errors };
+}
+
+function downloadTemplate() {
+  const csv = CSV_FIELDS.join(',') + '\n';
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'margincos-sku-template.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Import Preview Modal ──────────────────────────────────────────────────
+function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
+  if (!result) return null;
+  const { valid, errors } = result;
+  return (
+    <>
+      <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm z-30" onClick={onCancel} />
+      <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <h2 className="text-base font-bold text-navy">CSV Import Preview</h2>
+            <button onClick={onCancel} className="text-slate-400 hover:text-slate-600">
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="px-6 py-4 flex-1 overflow-y-auto">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="px-3 py-2 rounded-xl bg-teal-50 text-teal-700 text-sm font-bold">
+                {valid.length} valid rows
+              </div>
+              {errors.length > 0 && (
+                <div className="px-3 py-2 rounded-xl bg-red-50 text-red-600 text-sm font-bold">
+                  {errors.length} rows with errors
+                </div>
+              )}
+            </div>
+            {errors.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-slate-500 mb-2">Errors (these rows will be skipped):</p>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                  {errors.map((e, i) => (
+                    <div key={i} className="text-xs bg-red-50 rounded-lg px-3 py-2 text-red-700">
+                      <strong>Row {e.row}</strong> ({e.sku}): {e.issues.join('; ')}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {valid.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-2">Preview of valid rows:</p>
+                <div className="overflow-x-auto border border-slate-100 rounded-lg">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-100">
+                        <th className="px-2 py-1.5 text-left">SKU ID</th>
+                        <th className="px-2 py-1.5 text-left">Product Name</th>
+                        <th className="px-2 py-1.5 text-right">RRP</th>
+                        <th className="px-2 py-1.5 text-right">COGS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {valid.slice(0, 10).map((r, i) => (
+                        <tr key={i} className="border-b border-slate-50">
+                          <td className="px-2 py-1.5 font-medium">{r.sku_id}</td>
+                          <td className="px-2 py-1.5">{r.sku_name || '—'}</td>
+                          <td className="px-2 py-1.5 text-right">{r.rrp ?? '—'}</td>
+                          <td className="px-2 py-1.5 text-right">{r.cogs_per_unit ?? '—'}</td>
+                        </tr>
+                      ))}
+                      {valid.length > 10 && (
+                        <tr><td colSpan={4} className="px-2 py-1.5 text-center text-slate-400">+{valid.length - 10} more</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3">
+            <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
+            <Button variant="primary" size="md" onClick={onConfirm} loading={importing} disabled={valid.length === 0}>
+              Import {valid.length} SKUs
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function CellInput({ col, value, onChange, onBlur, vertical }) {
   // Local state so the input updates immediately on keystrokes.
   // The parent is notified via onChange (writes to pendingEdits ref)
@@ -84,7 +261,7 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
     return (
       <select value={local || ''} onChange={e => handleChange(e.target.value)} onBlur={onBlur}
         className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5">
-        <option value="">\u2014</option>
+        <option value="">Select {col.label.toLowerCase()}…</option>
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     );
@@ -110,17 +287,20 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
         handleChange(v);
       }}
       onBlur={onBlur}
-      placeholder={col.required ? '—' : ''}
+      placeholder={col.required ? `Enter ${col.label.toLowerCase()}` : ''}
       className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5 [appearance:textfield]"
     />
   );
 }
 
-export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, activePeriod }) {
+export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod }) {
   const [visibleGroups, setVisibleGroups] = useState(
     new Set(['identity', 'pricing', 'cost', 'channel', 'trade', 'meta'])
   );
   const [editingCell, setEditingCell] = useState(null); // { rowIdx, colKey }
+  const [importResult, setImportResult] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef(null);
   const pendingEdits = useRef({});
   const saveTimers = useRef({});
   // Stable refs so debounce callbacks always see current values
@@ -170,9 +350,21 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
     setEditingCell(null);
   }, [onSave]);
 
-  // Clear pendingEdits once skuRows actually updates (save completed)
+  // When skuRows updates (save completed), clear only the edits that
+  // have been persisted. Any edits made while the save was in-flight
+  // must be preserved — otherwise rapid data entry gets silently dropped.
   useEffect(() => {
-    pendingEdits.current = {};
+    const pending = pendingEdits.current;
+    Object.keys(pending).forEach(key => {
+      const dbRow = skuRows.find(r => r.id === key || r._tempId === key);
+      if (!dbRow) return; // row not yet in skuRows, keep edits
+      const edits = pending[key];
+      const stale = Object.keys(edits).every(col => {
+        // Edit matches the DB value → it was part of the save that just completed
+        return edits[col] === dbRow[col];
+      });
+      if (stale) delete pending[key];
+    });
   }, [skuRows]);
 
   // Flush any unsaved edits on unmount (e.g. user navigates away)
@@ -189,6 +381,33 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
       });
     };
   }, []);
+
+  // ── CSV Import handlers ──────────────────────────────────────
+  const handleFileSelect = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target.result;
+      const rawRows = parseCSV(text);
+      const result = validateCSVRows(rawRows);
+      setImportResult(result);
+    };
+    reader.readAsText(file);
+    // Reset so the same file can be re-selected
+    e.target.value = '';
+  }, []);
+
+  const handleImportConfirm = useCallback(async () => {
+    if (!importResult?.valid?.length || !onBulkImport) return;
+    setImporting(true);
+    try {
+      await onBulkImport(importResult.valid);
+    } finally {
+      setImporting(false);
+      setImportResult(null);
+    }
+  }, [importResult, onBulkImport]);
 
   const toggleGroup = (g) => {
     if (g === 'identity') return; // always visible
@@ -219,9 +438,17 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {saving && <span className="text-xs text-teal animate-pulse font-medium">Saving…</span>}
-          <span className="text-xs text-slate-400">{skuRows.length} SKUs</span>
+          <span className="text-xs text-slate-400 mr-1">{skuRows.length} SKUs</span>
+          <button onClick={downloadTemplate} title="Download CSV template"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors">
+            <ArrowDownTrayIcon className="h-4 w-4" />
+          </button>
+          <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileSelect} />
+          <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
+            <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import CSV
+          </Button>
           <Button variant="primary" size="sm" onClick={onAdd}>
             <PlusIcon className="h-3.5 w-3.5" /> Add SKU
           </Button>
@@ -347,6 +574,14 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, saving, 
           </p>
         )}
       </div>
+
+      {/* CSV Import Preview Modal */}
+      <ImportPreviewModal
+        result={importResult}
+        onConfirm={handleImportConfirm}
+        onCancel={() => setImportResult(null)}
+        importing={importing}
+      />
     </div>
   );
 }
