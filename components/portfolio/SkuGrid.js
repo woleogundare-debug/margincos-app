@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { PlusIcon, TrashIcon, ChevronRightIcon, ArrowUpTrayIcon, ArrowDownTrayIcon, XMarkIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
 import { getTaxonomy } from '../../lib/taxonomy/index';
 import { PRIMARY_CHANNELS, SEGMENTS, REGIONS } from '../../lib/constants';
+import { LockClosedIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 
 // Column definitions
@@ -11,32 +12,32 @@ const COLUMNS = [
   // Always visible (identity core)
   { key: 'sku_id',        label: 'SKU ID',           group: 'identity', required: true,  type: 'text',   width: 'w-28',  tip: 'Your internal product code. Must be unique.' },
   { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on-pack or in your ERP.' },
-  { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-44',  tip: 'Product category from your vertical\u2019s taxonomy.' },
-  { key: 'rrp',           label: 'RRP \u20a6',       group: 'identity', required: true,  type: 'number', width: 'w-24',  tip: 'Recommended Retail Price in Naira per unit.' },
+  { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-56',  tip: 'Product category from your vertical\u2019s taxonomy.' },
+  { key: 'rrp',           label: 'RRP ₦',       group: 'identity', required: true,  type: 'number', width: 'w-24',  tip: 'Recommended Retail Price in Naira per unit.' },
   { key: 'active',        label: 'Active',           group: 'identity', required: true,  type: 'bool',   width: 'w-16',  tip: 'Include in analysis.' },
   // Identity extended
   { key: 'segment',       label: 'Segment',          group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Price positioning: Mass Market, Mid-Range, or Premium.' },
   { key: 'business_unit', label: 'Business Unit',    group: 'ext-identity', required: false, type: 'text',   width: 'w-32',  tip: 'Division or brand cluster.' },
   { key: 'region',        label: 'Region',           group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Primary geographic region.' },
   // Pricing P1
-  { key: 'competitor_price',         label: 'Comp. Price \u20a6', group: 'pricing',  required: false, type: 'number', width: 'w-28',  tip: 'Nearest competitor\u2019s shelf price.' },
+  { key: 'competitor_price',         label: 'Comp. Price ₦', group: 'pricing',  required: false, type: 'number', width: 'w-28',  tip: 'Nearest competitor\u2019s shelf price.' },
   { key: 'target_margin_floor_pct',  label: 'Margin Floor %', group: 'pricing', required: false, type: 'pct',    width: 'w-28',  tip: 'Minimum acceptable gross margin %.' },
   { key: 'price_elasticity',         label: 'Elasticity',    group: 'pricing',  required: false, type: 'number', width: 'w-24',  tip: 'Demand sensitivity to price change.' },
   { key: 'proposed_price_change_pct',label: 'Prop. Chg %',   group: 'pricing',  required: false, type: 'pct',    width: 'w-24',  tip: 'Proposed price increase/decrease %.' },
   { key: 'wtp_premium_pct',          label: 'WTP Premium %', group: 'pricing',  required: false, type: 'pct',    width: 'w-28',  tip: 'Willingness-to-pay premium %.' },
   // Cost P2
-  { key: 'cogs_per_unit',      label: 'COGS \u20a6',         group: 'cost', required: true,  type: 'number', width: 'w-24',  tip: 'Cost of Goods Sold per unit.' },
-  { key: 'cogs_prior_period',  label: 'Prior COGS \u20a6',   group: 'cost', required: false, type: 'number', width: 'w-28',  tip: 'COGS per unit in the previous period.' },
+  { key: 'cogs_per_unit',      label: 'COGS ₦',         group: 'cost', required: true,  type: 'number', width: 'w-24',  tip: 'Cost of Goods Sold per unit.' },
+  { key: 'cogs_prior_period',  label: 'Prior COGS ₦',   group: 'cost', required: false, type: 'number', width: 'w-28',  tip: 'COGS per unit in the previous period.' },
   { key: 'cogs_inflation_rate',label: 'COGS Infl. %',   group: 'cost', required: false, type: 'pct',    width: 'w-24',  tip: 'Annual input cost inflation rate.' },
   { key: 'pass_through_rate',  label: 'Pass-Through %', group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of cost increase passed on to trade.' },
   { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of COGS linked to foreign currency.' },
   // Channel P3
-  { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-44',  tip: 'Primary route-to-market.' },
+  { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-48',  tip: 'Primary route-to-market.' },
   { key: 'channel_revenue_split', label: 'Prim. Ch. Vol %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: '% of volume through primary channel.' },
   { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Primary distributor name.' },
   { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'Distributor margin %.' },
   { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Retrospective rebate %.' },
-  { key: 'logistics_cost_per_unit',label: 'Logistics \u20a6',  group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Delivery cost per unit.' },
+  { key: 'logistics_cost_per_unit',label: 'Logistics ₦',  group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Delivery cost per unit.' },
   { key: 'credit_days',           label: 'Credit Days',   group: 'channel', required: false, type: 'number', width: 'w-24',  tip: 'Payment terms in days.' },
   // Trade P4
   { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-24',  tip: 'Units sold in the period.' },
@@ -44,13 +45,13 @@ const COLUMNS = [
   { key: 'promo_lift_pct',       label: 'Promo Lift %', group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Expected volume uplift %.' },
 ];
 
-// Tab definitions
+// Tab definitions — requiredTier: 'professional' means Professional or Enterprise
 const TABS = [
   { key: 'identity',     label: 'Identity',             groups: ['identity', 'ext-identity'] },
   { key: 'pricing',      label: 'Pricing · P1',         groups: ['identity', 'pricing'] },
-  { key: 'cost',         label: 'Cost · P2',            groups: ['identity', 'cost'] },
-  { key: 'channel',      label: 'Channel · P3',         groups: ['identity', 'channel'] },
-  { key: 'trade',        label: 'Trade · P4',           groups: ['identity', 'trade'] },
+  { key: 'cost',         label: 'Cost · P2',            groups: ['identity', 'cost'],    requiredTier: 'professional' },
+  { key: 'channel',      label: 'Channel · P3',         groups: ['identity', 'channel'], requiredTier: 'professional' },
+  { key: 'trade',        label: 'Trade · P4',           groups: ['identity', 'trade'],   requiredTier: 'professional' },
 ];
 
 const TAB_GROUP_LABELS = {
@@ -250,18 +251,24 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
   if (col.type === 'bool') {
     const isYes = local === true || local === 'Y' || local === 'y' || local === 'true' || local === 'Active';
     return (
-      <select value={isYes ? 'Y' : 'N'} onChange={e => handleChange(e.target.value)} onBlur={onBlur}
-        className={clsx(baseClass, 'cursor-pointer')}>
-        <option value="Y">Yes</option>
-        <option value="N">No</option>
-      </select>
+      <button
+        type="button"
+        onClick={() => { const next = isYes ? 'N' : 'Y'; handleChange(next); onBlur(); }}
+        className={clsx(
+          'px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all cursor-pointer',
+          isYes
+            ? 'bg-teal-100 text-teal-700'
+            : 'bg-slate-100 text-slate-400'
+        )}>
+        {isYes ? 'Active' : 'Off'}
+      </button>
     );
   }
 
   const isNumeric = col.type === 'number' || col.type === 'pct';
   return (
     <div className="flex items-center">
-      {isNumeric && col.label.includes('\u20a6') && <span className="text-[10px] text-slate-300 mr-0.5">\u20a6</span>}
+      {isNumeric && col.label.includes('₦') && <span className="text-[10px] text-slate-300 mr-0.5">₦</span>}
       <input type={isNumeric ? 'number' : 'text'}
         value={local}
         step={col.type === 'pct' ? '0.01' : col.type === 'number' ? '1' : undefined}
@@ -324,7 +331,7 @@ function RowActionMenu({ onDetail, onDuplicate, onDelete }) {
   );
 }
 
-export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod }) {
+export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod, isProfessional, isEnterprise }) {
   const [activeTab, setActiveTab] = useState('identity');
   const [importResult, setImportResult] = useState(null);
   const [importing, setImporting] = useState(false);
@@ -338,6 +345,16 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   useEffect(() => { onSaveRef.current = onSave; }, [onSave]);
 
   const vertical = activePeriod?.vertical || 'FMCG';
+
+  // Detect duplicate SKU IDs
+  const duplicateSkuIds = useMemo(() => {
+    const counts = {};
+    skuRows.forEach(r => {
+      const id = r.sku_id?.trim();
+      if (id) counts[id] = (counts[id] || 0) + 1;
+    });
+    return new Set(Object.keys(counts).filter(k => counts[k] > 1));
+  }, [skuRows]);
 
   // Determine visible columns based on active tab
   const currentTab = TABS.find(t => t.key === activeTab) || TABS[0];
@@ -424,20 +441,28 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       {/* Column group tabs */}
       <div className="flex items-center justify-between px-5 py-0 border-b border-slate-200">
         <div className="flex items-center gap-0">
-          {TABS.map(tab => (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={clsx(
-                'px-4 py-3 text-xs font-semibold transition-all relative uppercase tracking-wide',
-                activeTab === tab.key
-                  ? 'text-navy'
-                  : 'text-slate-400 hover:text-slate-600'
-              )}>
-              {tab.label}
-              {activeTab === tab.key && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-t-full" />
-              )}
-            </button>
-          ))}
+          {TABS.map(tab => {
+            const locked = tab.requiredTier === 'professional' && !isProfessional;
+            return (
+              <button key={tab.key}
+                onClick={() => !locked && setActiveTab(tab.key)}
+                disabled={locked}
+                className={clsx(
+                  'px-4 py-3 text-xs font-semibold transition-all relative uppercase tracking-wide flex items-center gap-1.5',
+                  locked
+                    ? 'text-slate-300 cursor-not-allowed'
+                    : activeTab === tab.key
+                      ? 'text-navy'
+                      : 'text-slate-400 hover:text-slate-600'
+                )}>
+                {tab.label}
+                {locked && <LockClosedIcon className="w-3 h-3 text-slate-300" />}
+                {activeTab === tab.key && !locked && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-t-full" />
+                )}
+              </button>
+            );
+          })}
         </div>
         <div className="flex items-center gap-2 py-2">
           <button onClick={downloadTemplate} title="Download CSV template"
@@ -453,21 +478,34 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         <table className="w-full text-xs border-collapse">
           <thead>
             {/* Group label row — only for non-identity tabs */}
-            {activeTab !== 'identity' && (
-              <tr>
-                <th className="w-8" />
-                {visibleCols.map(col => (
-                  <th key={col.key} className="px-2 py-1.5">
-                    {TAB_GROUP_LABELS[col.group] && col === visibleCols.find(c => c.group === col.group) && (
-                      <span className="text-[9px] font-bold text-teal uppercase tracking-widest">
-                        {TAB_GROUP_LABELS[col.group]}
-                      </span>
-                    )}
-                  </th>
-                ))}
-                <th className="w-10" />
-              </tr>
-            )}
+            {activeTab !== 'identity' && (() => {
+              // Build group spans for colSpan labels
+              const groups = [];
+              let lastGroup = null;
+              visibleCols.forEach(col => {
+                if (col.group !== lastGroup) {
+                  groups.push({ group: col.group, span: 1 });
+                  lastGroup = col.group;
+                } else {
+                  groups[groups.length - 1].span++;
+                }
+              });
+              return (
+                <tr>
+                  <th className="w-8" />
+                  {groups.map(g => (
+                    <th key={g.group} colSpan={g.span} className="px-2 py-2 text-left">
+                      {TAB_GROUP_LABELS[g.group] && (
+                        <span className="text-xs font-semibold text-teal uppercase tracking-widest">
+                          {TAB_GROUP_LABELS[g.group]}
+                        </span>
+                      )}
+                    </th>
+                  ))}
+                  <th className="w-10" />
+                </tr>
+              );
+            })()}
             {/* Column headers */}
             <tr className="border-b border-slate-200" style={{ backgroundColor: '#E8EBF0' }}>
               <th className="w-8 px-2 py-2.5" />
@@ -517,18 +555,23 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                   {visibleCols.map(col => {
                     const val = pendingEdits.current[rowKey]?.[col.key] ?? row[col.key];
                     const isEmpty = col.required && (val === '' || val === null || val === undefined);
+                    const isDuplicate = col.key === 'sku_id' && val && duplicateSkuIds.has(val.toString().trim());
                     return (
                       <td key={col.key}
                         className={clsx(
                           'px-2 py-0',
                           col.width,
-                          isEmpty && 'bg-red-50/50'
-                        )}>
-                        <CellInput
-                          col={col} value={val} vertical={vertical}
-                          onChange={v => handleCellChange(rowKey, col.key, v)}
-                          onBlur={() => handleCellBlur()}
-                        />
+                          isEmpty && 'bg-red-50/50',
+                          isDuplicate && 'bg-red-50'
+                        )}
+                        title={isDuplicate ? `Duplicate SKU ID "${val}" — each row must have a unique ID` : undefined}>
+                        <div className={clsx(isDuplicate && 'ring-1 ring-red-400 rounded')}>
+                          <CellInput
+                            col={col} value={val} vertical={vertical}
+                            onChange={v => handleCellChange(rowKey, col.key, v)}
+                            onBlur={() => handleCellBlur()}
+                          />
+                        </div>
                       </td>
                     );
                   })}
@@ -557,8 +600,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       {/* Footer: row count + save status */}
       <div className="flex items-center justify-between px-5 py-2.5 border-t border-slate-100 bg-slate-50/40">
         <span className="text-[11px] text-slate-400">
-          Showing {skuRows.length} SKU{skuRows.length !== 1 ? 's' : ''}
-          {skuRows.length > 0 && ` · ${skuRows.filter(r => r.sku_id && r.sku_name && r.category && r.rrp && r.cogs_per_unit && r.monthly_volume_units).length} with complete data`}
+          {skuRows.length} SKU{skuRows.length !== 1 ? 's' : ''}
         </span>
         <span className={clsx('text-[11px] font-medium flex items-center gap-1.5',
           saveStatus === 'saved' && 'text-emerald-500',

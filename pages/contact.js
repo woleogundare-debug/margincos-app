@@ -23,10 +23,10 @@ function useScrollReveal() {
 }
 
 const REVENUE_OPTIONS = [
-  'Under \u20a61B',
-  '\u20a61B \u2013 \u20a610B',
-  '\u20a610B \u2013 \u20a650B',
-  'Over \u20a650B',
+  'Under ₦1B',
+  '₦1B \u2013 ₦10B',
+  '₦10B \u2013 ₦50B',
+  'Over ₦50B',
 ];
 
 export default function ContactPage() {

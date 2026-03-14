@@ -5,11 +5,11 @@ import { PRIMARY_CHANNELS, TRADE_SPEND_CATEGORIES } from '../../lib/constants';
 import clsx from 'clsx';
 
 function nairaFormat(v) {
-  if (!v) return '\u20a60';
+  if (!v) return '₦0';
   const n = parseFloat(v);
-  if (n >= 1e6) return '\u20a6' + (n / 1e6).toFixed(1) + 'M';
-  if (n >= 1e3) return '\u20a6' + (n / 1e3).toFixed(0) + 'K';
-  return '\u20a6' + n.toFixed(0);
+  if (n >= 1e6) return '₦' + (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '₦' + (n / 1e3).toFixed(0) + 'K';
+  return '₦' + n.toFixed(0);
 }
 
 export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId }) {
@@ -73,7 +73,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
         <div>
           <h3 className="text-sm font-bold text-navy">Monthly Trade Spend by Channel</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Enter spend in Naira (\u20a6) per category per channel</p>
+          <p className="text-xs text-slate-400 mt-0.5">Enter spend in Naira (₦) per category per channel</p>
         </div>
         <div className="flex items-center gap-3">
           {grandTotal > 0 && (
@@ -124,7 +124,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
                   {TRADE_SPEND_CATEGORIES.map(cat => (
                     <td key={cat.key} className="px-2 py-1">
                       <div className="flex items-center justify-end">
-                        <span className="text-slate-300 mr-0.5 text-[10px]">\u20a6</span>
+                        <span className="text-slate-300 mr-0.5 text-[10px]">₦</span>
                         <input
                           type="number"
                           min="0"

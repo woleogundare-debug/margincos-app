@@ -8,7 +8,7 @@ import {
   ChartBarIcon, CurrencyDollarIcon,
   ArrowTrendingDownIcon, BuildingStorefrontIcon,
   SparklesIcon, RectangleStackIcon, ArrowRightOnRectangleIcon,
-  FolderOpenIcon,
+  FolderOpenIcon, LockClosedIcon,
 } from '@heroicons/react/24/outline';
 
 const NAV_SECTIONS = [
@@ -29,9 +29,9 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: 'MODULES',
+    label: 'ENTERPRISE',
     items: [
-      { href: '/dashboard/modules', label: 'Modules', icon: SparklesIcon },
+      { href: '/dashboard/modules', label: 'Enterprise Modules', icon: SparklesIcon, requiresEnterprise: true },
     ],
   },
 ];
@@ -43,7 +43,7 @@ const TIER_COLORS = {
 };
 
 export function DashboardLayout({ children, title, activePeriod }) {
-  const { user, tier, signOut, loading } = useAuth();
+  const { user, tier, isEnterprise, signOut, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -92,21 +92,25 @@ export function DashboardLayout({ children, title, activePeriod }) {
                 </div>
               )}
               <div className="space-y-0.5">
-                {section.items.map(({ href, label, icon: Icon }) => {
+                {section.items.map(({ href, label, icon: Icon, requiresEnterprise: reqEnt }) => {
                   const active = router.pathname === href || router.pathname.startsWith(href + '/');
+                  const locked = reqEnt && !isEnterprise;
                   return (
                     <Link key={href} href={href}
                       className={clsx(
                         'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative',
                         active
                           ? 'bg-white text-navy shadow-sm'
-                          : 'text-gray-300 hover:text-white hover:bg-white/10'
+                          : locked
+                            ? 'text-gray-500 hover:text-gray-400 hover:bg-white/5'
+                            : 'text-gray-300 hover:text-white hover:bg-white/10'
                       )}>
                       {active && (
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style={{ backgroundColor: '#C0392B' }} />
                       )}
-                      <Icon className={clsx('w-5 h-5', active ? 'text-navy' : 'text-gray-400')} />
+                      <Icon className={clsx('w-5 h-5', active ? 'text-navy' : locked ? 'text-gray-500' : 'text-gray-400')} />
                       {label}
+                      {locked && <LockClosedIcon className="w-3.5 h-3.5 text-gray-500 ml-auto" />}
                     </Link>
                   );
                 })}

@@ -20,8 +20,8 @@ const FIELD_GROUPS = [
   },
   {
     label: 'Pricing Intelligence (P1)', color: 'text-teal-700', bg: 'bg-teal-50', fields: [
-      { key: 'rrp',                       label: 'RRP (\u20a6/unit)',              type: 'number', required: true,  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, in Naira per unit.' },
-      { key: 'competitor_price',          label: 'Competitor Price (\u20a6/unit)', type: 'number', required: false, tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, in \u20a6 per unit.' },
+      { key: 'rrp',                       label: 'RRP (₦/unit)',              type: 'number', required: true,  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, in Naira per unit.' },
+      { key: 'competitor_price',          label: 'Competitor Price (₦/unit)', type: 'number', required: false, tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, in ₦ per unit.' },
       { key: 'target_margin_floor_pct',   label: 'Margin Floor (%)',          type: 'pct',    required: false, tip: 'The minimum gross margin percentage you will accept for this SKU before flagging it for repricing or rationalisation.' },
       { key: 'price_elasticity',          label: 'Price Elasticity',          type: 'number', required: false, tip: 'How sensitive demand is to a price change. \u22121.5 means a 10% price rise reduces volume by 15%. Leave blank if unknown.' },
       { key: 'proposed_price_change_pct', label: 'Proposed Price Change (%)', type: 'pct',    required: false, tip: 'The price increase or decrease you are considering. Enter as a percentage \u2014 e.g. 5 for a 5% increase.' },
@@ -30,8 +30,8 @@ const FIELD_GROUPS = [
   },
   {
     label: 'Cost Pass-Through (P2)', color: 'text-red-700', bg: 'bg-red-50', fields: [
-      { key: 'cogs_per_unit',       label: 'COGS (\u20a6/unit)',           type: 'number', required: true,  tip: 'Cost of Goods Sold per unit \u2014 total landed cost including raw materials, packaging, and manufacturing.' },
-      { key: 'cogs_prior_period',   label: 'Prior Period COGS (\u20a6)',   type: 'number', required: false, tip: 'COGS per unit in the previous month or period. Used to calculate actual cost movement rather than relying on self-reported inflation rate.' },
+      { key: 'cogs_per_unit',       label: 'COGS (₦/unit)',           type: 'number', required: true,  tip: 'Cost of Goods Sold per unit \u2014 total landed cost including raw materials, packaging, and manufacturing.' },
+      { key: 'cogs_prior_period',   label: 'Prior Period COGS (₦)',   type: 'number', required: false, tip: 'COGS per unit in the previous month or period. Used to calculate actual cost movement rather than relying on self-reported inflation rate.' },
       { key: 'cogs_inflation_rate', label: 'COGS Inflation Rate (%)', type: 'pct',    required: false, tip: 'The annual rate at which this SKU\u2019s input costs are rising. Used to calculate cost absorption.' },
       { key: 'pass_through_rate',   label: 'Pass-Through Rate (%)',   type: 'pct',    required: false, tip: 'Percentage of cost increases already passed on to the trade. 100% means full pass-through; 0% means fully absorbed.' },
       { key: 'fx_exposure_pct',     label: 'FX Exposure (%)',         type: 'pct',    required: false, tip: 'Percentage of this SKU\u2019s COGS that is linked to foreign currency (imported raw materials, packaging, or machinery costs).' },
@@ -44,7 +44,7 @@ const FIELD_GROUPS = [
       { key: 'distributor_name',       label: 'Distributor Name',           type: 'text',   required: false, tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
       { key: 'distributor_margin_pct', label: 'Distributor Margin (%)',     type: 'pct',    required: false, tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for Nigerian FMCG.' },
       { key: 'trade_rebate_pct',       label: 'Trade Rebate (%)',           type: 'pct',    required: false, tip: 'Retrospective rebate paid back to the trade at period-end, separate from the upfront distributor margin.' },
-      { key: 'logistics_cost_per_unit',label: 'Logistics Cost (\u20a6/unit)',    type: 'number', required: false, tip: 'Cost to deliver one unit to the trade (\u20a6) \u2014 includes freight, last-mile, and handling.' },
+      { key: 'logistics_cost_per_unit',label: 'Logistics Cost (₦/unit)',    type: 'number', required: false, tip: 'Cost to deliver one unit to the trade (₦) \u2014 includes freight, last-mile, and handling.' },
       { key: 'credit_days',            label: 'Credit Days',                type: 'number', required: false, tip: 'Standard credit terms extended to distributors for this SKU \u2014 the number of days before payment is due.' },
     ]
   },

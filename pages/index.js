@@ -92,7 +92,7 @@ function PillarCard({ num, title, desc, color }) {
 const MODULES = [
   { mod: 'M1', title: 'SKU Portfolio Rationalisation', desc: 'Classify every SKU into a defend / reprice / delist framework. Identify margin-dilutive products and where to rationalise for portfolio health.', bg: 'bg-white border-purple/20' },
   { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios \u2014 15%, 25%, 40% input cost inflation \u2014 and stress-test pricing strategy against each.', bg: 'bg-gold-50/40 border-gold/20' },
-  { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every \u20a6 of trade investment by channel and spend category. Identify which investments generate margin and which destroy it.', bg: 'bg-white border-teal/20' },
+  { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Identify which investments generate margin and which destroy it.', bg: 'bg-white border-teal/20' },
   { mod: 'M4', title: 'Distributor Performance Scorecard', desc: 'Rank every distributor relationship by true net margin contribution after logistics, rebates, and credit costs. Identify who to reward, renegotiate, or exit.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
 
@@ -220,7 +220,7 @@ export default function HomePage() {
         </section>
 
         {/* \u2550\u2550\u2550\u2550 ENTERPRISE MODULES (all 4) \u2550\u2550\u2550\u2550 */}
-        <section className="bg-slate-50 py-20 md:py-28">
+        <section id="about" className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center max-w-2xl mx-auto mb-14">
               <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Enterprise</span>
@@ -251,7 +251,7 @@ export default function HomePage() {
               {[
                 { step: '01', title: 'Enter your portfolio data', desc: 'SKU by SKU via the in-app form, or bulk import via CSV. No ERP integration required.' },
                 { step: '02', title: 'Run the analysis', desc: 'The engine processes all four pillars simultaneously in seconds, quantifying every margin leak in Naira.' },
-                { step: '03', title: 'Act on the output', desc: 'Prioritised recommendations with \u20a6 impact quantified per action \u2014 from repricing to rationalisation.' },
+                { step: '03', title: 'Act on the output', desc: 'Prioritised recommendations with ₦ impact quantified per action \u2014 from repricing to rationalisation.' },
               ].map((s, i) => (
                 <div key={i} data-reveal className="opacity-0 text-center">
                   <div className="w-14 h-14 rounded-2xl bg-navy mx-auto flex items-center justify-center mb-5">
@@ -288,7 +288,7 @@ export default function HomePage() {
         </section>
 
         {/* \u2550\u2550\u2550\u2550 PRICING PREVIEW \u2550\u2550\u2550\u2550 */}
-        <section className="bg-slate-50 py-20 md:py-28">
+        <section id="pricing-section" className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6 text-center">
             <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Plans</span>
             <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy mb-12">Simple, Transparent Pricing</h2>

@@ -21,7 +21,7 @@ function nairaCompact(v) {
 }
 
 export default function PortfolioPage() {
-  const { user } = useAuth();
+  const { user, isProfessional, isEnterprise } = useAuth();
   const {
     periods, activePeriod, skuRows, tradeInvestment,
     loading, saving,
@@ -149,8 +149,6 @@ export default function PortfolioPage() {
               {activeSkuCount > 0 && (
                 <div className="flex items-center gap-3 text-xs text-slate-400">
                   <span>{activeSkuCount} SKUs</span>
-                  <span className="opacity-40">·</span>
-                  <span>{completeSkuCount} complete</span>
                   {totalRevenue > 0 && (
                     <>
                       <span className="opacity-40">·</span>
@@ -192,6 +190,8 @@ export default function PortfolioPage() {
                 onBulkImport={handleBulkImport}
                 saving={saving}
                 activePeriod={activePeriod}
+                isProfessional={isProfessional}
+                isEnterprise={isEnterprise}
               />
             )}
 

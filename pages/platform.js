@@ -107,7 +107,7 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
 const MODULES = [
   { mod: 'M1', title: 'SKU Portfolio Rationalisation', desc: 'Classify every SKU into a defend / reprice / delist framework based on margin contribution vs. strategic importance. Identify which SKUs are margin-dilutive, which to protect, and where to rationalise for portfolio health.', bg: 'bg-white border-purple/20' },
   { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios and stress-test your pricing strategy against each. See how margin erodes at 15%, 25%, or 40% input cost inflation \u2014 and what pricing actions are needed to maintain floor margin.', bg: 'bg-gold-50/40 border-gold/20' },
-  { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every \u20a6 of trade investment by channel and spend category. Surface which investments generate margin and which are destroying it \u2014 before the spend is committed.', bg: 'bg-white border-teal/20' },
+  { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Surface which investments generate margin and which are destroying it \u2014 before the spend is committed.', bg: 'bg-white border-teal/20' },
   { mod: 'M4', title: 'Distributor Performance Scorecard', desc: 'Rank every distributor relationship by true net margin contribution after logistics, rebates, and credit costs. Identify who to reward, renegotiate, or exit.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
 
@@ -150,7 +150,7 @@ export default function PlatformPage() {
                     { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template \u2014 designed from the ground up for the realities of operating in Nigeria and similar high-inflation economies.' },
                     { title: 'SKU-level granularity', desc: 'Not just portfolio averages \u2014 every metric, every recommendation, every Naira figure is calculated at the individual SKU level.' },
                     { title: 'No ERP integration required', desc: 'Works from your existing commercial data. Enter via the in-app form or bulk import a CSV. Live in hours, not months.' },
-                    { title: 'Output in \u20a6', desc: 'Every recommendation is quantified in Naira impact \u2014 not abstract percentages, but real recoverable revenue per action.' },
+                    { title: 'Output in ₦', desc: 'Every recommendation is quantified in Naira impact \u2014 not abstract percentages, but real recoverable revenue per action.' },
                   ].map((item, i) => (
                     <div key={i} data-reveal className="opacity-0 flex items-start gap-4">
                       <div className="w-8 h-8 rounded-lg bg-teal/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -181,7 +181,7 @@ export default function PlatformPage() {
             <div className="space-y-24">
               <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
                 problem="Most FMCG companies reprice reactively, without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
-                delivers={['Competitor price gap per SKU \u2014 quantified in \u20a6 and %', 'WTP headroom quantified in \u20a6/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations']}
+                delivers={['Competitor price gap per SKU \u2014 quantified in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations']}
                 users={['CFO', 'Commercial Director']} />
               <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without SKU-level tracking, absorbed costs compound into structural margin erosion that remains invisible on the P&L until it\u2019s too late to act."
