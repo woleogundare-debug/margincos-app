@@ -557,7 +557,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
             );
           })}
         </div>
-        <div className="flex items-center gap-2 py-2">
+        <div className="hidden items-center gap-2 py-2">
           <button onClick={downloadTemplate} title="Download CSV template"
             className="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors">
             <ArrowDownTrayIcon className="h-4 w-4" />
