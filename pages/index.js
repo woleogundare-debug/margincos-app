@@ -113,8 +113,8 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>MarginCOS | Commercial Operating System for Margin Recovery</title>
-        <meta name="description" content="MarginCOS identifies pricing gaps, cost absorption failures, and channel leakage across your FMCG or manufacturing portfolio. Built for inflationary markets." />
+        <title>MarginCOS — Margin Recovery Platform for Nigerian FMCG & Manufacturing</title>
+        <meta name="description" content="MarginCOS is Nigeria's margin recovery platform for FMCG and manufacturing companies. Get SKU-level pricing intelligence, cost pass-through analysis, and trade spend ROI from a single Excel upload — in under five minutes." />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">
@@ -126,11 +126,11 @@ export default function HomePage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               <div className="fade-in-up">
                 <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
-                  Stop Absorbing Inflation.<br />
-                  <span className="text-gold">Start Recovering Margin.</span>
+                  Nigeria's Margin Recovery Platform<br />
+                  <span className="text-gold">for FMCG and Manufacturing</span>
                 </h1>
                 <p className="mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
-                  MarginCOS gives FMCG, manufacturing, and retail companies in high-inflation markets the intelligence to identify pricing gaps, quantify cost absorption, and recover margin across every SKU, channel, and region.
+                  MarginCOS is the commercial analytics platform built for Nigerian CFOs — SKU-level pricing intelligence, cost pass-through analysis, and trade spend ROI in a single Excel upload. First findings in under five minutes.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <Link href="/contact"
@@ -203,18 +203,18 @@ export default function HomePage() {
               <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Core Engine</span>
               <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy">What MarginCOS Analyses</h2>
               <p data-reveal className="opacity-0 mt-4 text-slate-500 leading-relaxed">
-                Four analytical pillars run simultaneously on your portfolio data, surfacing margin leakage with Naira-quantified recovery actions.
+                Nigerian FMCG and manufacturing companies have absorbed 40–60% input cost inflation since 2022. Most still make pricing decisions without SKU-level margin visibility. MarginCOS closes that gap — delivering the cost pass-through analysis, pricing intelligence, and channel economics that used to cost ₦15–30M and take six weeks, in under five minutes from your own data.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <PillarCard num={1} title="Pricing Intelligence" color="teal"
-                desc="Identify pricing gaps, benchmark against competitors, and quantify WTP headroom before you leave revenue on the table." />
+                desc="SKU-level elasticity modelling and pricing strategy for FMCG portfolios facing cost inflation in Nigeria." />
               <PillarCard num={2} title="Cost Pass-Through" color="red"
-                desc="Measure how much input cost inflation you're absorbing vs. passing through — broken down by SKU and FX exposure." />
+                desc="Measures inflation recovered vs absorbed — benchmarked against Nigerian FMCG leaders with a 75% recovery target." />
               <PillarCard num={3} title="Channel Economics" color="gold"
-                desc="Calculate true net contribution margin by route to market, accounting for distributor margin, logistics, and rebates." />
+                desc="Quantifies the true margin cost of each route-to-market, including hidden trade credit financing costs." />
               <PillarCard num={4} title="Trade Execution" color="purple"
-                desc="Analyse promotional depth vs. volume lift, flag loss-making promotions, and quantify trade investment ROI." />
+                desc="Calculates trade spend ROI and breakeven volume lift for every promotion in your portfolio." />
             </div>
           </div>
         </section>

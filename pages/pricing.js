@@ -135,8 +135,8 @@ export default function PricingPage() {
   return (
     <>
       <Head>
-        <title>Pricing | MarginCOS</title>
-        <meta name="description" content="Essentials from $250/mo. Professional from $850/mo. Enterprise from $2,400/mo. No ERP required. 14-day pilot included." />
+        <title>Pricing — MarginCOS Margin Recovery Platform for Nigerian FMCG</title>
+        <meta name="description" content="MarginCOS pricing: three tiers from $250/month. Essentials for single-pillar pricing intelligence, Professional for full margin analysis, Enterprise for multi-user commercial analytics with dedicated onboarding. NGN, EUR and GBP rates available." />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">
@@ -146,7 +146,7 @@ export default function PricingPage() {
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1 className="fade-in-up text-3xl md:text-5xl font-black text-white leading-tight">Simple, Transparent Pricing</h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              All plans include a 14-day pilot. No ERP integration required. Cancel anytime.
+              Purpose-built for FMCG and manufacturing companies in Nigeria and West Africa — with pricing in USD, NGN, EUR, and GBP. All plans include a 14-day pilot.
             </p>
           </div>
         </section>

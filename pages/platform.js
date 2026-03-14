@@ -117,8 +117,8 @@ export default function PlatformPage() {
   return (
     <>
       <Head>
-        <title>Platform | MarginCOS</title>
-        <meta name="description" content="Four integrated commercial intelligence pillars — Pricing, Cost Pass-Through, Channel Economics, and Trade Execution — in one decision system." />
+        <title>Platform — Pricing Intelligence & Margin Analytics for Nigerian FMCG | MarginCOS</title>
+        <meta name="description" content="Explore MarginCOS's eight analytical engines: SKU pricing intelligence, cost pass-through tracking, channel margin analysis, and trade spend ROI — purpose-built for FMCG and manufacturing companies in Nigeria and West Africa." />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">
@@ -131,7 +131,7 @@ export default function PlatformPage() {
               The MarginCOS Platform
             </h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              A purpose-built margin intelligence engine for FMCG, manufacturing, and retail companies operating in high-inflation, high-complexity markets.
+              MarginCOS is a margin recovery platform purpose-built for Nigerian FMCG, manufacturing, and retail. Eight analytical engines work simultaneously across your portfolio — giving your CFO and Commercial Director real-time pricing intelligence, cost pass-through analysis, and trade spend ROI from a single Excel upload.
             </p>
           </div>
         </section>
@@ -181,26 +181,26 @@ export default function PlatformPage() {
             <div className="space-y-24">
               <div id="pricing-intelligence">
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
-                problem="Most FMCG companies reprice reactively, without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
-                delivers={['Competitor price gap per SKU — quantified in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations']}
+                problem="Most FMCG companies in Nigeria reprice reactively, without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. Without a pricing strategy tool, the result is chronic under-pricing or poorly timed increases that erode volume."
+                delivers={['SKU-level pricing intelligence with competitor benchmarks in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations for FMCG portfolios']}
                 users={['CFO', 'Commercial Director']} />
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
-                problem="Input cost inflation accumulates silently. Without SKU-level tracking, absorbed costs compound into structural margin erosion that remains invisible on the P&L until it's too late to act."
-                delivers={['Pass-through rate vs. BUA Foods 75% benchmark', 'FX-linked cost decomposition by SKU', 'Actual vs. self-reported inflation comparison']}
+                problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the SKU level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
+                delivers={['Cost pass-through rate vs. BUA Foods 75% benchmark for margin improvement', 'FX-linked cost decomposition by SKU for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>
               <div id="channel-economics">
                 <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
-                problem="Gross margin looks healthy until logistics, distributor margin, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable."
-                delivers={['Net contribution margin by channel', 'Distributor performance ranking', 'Weak channel identification with remediation actions']}
+                problem="Gross margin looks healthy until logistics, distributor margin, trade credit costs, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable."
+                delivers={['Net route-to-market margin by channel including trade credit cost', 'Distributor performance ranking by true contribution', 'Weak channel identification with remediation actions']}
                 users={['Commercial Director', 'Sales Director', 'Trade Marketing']} />
               </div>
               <div id="trade-execution">
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
-                problem="Trade investment is the largest untracked cost line in most FMCG P&Ls. Promotional depth routinely exceeds margin, with no mechanism to catch it before the spend is committed."
-                delivers={['Promotion P&L per SKU — revenue, cost, and net impact', 'Break-even lift calculation for every promo', 'Loss-making promotion flagging with alternatives']}
+                problem="Trade investment is the largest untracked cost line in most FMCG P&Ls. Without trade spend ROI visibility, promotional depth routinely exceeds margin — with no mechanism to catch it before the spend is committed."
+                delivers={['Promotion profitability per SKU — revenue, cost, and net impact', 'Break-even lift calculation for trade spend ROI on every promo', 'Loss-making promotion flagging with margin-positive alternatives']}
                 users={['Trade Marketing', 'Sales Director', 'CFO']} />
               </div>
             </div>
