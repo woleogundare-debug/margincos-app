@@ -125,7 +125,7 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               <div className="fade-in-up">
-                <h1 className="text-3xl md:text-5xl font-black text-white leading-snug">
+                <h1 className="text-3xl md:text-5xl font-black text-white leading-snug md:leading-normal">
                   Nigeria's Margin Recovery Platform<br />
                   <span className="text-gold">for FMCG and Manufacturing</span>
                 </h1>
