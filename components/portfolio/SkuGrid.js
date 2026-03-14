@@ -199,14 +199,10 @@ function validateCSVRows(rawRows) {
 }
 
 function downloadTemplate() {
-  const csv = CSV_FIELDS.join(',') + '\n';
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'margincos-sku-template.csv';
+  a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
+  a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
   a.click();
-  URL.revokeObjectURL(url);
 }
 
 // ── Import Preview Modal ──

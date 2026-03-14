@@ -117,11 +117,10 @@ export default function PortfolioPage() {
               </h1>
               <div className="flex items-center gap-2">
                 <Button variant="secondary" size="sm" onClick={() => {
-                  const cols = 'sku_id,sku_name,category,rrp,competitor_price,cogs_per_unit,primary_channel,monthly_volume_units';
-                  const blob = new Blob([cols + '\n'], { type: 'text/csv' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a'); a.href = url; a.download = 'margincos-sku-template.csv'; a.click();
-                  URL.revokeObjectURL(url);
+                  const a = document.createElement('a');
+                  a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
+                  a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
+                  a.click();
                 }}>
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -166,12 +165,11 @@ export default function PortfolioPage() {
                     <PlusIcon className="h-4 w-4" />
                   </button>
                   <button onClick={() => {
-                    const cols = 'sku_id,sku_name,category,rrp,competitor_price,cogs_per_unit,primary_channel,monthly_volume_units';
-                    const blob = new Blob([cols + '\n'], { type: 'text/csv' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a'); a.href = url; a.download = 'margincos-sku-template.csv'; a.click();
-                    URL.revokeObjectURL(url);
-                  }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Export CSV">
+                    const a = document.createElement('a');
+                    a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
+                    a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
+                    a.click();
+                  }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Download Template">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
