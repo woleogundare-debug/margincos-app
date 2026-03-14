@@ -32,22 +32,31 @@ export default async function handler(req, res) {
       .select('user_id')
       .eq('team_id', teamId);
 
-    // Delete the team (cascades to team_members, team_invitations)
+    const userIds = members?.map(m => m.user_id) || [];
+
+    // Step 1 — Null out team_id on profiles FIRST (breaks FK constraint)
+    if (userIds.length > 0) {
+      await supabase
+        .from('profiles')
+        .update({ team_id: null })
+        .in('user_id', userIds);
+    }
+
+    // Step 2 — Delete the team (cascades to team_members, team_invitations)
     const { error: teamError } = await supabase
       .from('teams')
       .delete()
       .eq('id', teamId);
     if (teamError) throw teamError;
 
-    // Delete profiles for all team members
-    if (members && members.length > 0) {
-      const userIds = members.map(m => m.user_id);
+    // Step 3 — Delete profiles
+    if (userIds.length > 0) {
       await supabase
         .from('profiles')
         .delete()
         .in('user_id', userIds);
 
-      // Delete auth users
+      // Step 4 — Delete auth users
       for (const userId of userIds) {
         await supabase.auth.admin.deleteUser(userId);
       }
