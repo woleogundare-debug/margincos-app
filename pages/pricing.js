@@ -153,17 +153,20 @@ export default function PricingPage() {
 
         <section className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
-            <div className="flex items-center justify-center gap-6 mb-10 flex-wrap">
-              <div className="flex items-center gap-4">
-                <span className={`text-sm font-semibold transition-colors ${!annual ? 'text-navy' : 'text-slate-400'}`}>Monthly</span>
+            <div className="flex flex-col items-center gap-4 mb-10">
+              {/* Row 1 — Monthly/Annual toggle */}
+              <div className="flex items-center gap-3">
+                <span className={`text-sm font-medium ${!annual ? 'text-navy' : 'text-gray-400'}`}>Monthly</span>
                 <button onClick={() => setAnnual(!annual)}
-                  className={`relative w-14 h-7 rounded-full transition-colors ${annual ? 'bg-teal' : 'bg-slate-300'}`}>
-                  <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${annual ? 'translate-x-7' : 'translate-x-0.5'}`} />
+                  className="relative w-12 h-6 rounded-full transition-colors"
+                  style={{ backgroundColor: annual ? '#0D8F8F' : '#D1D5DB' }}>
+                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${annual ? 'translate-x-6' : 'translate-x-0.5'}`} />
                 </button>
-                <span className={`text-sm font-semibold transition-colors ${annual ? 'text-navy' : 'text-slate-400'}`}>
-                  Annual <span className="text-teal text-xs font-bold">(save 15%)</span>
+                <span className={`text-sm font-medium ${annual ? 'text-navy' : 'text-gray-400'}`}>
+                  Annual <span className="font-semibold" style={{ color: '#0D8F8F' }}>(save 15%)</span>
                 </span>
               </div>
+              {/* Row 2 — Currency selector */}
               <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-1 py-1">
                 {CURRENCIES.map(c => (
                   <button
