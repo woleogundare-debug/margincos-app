@@ -8,7 +8,7 @@ import {
   ChartBarIcon, CurrencyDollarIcon,
   ArrowTrendingDownIcon, BuildingStorefrontIcon,
   SparklesIcon, RectangleStackIcon, ArrowRightOnRectangleIcon,
-  FolderOpenIcon, LockClosedIcon,
+  FolderOpenIcon, LockClosedIcon, UsersIcon,
 } from '@heroicons/react/24/outline';
 
 const NAV_SECTIONS = [
@@ -32,6 +32,12 @@ const NAV_SECTIONS = [
     label: 'ENTERPRISE',
     items: [
       { href: '/dashboard/modules', label: 'Enterprise Modules', icon: SparklesIcon, requiresEnterprise: true },
+    ],
+  },
+  {
+    label: 'ACCOUNT',
+    items: [
+      { href: '/dashboard/team', label: 'Team', icon: UsersIcon },
     ],
   },
 ];
