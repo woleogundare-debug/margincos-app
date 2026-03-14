@@ -13,21 +13,21 @@ const COLUMNS = [
   { key: 'sku_id',        label: 'SKU ID',           group: 'identity', required: true,  type: 'text',   width: 'w-28',  tip: 'Your internal product code. Must be unique.' },
   { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on-pack or in your ERP.' },
   { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-56',  tip: 'Product category from your vertical\u2019s taxonomy.' },
-  { key: 'rrp',           label: 'RRP ₦',       group: 'identity', required: true,  type: 'number', width: 'w-24',  tip: 'Recommended Retail Price in Naira per unit.' },
+  { key: 'rrp',           label: 'RRP ₦',       group: 'identity', required: true,  type: 'number', width: 'w-36',  minWidth: 130, tip: 'Recommended Retail Price in Naira per unit.' },
   { key: 'active',        label: 'Active',           group: 'identity', required: true,  type: 'bool',   width: 'w-16',  tip: 'Include in analysis.' },
   // Identity extended
   { key: 'segment',       label: 'Segment',          group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Price positioning: Mass Market, Mid-Range, or Premium.' },
   { key: 'business_unit', label: 'Business Unit',    group: 'ext-identity', required: false, type: 'text',   width: 'w-32',  tip: 'Division or brand cluster.' },
   { key: 'region',        label: 'Region',           group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Primary geographic region.' },
   // Pricing P1
-  { key: 'competitor_price',         label: 'Comp. Price ₦', group: 'pricing',  required: false, type: 'number', width: 'w-28',  tip: 'Nearest competitor\u2019s shelf price.' },
+  { key: 'competitor_price',         label: 'Comp. Price ₦', group: 'pricing',  required: false, type: 'number', width: 'w-40',  minWidth: 140, tip: 'Nearest competitor\u2019s shelf price.' },
   { key: 'target_margin_floor_pct',  label: 'Margin Floor %', group: 'pricing', required: false, type: 'pct',    width: 'w-28',  tip: 'Minimum acceptable gross margin %.' },
   { key: 'price_elasticity',         label: 'Elasticity',    group: 'pricing',  required: false, type: 'number', width: 'w-24',  tip: 'Demand sensitivity to price change.' },
   { key: 'proposed_price_change_pct',label: 'Prop. Chg %',   group: 'pricing',  required: false, type: 'pct',    width: 'w-24',  tip: 'Proposed price increase/decrease %.' },
   { key: 'wtp_premium_pct',          label: 'WTP Premium %', group: 'pricing',  required: false, type: 'pct',    width: 'w-28',  tip: 'Willingness-to-pay premium %.' },
   // Cost P2
-  { key: 'cogs_per_unit',      label: 'COGS ₦',         group: 'cost', required: true,  type: 'number', width: 'w-24',  tip: 'Cost of Goods Sold per unit.' },
-  { key: 'cogs_prior_period',  label: 'Prior COGS ₦',   group: 'cost', required: false, type: 'number', width: 'w-28',  tip: 'COGS per unit in the previous period.' },
+  { key: 'cogs_per_unit',      label: 'COGS ₦',         group: 'cost', required: true,  type: 'number', width: 'w-36',  minWidth: 130, tip: 'Cost of Goods Sold per unit.' },
+  { key: 'cogs_prior_period',  label: 'Prior COGS ₦',   group: 'cost', required: false, type: 'number', width: 'w-40',  minWidth: 140, tip: 'COGS per unit in the previous period.' },
   { key: 'cogs_inflation_rate',label: 'COGS Infl. %',   group: 'cost', required: false, type: 'pct',    width: 'w-24',  tip: 'Annual input cost inflation rate.' },
   { key: 'pass_through_rate',  label: 'Pass-Through %', group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of cost increase passed on to trade.' },
   { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of COGS linked to foreign currency.' },
@@ -37,7 +37,7 @@ const COLUMNS = [
   { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Primary distributor name.' },
   { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'Distributor margin %.' },
   { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Retrospective rebate %.' },
-  { key: 'logistics_cost_per_unit',label: 'Logistics ₦',  group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Delivery cost per unit.' },
+  { key: 'logistics_cost_per_unit',label: 'Logistics ₦',  group: 'channel', required: false, type: 'number', width: 'w-36',  minWidth: 130, tip: 'Delivery cost per unit.' },
   { key: 'credit_days',           label: 'Credit Days',   group: 'channel', required: false, type: 'number', width: 'w-24',  tip: 'Payment terms in days.' },
   // Trade P4
   { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-24',  tip: 'Units sold in the period.' },
@@ -266,21 +266,42 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
   }
 
   const isNumeric = col.type === 'number' || col.type === 'pct';
+  const isCurrency = isNumeric && col.label.includes('₦');
+  const [focused, setFocused] = useState(false);
+
+  const handleInputBlur = () => {
+    setFocused(false);
+    if (isCurrency && local !== '' && !isNaN(local)) {
+      setLocal(Number(local).toLocaleString('en-NG'));
+    }
+    onBlur();
+  };
+
+  const handleInputFocus = () => {
+    setFocused(true);
+    if (isCurrency && typeof local === 'string') {
+      setLocal(local.replace(/,/g, ''));
+    }
+  };
+
   return (
     <div className="flex items-center">
-      {isNumeric && col.label.includes('₦') && <span className="text-[10px] text-slate-300 mr-0.5">₦</span>}
-      <input type={isNumeric ? 'number' : 'text'}
+      {isCurrency && <span className="text-sm font-medium text-gray-400 mr-0.5 select-none">₦</span>}
+      <input type={focused || !isCurrency ? (isNumeric ? 'number' : 'text') : 'text'}
         value={local}
         step={col.type === 'pct' ? '0.01' : col.type === 'number' ? '1' : undefined}
         onChange={e => {
-          const v = isNumeric ? (e.target.value === '' ? '' : parseFloat(e.target.value)) : e.target.value;
+          const raw = e.target.value;
+          const v = isNumeric ? (raw === '' ? '' : parseFloat(raw.replace(/,/g, ''))) : raw;
           handleChange(v);
+          setLocal(raw);
         }}
-        onBlur={onBlur}
+        onBlur={handleInputBlur}
+        onFocus={handleInputFocus}
         placeholder={col.required ? '-' : ''}
         className={clsx(baseClass, isNumeric && 'text-right', '[appearance:textfield]')}
       />
-      {col.type === 'pct' && <span className="text-[10px] text-slate-300 ml-0.5">%</span>}
+      {col.type === 'pct' && <span className="text-sm font-medium text-gray-400 ml-0.5 select-none">%</span>}
     </div>
   );
 }
@@ -510,7 +531,8 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
             <tr className="border-b border-slate-200" style={{ backgroundColor: '#E8EBF0' }}>
               <th className="w-8 px-2 py-2.5" />
               {visibleCols.map(col => (
-                <th key={col.key} className={clsx('px-2 py-2.5 text-left font-semibold text-navy/70 whitespace-nowrap uppercase tracking-wide', col.width)}>
+                <th key={col.key} className={clsx('px-2 py-2.5 text-left font-semibold text-navy/70 whitespace-nowrap uppercase tracking-wide', col.width)}
+                  style={col.minWidth ? { minWidth: col.minWidth } : undefined}>
                   <span className="flex items-center gap-1">
                     {col.label}
                     {col.required && <span className="text-red-400 text-[10px]">*</span>}
@@ -564,6 +586,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                           isEmpty && 'bg-red-50/50',
                           isDuplicate && 'bg-red-50'
                         )}
+                        style={col.minWidth ? { minWidth: col.minWidth } : undefined}
                         title={isDuplicate ? `Duplicate SKU ID "${val}" — each row must have a unique ID` : undefined}>
                         <div className={clsx(isDuplicate && 'ring-1 ring-red-400 rounded')}>
                           <CellInput

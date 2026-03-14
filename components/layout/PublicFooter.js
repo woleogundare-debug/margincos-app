@@ -51,7 +51,7 @@ export function PublicFooter() {
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Company</h4>
             <nav className="space-y-2.5">
               <Link href="/platform" className="block text-xs text-white/50 hover:text-white transition-colors">Platform</Link>
-              <Link href="/platform" className="block text-xs text-white/50 hover:text-white transition-colors">How It Works</Link>
+              <Link href="/#how-it-works" className="block text-xs text-white/50 hover:text-white transition-colors">How It Works</Link>
               <Link href="/pricing" className="block text-xs text-white/50 hover:text-white transition-colors">Pricing</Link>
               <Link href="/contact" className="block text-xs text-white/50 hover:text-white transition-colors">Contact</Link>
               <a href="https://carthenaadvisory.com" target="_blank" rel="noopener noreferrer"
