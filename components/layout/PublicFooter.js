@@ -12,7 +12,7 @@ export function PublicFooter() {
                 <span className="text-white">Margin</span>
                 <span style={{ color: '#C0392B' }}>COS</span>
               </span>
-              <span className="text-[9px] tracking-[0.18em] uppercase text-gray-500 font-medium mt-1 block">
+              <span className="text-[9px] tracking-[0.18em] uppercase text-gray-500 font-medium mt-1.5 block">
                 Commercial Operating System
               </span>
             </Link>

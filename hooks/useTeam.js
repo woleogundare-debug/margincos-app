@@ -32,15 +32,28 @@ export function useTeam() {
 
     setTeam(teamData);
 
-    const { data: membersData } = await supabase
+    // Get members then fetch their profiles separately
+    const { data: memberRows } = await supabase
       .from('team_members')
-      .select(`
-        id, role, joined_at,
-        profiles:user_id (id, full_name, email)
-      `)
+      .select('id, role, joined_at, user_id')
       .eq('team_id', membership.team_id);
 
-    setMembers(membersData || []);
+    if (memberRows && memberRows.length > 0) {
+      const userIds = memberRows.map(m => m.user_id);
+      const { data: profileRows } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', userIds);
+
+      const enriched = memberRows.map(m => ({
+        ...m,
+        profile: profileRows?.find(p => p.id === m.user_id) || null,
+      }));
+      setMembers(enriched);
+    } else {
+      setMembers([]);
+    }
+
     setLoading(false);
   }, []);
 

@@ -81,7 +81,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
               <span className="text-white">Margin</span>
               <span style={{ color: '#C0392B' }}>COS</span>
             </span>
-            <span className="text-[8px] tracking-[0.15em] uppercase text-gray-400 font-medium leading-none mt-0.5 block">
+            <span className="text-[8px] tracking-[0.18em] uppercase text-gray-400 font-medium mt-1.5 block">
               Commercial Operating System
             </span>
           </Link>

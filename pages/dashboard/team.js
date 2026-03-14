@@ -51,6 +51,21 @@ export default function TeamPage() {
     }
   };
 
+  if (loading) return (
+    <DashboardLayout>
+      <div className="p-8 text-gray-400 text-sm">Loading team...</div>
+    </DashboardLayout>
+  );
+
+  if (!team) return (
+    <DashboardLayout>
+      <div className="p-8">
+        <h1 className="text-2xl font-bold text-navy mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Team Management</h1>
+        <p className="text-gray-500 text-sm">You are not currently assigned to a team. Contact your administrator.</p>
+      </div>
+    </DashboardLayout>
+  );
+
   return (
     <>
       <Head><title>Team Management | MarginCOS</title></Head>
@@ -93,8 +108,8 @@ export default function TeamPage() {
               {members.map(m => (
                 <div key={m.id} className="px-6 py-4 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-navy">{m.profiles?.full_name || m.profiles?.email || 'Unknown'}</p>
-                    <p className="text-xs text-slate-400">{m.profiles?.email}</p>
+                    <p className="text-sm font-medium text-navy">{m.profile?.full_name || m.profile?.email || 'Unknown'}</p>
+                    <p className="text-xs text-slate-400">{m.profile?.email}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wide ${

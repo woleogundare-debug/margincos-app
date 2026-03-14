@@ -53,7 +53,7 @@ export function PublicNav() {
             <span className={clsx('transition-colors', scrolled ? 'text-navy' : 'text-white')}>Margin</span>
             <span style={{ color: '#C0392B' }}>COS</span>
           </span>
-          <span className={clsx('text-[9px] tracking-[0.15em] uppercase font-medium leading-none mt-0.5 block transition-colors', scrolled ? 'text-gray-400' : 'text-white/40')}>
+          <span className={clsx('text-[9px] tracking-[0.18em] uppercase font-medium mt-1.5 block transition-colors', scrolled ? 'text-gray-400' : 'text-white/40')}>
             Commercial Operating System
           </span>
         </Link>
