@@ -25,5 +25,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Submission failed' });
   }
 
+  // TODO: send notification to info@carthenaadvisory.com
+
   return res.status(200).json({ success: true });
 }

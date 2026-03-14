@@ -7,9 +7,14 @@ export function PublicFooter() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-8">
           {/* Column 1 — Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-baseline gap-0.5">
-              <span className="text-xl font-black text-white tracking-tight">Margin</span>
-              <span className="text-xl font-black text-red-brand tracking-tight">COS</span>
+            <Link href="/" className="flex flex-col">
+              <span className="flex items-baseline gap-0.5">
+                <span className="text-xl font-black text-white tracking-tight">Margin</span>
+                <span className="text-xl font-black text-red-brand tracking-tight">COS</span>
+              </span>
+              <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-medium leading-none mt-0.5">
+                Commercial Operating System
+              </span>
             </Link>
             <p className="mt-3 text-xs text-white/40 leading-relaxed max-w-xs">
               The Commercial Operating System for Margin Recovery. Built for FMCG, manufacturing, and retail companies navigating inflationary markets.
@@ -28,10 +33,10 @@ export function PublicFooter() {
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Platform</h4>
             <nav className="space-y-2.5">
               {[
-                { label: 'Pricing Intelligence', href: '/platform' },
-                { label: 'Cost Pass-Through',    href: '/platform' },
-                { label: 'Channel Economics',     href: '/platform' },
-                { label: 'Trade Execution',       href: '/platform' },
+                { label: 'Pricing Intelligence', href: '/platform#pricing-intelligence' },
+                { label: 'Cost Pass-Through',    href: '/platform#cost-pass-through' },
+                { label: 'Channel Economics',     href: '/platform#channel-economics' },
+                { label: 'Trade Execution',       href: '/platform#trade-execution' },
               ].map((l, i) => (
                 <Link key={i} href={l.href}
                   className="block text-xs text-white/50 hover:text-white transition-colors">
@@ -45,8 +50,8 @@ export function PublicFooter() {
           <div>
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Company</h4>
             <nav className="space-y-2.5">
-              <Link href="/" className="block text-xs text-white/50 hover:text-white transition-colors">About</Link>
-              <Link href="/" className="block text-xs text-white/50 hover:text-white transition-colors">How It Works</Link>
+              <Link href="/#about" className="block text-xs text-white/50 hover:text-white transition-colors">About</Link>
+              <Link href="/#how-it-works" className="block text-xs text-white/50 hover:text-white transition-colors">How It Works</Link>
               <Link href="/pricing" className="block text-xs text-white/50 hover:text-white transition-colors">Pricing</Link>
               <Link href="/contact" className="block text-xs text-white/50 hover:text-white transition-colors">Contact</Link>
               <a href="https://carthenaadvisory.com" target="_blank" rel="noopener noreferrer"
@@ -60,7 +65,10 @@ export function PublicFooter() {
           <div>
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Resources</h4>
             <nav className="space-y-2.5">
-              <a href="#" className="block text-xs text-white/50 hover:text-white transition-colors">↓ Sales Deck (PDF)</a>
+              <a href="/MarginCOS_Sales_Deck.pdf" target="_blank" rel="noopener noreferrer" download
+                className="block text-xs text-white/50 hover:text-white transition-colors">
+                ↓ Sales Deck (PDF)
+              </a>
               <Link href="/login" className="block text-xs text-white/50 hover:text-white transition-colors">Interactive Demo</Link>
               <Link href="/contact" className="block text-xs text-white/50 hover:text-white transition-colors">Book a Diagnostic</Link>
             </nav>
@@ -79,7 +87,9 @@ export function PublicFooter() {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/25">&copy; 2026 Carthena Advisory. All rights reserved.</p>
-          <span className="text-xs text-white/25">MarginCOS.com</span>
+          <a href="mailto:info@carthenaadvisory.com" className="text-xs text-white/25 hover:text-white/50 transition-colors">
+            info@carthenaadvisory.com
+          </a>
         </div>
       </div>
     </footer>

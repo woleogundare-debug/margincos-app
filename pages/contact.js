@@ -57,7 +57,7 @@ export default function ContactPage() {
       if (res.ok) {
         setSubmitted(true);
       } else {
-        setFormError('Something went wrong. Please try again or email us directly at info@margincos.com');
+        setFormError('Something went wrong. Please try again or email us directly at info@carthenaadvisory.com');
       }
     } catch (err) {
       setFormError('Something went wrong. Please try again.');
@@ -193,7 +193,7 @@ export default function ContactPage() {
                   <div className="mt-8 pt-6 border-t border-slate-200">
                     <p className="text-xs text-slate-400 leading-relaxed">
                       Questions? Email us directly at{' '}
-                      <a href="mailto:info@margincos.com" className="text-teal hover:underline">info@margincos.com</a>
+                      <a href="mailto:info@carthenaadvisory.com" className="text-teal hover:underline">info@carthenaadvisory.com</a>
                     </p>
                   </div>
                 </div>

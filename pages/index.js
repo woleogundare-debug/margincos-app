@@ -97,7 +97,15 @@ const MODULES = [
 ];
 
 /* ── Logo ticker companies ── */
-const COMPANIES = ['Flour Mills of Nigeria', 'GB Foods', 'Julius Berger', 'Sifax Group', 'Pade HCM', 'Arit of Africa', 'PFS'];
+const COMPANY_LOGOS = [
+  { name: 'Flour Mills of Nigeria', src: '/logos/flour-mills-of-nigeria.webp' },
+  { name: 'GB Foods',               src: '/logos/gb-foods.webp' },
+  { name: 'Julius Berger',          src: '/logos/julius-berger.webp' },
+  { name: 'Sifax Group',            src: '/logos/sifax-group.png' },
+  { name: 'Pade HCM',               src: '/logos/pade-hcm.webp' },
+  { name: 'Arit of Africa',         src: '/logos/arit-of-africa.webp' },
+  { name: 'PFS',                    src: '/logos/pfs.webp' },
+];
 
 export default function HomePage() {
   const rootRef = useScrollReveal();
@@ -169,12 +177,16 @@ export default function HomePage() {
             </p>
           </div>
           <div className="relative">
-            <div className="flex logo-ticker" style={{ width: 'max-content' }}>
+            <div className="flex logo-ticker items-center" style={{ width: 'max-content' }}>
               {[...Array(2)].map((_, setIdx) => (
-                COMPANIES.map((name, i) => (
-                  <div key={`${setIdx}-${i}`} className="flex-shrink-0 mx-5 flex items-center gap-2.5 px-5 py-3 bg-white rounded-xl border border-slate-100 shadow-sm">
-                    <span className={`w-2 h-2 rounded-sm flex-shrink-0 ${i % 2 === 0 ? 'bg-teal' : 'bg-red-brand'}`} />
-                    <span className="text-[15px] font-medium text-navy whitespace-nowrap">{name}</span>
+                COMPANY_LOGOS.map((logo, i) => (
+                  <div key={`${setIdx}-${i}`} className="flex-shrink-0 mx-6 px-6 py-3 bg-white rounded-xl border border-slate-100 shadow-sm flex items-center justify-center"
+                    style={{ minWidth: 160 }}>
+                    <img
+                      src={logo.src}
+                      alt={logo.name}
+                      className="max-w-[120px] h-[40px] object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                    />
                   </div>
                 ))
               ))}
