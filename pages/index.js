@@ -134,7 +134,7 @@ export default function HomePage() {
                   <span className="text-gold">for FMCG and Manufacturing</span>
                 </h1>
                 <p className="mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
-                  Margin isn't lost at the factory. It's lost in the decisions made without the right intelligence. MarginCOS exists to close that gap.
+                  Margin isn't lost in the market. It's lost decision by decision, without the right intelligence to stop it. MarginCOS exists to close that gap.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <Link href="/contact"
