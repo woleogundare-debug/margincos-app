@@ -108,7 +108,7 @@ export default function TeamPage() {
               {members.map(m => (
                 <div key={m.id} className="px-6 py-4 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-navy">{m.profile?.full_name || m.profile?.email || 'Unknown'}</p>
+                    <p className="text-sm font-medium text-navy">{m.profile?.full_name || m.profile?.email || 'Team Member'}</p>
                     <p className="text-xs text-slate-400">{m.profile?.email}</p>
                   </div>
                   <div className="flex items-center gap-3">
