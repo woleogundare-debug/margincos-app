@@ -76,7 +76,7 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
                   </svg>
                   <span className="text-sm text-slate-700">{d}</span>
                 </div>
-              )})}
+              ))}
             </div>
           </div>
           <div>
@@ -84,7 +84,7 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
             <div className="flex flex-wrap gap-2">
               {users.map((u, i) => (
                 <span key={i} className="text-xs font-semibold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">{u}</span>
-              )})}
+              ))}
             </div>
           </div>
         </div>
@@ -163,7 +163,7 @@ export default function PlatformPage() {
                         <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
                       </div>
                     </div>
-                  )})}
+                  ))}
                 </div>
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function PlatformPage() {
                   <h3 className="text-sm font-bold text-white mb-1">{s.label}</h3>
                   <p className="text-xs text-white/50 leading-relaxed">{s.desc}</p>
                 </div>
-              )})}
+              ))}
             </div>
           </div>
         </section>
