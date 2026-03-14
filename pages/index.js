@@ -114,7 +114,7 @@ export default function HomePage() {
     <>
       <Head>
         <title>MarginCOS — Margin Recovery Platform for Nigerian FMCG & Manufacturing</title>
-        <meta name="description" content="MarginCOS is Nigeria's margin recovery platform for FMCG and manufacturing companies. Get SKU-level pricing intelligence, cost pass-through analysis, and trade spend ROI from a single Excel upload — in under five minutes." />
+        <meta name="description" content="Nigeria's margin recovery platform for FMCG & manufacturing. SKU pricing intelligence, cost pass-through analysis and trade spend ROI — first findings in under five minutes." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
