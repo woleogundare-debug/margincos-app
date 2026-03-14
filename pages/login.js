@@ -32,7 +32,7 @@ export default function LoginPage() {
   return (
     <>
       <Head>
-        <title>Sign In — MarginCOS</title>
+        <title>Sign In | MarginCOS</title>
       </Head>
       <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
@@ -40,9 +40,9 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-baseline gap-0.5">
               <span className="text-3xl font-black text-navy">Margin</span>
-              <span className="text-3xl font-black text-teal">COS</span>
+              <span className="text-3xl font-black" style={{ color: '#C0392B' }}>COS</span>
             </Link>
-            <p className="text-sm text-slate-500 mt-2">Margin intelligence for high-inflation markets</p>
+            <p className="text-sm text-slate-500 mt-2">Your commercial data is waiting. Sign in to continue.</p>
           </div>
 
           {/* Card */}
@@ -72,7 +72,7 @@ export default function LoginPage() {
                   {error}
                 </div>
               )}
-              <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full justify-center">
+              <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full justify-center !bg-red-brand hover:!bg-red-light">
                 Sign In
               </Button>
             </form>
@@ -80,7 +80,7 @@ export default function LoginPage() {
 
           <p className="text-center text-xs text-slate-400 mt-6">
             Need access?{' '}
-            <Link href="/demo" className="text-teal font-semibold hover:text-teal-dark">
+            <Link href="/contact" className="text-teal font-semibold hover:text-teal-dark">
               Request a demo
             </Link>
           </p>

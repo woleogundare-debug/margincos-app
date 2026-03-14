@@ -76,7 +76,7 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
                   </svg>
                   <span className="text-sm text-slate-700">{d}</span>
                 </div>
-              ))}
+              );})}
             </div>
           </div>
           <div>
@@ -84,7 +84,7 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
             <div className="flex flex-wrap gap-2">
               {users.map((u, i) => (
                 <span key={i} className="text-xs font-semibold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">{u}</span>
-              ))}
+              );})}
             </div>
           </div>
         </div>
@@ -163,7 +163,7 @@ export default function PlatformPage() {
                         <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
                       </div>
                     </div>
-                  ))}
+                  );})}
                 </div>
               </div>
             </div>
@@ -179,22 +179,30 @@ export default function PlatformPage() {
             </div>
 
             <div className="space-y-24">
-              <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
+              <div id="pricing-intelligence">
+                <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
                 problem="Most FMCG companies reprice reactively, without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
                 delivers={['Competitor price gap per SKU \u2014 quantified in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations']}
                 users={['CFO', 'Commercial Director']} />
-              <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
+              </div>
+              <div id="cost-pass-through">
+                <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without SKU-level tracking, absorbed costs compound into structural margin erosion that remains invisible on the P&L until it\u2019s too late to act."
                 delivers={['Pass-through rate vs. BUA Foods 75% benchmark', 'FX-linked cost decomposition by SKU', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
-              <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
+              </div>
+              <div id="channel-economics">
+                <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
                 problem="Gross margin looks healthy until logistics, distributor margin, and rebates are deducted by channel \u2014 revealing that some routes to market are actively destroying value while appearing profitable."
                 delivers={['Net contribution margin by channel', 'Distributor performance ranking', 'Weak channel identification with remediation actions']}
                 users={['Commercial Director', 'Sales Director', 'Trade Marketing']} />
-              <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
+              </div>
+              <div id="trade-execution">
+                <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
                 problem="Trade investment is the largest untracked cost line in most FMCG P&Ls. Promotional depth routinely exceeds margin, with no mechanism to catch it before the spend is committed."
                 delivers={['Promotion P&L per SKU \u2014 revenue, cost, and net impact', 'Break-even lift calculation for every promo', 'Loss-making promotion flagging with alternatives']}
                 users={['Trade Marketing', 'Sales Director', 'CFO']} />
+              </div>
             </div>
           </div>
         </section>
@@ -210,15 +218,15 @@ export default function PlatformPage() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {MODULES.map((m, i) => (
-                <div key={i} data-reveal className={`opacity-0 rounded-2xl border p-8 ${m.bg}`}>
+              {MODULES.map((m, i) => {const modId = m.mod.toLowerCase(); return (
+                <div key={i} id={modId} data-reveal className={`opacity-0 rounded-2xl border p-8 ${m.bg}`}>
                   <div className="flex items-center gap-3 mb-4">
                     <span className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center text-sm font-black text-white">{m.mod}</span>
                     <h3 className="text-lg font-bold text-navy">{m.title}</h3>
                   </div>
                   <p className="text-sm text-slate-600 leading-relaxed">{m.desc}</p>
                 </div>
-              ))}
+              );})}
             </div>
           </div>
         </section>
@@ -254,7 +262,7 @@ export default function PlatformPage() {
                   <h3 className="text-sm font-bold text-white mb-1">{s.label}</h3>
                   <p className="text-xs text-white/50 leading-relaxed">{s.desc}</p>
                 </div>
-              ))}
+              );})}
             </div>
           </div>
         </section>

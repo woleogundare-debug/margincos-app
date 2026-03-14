@@ -4,7 +4,7 @@ export function PublicFooter() {
   return (
     <footer className="bg-navy-dark text-white">
       <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-10 md:gap-8">
           {/* Column 1 — Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex flex-col">
@@ -33,10 +33,10 @@ export function PublicFooter() {
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Platform</h4>
             <nav className="space-y-2.5">
               {[
-                { label: 'Pricing Intelligence', href: '/platform' },
-                { label: 'Cost Pass-Through',    href: '/platform' },
-                { label: 'Channel Economics',     href: '/platform' },
-                { label: 'Trade Execution',       href: '/platform' },
+                { label: 'Pricing Intelligence', href: '/platform#pricing-intelligence' },
+                { label: 'Cost Pass-Through',    href: '/platform#cost-pass-through' },
+                { label: 'Channel Economics',     href: '/platform#channel-economics' },
+                { label: 'Trade Execution',       href: '/platform#trade-execution' },
               ].map((l, i) => (
                 <Link key={i} href={l.href}
                   className="block text-xs text-white/50 hover:text-white transition-colors">
@@ -46,7 +46,25 @@ export function PublicFooter() {
             </nav>
           </div>
 
-          {/* Column 3 — Company */}
+          {/* Column 3 — Enterprise */}
+          <div>
+            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Enterprise</h4>
+            <nav className="space-y-2.5">
+              {[
+                { label: 'SKU Rationalisation',    href: '/platform#m1' },
+                { label: 'Inflation Scenarios',     href: '/platform#m2' },
+                { label: 'Trade Spend ROI',         href: '/platform#m3' },
+                { label: 'Distributor Scorecard',   href: '/platform#m4' },
+              ].map((l, i) => (
+                <Link key={i} href={l.href}
+                  className="block text-xs text-white/50 hover:text-white transition-colors">
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Column 4 — Company */}
           <div>
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Company</h4>
             <nav className="space-y-2.5">
@@ -61,7 +79,7 @@ export function PublicFooter() {
             </nav>
           </div>
 
-          {/* Column 4 — Resources */}
+          {/* Column 5 — Resources */}
           <div>
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Resources</h4>
             <nav className="space-y-2.5">
@@ -74,7 +92,7 @@ export function PublicFooter() {
             </nav>
           </div>
 
-          {/* Column 5 — Legal */}
+          {/* Column 6 — Legal */}
           <div>
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Legal</h4>
             <nav className="space-y-2.5">

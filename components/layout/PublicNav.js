@@ -6,6 +6,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { getSupabaseClient } from '../../lib/supabase/client';
 
 const NAV_LINKS = [
+  { href: '/',         label: 'Home' },
   { href: '/platform', label: 'Platform' },
   { href: '/pricing',  label: 'Pricing' },
   { href: '/contact',  label: 'Contact' },
