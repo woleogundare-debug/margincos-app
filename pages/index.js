@@ -91,7 +91,7 @@ function PillarCard({ num, title, desc, color }) {
 /* ── Enterprise module data (all 4) ── */
 const MODULES = [
   { mod: 'M1', title: 'SKU Portfolio Rationalisation', desc: 'Classify every SKU into a defend / reprice / delist framework. Identify margin-dilutive products and where to rationalise for portfolio health.', bg: 'bg-white border-purple/20' },
-  { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios \u2014 15%, 25%, 40% input cost inflation \u2014 and stress-test pricing strategy against each.', bg: 'bg-gold-50/40 border-gold/20' },
+  { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios — 15%, 25%, 40% input cost inflation — and stress-test pricing strategy against each.', bg: 'bg-gold-50/40 border-gold/20' },
   { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Identify which investments generate margin and which destroy it.', bg: 'bg-white border-teal/20' },
   { mod: 'M4', title: 'Distributor Performance Scorecard', desc: 'Rank every distributor relationship by true net margin contribution after logistics, rebates, and credit costs. Identify who to reward, renegotiate, or exit.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
@@ -156,9 +156,9 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto px-6 py-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               {[
-                { val: '3\u20136%', label: 'Revenue as EBITDA Uplift' },
-                { val: '15\u201330', label: 'Days DSO Reduction' },
-                { val: '10\u201330\u00d7', label: 'Platform ROI' },
+                { val: '3–6%', label: 'Revenue as EBITDA Uplift' },
+                { val: '15–30', label: 'Days DSO Reduction' },
+                { val: '10–30×', label: 'Platform ROI' },
               ].map((s, i) => (
                 <div key={i} data-reveal className="opacity-0">
                   <div className="text-3xl md:text-4xl font-black text-gold">{s.val}</div>
@@ -210,7 +210,7 @@ export default function HomePage() {
               <PillarCard num={1} title="Pricing Intelligence" color="teal"
                 desc="Identify pricing gaps, benchmark against competitors, and quantify WTP headroom before you leave revenue on the table." />
               <PillarCard num={2} title="Cost Pass-Through" color="red"
-                desc="Measure how much input cost inflation you\u2019re absorbing vs. passing through \u2014 broken down by SKU and FX exposure." />
+                desc="Measure how much input cost inflation you're absorbing vs. passing through — broken down by SKU and FX exposure." />
               <PillarCard num={3} title="Channel Economics" color="gold"
                 desc="Calculate true net contribution margin by route to market, accounting for distributor margin, logistics, and rebates." />
               <PillarCard num={4} title="Trade Execution" color="purple"
@@ -251,7 +251,7 @@ export default function HomePage() {
               {[
                 { step: '01', title: 'Enter your portfolio data', desc: 'SKU by SKU via the in-app form, or bulk import via CSV. No ERP integration required.' },
                 { step: '02', title: 'Run the analysis', desc: 'The engine processes all four pillars simultaneously in seconds, quantifying every margin leak in Naira.' },
-                { step: '03', title: 'Act on the output', desc: 'Prioritised recommendations with ₦ impact quantified per action \u2014 from repricing to rationalisation.' },
+                { step: '03', title: 'Act on the output', desc: 'Prioritised recommendations with ₦ impact quantified per action — from repricing to rationalisation.' },
               ].map((s, i) => (
                 <div key={i} data-reveal className="opacity-0 text-center">
                   <div className="w-14 h-14 rounded-2xl bg-navy mx-auto flex items-center justify-center mb-5">

@@ -106,8 +106,8 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
 /* ── Enterprise modules (all 4) ── */
 const MODULES = [
   { mod: 'M1', title: 'SKU Portfolio Rationalisation', desc: 'Classify every SKU into a defend / reprice / delist framework based on margin contribution vs. strategic importance. Identify which SKUs are margin-dilutive, which to protect, and where to rationalise for portfolio health.', bg: 'bg-white border-purple/20' },
-  { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios and stress-test your pricing strategy against each. See how margin erodes at 15%, 25%, or 40% input cost inflation \u2014 and what pricing actions are needed to maintain floor margin.', bg: 'bg-gold-50/40 border-gold/20' },
-  { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Surface which investments generate margin and which are destroying it \u2014 before the spend is committed.', bg: 'bg-white border-teal/20' },
+  { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios and stress-test your pricing strategy against each. See how margin erodes at 15%, 25%, or 40% input cost inflation — and what pricing actions are needed to maintain floor margin.', bg: 'bg-gold-50/40 border-gold/20' },
+  { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Surface which investments generate margin and which are destroying it — before the spend is committed.', bg: 'bg-white border-teal/20' },
   { mod: 'M4', title: 'Distributor Performance Scorecard', desc: 'Rank every distributor relationship by true net margin contribution after logistics, rebates, and credit costs. Identify who to reward, renegotiate, or exit.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
 
@@ -147,10 +147,10 @@ export default function PlatformPage() {
                 <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy mb-8">What Makes MarginCOS Different</h2>
                 <div className="space-y-6">
                   {[
-                    { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template \u2014 designed from the ground up for the realities of operating in Nigeria and similar high-inflation economies.' },
-                    { title: 'SKU-level granularity', desc: 'Not just portfolio averages \u2014 every metric, every recommendation, every Naira figure is calculated at the individual SKU level.' },
+                    { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template — designed from the ground up for the realities of operating in Nigeria and similar high-inflation economies.' },
+                    { title: 'SKU-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every Naira figure is calculated at the individual SKU level.' },
                     { title: 'No ERP integration required', desc: 'Works from your existing commercial data. Enter via the in-app form or bulk import a CSV. Live in hours, not months.' },
-                    { title: 'Output in ₦', desc: 'Every recommendation is quantified in Naira impact \u2014 not abstract percentages, but real recoverable revenue per action.' },
+                    { title: 'Output in ₦', desc: 'Every recommendation is quantified in Naira impact — not abstract percentages, but real recoverable revenue per action.' },
                   ].map((item, i) => (
                     <div key={i} data-reveal className="opacity-0 flex items-start gap-4">
                       <div className="w-8 h-8 rounded-lg bg-teal/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -170,7 +170,7 @@ export default function PlatformPage() {
           </div>
         </section>
 
-        {/* FOUR PILLARS \u2014 DEEP DIVE */}
+        {/* FOUR PILLARS — DEEP DIVE */}
         <section className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -182,25 +182,25 @@ export default function PlatformPage() {
               <div id="pricing-intelligence">
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
                 problem="Most FMCG companies reprice reactively, without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
-                delivers={['Competitor price gap per SKU \u2014 quantified in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations']}
+                delivers={['Competitor price gap per SKU — quantified in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations']}
                 users={['CFO', 'Commercial Director']} />
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
-                problem="Input cost inflation accumulates silently. Without SKU-level tracking, absorbed costs compound into structural margin erosion that remains invisible on the P&L until it\u2019s too late to act."
+                problem="Input cost inflation accumulates silently. Without SKU-level tracking, absorbed costs compound into structural margin erosion that remains invisible on the P&L until it's too late to act."
                 delivers={['Pass-through rate vs. BUA Foods 75% benchmark', 'FX-linked cost decomposition by SKU', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>
               <div id="channel-economics">
                 <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
-                problem="Gross margin looks healthy until logistics, distributor margin, and rebates are deducted by channel \u2014 revealing that some routes to market are actively destroying value while appearing profitable."
+                problem="Gross margin looks healthy until logistics, distributor margin, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable."
                 delivers={['Net contribution margin by channel', 'Distributor performance ranking', 'Weak channel identification with remediation actions']}
                 users={['Commercial Director', 'Sales Director', 'Trade Marketing']} />
               </div>
               <div id="trade-execution">
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
                 problem="Trade investment is the largest untracked cost line in most FMCG P&Ls. Promotional depth routinely exceeds margin, with no mechanism to catch it before the spend is committed."
-                delivers={['Promotion P&L per SKU \u2014 revenue, cost, and net impact', 'Break-even lift calculation for every promo', 'Loss-making promotion flagging with alternatives']}
+                delivers={['Promotion P&L per SKU — revenue, cost, and net impact', 'Break-even lift calculation for every promo', 'Loss-making promotion flagging with alternatives']}
                 users={['Trade Marketing', 'Sales Director', 'CFO']} />
               </div>
             </div>
@@ -214,7 +214,7 @@ export default function PlatformPage() {
               <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Enterprise</span>
               <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy">Advanced Intelligence Modules</h2>
               <p data-reveal className="opacity-0 mt-4 text-slate-500 leading-relaxed">
-                Enterprise clients access advanced analytical modules that go deeper \u2014 portfolio-level rationalisation, forward scenario planning, trade spend analytics, and distributor scorecards. These modules run on the same data and appear alongside the four core pillars.
+                Enterprise clients access advanced analytical modules that go deeper — portfolio-level rationalisation, forward scenario planning, trade spend analytics, and distributor scorecards. These modules run on the same data and appear alongside the four core pillars.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -237,7 +237,7 @@ export default function PlatformPage() {
             <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Data Entry</span>
             <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy mb-6">Your Data, Your Way</h2>
             <p data-reveal className="opacity-0 text-slate-500 leading-relaxed max-w-2xl mx-auto">
-              MarginCOS does not require an ERP integration. Clients enter their portfolio data directly into the platform \u2014 either SKU by SKU via the built-in form, or by uploading a CSV file for bulk import. A downloadable CSV template is available to guide data preparation. Most teams are live and running their first analysis within 48 hours.
+              MarginCOS does not require an ERP integration. Clients enter their portfolio data directly into the platform — either SKU by SKU via the built-in form, or by uploading a CSV file for bulk import. A downloadable CSV template is available to guide data preparation. Most teams are live and running their first analysis within 48 hours.
             </p>
           </div>
         </section>
