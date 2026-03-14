@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -14,6 +15,8 @@ export default function CostPage() {
   const { activePeriod, skuRows, tradeInvestment } = usePortfolio(user?.id);
   const { results, running, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
   const p2 = results?.p2;
+
+  const [tableExpanded, setTableExpanded] = useState(false);
 
   const ragStatus = !hasResults ? 'grey'
     : p2?.avgAbsorbedPct > 60 ? 'red'
@@ -46,6 +49,53 @@ export default function CostPage() {
                 accent={p2.portRecoveryPct < 40 ? 'red' : p2.portRecoveryPct < 70 ? 'amber' : 'teal'} />
             </div>
 
+            {/* Mobile summary strip */}
+            <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">
+              <div className={`px-4 py-2.5 flex items-center gap-2 ${
+                ragStatus === 'green' ? 'bg-teal-50' : ragStatus === 'amber' ? 'bg-amber-50' : ragStatus === 'red' ? 'bg-red-50' : 'bg-gray-50'
+              }`}>
+                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                  ragStatus === 'green' ? 'bg-teal-500' : ragStatus === 'amber' ? 'bg-amber-400' : ragStatus === 'red' ? 'bg-red-500' : 'bg-gray-300'
+                }`} />
+                <span className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: ragStatus === 'green' ? '#0D8F8F' : ragStatus === 'red' ? '#C0392B' : '#92400E' }}>
+                  {ragStatus === 'green' ? 'Managed' : ragStatus === 'amber' ? 'Watch' : ragStatus === 'red' ? 'At Risk' : 'Pending'}
+                </span>
+              </div>
+              <div className="px-4 py-3 bg-white">
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {`Recovery rate: ${(p2.portRecoveryPct || 0).toFixed(1)}% — ${fNAbs(p2.totalAbsorbed)}/month absorbed into margin.`}
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile collapsible table */}
+            <div className="md:hidden mb-4">
+              <button onClick={() => setTableExpanded(!tableExpanded)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl border border-gray-100 text-sm font-semibold"
+                style={{ color: '#1B2A4A' }}>
+                <span>View SKU Detail ({p2.results?.length || 0} SKUs)</span>
+                <span className="text-gray-400">{tableExpanded ? '▲' : '▼'}</span>
+              </button>
+              {tableExpanded && (
+                <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
+                  style={{ WebkitOverflowScrolling: 'touch' }}>
+                  <AnalysisTable
+                    headers={['SKU', 'Shock ₦/mo', 'Pass-Through', 'Absorbed ₦/mo']}
+                    rows={p2.results.map(r => [
+                      r.sku,
+                      fNAbs(r.shock),
+                      (r.pt * 100).toFixed(0) + '%',
+                      { content: <span className="text-red-600 font-semibold">{fNAbs(r.absorbed)}</span> },
+                    ])}
+                    emptyMessage="No cost data."
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Desktop table */}
+            <div className="hidden md:block">
             <PillarCard
               title="Cost Absorption by SKU"
               subtitle="Inflation shock, pass-through, and absorbed exposure per SKU"
@@ -83,6 +133,7 @@ export default function CostPage() {
                   : 'No FX exposure data captured — populate FX Exposure % to decompose absorbed inflation.'}
               </NarrativeBox>
             </PillarCard>
+            </div>
           </>
         )}
       </DashboardLayout>

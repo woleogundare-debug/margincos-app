@@ -62,6 +62,68 @@ const TAB_GROUP_LABELS = {
   trade: 'TRADE EXECUTION',
 };
 
+// Mobile card fields per tab — keys match COLUMNS
+const CARD_FIELDS = {
+  identity: [
+    { key: 'sku_name',      label: 'Product Name' },
+    { key: 'category',      label: 'Category' },
+    { key: 'rrp',           label: 'RRP ₦', fmt: 'currency' },
+    { key: 'segment',       label: 'Segment' },
+    { key: 'business_unit', label: 'Business Unit' },
+    { key: 'region',        label: 'Region' },
+  ],
+  pricing: [
+    { key: 'sku_name',                 label: 'Product' },
+    { key: 'rrp',                      label: 'RRP ₦', fmt: 'currency' },
+    { key: 'competitor_price',         label: 'Comp. Price ₦', fmt: 'currency' },
+    { key: 'target_margin_floor_pct',  label: 'Margin Floor %', fmt: 'pct' },
+    { key: 'price_elasticity',         label: 'Elasticity' },
+    { key: 'proposed_price_change_pct',label: 'Proposed Chg %', fmt: 'pct' },
+    { key: 'wtp_premium_pct',          label: 'WTP Premium %', fmt: 'pct' },
+  ],
+  cost: [
+    { key: 'sku_name',           label: 'Product' },
+    { key: 'cogs_per_unit',      label: 'COGS ₦', fmt: 'currency' },
+    { key: 'cogs_prior_period',  label: 'Prior COGS ₦', fmt: 'currency' },
+    { key: 'cogs_inflation_rate',label: 'COGS Inflation %', fmt: 'pct' },
+    { key: 'pass_through_rate',  label: 'Pass-Through %', fmt: 'pct' },
+    { key: 'fx_exposure_pct',    label: 'FX Exposure %', fmt: 'pct' },
+  ],
+  channel: [
+    { key: 'sku_name',              label: 'Product' },
+    { key: 'primary_channel',       label: 'Channel' },
+    { key: 'channel_revenue_split', label: 'Prim. Ch. Vol %' },
+    { key: 'distributor_name',      label: 'Distributor' },
+    { key: 'distributor_margin_pct',label: 'Dist. Margin %', fmt: 'pct' },
+    { key: 'trade_rebate_pct',      label: 'Rebate %', fmt: 'pct' },
+    { key: 'logistics_cost_per_unit',label: 'Logistics ₦', fmt: 'currency' },
+    { key: 'credit_days',           label: 'Credit Days' },
+  ],
+  trade: [
+    { key: 'sku_name',             label: 'Product' },
+    { key: 'monthly_volume_units', label: 'Volume', fmt: 'number' },
+    { key: 'promo_depth_pct',      label: 'Promo Depth %', fmt: 'pct' },
+    { key: 'promo_lift_pct',       label: 'Promo Lift %', fmt: 'pct' },
+  ],
+};
+
+function formatCardValue(val, fmt) {
+  if (val === null || val === undefined || val === '') return null;
+  if (fmt === 'currency') {
+    const n = typeof val === 'number' ? val : parseFloat(String(val).replace(/,/g, ''));
+    return isNaN(n) ? val : '₦' + n.toLocaleString('en-NG');
+  }
+  if (fmt === 'pct') {
+    const n = typeof val === 'number' ? val : parseFloat(val);
+    return isNaN(n) ? val : n + '%';
+  }
+  if (fmt === 'number') {
+    const n = typeof val === 'number' ? val : parseFloat(String(val).replace(/,/g, ''));
+    return isNaN(n) ? val : n.toLocaleString('en-NG');
+  }
+  return val;
+}
+
 // ── CSV Import helpers ──
 const CSV_FIELDS = COLUMNS.filter(c => c.key !== 'active').map(c => c.key);
 const NUMERIC_KEYS = new Set(
@@ -504,8 +566,90 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="overflow-x-auto">
+      {/* Mobile card view */}
+      <div className="md:hidden">
+        {skuRows.length === 0 && (
+          <div className="text-center py-12 px-4">
+            <p className="text-sm text-slate-400 mb-4">
+              Tap <strong className="text-navy">+ Add SKU</strong> to begin, or <strong className="text-navy">Import CSV</strong> to bulk-load.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
+                <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import CSV
+              </Button>
+              <Button variant="primary" size="sm" onClick={onAdd}>
+                <PlusIcon className="h-3.5 w-3.5" /> Add SKU
+              </Button>
+            </div>
+          </div>
+        )}
+        {skuRows.length > 0 && (
+          <div className="space-y-3 px-4 pt-3 pb-4">
+            {skuRows.map((row, idx) => {
+              const rowKey = row.id || row._tempId;
+              const fields = CARD_FIELDS[activeTab] || CARD_FIELDS.identity;
+              const isActive = row.active === true || row.active === 'Y' || row.active === 'y' || row.active === 'Active';
+              return (
+                <div key={rowKey} className="bg-white rounded-xl border border-gray-100 overflow-hidden sku-card-enter"
+                  style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                  {/* Card header */}
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50"
+                    style={{ backgroundColor: '#F8FAFC' }}>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <CompletenessDot row={row} />
+                      <span className="text-sm font-semibold truncate" style={{ color: '#1B2A4A' }}>
+                        {row.sku_id || `SKU ${idx + 1}`}
+                      </span>
+                    </div>
+                    <span className={clsx('text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0',
+                      isActive ? 'bg-teal-50 text-teal-700' : 'bg-gray-100 text-gray-400'
+                    )}>
+                      {isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                  {/* Card body */}
+                  <div className="px-4 py-3 space-y-2">
+                    {fields.map(field => {
+                      const raw = pendingEdits.current[rowKey]?.[field.key] ?? row[field.key];
+                      const display = formatCardValue(raw, field.fmt);
+                      if (display === null) return null;
+                      return (
+                        <div key={field.key} className="flex items-center justify-between">
+                          <span className="text-xs text-gray-400">{field.label}</span>
+                          <span className="text-sm font-medium text-right ml-3 truncate" style={{ color: '#1B2A4A', maxWidth: '60%' }}>
+                            {display}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Card footer */}
+                  {onRowClick && (
+                    <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-50">
+                      <button onClick={() => onRowClick(row)}
+                        className="text-xs font-semibold" style={{ color: '#0D8F8F' }}>
+                        Edit details →
+                      </button>
+                      <button onClick={() => onDelete(rowKey)}
+                        className="text-xs font-semibold text-red-400 hover:text-red-600">
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {/* Mobile add button */}
+            <button onClick={onAdd}
+              className="w-full py-3 text-xs font-semibold rounded-xl border border-dashed border-slate-200 text-navy/40 hover:text-navy hover:border-navy/30 transition-colors flex items-center justify-center gap-1.5">
+              <PlusIcon className="h-3.5 w-3.5" /> Add SKU
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop grid */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
             {/* Group label row — only for non-identity tabs */}

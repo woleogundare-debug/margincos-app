@@ -79,6 +79,32 @@ export default function OverviewPage() {
         {/* Results */}
         {hasResults && results && (
           <>
+            {/* Mobile pillar scorecard — horizontal scroll */}
+            <div className="md:hidden overflow-x-auto scrollbar-hide mb-4">
+              <div className="flex gap-2 min-w-max py-1">
+                {[
+                  { label: 'Pricing', color: '#0D9488',
+                    rag: results.p1?.floorBreaches?.length > 0 ? 'red' : results.p1?.totalGain > 0 ? 'amber' : 'green' },
+                  { label: 'Cost', color: '#DC2626',
+                    rag: results.p2?.avgAbsorbedPct > 60 ? 'red' : results.p2?.avgAbsorbedPct > 30 ? 'amber' : 'green' },
+                  { label: 'Channel', color: '#D97706',
+                    rag: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'amber' : 'green' },
+                  { label: 'Trade', color: '#7C3AED',
+                    rag: results.p4?.results?.some(r => !r.profitable) ? 'red' : results.p4?.results?.length > 0 ? 'green' : 'grey' },
+                ].map(p => (
+                  <div key={p.label}
+                    className="flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl border border-gray-100 bg-white min-w-[90px]"
+                    style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <span className={clsx('w-2.5 h-2.5 rounded-full',
+                      p.rag === 'green' ? 'bg-teal-500' : p.rag === 'amber' ? 'bg-amber-400' : p.rag === 'red' ? 'bg-red-500' : 'bg-gray-300'
+                    )} />
+                    <span className="text-xs font-semibold text-center" style={{ color: '#1B2A4A' }}>{p.label}</span>
+                    <span className="text-[10px] text-gray-400 capitalize">{p.rag}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* KPI Tiles */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
               <KpiTile
@@ -109,19 +135,43 @@ export default function OverviewPage() {
               />
             </div>
 
-            {/* Priority Actions */}
+            {/* Priority Actions — mobile card layout */}
             {results.actions?.length > 0 && (
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-6">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-navy">Priority Actions</h2>
-                  <span className="text-xs text-slate-400">{results.actions.length} identified</span>
-                </div>
-                <div>
+              <>
+                <div className="md:hidden space-y-2 mb-6">
+                  <p className="text-xs font-bold text-navy uppercase tracking-wider mb-2">
+                    Priority Actions · {results.actions.length} identified
+                  </p>
                   {results.actions.map((action, i) => (
-                    <ActionItem key={i} action={action} index={i} />
+                    <div key={i} className="bg-white rounded-xl border-l-4 border-gray-100 px-4 py-3 flex items-start gap-3"
+                      style={{ borderLeftColor: action.color }}>
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5"
+                        style={{ background: action.color + '20', color: action.color }}>
+                        {i + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold" style={{ color: '#1B2A4A' }}>{action.title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{action.detail}</p>
+                        <p className="text-[10px] font-semibold mt-1 uppercase tracking-wide" style={{ color: action.color }}>
+                          {action.pillar} · {action.timeline}
+                        </p>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
+                {/* Desktop: Priority Actions (unchanged) */}
+                <div className="hidden md:block bg-white rounded-2xl border border-slate-100 shadow-sm mb-6">
+                  <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <h2 className="text-sm font-bold text-navy">Priority Actions</h2>
+                    <span className="text-xs text-slate-400">{results.actions.length} identified</span>
+                  </div>
+                  <div>
+                    {results.actions.map((action, i) => (
+                      <ActionItem key={i} action={action} index={i} />
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
 
             {/* Pillar Summary Grid */}

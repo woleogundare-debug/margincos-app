@@ -163,7 +163,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
                       <Link key={href} href={href}
                         onClick={() => setSidebarOpen(false)}
                         className={clsx(
-                          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative',
+                          'flex items-center gap-3 px-4 py-3.5 md:py-3 rounded-xl text-sm font-medium transition-all relative',
                           active
                             ? 'bg-white text-navy shadow-sm'
                             : locked
@@ -198,7 +198,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
               </div>
             </div>
             <button onClick={signOut}
-              className="mt-2 w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 text-xs font-medium transition-all">
+              className="mt-2 w-full flex items-center gap-2 px-4 py-3 md:py-2.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 text-sm md:text-xs font-medium transition-all">
               <ArrowRightOnRectangleIcon className="w-5 h-5" />
               Sign out
             </button>

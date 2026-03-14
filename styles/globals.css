@@ -82,6 +82,28 @@ h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; letter-spacing
   .dashboard-main { padding-left: 1rem; padding-right: 1rem; }
 }
 
+/* ── Smooth momentum scrolling on iOS ── */
+.overflow-x-auto,
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Mobile card entrance animation ── */
+@media (max-width: 767px) {
+  .sku-card-enter {
+    animation: cardFadeIn 0.15s ease-out;
+  }
+  @keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ── Prevent double-tap zoom on interactive elements (iOS) ── */
+button, a {
+  touch-action: manipulation;
+}
+
 /* ── Gradient mesh for hero backgrounds ── */
 .hero-mesh {
   background:

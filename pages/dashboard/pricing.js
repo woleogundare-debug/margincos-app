@@ -16,6 +16,7 @@ export default function PricingPage() {
   const { activePeriod, skuRows, tradeInvestment } = usePortfolio(user?.id);
   const { results, running, ranAt, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
   const p1 = results?.p1;
+  const [tableExpanded, setTableExpanded] = useState(false);
 
   const ragStatus = !hasResults ? 'grey'
     : p1?.floorBreaches?.length > 0 ? 'red'
@@ -65,7 +66,57 @@ export default function PricingPage() {
               </div>
             )}
 
-            {/* SKU Results */}
+            {/* Mobile summary strip */}
+            <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">
+              <div className={`px-4 py-2.5 flex items-center gap-2 ${
+                ragStatus === 'green' ? 'bg-teal-50' : ragStatus === 'amber' ? 'bg-amber-50' : ragStatus === 'red' ? 'bg-red-50' : 'bg-gray-50'
+              }`}>
+                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                  ragStatus === 'green' ? 'bg-teal-500' : ragStatus === 'amber' ? 'bg-amber-400' : ragStatus === 'red' ? 'bg-red-500' : 'bg-gray-300'
+                }`} />
+                <span className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: ragStatus === 'green' ? '#0D8F8F' : ragStatus === 'red' ? '#C0392B' : '#92400E' }}>
+                  {ragStatus === 'green' ? 'Managed' : ragStatus === 'amber' ? 'Opportunity' : ragStatus === 'red' ? 'At Risk' : 'Pending'}
+                </span>
+              </div>
+              <div className="px-4 py-3 bg-white">
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {p1.totalGain > 0
+                    ? `Portfolio pricing opportunity: ${fN(p1.totalGain)}/month across ${p1.results.filter(r => r.delta > 0).length} SKUs.`
+                    : `Portfolio pricing is stable. Price realisation: ${(p1.priceRealisation || 0).toFixed(1)}%.`
+                  }
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile collapsible table */}
+            <div className="md:hidden mb-4">
+              <button onClick={() => setTableExpanded(!tableExpanded)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl border border-gray-100 text-sm font-semibold"
+                style={{ color: '#1B2A4A' }}>
+                <span>View SKU Detail ({p1.results?.length || 0} SKUs)</span>
+                <span className="text-gray-400">{tableExpanded ? '▲' : '▼'}</span>
+              </button>
+              {tableExpanded && (
+                <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
+                  style={{ WebkitOverflowScrolling: 'touch' }}>
+                  <AnalysisTable
+                    headers={['SKU', 'RRP ₦', 'Margin %', 'Comp. Gap', 'Gain ₦/mo']}
+                    rows={p1.results.map(r => [
+                      r.sku,
+                      fNAbs(r.price),
+                      r.marginPct.toFixed(1) + '%',
+                      r.compGap !== null ? (r.compGap > 0 ? '+' : '') + r.compGap.toFixed(1) + '%' : '—',
+                      { content: <span className={r.delta > 0 ? 'text-emerald-600 font-semibold' : 'text-red-500'}>{fN(r.delta)}</span> },
+                    ])}
+                    emptyMessage="No pricing data."
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: SKU Results (unchanged) */}
+            <div className="hidden md:block">
             <PillarCard
               title="SKU Pricing Analysis"
               subtitle="Repricing opportunity and competitor benchmarks by SKU"
@@ -101,6 +152,7 @@ export default function PricingPage() {
                 }
               </NarrativeBox>
             </PillarCard>
+            </div>
           </>
         )}
       </DashboardLayout>

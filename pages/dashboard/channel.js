@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -16,6 +17,7 @@ export default function ChannelPage() {
   const { results, running, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
   const p3 = results?.p3;
 
+  const [tableExpanded, setTableExpanded] = useState(false);
   const weakChannels = p3?.channelResults?.filter(c => c.contPct < 15 && c.rev > 0) || [];
 
   const ragStatus = !hasResults ? 'grey'
@@ -48,7 +50,58 @@ export default function ChannelPage() {
                 accent={weakChannels.length > 0 ? 'red' : 'teal'} />
             </div>
 
-            {/* Channel summary */}
+            {/* Mobile summary strip */}
+            <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">
+              <div className={`px-4 py-2.5 flex items-center gap-2 ${
+                ragStatus === 'green' ? 'bg-teal-50' : ragStatus === 'amber' ? 'bg-amber-50' : ragStatus === 'red' ? 'bg-red-50' : 'bg-gray-50'
+              }`}>
+                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                  ragStatus === 'green' ? 'bg-teal-500' : ragStatus === 'amber' ? 'bg-amber-400' : ragStatus === 'red' ? 'bg-red-500' : 'bg-gray-300'
+                }`} />
+                <span className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: ragStatus === 'green' ? '#0D8F8F' : ragStatus === 'red' ? '#C0392B' : '#92400E' }}>
+                  {ragStatus === 'green' ? 'Healthy' : ragStatus === 'amber' ? 'Watch' : ragStatus === 'red' ? 'At Risk' : 'Pending'}
+                </span>
+              </div>
+              <div className="px-4 py-3 bg-white">
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {p3.channelResults?.length > 0
+                    ? `${p3.channelResults.length} active channels. ${weakChannels.length > 0 ? weakChannels.length + ' below 15% contribution.' : 'All above threshold.'}`
+                    : 'No channel data yet.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile collapsible table */}
+            <div className="md:hidden mb-4">
+              <button onClick={() => setTableExpanded(!tableExpanded)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl border border-gray-100 text-sm font-semibold"
+                style={{ color: '#1B2A4A' }}>
+                <span>View Channel Detail ({p3.channelResults?.length || 0} channels)</span>
+                <span className="text-gray-400">{tableExpanded ? '▲' : '▼'}</span>
+              </button>
+              {tableExpanded && (
+                <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
+                  style={{ WebkitOverflowScrolling: 'touch' }}>
+                  <AnalysisTable
+                    headers={['Channel', 'Revenue ₦/mo', 'Cont. %', 'Status']}
+                    rows={(p3.channelResults || []).map(c => [
+                      CHANNEL_LABELS[c.channel] || c.channel,
+                      fNAbs(c.rev),
+                      c.contPct.toFixed(1) + '%',
+                      { content: c.contPct < 15
+                        ? <Badge color="red">Review</Badge>
+                        : <Badge color="green">Healthy</Badge>
+                      },
+                    ])}
+                    emptyMessage="No channel data."
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: Channel summary */}
+            <div className="hidden md:block">
             <PillarCard
               title="Channel Contribution Analysis"
               subtitle="Net contribution margin by primary route to market"
@@ -84,6 +137,7 @@ export default function ChannelPage() {
                 {p3.hasRebate && ' Distributor rebates deducted from net price.'}
               </NarrativeBox>
             </PillarCard>
+            </div>
 
             {/* Distributor view — if data present */}
             {p3.hasDistributorName && (
