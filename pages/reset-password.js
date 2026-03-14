@@ -1,0 +1,96 @@
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import Link from 'next/link';
+import { getSupabaseClient } from '../lib/supabase/client';
+
+export default function ResetPassword() {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleReset = async () => {
+    setError('');
+    if (password !== confirm) { setError('Passwords do not match.'); return; }
+    if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
+    setLoading(true);
+    const sb = getSupabaseClient();
+    const { error: updateError } = await sb.auth.updateUser({ password });
+    if (updateError) { setError(updateError.message); setLoading(false); return; }
+    setSuccess(true);
+    setTimeout(() => router.push('/login'), 2000);
+  };
+
+  return (
+    <>
+      <Head>
+        <title>Reset Password | MarginCOS</title>
+        <meta name="description" content="Set a new password for your MarginCOS account." />
+      </Head>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-flex items-baseline gap-0.5">
+              <span className="text-3xl font-black text-navy">Margin</span>
+              <span className="text-3xl font-black" style={{ color: '#C0392B' }}>COS</span>
+            </Link>
+          </div>
+
+          {/* Card */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
+            <h2 className="text-lg font-bold text-navy mb-2">Set new password</h2>
+            <p className="text-sm text-slate-500 mb-6">Choose a strong password for your account.</p>
+
+            {success ? (
+              <p className="text-emerald-600 text-sm text-center py-4">
+                Password updated. Redirecting to login...
+              </p>
+            ) : (
+              <>
+                <div className="space-y-3 mb-4">
+                  <input
+                    type="password"
+                    placeholder="New password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm password"
+                    value={confirm}
+                    onChange={e => setConfirm(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                  />
+                </div>
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-medium px-3 py-2.5 rounded-lg mb-3">
+                    {error}
+                  </div>
+                )}
+                <button
+                  onClick={handleReset}
+                  disabled={loading}
+                  className="w-full py-3 rounded-lg text-white font-semibold text-sm transition-colors"
+                  style={{ backgroundColor: '#C0392B' }}
+                >
+                  {loading ? 'Updating...' : 'Update Password'}
+                </button>
+              </>
+            )}
+          </div>
+
+          <p className="text-center text-xs text-slate-400 mt-6">
+            <Link href="/login" className="text-teal hover:underline">
+              Back to sign in
+            </Link>
+          </p>
+        </div>
+      </div>
+    </>
+  );
+}
