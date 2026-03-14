@@ -137,6 +137,10 @@ export default function PricingPage() {
       <Head>
         <title>Pricing — MarginCOS Margin Recovery Platform for Nigerian FMCG</title>
         <meta name="description" content="MarginCOS pricing: three tiers from $250/month. Essentials for single-pillar pricing intelligence, Professional for full margin analysis, Enterprise for multi-user commercial analytics with dedicated onboarding. NGN, EUR and GBP rates available." />
+        <meta property="og:image" content="https://margincos.com/og-image.png" />
+        <meta name="twitter:image" content="https://margincos.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">

@@ -119,6 +119,10 @@ export default function PlatformPage() {
       <Head>
         <title>Platform — Pricing Intelligence & Margin Analytics for Nigerian FMCG | MarginCOS</title>
         <meta name="description" content="Explore MarginCOS's eight analytical engines: SKU pricing intelligence, cost pass-through tracking, channel margin analysis, and trade spend ROI — purpose-built for FMCG and manufacturing companies in Nigeria and West Africa." />
+        <meta property="og:image" content="https://margincos.com/og-image.png" />
+        <meta name="twitter:image" content="https://margincos.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">
