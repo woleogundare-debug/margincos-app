@@ -37,7 +37,7 @@ export default function LoginPage() {
     setLoading(true);
     const sb = getSupabaseClient();
     const { error } = await sb.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `https://margincos.com/reset-password`,
     });
     setLoading(false);
     if (!error) setResetSent(true);
