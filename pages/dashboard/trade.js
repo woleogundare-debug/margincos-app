@@ -23,7 +23,7 @@ export default function TradePage() {
 
   return (
     <>
-      <Head><title>Trade Execution — MarginCOS</title></Head>
+      <Head><title>Trade Execution | MarginCOS</title></Head>
       <DashboardLayout title="Trade Execution" activePeriod={activePeriod}>
 
         {!hasResults && (

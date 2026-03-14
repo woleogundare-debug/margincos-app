@@ -69,7 +69,7 @@ export default function PortfolioPage() {
   return (
     <>
       <Head>
-        <title>Portfolio Manager — MarginCOS</title>
+        <title>Portfolio Manager | MarginCOS</title>
       </Head>
       <DashboardLayout activePeriod={activePeriod}>
         {/* ── No period empty state ── */}

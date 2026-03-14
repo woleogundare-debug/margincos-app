@@ -118,8 +118,8 @@ export default function PricingPage() {
   return (
     <>
       <Head>
-        <title>Pricing — MarginCOS</title>
-        <meta name="description" content="Simple, transparent pricing for MarginCOS. All plans include a 14-day pilot. No ERP integration required." />
+        <title>Pricing | MarginCOS</title>
+        <meta name="description" content="Essentials from $250/mo. Professional from $850/mo. Enterprise from $2,400/mo. No ERP required. 14-day pilot included." />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">

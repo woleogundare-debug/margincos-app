@@ -174,7 +174,7 @@ export default function ModulesPage() {
 
   return (
     <>
-      <Head><title>Enterprise Modules — MarginCOS</title></Head>
+      <Head><title>Enterprise Modules | MarginCOS</title></Head>
       <DashboardLayout title="Enterprise Modules" activePeriod={activePeriod}>
 
         {!hasResults && (

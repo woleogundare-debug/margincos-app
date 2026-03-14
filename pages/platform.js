@@ -117,8 +117,8 @@ export default function PlatformPage() {
   return (
     <>
       <Head>
-        <title>Platform \u2014 MarginCOS</title>
-        <meta name="description" content="A purpose-built margin intelligence engine for FMCG, manufacturing, and retail companies operating in high-inflation markets." />
+        <title>Platform | MarginCOS</title>
+        <meta name="description" content="Four integrated commercial intelligence pillars — Pricing, Cost Pass-Through, Channel Economics, and Trade Execution — in one decision system." />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">

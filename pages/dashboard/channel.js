@@ -24,7 +24,7 @@ export default function ChannelPage() {
 
   return (
     <>
-      <Head><title>Channel Economics — MarginCOS</title></Head>
+      <Head><title>Channel Economics | MarginCOS</title></Head>
       <DashboardLayout title="Channel Economics" activePeriod={activePeriod}>
 
         {!hasResults && (

@@ -113,8 +113,8 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>MarginCOS \u2014 Margin Intelligence for High-Inflation Markets</title>
-        <meta name="description" content="MarginCOS gives FMCG, manufacturing, and retail companies in high-inflation markets the intelligence to recover margin across every SKU, channel, and region." />
+        <title>MarginCOS | Commercial Operating System for Margin Recovery</title>
+        <meta name="description" content="MarginCOS identifies pricing gaps, cost absorption failures, and channel leakage across your FMCG or manufacturing portfolio. Built for inflationary markets." />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">

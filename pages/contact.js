@@ -69,8 +69,8 @@ export default function ContactPage() {
   return (
     <>
       <Head>
-        <title>Book a Diagnostic \u2014 MarginCOS</title>
-        <meta name="description" content="Book a 90-minute margin diagnostic session. We apply MarginCOS to your actual commercial data and show you the first findings in the room." />
+        <title>Book a Diagnostic | MarginCOS</title>
+        <meta name="description" content="A 90-minute diagnostic session applying MarginCOS to your actual commercial data. No cost, no obligation." />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">

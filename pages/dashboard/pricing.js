@@ -24,7 +24,7 @@ export default function PricingPage() {
 
   return (
     <>
-      <Head><title>Pricing Intelligence — MarginCOS</title></Head>
+      <Head><title>Pricing Intelligence | MarginCOS</title></Head>
       <DashboardLayout title="Pricing Intelligence" activePeriod={activePeriod}>
 
         {!hasResults && (

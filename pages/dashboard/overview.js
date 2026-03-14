@@ -30,7 +30,7 @@ export default function OverviewPage() {
 
   return (
     <>
-      <Head><title>Overview — MarginCOS</title></Head>
+      <Head><title>Overview | MarginCOS</title></Head>
       <DashboardLayout title="Overview" activePeriod={activePeriod}>
 
         {/* Run Analysis banner */}

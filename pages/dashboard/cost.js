@@ -22,7 +22,7 @@ export default function CostPage() {
 
   return (
     <>
-      <Head><title>Cost Pass-Through — MarginCOS</title></Head>
+      <Head><title>Cost Pass-Through | MarginCOS</title></Head>
       <DashboardLayout title="Cost Pass-Through" activePeriod={activePeriod}>
 
         {!hasResults && (
