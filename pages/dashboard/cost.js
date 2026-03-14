@@ -52,7 +52,7 @@ export default function CostPage() {
               accentColor="#DC2626"
               ragStatus={ragStatus}>
               <AnalysisTable
-                headers={['SKU', 'Category', 'Cost Shock ₦/mo', 'Pass-Through %', 'Absorbed ₦/mo', 'FX-Linked', 'Source']}
+                headers={['SKU', 'Category', 'Cost Shock ₦/mo', 'Pass-Through %', 'Absorbed ₦/mo', 'FX-Linked', <span>Source <span title="How the inflation rate was determined for this SKU" className="ml-0.5 text-gray-400 cursor-help">?</span></span>]}
                 rows={p2.results.map(r => [
                   r.sku, r.category,
                   fNAbs(r.shock),
@@ -66,9 +66,9 @@ export default function CostPage() {
                     ? <Badge color="amber">{fNAbs(r.fxAbsorbed)}</Badge>
                     : <span className="text-slate-300">—</span>
                   },
-                  { content: <Badge color={r.usedActualInflation ? 'teal' : 'slate'}>
-                      {r.usedActualInflation ? 'Actual' : 'Self-reported'}
-                    </Badge>
+                  { content: r.usedActualInflation
+                    ? <Badge color="teal"><span title="Inflation rate calculated from your Prior Period COGS — not self-reported. More reliable." className="cursor-help">Actual</span></Badge>
+                    : <Badge color="slate"><span title="Based on the self-reported COGS Inflation Rate % you entered. Add Prior Period COGS for a verified rate." className="cursor-help">Estimated</span></Badge>
                   },
                 ])}
                 emptyMessage="No cost data — populate COGS and COGS inflation rate fields."
