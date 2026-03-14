@@ -39,7 +39,7 @@ export default function TradePage() {
                 pill="SKUs with promo data" accent="purple" />
               <KpiTile label="Net Promo Impact"
                 value={fN(p4.totalPromoImpact)}
-                pill={p4.totalPromoImpact >= 0 ? 'Net positive' : 'Net dilutive'}
+                pill={p4.totalPromoImpact >= 0 ? 'Net positive' : 'Net loss-making'}
                 accent={p4.totalPromoImpact >= 0 ? 'teal' : 'red'} />
               <KpiTile label="Loss-Making Promos"
                 value={lossCount}
@@ -67,7 +67,7 @@ export default function TradePage() {
                     { content: <span className={r.netImpact >= 0 ? 'text-emerald-600 font-semibold' : 'text-red-600 font-semibold'}>{fN(r.netImpact)}</span> },
                     { content: r.profitable
                         ? <Badge color="green">✓ Profitable</Badge>
-                        : <Badge color="red">✗ Dilutive</Badge>
+                        : <Badge color="red">✗ Loss-Making</Badge>
                     },
                   ])}
                 />

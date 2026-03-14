@@ -226,8 +226,20 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
 
 // ── Cell Input ──
 function CellInput({ col, value, onChange, onBlur, vertical }) {
-  const [local, setLocal] = useState(value ?? '');
-  useEffect(() => { setLocal(value ?? ''); }, [value]);
+  const isNumeric = col.type === 'number' || col.type === 'pct';
+  const isCurrency = isNumeric && col.label.includes('₦');
+  const isVolume = col.key === 'monthly_volume_units';
+  const useCommaFormat = isCurrency || isVolume;
+
+  const formatForDisplay = (val) => {
+    if (!useCommaFormat || val === '' || val === null || val === undefined) return val ?? '';
+    const num = parseFloat(String(val).replace(/,/g, ''));
+    if (isNaN(num)) return val;
+    return num.toLocaleString('en-NG');
+  };
+
+  const [local, setLocal] = useState(() => formatForDisplay(value));
+  useEffect(() => { setLocal(formatForDisplay(value)); }, [value]);
   const { categories } = getTaxonomy(vertical || 'FMCG');
   const handleChange = (v) => { setLocal(v); onChange(v); };
 
@@ -265,10 +277,6 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
     );
   }
 
-  const isNumeric = col.type === 'number' || col.type === 'pct';
-  const isCurrency = isNumeric && col.label.includes('₦');
-  const isVolume = col.key === 'monthly_volume_units';
-  const useCommaFormat = isCurrency || isVolume;
   const [focused, setFocused] = useState(false);
 
   const handleInputBlur = () => {
