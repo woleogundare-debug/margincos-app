@@ -22,9 +22,20 @@ function useScrollReveal() {
   return ref;
 }
 
-const MONTHLY = { essentials: 250, professional: 850, enterprise: 2400 };
+const CURRENCIES = [
+  { code: 'USD', symbol: '$', label: 'USD', rate: 1 },
+  { code: 'NGN', symbol: '₦', label: 'NGN', rate: 1650 },
+  { code: 'EUR', symbol: '€', label: 'EUR', rate: 0.92 },
+  { code: 'GBP', symbol: '£', label: 'GBP', rate: 0.79 },
+];
+
+const BASE_PRICES = {
+  essentials: { monthly: 250, annual: 213, impl: 450 },
+  professional: { monthly: 850, annual: 723, impl: 1300 },
+  enterprise: { monthly: 2400, annual: 2040, impl: 0 },
+};
+
 const ANNUAL_DISCOUNT = 0.15;
-const IMPL = { essentials: 450, professional: 1300, enterprise: null };
 
 const TIERS = [
   { key: 'essentials', name: 'Essentials', tagline: 'Pricing Intelligence pillar for lean teams getting started with margin analysis.', cta: 'Start Pilot', ctaHref: '/contact?plan=essentials', featured: false },
@@ -60,10 +71,9 @@ const FAQS = [
   { q: 'Can I upgrade my plan?', a: 'Yes. Upgrades take effect immediately and are prorated for the remainder of your billing period.' },
 ];
 
-function PricingCard({ tier, annual }) {
-  const monthly = MONTHLY[tier.key];
-  const price = annual ? Math.round(monthly * (1 - ANNUAL_DISCOUNT)) : monthly;
-  const impl = IMPL[tier.key];
+function PricingCard({ tier, annual, formatPrice }) {
+  const prices = BASE_PRICES[tier.key];
+  const price = annual ? prices.annual : prices.monthly;
 
   return (
     <div className={`relative rounded-2xl border p-8 flex flex-col transition-all hover:shadow-lg ${
@@ -77,14 +87,14 @@ function PricingCard({ tier, annual }) {
       <div className="mb-6">
         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{tier.name}</h3>
         <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-black text-navy">${price}</span>
+          <span className="text-4xl font-black text-navy">{formatPrice(price)}</span>
           <span className="text-sm text-slate-400 font-medium">/mo</span>
         </div>
         {annual && <p className="mt-1 text-xs text-teal font-semibold">Save {Math.round(ANNUAL_DISCOUNT * 100)}% with annual billing</p>}
         <p className="mt-3 text-xs text-slate-500 leading-relaxed">{tier.tagline}</p>
-        {impl
-          ? <p className="mt-2 text-xs text-slate-400">+ ${impl.toLocaleString()} implementation</p>
-          : <p className="mt-2 text-xs text-slate-400">4-week onboarding included</p>}
+        <p className="mt-2 text-xs text-slate-400">
+          {prices.impl > 0 ? `+ ${formatPrice(prices.impl)} implementation` : '4-week onboarding included'}
+        </p>
       </div>
       <Link href={tier.ctaHref}
         className={`mt-auto w-full text-center py-3 rounded-xl font-semibold text-sm transition-all block ${
@@ -113,7 +123,14 @@ function FaqItem({ q, a }) {
 
 export default function PricingPage() {
   const [annual, setAnnual] = useState(false);
+  const [currency, setCurrency] = useState(CURRENCIES[0]);
   const rootRef = useScrollReveal();
+
+  const formatPrice = (usdAmount) => {
+    if (usdAmount === 0) return 'Included';
+    const converted = Math.round(usdAmount * currency.rate);
+    return currency.symbol + converted.toLocaleString();
+  };
 
   return (
     <>
@@ -136,19 +153,40 @@ export default function PricingPage() {
 
         <section className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
-            <div className="flex items-center justify-center gap-4 mb-14">
-              <span className={`text-sm font-semibold transition-colors ${!annual ? 'text-navy' : 'text-slate-400'}`}>Monthly</span>
-              <button onClick={() => setAnnual(!annual)}
-                className={`relative w-14 h-7 rounded-full transition-colors ${annual ? 'bg-teal' : 'bg-slate-300'}`}>
-                <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${annual ? 'translate-x-7' : 'translate-x-0.5'}`} />
-              </button>
-              <span className={`text-sm font-semibold transition-colors ${annual ? 'text-navy' : 'text-slate-400'}`}>
-                Annual <span className="text-teal text-xs font-bold">(save 15%)</span>
-              </span>
+            <div className="flex items-center justify-center gap-6 mb-10 flex-wrap">
+              <div className="flex items-center gap-4">
+                <span className={`text-sm font-semibold transition-colors ${!annual ? 'text-navy' : 'text-slate-400'}`}>Monthly</span>
+                <button onClick={() => setAnnual(!annual)}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${annual ? 'bg-teal' : 'bg-slate-300'}`}>
+                  <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${annual ? 'translate-x-7' : 'translate-x-0.5'}`} />
+                </button>
+                <span className={`text-sm font-semibold transition-colors ${annual ? 'text-navy' : 'text-slate-400'}`}>
+                  Annual <span className="text-teal text-xs font-bold">(save 15%)</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-1 py-1">
+                {CURRENCIES.map(c => (
+                  <button
+                    key={c.code}
+                    onClick={() => setCurrency(c)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      currency.code === c.code
+                        ? 'text-white shadow-sm'
+                        : 'text-gray-500 hover:text-navy'
+                    }`}
+                    style={currency.code === c.code ? { backgroundColor: '#1B2A4A' } : {}}
+                  >
+                    {c.symbol} {c.code}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto items-start">
-              {TIERS.map(tier => <PricingCard key={tier.key} tier={tier} annual={annual} />)}
+              {TIERS.map(tier => <PricingCard key={tier.key} tier={tier} annual={annual} formatPrice={formatPrice} />)}
             </div>
+            <p className="text-center text-xs text-gray-400 mt-4">
+              All prices shown in {currency.label}. NGN rates are indicative and updated periodically. Contracts are invoiced in USD unless otherwise agreed.
+            </p>
           </div>
         </section>
 
