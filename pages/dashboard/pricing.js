@@ -40,7 +40,7 @@ export default function PricingPage() {
         {hasResults && p1 && (
           <>
             {/* KPIs */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="P1 Repricing Opportunity" value={fN(p1.totalGain)} accent="teal"
                 pill="vs. current pricing" />
               <KpiTile label="WTP Headroom" value={fNAbs(p1.totalWTPGap)} accent="teal"

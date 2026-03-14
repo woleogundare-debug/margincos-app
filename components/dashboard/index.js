@@ -47,14 +47,14 @@ export function AnalysisTable({ headers, rows, emptyMessage }) {
     );
   }
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto scrollbar-hide">
+      <table className="w-full text-sm min-w-[600px]">
         <thead>
           <tr className="border-b border-slate-100">
             {headers.map((h, i) => (
               <th key={i} className={clsx(
-                'pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wider',
-                i === 0 ? 'text-left' : 'text-right'
+                'pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap',
+                i === 0 ? 'text-left sticky left-0 bg-white z-10 pr-3' : 'text-right px-2'
               )}>{h}</th>
             ))}
           </tr>
@@ -64,8 +64,9 @@ export function AnalysisTable({ headers, rows, emptyMessage }) {
             <tr key={i} className={clsx('border-b border-slate-50', i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50')}>
               {row.map((cell, j) => (
                 <td key={j} className={clsx(
-                  'py-3 px-1',
-                  j === 0 ? 'text-left font-medium text-navy' : 'text-right text-slate-600',
+                  'py-3 whitespace-nowrap',
+                  j === 0 ? 'text-left font-medium text-navy sticky left-0 z-10 pr-3' : 'text-right text-slate-600 px-2',
+                  j === 0 && (i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'),
                   typeof cell === 'object' && cell?.className
                 )}>
                   {typeof cell === 'object' && cell?.content ? cell.content : cell}

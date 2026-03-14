@@ -110,15 +110,14 @@ export default function PortfolioPage() {
         {/* ── Active period content ── */}
         {activePeriod && !loading && (
           <>
-            {/* Row 1 — Page title + primary actions */}
-            <div className="flex items-center justify-between mb-2">
+            {/* Row 1 — Page title + primary actions (Desktop) */}
+            <div className="hidden md:flex items-center justify-between mb-2">
               <h1 className="text-2xl font-bold text-navy" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Portfolio Manager
               </h1>
               <div className="flex items-center gap-2">
                 <Button variant="secondary" size="sm" onClick={() => {
                   setActiveTab('sku');
-                  // trigger CSV file picker via SkuGrid ref — handled inside SkuGrid
                   document.getElementById('csv-import-trigger')?.click();
                 }}>
                   <ArrowUpTrayIcon className="h-4 w-4" /> Import CSV
@@ -135,6 +134,34 @@ export default function PortfolioPage() {
                   </button>
                 </Link>
               </div>
+            </div>
+
+            {/* Row 1 — Mobile header */}
+            <div className="md:hidden mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-lg font-bold text-navy" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  Portfolio Manager
+                </h1>
+                <div className="flex items-center gap-1.5">
+                  <button onClick={() => {
+                    setActiveTab('sku');
+                    document.getElementById('csv-import-trigger')?.click();
+                  }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Import CSV">
+                    <ArrowUpTrayIcon className="h-4 w-4" />
+                  </button>
+                  <button onClick={handleAddSku} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Add SKU">
+                    <PlusIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              <Link href="/dashboard/overview">
+                <button className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shadow-sm" style={{ backgroundColor: '#C0392B' }}>
+                  Run Analysis
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </button>
+              </Link>
             </div>
 
             {/* Row 2 — Period selector pill + portfolio summary */}

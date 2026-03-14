@@ -80,7 +80,7 @@ export default function OverviewPage() {
         {hasResults && results && (
           <>
             {/* KPI Tiles */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
               <KpiTile
                 label="Total Revenue"
                 value={fNAbs(results.totalRevenue)}
@@ -125,7 +125,7 @@ export default function OverviewPage() {
             )}
 
             {/* Pillar Summary Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {[
                 { label: 'Pricing Intelligence', color: '#0D9488', href: '/dashboard/pricing',
                   stat: results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : 'No gap',

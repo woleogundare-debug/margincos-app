@@ -471,7 +471,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-visible">
       {/* Column group tabs */}
       <div className="flex items-center justify-between px-5 py-0 border-b border-slate-200">
-        <div className="flex items-center gap-0">
+        <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
           {TABS.map(tab => {
             const locked = tab.requiredTier === 'professional' && !isProfessional;
             return (
@@ -479,7 +479,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                 onClick={() => !locked && setActiveTab(tab.key)}
                 disabled={locked}
                 className={clsx(
-                  'px-4 py-3 text-xs font-semibold transition-all relative uppercase tracking-wide flex items-center gap-1.5',
+                  'px-4 py-3 text-xs font-semibold transition-all relative uppercase tracking-wide flex items-center gap-1.5 whitespace-nowrap',
                   locked
                     ? 'text-slate-300 cursor-not-allowed'
                     : activeTab === tab.key

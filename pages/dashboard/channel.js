@@ -35,7 +35,7 @@ export default function ChannelPage() {
 
         {hasResults && p3 && (
           <>
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Channels Active"
                 value={p3.channelResults?.length || 0}
                 pill="Routes to market" accent="amber" />

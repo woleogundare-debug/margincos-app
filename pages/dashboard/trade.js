@@ -34,7 +34,7 @@ export default function TradePage() {
 
         {hasResults && p4 && (
           <>
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Promos Analysed" value={p4.results?.length || 0}
                 pill="SKUs with promo data" accent="purple" />
               <KpiTile label="Net Promo Impact"

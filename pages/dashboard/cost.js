@@ -33,7 +33,7 @@ export default function CostPage() {
 
         {hasResults && p2 && (
           <>
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Cost Absorbed" value={fNAbs(p2.totalAbsorbed)}
                 pill="Not priced in — margin erosion" accent="red" />
               <KpiTile label="Total Cost Shock" value={fNAbs(p2.totalCostShock)}

@@ -73,6 +73,15 @@ h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; letter-spacing
   animation-play-state: paused;
 }
 
+/* ── Scrollbar-hide utility (tab pills, horizontal scroll areas) ── */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ── Mobile dashboard padding ── */
+@media (max-width: 767px) {
+  .dashboard-main { padding-left: 1rem; padding-right: 1rem; }
+}
+
 /* ── Gradient mesh for hero backgrounds ── */
 .hero-mesh {
   background:
