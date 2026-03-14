@@ -19,6 +19,7 @@ export default function AdminPanel() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [token, setToken] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   const [form, setForm] = useState({
     companyName: '',
@@ -87,6 +88,28 @@ export default function AdminPanel() {
       setError(data.error || 'Something went wrong');
     }
     setCreating(false);
+  };
+
+  const handleDelete = async (teamId, teamName) => {
+    if (!confirm(`Delete ${teamName} and all associated users? This cannot be undone.`)) return;
+
+    setDeletingId(teamId);
+    const res = await fetch('/api/admin/delete-client', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ teamId }),
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      loadClients(token);
+    } else {
+      alert('Delete failed: ' + data.error);
+    }
+    setDeletingId(null);
   };
 
   const tierColour = (tier) => {
@@ -280,6 +303,13 @@ export default function AdminPanel() {
                           <p className="text-xs text-gray-300">+{team.team_members.length - 2} more</p>
                         )}
                       </div>
+                      <button
+                        onClick={() => handleDelete(team.id, team.name)}
+                        disabled={deletingId === team.id}
+                        className="text-xs text-red-400 hover:text-red-600 transition-colors disabled:opacity-40 ml-3"
+                      >
+                        {deletingId === team.id ? 'Deleting...' : 'Delete'}
+                      </button>
                     </div>
                   </div>
                 ))}
