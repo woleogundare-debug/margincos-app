@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -51,12 +51,23 @@ const TIER_COLORS = {
 export function DashboardLayout({ children, title, activePeriod }) {
   const { user, tier, isEnterprise, signOut, loading } = useAuth();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
       router.replace('/login');
     }
   }, [loading, user, router]);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
 
   if (loading || !user) {
     return (
@@ -72,8 +83,53 @@ export function DashboardLayout({ children, title, activePeriod }) {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
+      {/* Mobile header bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3"
+        style={{ backgroundColor: '#1B2A4A' }}>
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="text-white p-1"
+          aria-label="Open menu"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <span className="text-lg font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <span className="text-white">Margin</span>
+          <span style={{ color: '#C0392B' }}>COS</span>
+        </span>
+        <div className="w-8" />
+      </div>
+
+      {/* Backdrop — mobile only */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ── Sidebar ── */}
-      <aside className="w-64 flex-shrink-0 bg-navy flex flex-col">
+      <aside className={clsx(
+        'fixed md:static inset-y-0 left-0 z-50',
+        'w-72 md:w-64 flex-shrink-0 flex flex-col',
+        'transition-transform duration-300 ease-in-out',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      )} style={{ backgroundColor: '#1B2A4A', minHeight: '100vh' }}>
+
+        {/* Close button — mobile only */}
+        <div className="md:hidden flex justify-end p-4">
+          <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-white">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
         {/* Logo */}
         <div className="px-6 py-5 border-b border-white/10">
           <Link href="/" className="flex flex-col">
@@ -103,6 +159,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
                   const locked = reqEnt && !isEnterprise;
                   return (
                     <Link key={href} href={href}
+                      onClick={() => setSidebarOpen(false)}
                       className={clsx(
                         'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative',
                         active
@@ -148,7 +205,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
 
       {/* ── Main content ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto px-8 py-6">
+        <main className="flex-1 overflow-y-auto px-8 py-6 pt-14 md:pt-6">
           {children}
         </main>
       </div>
