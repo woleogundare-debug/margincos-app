@@ -57,17 +57,14 @@ export function DashboardLayout({ children, title, activePeriod }) {
         {/* Logo */}
         <div className="px-5 py-5 border-b border-white/10">
           <Link href="/" className="flex flex-col">
-            <span className="flex items-baseline gap-0.5">
-              <span className="text-xl font-black text-white tracking-tight">Margin</span>
-              <span className="text-xl font-black tracking-tight" style={{color: '#C0392B'}}>COS</span>
+            <span className="text-xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <span className="text-white">Margin</span>
+              <span style={{ color: '#C0392B' }}>COS</span>
             </span>
-            <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-medium leading-none mt-0.5">
+            <span className="text-[8px] tracking-[0.15em] uppercase text-gray-400 font-medium leading-none mt-0.5 block">
               Commercial Operating System
             </span>
           </Link>
-          {activePeriod && (
-            <p className="mt-1 text-xs text-white/40 truncate">{activePeriod.label}</p>
-          )}
         </div>
 
         {/* Nav */}

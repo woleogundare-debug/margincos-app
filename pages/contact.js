@@ -191,9 +191,8 @@ export default function ContactPage() {
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-slate-200">
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Questions? Email us directly at{' '}
-                      <a href="mailto:info@carthenaadvisory.com" className="text-teal hover:underline">info@carthenaadvisory.com</a>
+                    <p className="text-sm text-gray-text">
+                      Prefer to reach out directly? We respond to all enquiries within 24 hours.
                     </p>
                   </div>
                 </div>

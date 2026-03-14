@@ -48,13 +48,11 @@ export function PublicNav() {
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         {/* Logo — Margin navy, COS red per brand manual */}
         <Link href="/" className="flex flex-col group">
-          <span className="flex items-baseline gap-0.5">
-            <span className={clsx('text-xl font-black tracking-tight transition-colors', scrolled ? 'text-navy' : 'text-white')}>
-              Margin
-            </span>
-            <span className="text-xl font-black tracking-tight text-red-brand">COS</span>
+          <span className="text-2xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className={clsx('transition-colors', scrolled ? 'text-navy' : 'text-white')}>Margin</span>
+            <span style={{ color: '#C0392B' }}>COS</span>
           </span>
-          <span className={clsx('text-[9px] tracking-[0.15em] uppercase font-medium leading-none mt-0.5 transition-colors', scrolled ? 'text-gray-400' : 'text-white/40')}>
+          <span className={clsx('text-[9px] tracking-[0.15em] uppercase font-medium leading-none mt-0.5 block transition-colors', scrolled ? 'text-gray-400' : 'text-white/40')}>
             Commercial Operating System
           </span>
         </Link>

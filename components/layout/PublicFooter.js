@@ -8,11 +8,11 @@ export function PublicFooter() {
           {/* Column 1 — Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex flex-col">
-              <span className="flex items-baseline gap-0.5">
-                <span className="text-xl font-black text-white tracking-tight">Margin</span>
-                <span className="text-xl font-black text-red-brand tracking-tight">COS</span>
+              <span className="text-2xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <span className="text-white">Margin</span>
+                <span style={{ color: '#C0392B' }}>COS</span>
               </span>
-              <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-medium leading-none mt-0.5">
+              <span className="text-[9px] tracking-[0.15em] uppercase text-gray-500 font-medium leading-none mt-0.5 block">
                 Commercial Operating System
               </span>
             </Link>
@@ -33,10 +33,10 @@ export function PublicFooter() {
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Platform</h4>
             <nav className="space-y-2.5">
               {[
-                { label: 'Pricing Intelligence', href: '/platform#pricing-intelligence' },
-                { label: 'Cost Pass-Through',    href: '/platform#cost-pass-through' },
-                { label: 'Channel Economics',     href: '/platform#channel-economics' },
-                { label: 'Trade Execution',       href: '/platform#trade-execution' },
+                { label: 'Pricing Intelligence', href: '/platform' },
+                { label: 'Cost Pass-Through',    href: '/platform' },
+                { label: 'Channel Economics',     href: '/platform' },
+                { label: 'Trade Execution',       href: '/platform' },
               ].map((l, i) => (
                 <Link key={i} href={l.href}
                   className="block text-xs text-white/50 hover:text-white transition-colors">
@@ -50,8 +50,8 @@ export function PublicFooter() {
           <div>
             <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Company</h4>
             <nav className="space-y-2.5">
-              <Link href="/#about" className="block text-xs text-white/50 hover:text-white transition-colors">About</Link>
-              <Link href="/#how-it-works" className="block text-xs text-white/50 hover:text-white transition-colors">How It Works</Link>
+              <Link href="/platform" className="block text-xs text-white/50 hover:text-white transition-colors">Platform</Link>
+              <Link href="/platform" className="block text-xs text-white/50 hover:text-white transition-colors">How It Works</Link>
               <Link href="/pricing" className="block text-xs text-white/50 hover:text-white transition-colors">Pricing</Link>
               <Link href="/contact" className="block text-xs text-white/50 hover:text-white transition-colors">Contact</Link>
               <a href="https://carthenaadvisory.com" target="_blank" rel="noopener noreferrer"
