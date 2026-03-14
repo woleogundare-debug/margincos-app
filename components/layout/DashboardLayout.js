@@ -5,20 +5,35 @@ import clsx from 'clsx';
 import { useAuth } from '../../hooks/useAuth';
 import { LoadingSpinner } from '../ui/index';
 import {
-  ChartBarIcon, CogIcon, CurrencyDollarIcon,
+  ChartBarIcon, CurrencyDollarIcon,
   ArrowTrendingDownIcon, BuildingStorefrontIcon,
   SparklesIcon, RectangleStackIcon, ArrowRightOnRectangleIcon,
   FolderOpenIcon,
 } from '@heroicons/react/24/outline';
 
-const NAV = [
-  { href: '/dashboard/portfolio', label: 'Portfolio',  icon: FolderOpenIcon,          color: 'text-slate-500' },
-  { href: '/dashboard/overview',  label: 'Overview',   icon: ChartBarIcon,            color: 'text-slate-500' },
-  { href: '/dashboard/pricing',   label: 'Pricing',    icon: CurrencyDollarIcon,      color: 'text-teal-600' },
-  { href: '/dashboard/cost',      label: 'Cost',       icon: ArrowTrendingDownIcon,   color: 'text-red-500' },
-  { href: '/dashboard/channel',   label: 'Channel',    icon: BuildingStorefrontIcon,  color: 'text-amber-500' },
-  { href: '/dashboard/trade',     label: 'Trade',      icon: RectangleStackIcon,      color: 'text-purple-600' },
-  { href: '/dashboard/modules',   label: 'Modules',    icon: SparklesIcon,            color: 'text-slate-500' },
+const NAV_SECTIONS = [
+  {
+    label: null,
+    items: [
+      { href: '/dashboard/portfolio', label: 'Portfolio', icon: FolderOpenIcon },
+    ],
+  },
+  {
+    label: 'ANALYSIS',
+    items: [
+      { href: '/dashboard/overview', label: 'Overview',  icon: ChartBarIcon },
+      { href: '/dashboard/pricing',  label: 'Pricing',   icon: CurrencyDollarIcon },
+      { href: '/dashboard/cost',     label: 'Cost',       icon: ArrowTrendingDownIcon },
+      { href: '/dashboard/channel',  label: 'Channel',    icon: BuildingStorefrontIcon },
+      { href: '/dashboard/trade',    label: 'Trade',      icon: RectangleStackIcon },
+    ],
+  },
+  {
+    label: 'MODULES',
+    items: [
+      { href: '/dashboard/modules', label: 'Modules', icon: SparklesIcon },
+    ],
+  },
 ];
 
 const TIER_COLORS = {
@@ -31,7 +46,6 @@ export function DashboardLayout({ children, title, activePeriod }) {
   const { user, tier, signOut, loading } = useAuth();
   const router = useRouter();
 
-  // Redirect to login if auth check has completed and there is no user
   useEffect(() => {
     if (!loading && !user) {
       router.replace('/login');
@@ -53,9 +67,9 @@ export function DashboardLayout({ children, title, activePeriod }) {
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* ── Sidebar ── */}
-      <aside className="w-56 flex-shrink-0 bg-navy flex flex-col">
+      <aside className="w-64 flex-shrink-0 bg-navy flex flex-col">
         {/* Logo */}
-        <div className="px-5 py-5 border-b border-white/10">
+        <div className="px-6 py-5 border-b border-white/10">
           <Link href="/" className="flex flex-col">
             <span className="text-xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
               <span className="text-white">Margin</span>
@@ -68,40 +82,55 @@ export function DashboardLayout({ children, title, activePeriod }) {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {NAV.map(({ href, label, icon: Icon, color }) => {
-            const active = router.pathname === href || router.pathname.startsWith(href + '/');
-            return (
-              <Link key={href} href={href}
-                className={clsx(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
-                  active
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/50 hover:text-white hover:bg-white/5'
-                )}>
-                <Icon className={clsx('h-4 w-4', active ? 'text-teal' : color)} />
-                {label}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 px-3 py-4 overflow-y-auto">
+          {NAV_SECTIONS.map((section, si) => (
+            <div key={si}>
+              {section.label && (
+                <div className="px-4 pt-5 pb-2 flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">{section.label}</span>
+                  <div className="flex-1 border-t border-white/10" />
+                </div>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map(({ href, label, icon: Icon }) => {
+                  const active = router.pathname === href || router.pathname.startsWith(href + '/');
+                  return (
+                    <Link key={href} href={href}
+                      className={clsx(
+                        'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative',
+                        active
+                          ? 'bg-white text-navy shadow-sm'
+                          : 'text-gray-300 hover:text-white hover:bg-white/10'
+                      )}>
+                      {active && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style={{ backgroundColor: '#C0392B' }} />
+                      )}
+                      <Icon className={clsx('w-5 h-5', active ? 'text-navy' : 'text-gray-400')} />
+                      {label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* User footer */}
         <div className="px-3 py-4 border-t border-white/10">
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-full bg-teal flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+          <div className="flex items-center gap-3 px-4 py-2">
+            <div className="w-9 h-9 rounded-full bg-teal flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               {initials}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs text-white/70 truncate">{user?.email}</p>
-              <span className={clsx('text-xs font-semibold capitalize px-1.5 py-0.5 rounded', TIER_COLORS[tier] || TIER_COLORS.essentials)}>
+              <span className={clsx('text-[10px] font-semibold capitalize px-1.5 py-0.5 rounded', TIER_COLORS[tier] || TIER_COLORS.essentials)}>
                 {tier}
               </span>
             </div>
           </div>
           <button onClick={signOut}
-            className="mt-2 w-full flex items-center gap-2 px-3 py-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 text-xs font-medium transition-all">
-            <ArrowRightOnRectangleIcon className="h-4 w-4" />
+            className="mt-2 w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 text-xs font-medium transition-all">
+            <ArrowRightOnRectangleIcon className="w-5 h-5" />
             Sign out
           </button>
         </div>
@@ -109,12 +138,6 @@ export function DashboardLayout({ children, title, activePeriod }) {
 
       {/* ── Main content ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top bar */}
-        {title && (
-          <header className="flex-shrink-0 bg-white border-b border-slate-100 px-8 py-4">
-            <h1 className="text-lg font-bold text-navy">{title}</h1>
-          </header>
-        )}
         <main className="flex-1 overflow-y-auto px-8 py-6">
           {children}
         </main>

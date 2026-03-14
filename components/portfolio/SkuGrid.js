@@ -1,85 +1,79 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { PlusIcon, TrashIcon, ChevronRightIcon, ArrowUpTrayIcon, ArrowDownTrayIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, TrashIcon, ChevronRightIcon, ArrowUpTrayIcon, ArrowDownTrayIcon, XMarkIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
 import { getTaxonomy } from '../../lib/taxonomy/index';
 import { PRIMARY_CHANNELS, SEGMENTS, REGIONS } from '../../lib/constants';
 import clsx from 'clsx';
 
-// Column group colours
-const GROUP_COLORS = {
-  identity: 'bg-navy/5 text-navy',
-  pricing:  'bg-teal-50 text-teal-800',
-  cost:     'bg-red-50 text-red-800',
-  channel:  'bg-amber-50 text-amber-800',
-  trade:    'bg-purple-50 text-purple-800',
-  meta:     'bg-slate-50 text-slate-600',
-};
-
 // Column definitions
 const COLUMNS = [
-  // Identity
-  { key: 'sku_id',        label: 'SKU ID',           group: 'identity', required: true,  type: 'text',   width: 'w-28',  tip: 'Your internal product code. Must be unique \u2014 no two rows can share the same SKU ID.' },
-  { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on-pack or in your ERP system.' },
-  { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-44',  tip: 'Product category from your vertical\u2019s standard taxonomy.' },
-  { key: 'segment',       label: 'Segment',          group: 'identity', required: false, type: 'select', width: 'w-32',  tip: 'Price positioning: Mass Market (volume-driven), Mid-Range, or Premium.' },
-  { key: 'business_unit', label: 'Business Unit',    group: 'identity', required: false, type: 'text',   width: 'w-32',  tip: 'Division or brand cluster this SKU belongs to (e.g. Flour, Pasta, Noodles).' },
+  // Always visible (identity core)
+  { key: 'sku_id',        label: 'SKU ID',           group: 'identity', required: true,  type: 'text',   width: 'w-28',  tip: 'Your internal product code. Must be unique.' },
+  { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on-pack or in your ERP.' },
+  { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-44',  tip: 'Product category from your vertical\u2019s taxonomy.' },
+  { key: 'rrp',           label: 'RRP \u20a6',       group: 'identity', required: true,  type: 'number', width: 'w-24',  tip: 'Recommended Retail Price in Naira per unit.' },
+  { key: 'active',        label: 'Active',           group: 'identity', required: true,  type: 'bool',   width: 'w-16',  tip: 'Include in analysis.' },
+  // Identity extended
+  { key: 'segment',       label: 'Segment',          group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Price positioning: Mass Market, Mid-Range, or Premium.' },
+  { key: 'business_unit', label: 'Business Unit',    group: 'ext-identity', required: false, type: 'text',   width: 'w-32',  tip: 'Division or brand cluster.' },
+  { key: 'region',        label: 'Region',           group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Primary geographic region.' },
   // Pricing P1
-  { key: 'rrp',                      label: 'RRP \u20a6',         group: 'pricing',  required: true,  type: 'number', width: 'w-24',  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, in Naira per unit.' },
-  { key: 'competitor_price',         label: 'Comp. Price \u20a6', group: 'pricing',  required: false, type: 'number', width: 'w-28',  tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, in \u20a6 per unit.' },
-  { key: 'target_margin_floor_pct',  label: 'Margin Floor %', group: 'pricing', required: false, type: 'pct',    width: 'w-28',  tip: 'The minimum gross margin percentage you will accept for this SKU before flagging it for repricing or rationalisation.' },
-  { key: 'price_elasticity',         label: 'Elasticity',    group: 'pricing',  required: false, type: 'number', width: 'w-24',  tip: 'How sensitive demand is to a price change. \u22121.5 means a 10% price rise reduces volume by 15%. Leave blank if unknown.' },
-  { key: 'proposed_price_change_pct',label: 'Prop. Chg %',   group: 'pricing',  required: false, type: 'pct',    width: 'w-24',  tip: 'The price increase or decrease you are considering. Enter as a percentage \u2014 e.g. 5 for a 5% increase.' },
-  { key: 'wtp_premium_pct',          label: 'WTP Premium %', group: 'pricing',  required: false, type: 'pct',    width: 'w-28',  tip: 'Willingness-to-pay premium: how much more (%) consumers are prepared to pay above current RRP before switching.' },
+  { key: 'competitor_price',         label: 'Comp. Price \u20a6', group: 'pricing',  required: false, type: 'number', width: 'w-28',  tip: 'Nearest competitor\u2019s shelf price.' },
+  { key: 'target_margin_floor_pct',  label: 'Margin Floor %', group: 'pricing', required: false, type: 'pct',    width: 'w-28',  tip: 'Minimum acceptable gross margin %.' },
+  { key: 'price_elasticity',         label: 'Elasticity',    group: 'pricing',  required: false, type: 'number', width: 'w-24',  tip: 'Demand sensitivity to price change.' },
+  { key: 'proposed_price_change_pct',label: 'Prop. Chg %',   group: 'pricing',  required: false, type: 'pct',    width: 'w-24',  tip: 'Proposed price increase/decrease %.' },
+  { key: 'wtp_premium_pct',          label: 'WTP Premium %', group: 'pricing',  required: false, type: 'pct',    width: 'w-28',  tip: 'Willingness-to-pay premium %.' },
   // Cost P2
-  { key: 'cogs_per_unit',      label: 'COGS \u20a6',         group: 'cost', required: true,  type: 'number', width: 'w-24',  tip: 'Cost of Goods Sold per unit \u2014 total landed cost including raw materials, packaging, and manufacturing.' },
-  { key: 'cogs_prior_period',  label: 'Prior COGS \u20a6',   group: 'cost', required: false, type: 'number', width: 'w-28',  tip: 'COGS per unit in the previous month or period. Used to calculate actual cost movement rather than relying on self-reported inflation rate.' },
-  { key: 'cogs_inflation_rate',label: 'COGS Infl. %',   group: 'cost', required: false, type: 'pct',    width: 'w-24',  tip: 'The annual rate at which this SKU\u2019s input costs are rising. Used to calculate cost absorption.' },
-  { key: 'pass_through_rate',  label: 'Pass-Through %', group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: 'Percentage of cost increases already passed on to the trade. 100% means full pass-through; 0% means fully absorbed.' },
-  { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: 'Percentage of this SKU\u2019s COGS that is linked to foreign currency (imported raw materials, packaging, or machinery costs).' },
+  { key: 'cogs_per_unit',      label: 'COGS \u20a6',         group: 'cost', required: true,  type: 'number', width: 'w-24',  tip: 'Cost of Goods Sold per unit.' },
+  { key: 'cogs_prior_period',  label: 'Prior COGS \u20a6',   group: 'cost', required: false, type: 'number', width: 'w-28',  tip: 'COGS per unit in the previous period.' },
+  { key: 'cogs_inflation_rate',label: 'COGS Infl. %',   group: 'cost', required: false, type: 'pct',    width: 'w-24',  tip: 'Annual input cost inflation rate.' },
+  { key: 'pass_through_rate',  label: 'Pass-Through %', group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of cost increase passed on to trade.' },
+  { key: 'fx_exposure_pct',    label: 'FX Exposure %',  group: 'cost', required: false, type: 'pct',    width: 'w-28',  tip: '% of COGS linked to foreign currency.' },
   // Channel P3
-  { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-44',  tip: 'Primary route-to-market for this SKU. Select the channel that accounts for the majority of volume.' },
-  { key: 'channel_revenue_split', label: 'Prim. Ch. Vol %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'What percentage of this SKU\u2019s total volume flows through its primary channel. Each SKU is independent \u2014 rows do not need to sum to 100%.' },
-  { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
-  { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for Nigerian FMCG.' },
-  { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Retrospective rebate paid back to the trade at period-end, separate from the upfront distributor margin.' },
-  { key: 'logistics_cost_per_unit',label: 'Logistics \u20a6',  group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Cost to deliver one unit to the trade (\u20a6) \u2014 includes freight, last-mile, and handling.' },
-  { key: 'credit_days',           label: 'Credit Days',   group: 'channel', required: false, type: 'number', width: 'w-24',  tip: 'Standard credit terms extended to distributors for this SKU \u2014 the number of days before payment is due.' },
+  { key: 'primary_channel',       label: 'Channel',       group: 'channel', required: true,  type: 'select', width: 'w-44',  tip: 'Primary route-to-market.' },
+  { key: 'channel_revenue_split', label: 'Prim. Ch. Vol %', group: 'channel', required: false, type: 'number', width: 'w-28',  tip: '% of volume through primary channel.' },
+  { key: 'distributor_name',      label: 'Distributor',   group: 'channel', required: false, type: 'text',   width: 'w-36',  tip: 'Primary distributor name.' },
+  { key: 'distributor_margin_pct',label: 'Dist. Margin %',group: 'channel', required: false, type: 'pct',    width: 'w-28',  tip: 'Distributor margin %.' },
+  { key: 'trade_rebate_pct',      label: 'Rebate %',      group: 'channel', required: false, type: 'pct',    width: 'w-24',  tip: 'Retrospective rebate %.' },
+  { key: 'logistics_cost_per_unit',label: 'Logistics \u20a6',  group: 'channel', required: false, type: 'number', width: 'w-28',  tip: 'Delivery cost per unit.' },
+  { key: 'credit_days',           label: 'Credit Days',   group: 'channel', required: false, type: 'number', width: 'w-24',  tip: 'Payment terms in days.' },
   // Trade P4
-  { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-24',  tip: 'Number of units sold or distributed in the period.' },
-  { key: 'promo_depth_pct',      label: 'Promo Depth %',group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'The discount percentage applied during a promotional period \u2014 e.g. 15 for a 15% promotional price cut.' },
-  { key: 'promo_lift_pct',       label: 'Promo Lift %', group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Expected volume uplift during the promotion as a percentage \u2014 e.g. 20 means you expect 20% more units sold.' },
-  // Meta
-  { key: 'region', label: 'Region', group: 'meta', required: false, type: 'select', width: 'w-32', tip: 'Primary geographic region for this SKU.' },
-  { key: 'active', label: 'Active', group: 'meta', required: true,  type: 'bool',   width: 'w-20', tip: 'Include in analysis. Set to No to exclude without deleting.' },
+  { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-24',  tip: 'Units sold in the period.' },
+  { key: 'promo_depth_pct',      label: 'Promo Depth %',group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Promotional discount %.' },
+  { key: 'promo_lift_pct',       label: 'Promo Lift %', group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Expected volume uplift %.' },
 ];
 
-const GROUP_LABELS = {
-  identity: 'Identity',
-  pricing:  'Pricing · P1',
-  cost:     'Cost · P2',
-  channel:  'Channel · P3',
-  trade:    'Trade · P4',
-  meta:     'Meta',
+// Tab definitions
+const TABS = [
+  { key: 'identity',     label: 'Identity',             groups: ['identity', 'ext-identity'] },
+  { key: 'pricing',      label: 'Pricing · P1',         groups: ['identity', 'pricing'] },
+  { key: 'cost',         label: 'Cost · P2',            groups: ['identity', 'cost'] },
+  { key: 'channel',      label: 'Channel · P3',         groups: ['identity', 'channel'] },
+  { key: 'trade',        label: 'Trade · P4',           groups: ['identity', 'trade'] },
+];
+
+const TAB_GROUP_LABELS = {
+  'ext-identity': 'IDENTITY',
+  pricing: 'PRICING INTELLIGENCE',
+  cost: 'COST PASS-THROUGH',
+  channel: 'CHANNEL ECONOMICS',
+  trade: 'TRADE EXECUTION',
 };
 
-// ── CSV Import helpers ────────────────────────────────────────────────────
-
-// CSV headers that map to column keys
+// ── CSV Import helpers ──
 const CSV_FIELDS = COLUMNS.filter(c => c.key !== 'active').map(c => c.key);
 const NUMERIC_KEYS = new Set(
   COLUMNS.filter(c => c.type === 'number' || c.type === 'pct').map(c => c.key)
 );
 
 function parseCSV(text) {
-  // Lightweight RFC 4180 parser: handles quoted fields, embedded commas, newlines
   const rows = [];
   let i = 0;
   while (i < text.length) {
     const row = [];
     while (i < text.length) {
       if (text[i] === '"') {
-        // Quoted field
         i++;
         let field = '';
         while (i < text.length) {
@@ -90,7 +84,6 @@ function parseCSV(text) {
         }
         row.push(field);
       } else {
-        // Unquoted field
         let field = '';
         while (i < text.length && text[i] !== ',' && text[i] !== '\n' && text[i] !== '\r') {
           field += text[i]; i++;
@@ -120,7 +113,6 @@ function validateCSVRows(rawRows) {
     const cells = rawRows[r];
     const rowErrors = [];
     const row = { active: true };
-
     CSV_FIELDS.forEach(key => {
       const idx = keyMap[key];
       const raw = idx !== undefined ? (cells[idx] || '').trim() : '';
@@ -131,14 +123,9 @@ function validateCSVRows(rawRows) {
         row[key] = raw || '';
       }
     });
-
-    // Required checks
     if (!row.sku_id) rowErrors.push('sku_id is missing');
     if (row.sku_id && seenIds.has(row.sku_id)) rowErrors.push(`Duplicate sku_id "${row.sku_id}"`);
     if (row.sku_id) seenIds.add(row.sku_id);
-    if (row.rrp !== null && isNaN(row.rrp)) rowErrors.push('rrp must be a number');
-    if (row.cogs_per_unit !== null && isNaN(row.cogs_per_unit)) rowErrors.push('cogs_per_unit must be a number');
-
     if (rowErrors.length > 0) {
       errors.push({ row: r, sku: row.sku_id || `(row ${r})`, issues: rowErrors });
     } else {
@@ -159,7 +146,7 @@ function downloadTemplate() {
   URL.revokeObjectURL(url);
 }
 
-// ── Import Preview Modal ──────────────────────────────────────────────────
+// ── Import Preview Modal ──
 function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
   if (!result) return null;
   const { valid, errors } = result;
@@ -176,18 +163,14 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
           </div>
           <div className="px-6 py-4 flex-1 overflow-y-auto">
             <div className="flex items-center gap-4 mb-4">
-              <div className="px-3 py-2 rounded-xl bg-teal-50 text-teal-700 text-sm font-bold">
-                {valid.length} valid rows
-              </div>
+              <div className="px-3 py-2 rounded-xl bg-teal-50 text-teal-700 text-sm font-bold">{valid.length} valid rows</div>
               {errors.length > 0 && (
-                <div className="px-3 py-2 rounded-xl bg-red-50 text-red-600 text-sm font-bold">
-                  {errors.length} rows with errors
-                </div>
+                <div className="px-3 py-2 rounded-xl bg-red-50 text-red-600 text-sm font-bold">{errors.length} with errors</div>
               )}
             </div>
             {errors.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs font-semibold text-slate-500 mb-2">Errors (these rows will be skipped):</p>
+                <p className="text-xs font-semibold text-slate-500 mb-2">Errors (skipped):</p>
                 <div className="space-y-1.5 max-h-40 overflow-y-auto">
                   {errors.map((e, i) => (
                     <div key={i} className="text-xs bg-red-50 rounded-lg px-3 py-2 text-red-700">
@@ -199,7 +182,7 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
             )}
             {valid.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-500 mb-2">Preview of valid rows:</p>
+                <p className="text-xs font-semibold text-slate-500 mb-2">Preview:</p>
                 <div className="overflow-x-auto border border-slate-100 rounded-lg">
                   <table className="w-full text-xs">
                     <thead>
@@ -214,9 +197,9 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
                       {valid.slice(0, 10).map((r, i) => (
                         <tr key={i} className="border-b border-slate-50">
                           <td className="px-2 py-1.5 font-medium">{r.sku_id}</td>
-                          <td className="px-2 py-1.5">{r.sku_name || '—'}</td>
-                          <td className="px-2 py-1.5 text-right">{r.rrp ?? '—'}</td>
-                          <td className="px-2 py-1.5 text-right">{r.cogs_per_unit ?? '—'}</td>
+                          <td className="px-2 py-1.5">{r.sku_name || '\u2014'}</td>
+                          <td className="px-2 py-1.5 text-right">{r.rrp ?? '\u2014'}</td>
+                          <td className="px-2 py-1.5 text-right">{r.cogs_per_unit ?? '\u2014'}</td>
                         </tr>
                       ))}
                       {valid.length > 10 && (
@@ -240,16 +223,14 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
   );
 }
 
+// ── Cell Input ──
 function CellInput({ col, value, onChange, onBlur, vertical }) {
-  // Local state so the input updates immediately on keystrokes.
-  // The parent is notified via onChange (writes to pendingEdits ref)
-  // but re-render is driven locally, not by the ref.
   const [local, setLocal] = useState(value ?? '');
   useEffect(() => { setLocal(value ?? ''); }, [value]);
-
   const { categories } = getTaxonomy(vertical || 'FMCG');
-
   const handleChange = (v) => { setLocal(v); onChange(v); };
+
+  const baseClass = 'w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal rounded px-1.5 py-1.5 transition-all';
 
   if (col.type === 'select') {
     let options = [];
@@ -257,11 +238,10 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
     else if (col.key === 'segment')    options = SEGMENTS.map(s => ({ value: s, label: s }));
     else if (col.key === 'primary_channel') options = PRIMARY_CHANNELS.map(c => ({ value: c.code, label: c.label }));
     else if (col.key === 'region')     options = REGIONS.map(r => ({ value: r, label: r }));
-
     return (
       <select value={local || ''} onChange={e => handleChange(e.target.value)} onBlur={onBlur}
-        className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5">
-        <option value="">Select {col.label.toLowerCase()}…</option>
+        className={clsx(baseClass, 'cursor-pointer appearance-none')}>
+        <option value="">-</option>
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     );
@@ -270,66 +250,105 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
   if (col.type === 'bool') {
     const isYes = local === true || local === 'Y' || local === 'y' || local === 'true' || local === 'Active';
     return (
-      <select value={isYes ? 'Y' : 'N'}
-        onChange={e => handleChange(e.target.value)} onBlur={onBlur}
-        className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5">
+      <select value={isYes ? 'Y' : 'N'} onChange={e => handleChange(e.target.value)} onBlur={onBlur}
+        className={clsx(baseClass, 'cursor-pointer')}>
         <option value="Y">Yes</option>
         <option value="N">No</option>
       </select>
     );
   }
 
+  const isNumeric = col.type === 'number' || col.type === 'pct';
   return (
-    <input type={col.type === 'number' || col.type === 'pct' ? 'number' : 'text'}
-      value={local}
-      step={col.type === 'pct' ? '0.01' : col.type === 'number' ? '1' : undefined}
-      onChange={e => {
-        const v = col.type === 'number' || col.type === 'pct' ? (e.target.value === '' ? '' : parseFloat(e.target.value)) : e.target.value;
-        handleChange(v);
-      }}
-      onBlur={onBlur}
-      placeholder={col.required ? `Enter ${col.label.toLowerCase()}` : ''}
-      className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal/40 rounded px-1 py-0.5 [appearance:textfield]"
-    />
+    <div className="flex items-center">
+      {isNumeric && col.label.includes('\u20a6') && <span className="text-[10px] text-slate-300 mr-0.5">\u20a6</span>}
+      <input type={isNumeric ? 'number' : 'text'}
+        value={local}
+        step={col.type === 'pct' ? '0.01' : col.type === 'number' ? '1' : undefined}
+        onChange={e => {
+          const v = isNumeric ? (e.target.value === '' ? '' : parseFloat(e.target.value)) : e.target.value;
+          handleChange(v);
+        }}
+        onBlur={onBlur}
+        placeholder={col.required ? '-' : ''}
+        className={clsx(baseClass, isNumeric && 'text-right', '[appearance:textfield]')}
+      />
+      {col.type === 'pct' && <span className="text-[10px] text-slate-300 ml-0.5">%</span>}
+    </div>
+  );
+}
+
+// ── Completeness dot ──
+function CompletenessDot({ row }) {
+  const requiredFilled = row.sku_id && row.sku_name && row.category && row.rrp && row.cogs_per_unit && row.monthly_volume_units && row.primary_channel;
+  const hasOptionalGaps = !row.competitor_price || !row.segment || !row.region;
+
+  let color = 'bg-red-400';   // required missing
+  if (requiredFilled && hasOptionalGaps) color = 'bg-amber-400';
+  if (requiredFilled && !hasOptionalGaps) color = 'bg-emerald-400';
+
+  return <span className={clsx('w-2 h-2 rounded-full flex-shrink-0', color)} />;
+}
+
+// ── Row Action Menu ──
+function RowActionMenu({ onDetail, onDuplicate, onDelete }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        className="p-1 rounded text-slate-300 hover:text-navy hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100">
+        <EllipsisVerticalIcon className="h-4 w-4" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-slate-200 rounded-lg shadow-lg z-20 py-1">
+          <button onClick={() => { onDetail(); setOpen(false); }}
+            className="w-full text-left px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 transition-colors">
+            Open detail panel
+          </button>
+          <button onClick={() => { onDelete(); setOpen(false); }}
+            className="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-50 transition-colors">
+            Delete row
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
 export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod }) {
-  const [visibleGroups, setVisibleGroups] = useState(
-    new Set(['identity', 'pricing', 'cost', 'channel', 'trade', 'meta'])
-  );
-  const [editingCell, setEditingCell] = useState(null); // { rowIdx, colKey }
+  const [activeTab, setActiveTab] = useState('identity');
   const [importResult, setImportResult] = useState(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef(null);
   const pendingEdits = useRef({});
-  const flushTimer = useRef(null);        // Single grid-level debounce timer
-  const savingKeys = useRef(new Set());    // Track which rows are mid-save
-  // Stable refs so debounce callbacks always see current values
+  const flushTimer = useRef(null);
+  const savingKeys = useRef(new Set());
   const skuRowsRef = useRef(skuRows);
   const onSaveRef = useRef(onSave);
   useEffect(() => { skuRowsRef.current = skuRows; }, [skuRows]);
   useEffect(() => { onSaveRef.current = onSave; }, [onSave]);
 
   const vertical = activePeriod?.vertical || 'FMCG';
-  const visibleCols = COLUMNS.filter(c => visibleGroups.has(c.group));
 
-  // Primary channel volume % — portfolio-level average (rows are independent, NOT expected to sum to 100%)
-  const channelSplitValues = skuRows.map(r => {
-    const v = pendingEdits.current[r.id || r._tempId]?.channel_revenue_split ?? r.channel_revenue_split;
-    return parseFloat(v) || 0;
-  }).filter(v => v > 0);
-  const channelSplitAvg = channelSplitValues.length > 0
-    ? Math.round(channelSplitValues.reduce((s, v) => s + v, 0) / channelSplitValues.length)
-    : 0;
+  // Determine visible columns based on active tab
+  const currentTab = TABS.find(t => t.key === activeTab) || TABS[0];
+  const visibleCols = COLUMNS.filter(c => currentTab.groups.includes(c.group));
 
-  // ── Single grid-level flush — saves ALL dirty rows at once ────────
+  // ── Flush logic ──
   const flushPendingEdits = useCallback(() => {
     const pending = pendingEdits.current;
     const keys = Object.keys(pending);
     if (keys.length === 0) return;
     keys.forEach(key => {
-      // Skip rows already mid-save to prevent duplicates
       if (savingKeys.current.has(key)) return;
       const edits = pending[key];
       if (!edits || Object.keys(edits).length === 0) return;
@@ -337,11 +356,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       if (!row) return;
       savingKeys.current.add(key);
       const merged = { ...row, ...edits };
-      onSaveRef.current(merged).then(() => {
-        savingKeys.current.delete(key);
-      }).catch(() => {
-        savingKeys.current.delete(key);
-      });
+      onSaveRef.current(merged).then(() => { savingKeys.current.delete(key); }).catch(() => { savingKeys.current.delete(key); });
     });
   }, []);
 
@@ -353,43 +368,32 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   const handleCellChange = useCallback((rowId, colKey, value) => {
     if (!pendingEdits.current[rowId]) pendingEdits.current[rowId] = {};
     pendingEdits.current[rowId][colKey] = value;
-    // Schedule a single grid-level flush after 2s of inactivity
     scheduleFlush(2000);
   }, [scheduleFlush]);
 
-  const handleCellBlur = useCallback((row, colKey) => {
-    // On blur: shorten the flush delay to 500ms (don't fire immediately
-    // to let rapid tab-through settle, but flush sooner than 2s)
+  const handleCellBlur = useCallback(() => {
     scheduleFlush(500);
-    setEditingCell(null);
   }, [scheduleFlush]);
 
-  // When skuRows updates (save completed), clear only the edits that
-  // have been persisted. Any edits made while the save was in-flight
-  // must be preserved — otherwise rapid data entry gets silently dropped.
   useEffect(() => {
     const pending = pendingEdits.current;
     Object.keys(pending).forEach(key => {
       const dbRow = skuRows.find(r => r.id === key || r._tempId === key);
-      if (!dbRow) return; // row not yet in skuRows, keep edits
+      if (!dbRow) return;
       const edits = pending[key];
-      const stale = Object.keys(edits).every(col => {
-        // Edit matches the DB value → it was part of the save that just completed
-        return edits[col] === dbRow[col];
-      });
+      const stale = Object.keys(edits).every(col => edits[col] === dbRow[col]);
       if (stale) delete pending[key];
     });
   }, [skuRows]);
 
-  // Flush any unsaved edits on unmount (e.g. user navigates away)
   useEffect(() => {
     return () => {
       if (flushTimer.current) clearTimeout(flushTimer.current);
-      flushPendingEdits(); // Immediate flush of everything remaining
+      flushPendingEdits();
     };
   }, [flushPendingEdits]);
 
-  // ── CSV Import handlers ──────────────────────────────────────
+  // ── CSV Import ──
   const handleFileSelect = useCallback((e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -401,64 +405,46 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       setImportResult(result);
     };
     reader.readAsText(file);
-    // Reset so the same file can be re-selected
     e.target.value = '';
   }, []);
 
   const handleImportConfirm = useCallback(async () => {
     if (!importResult?.valid?.length || !onBulkImport) return;
     setImporting(true);
-    try {
-      await onBulkImport(importResult.valid);
-    } finally {
-      setImporting(false);
-      setImportResult(null);
-    }
+    try { await onBulkImport(importResult.valid); }
+    finally { setImporting(false); setImportResult(null); }
   }, [importResult, onBulkImport]);
 
-  const toggleGroup = (g) => {
-    if (g === 'identity') return; // always visible
-    setVisibleGroups(prev => {
-      const next = new Set(prev);
-      next.has(g) ? next.delete(g) : next.add(g);
-      return next;
-    });
-  };
-
-  const groups = [...new Set(COLUMNS.map(c => c.group))];
+  // Determine save status
+  const hasPending = Object.keys(pendingEdits.current).length > 0;
+  const saveStatus = saving ? 'saving' : hasPending ? 'unsaved' : 'saved';
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-visible">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold text-slate-500 mr-1">Columns:</span>
-          {groups.map(g => (
-            <button key={g} onClick={() => toggleGroup(g)}
+      {/* Column group tabs */}
+      <div className="flex items-center justify-between px-5 py-0 border-b border-slate-200">
+        <div className="flex items-center gap-0">
+          {TABS.map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className={clsx(
-                'px-2.5 py-1 rounded-full text-xs font-semibold border transition-all',
-                visibleGroups.has(g)
-                  ? GROUP_COLORS[g] + ' border-current/20'
-                  : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'
+                'px-4 py-3 text-xs font-semibold transition-all relative uppercase tracking-wide',
+                activeTab === tab.key
+                  ? 'text-navy'
+                  : 'text-slate-400 hover:text-slate-600'
               )}>
-              {GROUP_LABELS[g]}
+              {tab.label}
+              {activeTab === tab.key && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-t-full" />
+              )}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2">
-          {saving && <span className="text-xs text-teal animate-pulse font-medium">Saving…</span>}
-          <span className="text-xs text-slate-400 mr-1">{skuRows.length} SKUs</span>
+        <div className="flex items-center gap-2 py-2">
           <button onClick={downloadTemplate} title="Download CSV template"
             className="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors">
             <ArrowDownTrayIcon className="h-4 w-4" />
           </button>
-          <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileSelect} />
-          <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
-            <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import CSV
-          </Button>
-          <Button variant="primary" size="sm" onClick={onAdd}>
-            <PlusIcon className="h-3.5 w-3.5" /> Add SKU
-          </Button>
+          <input ref={fileInputRef} id="csv-import-trigger" type="file" accept=".csv" className="hidden" onChange={handleFileSelect} />
         </div>
       </div>
 
@@ -466,112 +452,141 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       <div className="overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
-            {/* Group headers */}
-            <tr className="border-b border-slate-100">
-              {groups.filter(g => visibleGroups.has(g)).map(g => {
-                const count = visibleCols.filter(c => c.group === g).length;
-                return (
-                  <th key={g} colSpan={count}
-                    className={clsx('px-3 py-2 text-xs font-bold text-center border-r border-slate-100 last:border-r-0', GROUP_COLORS[g])}>
-                    {GROUP_LABELS[g]}
+            {/* Group label row — only for non-identity tabs */}
+            {activeTab !== 'identity' && (
+              <tr>
+                <th className="w-8" />
+                {visibleCols.map(col => (
+                  <th key={col.key} className="px-2 py-1.5">
+                    {TAB_GROUP_LABELS[col.group] && col === visibleCols.find(c => c.group === col.group) && (
+                      <span className="text-[9px] font-bold text-teal uppercase tracking-widest">
+                        {TAB_GROUP_LABELS[col.group]}
+                      </span>
+                    )}
                   </th>
-                );
-              })}
-              <th className="w-20 border-r-0" />
-            </tr>
+                ))}
+                <th className="w-10" />
+              </tr>
+            )}
             {/* Column headers */}
-            <tr className="border-b-2 border-slate-200">
+            <tr className="border-b border-slate-200" style={{ backgroundColor: '#E8EBF0' }}>
+              <th className="w-8 px-2 py-2.5" />
               {visibleCols.map(col => (
-                <th key={col.key} className={clsx('px-2 py-2 text-left font-semibold text-slate-500 whitespace-nowrap', col.width)}>
+                <th key={col.key} className={clsx('px-2 py-2.5 text-left font-semibold text-navy/70 whitespace-nowrap uppercase tracking-wide', col.width)}>
                   <span className="flex items-center gap-1">
                     {col.label}
-                    {col.required && <span className="text-red-400">*</span>}
+                    {col.required && <span className="text-red-400 text-[10px]">*</span>}
                     <Tooltip text={col.tip} />
                   </span>
                 </th>
               ))}
-              <th className="w-20" />
+              <th className="w-10" />
             </tr>
           </thead>
           <tbody>
+            {/* Empty state */}
             {skuRows.length === 0 && (
               <tr>
-                <td colSpan={visibleCols.length + 1} className="py-12 text-center text-sm text-slate-400">
-                  No SKUs yet — click <strong>Add SKU</strong> to begin
+                <td colSpan={visibleCols.length + 2} className="py-16 text-center">
+                  <p className="text-sm text-slate-400 mb-4">
+                    Click <strong className="text-navy">+ Add SKU</strong> to begin building your portfolio, or <strong className="text-navy">Import CSV</strong> to bulk-load your data.
+                  </p>
+                  <div className="flex items-center justify-center gap-3">
+                    <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
+                      <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import CSV
+                    </Button>
+                    <Button variant="primary" size="sm" onClick={onAdd}>
+                      <PlusIcon className="h-3.5 w-3.5" /> Add SKU
+                    </Button>
+                  </div>
                 </td>
               </tr>
             )}
             {skuRows.map((row, ri) => {
               const rowKey = row.id || row._tempId;
-              const hasError = (row.active === 'Y' || row.active === true) && (!row.sku_id || !row.sku_name || !row.category);
-              const cogsGtRrp = row.rrp && row.cogs_per_unit && parseFloat(row.cogs_per_unit) > parseFloat(row.rrp);
               return (
                 <tr key={rowKey}
                   className={clsx(
-                    'border-b border-slate-50 group hover:bg-teal-50/30 transition-colors',
-                    ri % 2 === 0 ? 'bg-white' : 'bg-slate-50/40',
-                    hasError  && 'border-l-2 border-l-red-400',
-                    cogsGtRrp && 'border-l-2 border-l-amber-400',
+                    'border-b border-gray-100 group transition-colors h-12',
+                    ri % 2 === 0 ? 'bg-white' : 'bg-gray-50',
+                    'hover:bg-teal-50'
                   )}>
+                  <td className="px-2 py-0 w-8 text-center">
+                    <CompletenessDot row={row} />
+                  </td>
                   {visibleCols.map(col => {
                     const val = pendingEdits.current[rowKey]?.[col.key] ?? row[col.key];
+                    const isEmpty = col.required && (val === '' || val === null || val === undefined);
                     return (
                       <td key={col.key}
-                        className={clsx('px-2 py-0 border-r border-slate-50 last:border-r-0', col.width)}
-                        onClick={() => setEditingCell({ rowIdx: ri, colKey: col.key })}>
+                        className={clsx(
+                          'px-2 py-0',
+                          col.width,
+                          isEmpty && 'bg-red-50/50'
+                        )}>
                         <CellInput
                           col={col} value={val} vertical={vertical}
                           onChange={v => handleCellChange(rowKey, col.key, v)}
-                          onBlur={() => handleCellBlur(row, col.key)}
+                          onBlur={() => handleCellBlur()}
                         />
                       </td>
                     );
                   })}
-                  {/* Actions */}
-                  <td className="px-2 py-1 w-20">
-                    <div className="flex items-center gap-1">
-                      <span className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => onRowClick(row)}
-                          className="p-1 rounded text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors"
-                          title="View / Edit detail">
-                          <ChevronRightIcon className="h-3.5 w-3.5" />
-                        </button>
-                        <button onClick={() => onDelete(rowKey)}
-                          className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                          title="Delete SKU">
-                          <TrashIcon className="h-3.5 w-3.5" />
-                        </button>
-                      </span>
-                    </div>
+                  <td className="px-1 py-0 w-10">
+                    <RowActionMenu
+                      onDetail={() => onRowClick(row)}
+                      onDelete={() => onDelete(rowKey)}
+                    />
                   </td>
                 </tr>
               );
             })}
           </tbody>
-          {skuRows.length > 0 && visibleGroups.has('channel') && (
-            <tfoot>
-              <tr className="border-t-2 border-slate-200 bg-slate-50">
-                {visibleCols.map(col => (
-                  <td key={col.key} className="px-2 py-2 text-xs">
-                    {col.key === 'channel_revenue_split' ? (
-                      <span className="font-bold text-slate-600">
-                        {channelSplitAvg}% avg
-                      </span>
-                    ) : col.key === 'primary_channel' ? (
-                      <span className="font-semibold text-slate-400">Primary channel coverage →</span>
-                    ) : null}
-                  </td>
-                ))}
-                <td className="w-20" />
-              </tr>
-            </tfoot>
-          )}
         </table>
-        {skuRows.length > 0 && visibleGroups.has('channel') && (
-          <p className="px-5 py-2 text-[11px] text-slate-400 border-t border-slate-100">
-            <strong>Primary Ch. Vol %:</strong> Enter what percentage of this SKU&apos;s volume flows through its primary channel. Each SKU is independent — rows do not need to sum to 100%.
-          </p>
+
+        {/* Add SKU row button */}
+        {skuRows.length > 0 && (
+          <button onClick={onAdd}
+            className="w-full py-3 text-xs font-semibold text-navy/40 hover:text-navy hover:bg-slate-50 transition-colors border-t border-slate-100 flex items-center justify-center gap-1.5">
+            <PlusIcon className="h-3.5 w-3.5" />
+            Add SKU
+          </button>
         )}
+      </div>
+
+      {/* Footer: row count + save status */}
+      <div className="flex items-center justify-between px-5 py-2.5 border-t border-slate-100 bg-slate-50/40">
+        <span className="text-[11px] text-slate-400">
+          Showing {skuRows.length} SKU{skuRows.length !== 1 ? 's' : ''}
+          {skuRows.length > 0 && ` · ${skuRows.filter(r => r.sku_id && r.sku_name && r.category && r.rrp && r.cogs_per_unit && r.monthly_volume_units).length} with complete data`}
+        </span>
+        <span className={clsx('text-[11px] font-medium flex items-center gap-1.5',
+          saveStatus === 'saved' && 'text-emerald-500',
+          saveStatus === 'saving' && 'text-teal',
+          saveStatus === 'unsaved' && 'text-amber-500'
+        )}>
+          {saveStatus === 'saved' && (
+            <>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              All changes saved
+            </>
+          )}
+          {saveStatus === 'saving' && (
+            <>
+              <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Saving...
+            </>
+          )}
+          {saveStatus === 'unsaved' && (
+            <>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              Unsaved changes
+            </>
+          )}
+        </span>
       </div>
 
       {/* CSV Import Preview Modal */}
