@@ -43,7 +43,7 @@ export default function AdminPanel() {
     const { data: profile } = await supabase
       .from('profiles')
       .select('is_superadmin')
-      .eq('id', session.user.id)
+      .eq('user_id', session.user.id)
       .single();
 
     if (!profile?.is_superadmin) { router.push('/dashboard/portfolio'); return; }

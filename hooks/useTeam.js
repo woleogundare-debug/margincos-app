@@ -42,12 +42,12 @@ export function useTeam() {
       const userIds = memberRows.map(m => m.user_id);
       const { data: profileRows } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
-        .in('id', userIds);
+        .select('user_id, full_name, email')
+        .in('user_id', userIds);
 
       const enriched = memberRows.map(m => ({
         ...m,
-        profile: profileRows?.find(p => p.id === m.user_id) || null,
+        profile: profileRows?.find(p => p.user_id === m.user_id) || null,
       }));
       setMembers(enriched);
     } else {

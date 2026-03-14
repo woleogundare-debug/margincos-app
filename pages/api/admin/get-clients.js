@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('is_superadmin')
-    .eq('id', user.id)
+    .eq('user_id', user.id)
     .single();
   if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
 
