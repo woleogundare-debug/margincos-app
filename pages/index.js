@@ -130,8 +130,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               <div className="fade-in-up">
                 <h1 className="text-3xl md:text-5xl font-black text-white leading-snug md:leading-[1.15]">
-                  Nigeria's Margin Recovery Platform<br />
-                  <span className="text-gold">for FMCG and Manufacturing</span>
+                  Nigeria's Margin Recovery Platform
                 </h1>
                 <p className="mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
                   Margin isn't lost in the market. It's lost decision by decision, without the right intelligence to stop it. MarginCOS exists to close that gap.
