@@ -28,6 +28,7 @@
   --text-muted:  #94A3B8;
 }
 html { scroll-behavior: smooth; }
+[id] { scroll-margin-top: 80px; }
 * { box-sizing: border-box; }
 body { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background: #F8FAFC; color: #1E293B; -webkit-font-smoothing: antialiased; }
 h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; letter-spacing: -0.02em; line-height: 1.15; }

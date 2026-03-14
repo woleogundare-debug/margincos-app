@@ -92,7 +92,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr style={{ backgroundColor: '#E8EBF0' }}>
-              <th className="px-0 py-3 text-left w-48">
+              <th className="px-0 py-3 text-left w-56">
                 <div className="bg-navy text-white px-4 py-2 text-xs font-semibold uppercase tracking-wide rounded-r-lg">
                   Channel
                 </div>
@@ -116,7 +116,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
                   'border-b border-gray-100 h-14 transition-colors hover:bg-teal-50',
                   ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                 )}>
-                  <td className="px-0 py-0 w-48">
+                  <td className="px-0 py-0 w-56">
                     <div className="bg-navy text-white px-4 py-3 font-semibold text-xs whitespace-nowrap">
                       {ch.label}
                     </div>
@@ -132,13 +132,13 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
                           value={matrix[ch.code]?.[cat.key] ?? ''}
                           onChange={e => handleChange(ch.code, cat.key, e.target.value)}
                           placeholder="0"
-                          className="w-24 text-right text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal rounded px-2 py-1.5 [appearance:textfield] transition-all"
+                          className="w-32 text-right text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal rounded px-2 py-1.5 [appearance:textfield] transition-all"
                         />
                       </div>
                     </td>
                   ))}
                   <td className="px-4 py-2 text-right font-bold text-teal">
-                    {rowTotal > 0 ? nairaFormat(rowTotal) : <span className="text-slate-300">\u2014</span>}
+                    {rowTotal > 0 ? nairaFormat(rowTotal) : <span className="text-gray-300">₦0</span>}
                   </td>
                 </tr>
               );
@@ -153,7 +153,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
               </td>
               {TRADE_SPEND_CATEGORIES.map(cat => (
                 <td key={cat.key} className="px-3 py-3 text-right text-xs font-bold text-navy">
-                  {catTotals[cat.key] > 0 ? nairaFormat(catTotals[cat.key]) : <span className="text-slate-300">\u2014</span>}
+                  {catTotals[cat.key] > 0 ? nairaFormat(catTotals[cat.key]) : <span className="text-gray-400">₦0</span>}
                 </td>
               ))}
               <td className="px-4 py-3 text-right text-sm font-black" style={{ color: '#D4A843' }}>

@@ -7,12 +7,12 @@ export function PublicFooter() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-10 md:gap-8">
           {/* Column 1 — Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex flex-col">
+            <Link href="/" className="flex flex-col gap-1 mb-4">
               <span className="text-2xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
                 <span className="text-white">Margin</span>
                 <span style={{ color: '#C0392B' }}>COS</span>
               </span>
-              <span className="text-[9px] tracking-[0.15em] uppercase text-gray-500 font-medium leading-none mt-0.5 block">
+              <span className="text-[9px] tracking-[0.18em] uppercase text-gray-500 font-medium mt-1 block">
                 Commercial Operating System
               </span>
             </Link>
@@ -87,7 +87,7 @@ export function PublicFooter() {
                 className="block text-xs text-white/50 hover:text-white transition-colors">
                 ↓ Sales Deck (PDF)
               </a>
-              <Link href="/login" className="block text-xs text-white/50 hover:text-white transition-colors">Interactive Demo</Link>
+              <Link href="/contact" className="block text-xs text-white/50 hover:text-white transition-colors">Interactive Demo</Link>
               <Link href="/contact" className="block text-xs text-white/50 hover:text-white transition-colors">Book a Diagnostic</Link>
             </nav>
           </div>

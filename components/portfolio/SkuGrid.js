@@ -14,7 +14,7 @@ const COLUMNS = [
   { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on-pack or in your ERP.' },
   { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-56',  tip: 'Product category from your vertical\u2019s taxonomy.' },
   { key: 'rrp',           label: 'RRP ₦',       group: 'identity', required: true,  type: 'number', width: 'w-36',  minWidth: 130, tip: 'Recommended Retail Price in Naira per unit.' },
-  { key: 'active',        label: 'Active',           group: 'identity', required: true,  type: 'bool',   width: 'w-16',  tip: 'Include in analysis.' },
+  { key: 'active',        label: 'Active',           group: 'identity', required: true,  type: 'bool',   width: 'w-24',  minWidth: 90, tip: 'Include in analysis.' },
   // Identity extended
   { key: 'segment',       label: 'Segment',          group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Price positioning: Mass Market, Mid-Range, or Premium.' },
   { key: 'business_unit', label: 'Business Unit',    group: 'ext-identity', required: false, type: 'text',   width: 'w-32',  tip: 'Division or brand cluster.' },
@@ -40,7 +40,7 @@ const COLUMNS = [
   { key: 'logistics_cost_per_unit',label: 'Logistics ₦',  group: 'channel', required: false, type: 'number', width: 'w-36',  minWidth: 130, tip: 'Delivery cost per unit.' },
   { key: 'credit_days',           label: 'Credit Days',   group: 'channel', required: false, type: 'number', width: 'w-24',  tip: 'Payment terms in days.' },
   // Trade P4
-  { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-24',  tip: 'Units sold in the period.' },
+  { key: 'monthly_volume_units', label: 'Volume',       group: 'trade', required: true,  type: 'number', width: 'w-40',  minWidth: 150, tip: 'Units sold in the period.' },
   { key: 'promo_depth_pct',      label: 'Promo Depth %',group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Promotional discount %.' },
   { key: 'promo_lift_pct',       label: 'Promo Lift %', group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Expected volume uplift %.' },
 ];
@@ -267,11 +267,13 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 
   const isNumeric = col.type === 'number' || col.type === 'pct';
   const isCurrency = isNumeric && col.label.includes('₦');
+  const isVolume = col.key === 'monthly_volume_units';
+  const useCommaFormat = isCurrency || isVolume;
   const [focused, setFocused] = useState(false);
 
   const handleInputBlur = () => {
     setFocused(false);
-    if (isCurrency && local !== '' && !isNaN(local)) {
+    if (useCommaFormat && local !== '' && !isNaN(local)) {
       setLocal(Number(local).toLocaleString('en-NG'));
     }
     onBlur();
@@ -279,7 +281,7 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 
   const handleInputFocus = () => {
     setFocused(true);
-    if (isCurrency && typeof local === 'string') {
+    if (useCommaFormat && typeof local === 'string') {
       setLocal(local.replace(/,/g, ''));
     }
   };
@@ -287,7 +289,7 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
   return (
     <div className="flex items-center">
       {isCurrency && <span className="text-sm font-medium text-gray-400 mr-0.5 select-none">₦</span>}
-      <input type={focused || !isCurrency ? (isNumeric ? 'number' : 'text') : 'text'}
+      <input type={focused || !useCommaFormat ? (isNumeric ? 'number' : 'text') : 'text'}
         value={local}
         step={col.type === 'pct' ? '0.01' : col.type === 'number' ? '1' : undefined}
         onChange={e => {
