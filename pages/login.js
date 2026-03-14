@@ -33,6 +33,7 @@ export default function LoginPage() {
     <>
       <Head>
         <title>Sign In | MarginCOS</title>
+        <meta name="description" content="Sign in to your MarginCOS account to access margin intelligence, pricing analysis, and commercial insights." />
       </Head>
       <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
