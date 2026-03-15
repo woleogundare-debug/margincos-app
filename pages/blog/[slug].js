@@ -78,13 +78,13 @@ export default function BlogPost({ frontmatter, mdxSource }) {
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://margincos.com/blog/${slug}`} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content="https://margincos.com/og-image.png" />
+        <meta property="og:image" content={`https://margincos.com/blog/${slug}-og.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content="https://margincos.com/og-image.png" />
+        <meta name="twitter:image" content={`https://margincos.com/blog/${slug}-og.png`} />
       </Head>
       <PublicNav />
 
