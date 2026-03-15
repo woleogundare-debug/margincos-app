@@ -115,10 +115,48 @@ export default function HomePage() {
       <Head>
         <title>MarginCOS — Margin Recovery Platform for Nigerian FMCG & Manufacturing</title>
         <meta name="description" content="Nigeria's margin recovery platform for FMCG & manufacturing. SKU pricing intelligence, cost pass-through analysis and trade spend ROI — first findings in under five minutes." />
+        <link rel="canonical" href="https://margincos.com" />
+        <meta property="og:title" content="MarginCOS — Nigeria's Margin Recovery Platform" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://margincos.com" />
+        <meta property="og:description" content="Nigeria's margin recovery platform for FMCG & manufacturing. SKU pricing intelligence, cost pass-through analysis and trade spend ROI — first findings in under five minutes." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
-        <meta name="twitter:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@margincos" />
+        <meta name="twitter:title" content="MarginCOS — Nigeria's Margin Recovery Platform" />
+        <meta name="twitter:description" content="Nigeria's margin recovery platform for FMCG & manufacturing. SKU pricing intelligence, cost pass-through analysis and trade spend ROI — first findings in under five minutes." />
+        <meta name="twitter:image" content="https://margincos.com/og-image.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "MarginCOS",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "description": "Nigeria's margin recovery platform for FMCG and manufacturing companies. SKU-level pricing intelligence, cost pass-through analysis, and trade spend ROI.",
+              "url": "https://margincos.com",
+              "offers": {
+                "@type": "Offer",
+                "price": "250",
+                "priceCurrency": "USD"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Carthena Advisory",
+                "url": "https://carthenaadvisory.com",
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": "Lagos",
+                  "addressCountry": "NG"
+                }
+              }
+            })
+          }}
+        />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">

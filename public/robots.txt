@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /login
+Disallow: /join
+Disallow: /reset-password
+Disallow: /api/
+
+Sitemap: https://margincos.com/sitemap.xml

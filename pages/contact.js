@@ -71,6 +71,19 @@ export default function ContactPage() {
       <Head>
         <title>Book a Diagnostic | MarginCOS</title>
         <meta name="description" content="A 90-minute diagnostic session applying MarginCOS to your actual commercial data. No cost, no obligation." />
+        <link rel="canonical" href="https://margincos.com/contact" />
+        <meta property="og:title" content="Request a Diagnostic — MarginCOS" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://margincos.com/contact" />
+        <meta property="og:description" content="Book a free 30-minute diagnostic session. We'll show you exactly what MarginCOS finds on a portfolio like yours." />
+        <meta property="og:image" content="https://margincos.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@margincos" />
+        <meta name="twitter:title" content="Request a Diagnostic — MarginCOS" />
+        <meta name="twitter:description" content="Book a free 30-minute diagnostic session. We'll show you exactly what MarginCOS finds on a portfolio like yours." />
+        <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">
