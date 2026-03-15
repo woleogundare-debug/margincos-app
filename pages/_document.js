@@ -14,7 +14,7 @@ export default function Document() {
         {/* GA4 */}
         {GA4_ID && (
           <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} />
+            <script defer src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} />
             <script dangerouslySetInnerHTML={{ __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}

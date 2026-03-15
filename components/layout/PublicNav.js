@@ -90,7 +90,7 @@ export function PublicNav() {
         </div>
 
         {/* Mobile hamburger */}
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2">
+        <button aria-label={mobileOpen ? 'Close menu' : 'Open menu'} onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2">
           {mobileOpen
             ? <XMarkIcon className={clsx('h-6 w-6', scrolled ? 'text-navy' : 'text-white')} />
             : <Bars3Icon className={clsx('h-6 w-6', scrolled ? 'text-navy' : 'text-white')} />

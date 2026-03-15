@@ -101,7 +101,7 @@ const COMPANY_LOGOS = [
   { name: 'Flour Mills of Nigeria', src: '/logos/flour-mills-of-nigeria.webp' },
   { name: 'GB Foods',               src: '/logos/gb-foods.webp' },
   { name: 'Julius Berger',          src: '/logos/julius-berger.webp' },
-  { name: 'Sifax Group',            src: '/logos/sifax-group.png' },
+  { name: 'Sifax Group',            src: '/logos/sifax-group.webp' },
   { name: 'Pade HCM',               src: '/logos/pade-hcm.webp' },
   { name: 'Arit of Africa',         src: '/logos/arit-of-africa.webp' },
   { name: 'PFS',                    src: '/logos/pfs.webp' },
@@ -193,7 +193,7 @@ export default function HomePage() {
         </section>
 
         {/* \u2550\u2550\u2550\u2550 STATS — numbers in Gold \u2550\u2550\u2550\u2550 */}
-        <section className="bg-white border-b border-slate-100">
+        <section className="bg-navy border-b border-white/10">
           <div className="max-w-6xl mx-auto px-6 py-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               {[
@@ -203,7 +203,7 @@ export default function HomePage() {
               ].map((s, i) => (
                 <div key={i} data-reveal className="opacity-0">
                   <div className="text-3xl md:text-4xl font-black text-gold">{s.val}</div>
-                  <div className="mt-1 text-sm text-slate-500 font-medium">{s.label}</div>
+                  <div className="mt-1 text-sm text-white/70 font-medium">{s.label}</div>
                 </div>
               ))}
             </div>

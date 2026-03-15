@@ -16,10 +16,10 @@ export function PublicFooter() {
                 Commercial Operating System
               </span>
             </Link>
-            <p className="mt-3 text-xs text-white/40 leading-relaxed max-w-xs">
+            <p className="mt-3 text-xs text-white/70 leading-relaxed max-w-xs">
               The Commercial Operating System for Margin Recovery. Built for FMCG, manufacturing, and retail companies navigating inflationary markets.
             </p>
-            <p className="mt-4 text-xs text-white/25">
+            <p className="mt-4 text-xs text-white/60">
               A product of{' '}
               <a href="https://carthenaadvisory.com" target="_blank" rel="noopener noreferrer"
                 className="text-teal/70 hover:text-teal transition-colors">
@@ -30,7 +30,7 @@ export function PublicFooter() {
 
           {/* Column 2 — Platform */}
           <div>
-            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Platform</h4>
+            <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Platform</h4>
             <nav className="space-y-2.5">
               {[
                 { label: 'Pricing Intelligence', href: '/platform#pricing-intelligence' },
@@ -48,7 +48,7 @@ export function PublicFooter() {
 
           {/* Column 3 — Enterprise */}
           <div>
-            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Enterprise</h4>
+            <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Enterprise</h4>
             <nav className="space-y-2.5">
               {[
                 { label: 'SKU Rationalisation',    href: '/platform#m1' },
@@ -66,7 +66,7 @@ export function PublicFooter() {
 
           {/* Column 4 — Company */}
           <div>
-            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Company</h4>
+            <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Company</h4>
             <nav className="space-y-2.5">
               <Link href="/platform" className="block text-xs text-white/50 hover:text-white transition-colors">Platform</Link>
               <Link href="/#how-it-works" className="block text-xs text-white/50 hover:text-white transition-colors">How It Works</Link>
@@ -81,7 +81,7 @@ export function PublicFooter() {
 
           {/* Column 5 — Resources */}
           <div>
-            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Resources</h4>
+            <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Resources</h4>
             <nav className="space-y-2.5">
               <a href="/MarginCOS_Sales_Deck.pdf" target="_blank" rel="noopener noreferrer" download
                 className="block text-xs text-white/50 hover:text-white transition-colors">
@@ -94,7 +94,7 @@ export function PublicFooter() {
 
           {/* Column 6 — Legal */}
           <div>
-            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Legal</h4>
+            <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Legal</h4>
             <nav className="space-y-2.5">
               <Link href="/privacy" className="block text-xs text-white/50 hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="block text-xs text-white/50 hover:text-white transition-colors">Terms of Service</Link>
@@ -104,8 +104,8 @@ export function PublicFooter() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/25">&copy; 2026 Carthena Advisory. All rights reserved.</p>
-          <a href="mailto:info@carthenaadvisory.com" className="text-xs text-white/25 hover:text-white/50 transition-colors">
+          <p className="text-xs text-white/60">&copy; 2026 Carthena Advisory. All rights reserved.</p>
+          <a href="mailto:info@carthenaadvisory.com" className="text-xs text-white/60 hover:text-white/50 transition-colors">
             info@carthenaadvisory.com
           </a>
         </div>
