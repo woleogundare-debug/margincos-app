@@ -113,8 +113,8 @@ export default function BlogPost({ frontmatter, mdxSource }) {
       </section>
 
       {/* Article body */}
-      <article className="max-w-3xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-2xl px-8 md:px-14 py-12">
+      <article className="max-w-3xl mx-auto px-3 md:px-6 py-12">
+        <div className="bg-white rounded-2xl px-5 md:px-14 py-12">
           <style global jsx>{`
             .article-body > * + * { margin-top: 1.5rem; }
             .article-body p {
