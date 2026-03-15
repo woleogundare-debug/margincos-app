@@ -7,6 +7,8 @@ import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
 import { PublicNav } from '../../components/layout/PublicNav';
 import { PublicFooter } from '../../components/layout/PublicFooter';
+import PassThroughChart from '../../components/blog/PassThroughChart';
+import MarginLeakageChart from '../../components/blog/MarginLeakageChart';
 
 export async function getStaticPaths() {
   const blogDir = path.join(process.cwd(), 'content/blog');
@@ -61,6 +63,11 @@ export async function getStaticProps({ params }) {
 export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, date, author, category, readTime, slug } = frontmatter;
 
+  const mdxComponents = {
+    PassThroughChart,
+    MarginLeakageChart,
+  };
+
   return (
     <>
       <Head>
@@ -107,16 +114,89 @@ export default function BlogPost({ frontmatter, mdxSource }) {
 
       {/* Article body */}
       <article className="max-w-3xl mx-auto px-6 py-12">
-        <div className="prose prose-lg prose-slate max-w-none
-          prose-headings:font-display prose-headings:text-navy prose-headings:font-bold
-          prose-h2:text-xl prose-h2:md:text-2xl prose-h2:mt-10 prose-h2:mb-4
-          prose-p:text-slate-600 prose-p:leading-relaxed
-          prose-a:text-teal prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
-          prose-strong:text-navy
-          prose-li:text-slate-600
-          prose-ul:my-4 prose-li:my-1
-          prose-hr:border-slate-200 prose-hr:my-10">
-          <MDXRemote {...mdxSource} />
+        <div className="bg-white rounded-2xl px-8 md:px-14 py-12">
+          <style global jsx>{`
+            .article-body > * + * { margin-top: 1.5rem; }
+            .article-body p {
+              font-size: 17px;
+              line-height: 1.85;
+              color: #2A3A4A;
+              margin-bottom: 1.5rem;
+            }
+            .article-body h2 {
+              font-family: 'Playfair Display', Georgia, serif !important;
+              font-size: 1.6rem !important;
+              font-weight: 700 !important;
+              color: #1B2A4A !important;
+              margin-top: 3rem !important;
+              margin-bottom: 1rem !important;
+              line-height: 1.3 !important;
+              display: block !important;
+            }
+            .article-body h3 {
+              font-size: 1.15rem !important;
+              font-weight: 600 !important;
+              color: #1B2A4A !important;
+              margin-top: 2rem !important;
+              margin-bottom: 0.75rem !important;
+              display: block !important;
+            }
+            .article-body ul {
+              list-style: disc !important;
+              margin-left: 1.75rem !important;
+              margin-bottom: 1.5rem !important;
+            }
+            .article-body li {
+              font-size: 17px;
+              line-height: 1.85;
+              color: #2A3A4A;
+              margin-bottom: 0.6rem !important;
+            }
+            .article-body strong { color: #1B2A4A; font-weight: 600; }
+            .article-body em { color: #5A6B80; }
+            .article-body a { color: #C0392B; font-weight: 600; text-decoration: none; }
+            .article-body a:hover { text-decoration: underline; }
+            .article-body hr {
+              border: none !important;
+              border-top: 1px solid #E5E8EC !important;
+              margin: 2.5rem 0 !important;
+            }
+            .article-body blockquote {
+              border-left: 3px solid #0D8F8F;
+              padding: 0.75rem 1.25rem;
+              margin: 1.5rem 0;
+              background: #F4F6F8;
+              border-radius: 0 8px 8px 0;
+              color: #3A5068;
+              font-style: italic;
+            }
+            .stat-card {
+              background: #1B2A4A;
+              border-radius: 16px;
+              padding: 32px;
+              margin: 2.5rem 0;
+            }
+            .stat-bar-label {
+              font-size: 14px;
+              color: #A8B8CC;
+              margin-bottom: 6px;
+            }
+            .stat-bar-track {
+              background: rgba(255,255,255,0.1);
+              border-radius: 6px;
+              height: 12px;
+              margin-bottom: 20px;
+              overflow: hidden;
+            }
+            .stat-bar-fill {
+              height: 12px;
+              border-radius: 6px;
+              transition: width 0.6s ease;
+            }
+          `}</style>
+          <div className="article-body">
+            <MDXRemote {...mdxSource} components={mdxComponents} />
+          </div>
         </div>
 
         {/* CTA */}
