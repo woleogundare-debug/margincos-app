@@ -213,8 +213,8 @@ export default function HomePage() {
         {/* \u2550\u2550\u2550\u2550 SOCIAL PROOF TICKER \u2550\u2550\u2550\u2550 */}
         <section className="bg-slate-50 border-b border-slate-100 py-10 overflow-hidden">
           <div className="max-w-6xl mx-auto px-6">
-            <p data-reveal className="opacity-0 text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
-              Trusted by leading organisations across West Africa
+            <p data-reveal className="opacity-0 text-center text-sm font-medium text-slate-400 uppercase tracking-widest mb-6">
+              Built by Carthena Advisory. Trusted by leading organisations across West Africa.
             </p>
           </div>
           <div className="relative">
