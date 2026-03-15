@@ -8,6 +8,7 @@ import { getSupabaseClient } from '../../lib/supabase/client';
 const NAV_LINKS = [
   { href: '/',         label: 'Home' },
   { href: '/platform', label: 'Platform' },
+  { href: '/blog',     label: 'Insights' },
   { href: '/pricing',  label: 'Pricing' },
   { href: '/contact',  label: 'Contact' },
 ];

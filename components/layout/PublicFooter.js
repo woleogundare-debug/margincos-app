@@ -83,6 +83,7 @@ export function PublicFooter() {
           <div>
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Resources</h4>
             <nav className="space-y-2.5">
+              <Link href="/blog" className="block text-xs text-white/50 hover:text-white transition-colors">Insights</Link>
               <a href="/MarginCOS_Sales_Deck.pdf" target="_blank" rel="noopener noreferrer" download
                 className="block text-xs text-white/50 hover:text-white transition-colors">
                 ↓ Sales Deck (PDF)
