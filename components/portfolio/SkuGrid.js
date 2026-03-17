@@ -509,11 +509,30 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       const XLSX = (await import('xlsx')).default;
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      // Convert to 2D array (same shape as parseCSV output) so validateCSVRows works unchanged
-      const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-      const result = validateCSVRows(rawRows);
+
+      // Fix 1 — find the correct sheet by name, fall back to last sheet
+      const targetSheet =
+        workbook.Sheets['SKU Data'] ||
+        workbook.Sheets[workbook.SheetNames[workbook.SheetNames.length - 1]];
+
+      // Fix 2 — produce 2D array with header: 1
+      const allRows = XLSX.utils.sheet_to_json(targetSheet, {
+        header: 1,
+        defval: '',
+      });
+
+      // Fix 3 — skip the display-label row (row index 1)
+      // Row 0 = field keys (sku_id, sku_name...) — keep as header
+      // Row 1 = display labels (SKU ID, Product Name...) — skip
+      // Row 2+ = actual data — keep
+      const rows = [allRows[0], ...allRows.slice(2)].filter(
+        row => row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+      );
+
+      // Pass through existing pipeline unchanged
+      const text = rows.map(r => r.join(',')).join('\n');
+      const parsed = parseCSV(text);
+      const result = validateCSVRows(parsed);
       setImportResult(result);
     } else {
       const reader = new FileReader();
