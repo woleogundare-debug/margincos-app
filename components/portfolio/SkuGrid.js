@@ -499,18 +499,32 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
     };
   }, [flushPendingEdits]);
 
-  // ── CSV Import ──
-  const handleFileSelect = useCallback((e) => {
+  // ── File Import (CSV + Excel) ──
+  const handleFileSelect = useCallback(async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target.result;
-      const rawRows = parseCSV(text);
+    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+    if (isExcel) {
+      const XLSX = (await import('xlsx')).default;
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      // Convert to 2D array (same shape as parseCSV output) so validateCSVRows works unchanged
+      const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
       const result = validateCSVRows(rawRows);
       setImportResult(result);
-    };
-    reader.readAsText(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target.result;
+        const rawRows = parseCSV(text);
+        const result = validateCSVRows(rawRows);
+        setImportResult(result);
+      };
+      reader.readAsText(file);
+    }
     e.target.value = '';
   }, []);
 
@@ -558,7 +572,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
             className="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors">
             <ArrowDownTrayIcon className="h-4 w-4" />
           </button>
-          <input ref={fileInputRef} id="csv-import-trigger" type="file" accept=".csv" className="hidden" onChange={handleFileSelect} />
+          <input ref={fileInputRef} id="csv-import-trigger" type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleFileSelect} />
         </div>
       </div>
 
@@ -567,11 +581,11 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         {skuRows.length === 0 && (
           <div className="text-center py-12 px-4">
             <p className="text-sm text-slate-400 mb-4">
-              Tap <strong className="text-navy">+ Add SKU</strong> to begin, or <strong className="text-navy">Import CSV</strong> to bulk-load.
+              Tap <strong className="text-navy">+ Add SKU</strong> to begin, or <strong className="text-navy">Import Data</strong> to bulk-load.
             </p>
             <div className="flex items-center justify-center gap-3">
               <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
-                <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import CSV
+                <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import Data
               </Button>
               <Button variant="primary" size="sm" onClick={onAdd}>
                 <PlusIcon className="h-3.5 w-3.5" /> Add SKU
@@ -699,11 +713,11 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
               <tr>
                 <td colSpan={visibleCols.length + 2} className="py-16 text-center">
                   <p className="text-sm text-slate-400 mb-4">
-                    Click <strong className="text-navy">+ Add SKU</strong> to begin building your portfolio, or <strong className="text-navy">Import CSV</strong> to bulk-load your data.
+                    Click <strong className="text-navy">+ Add SKU</strong> to begin building your portfolio, or <strong className="text-navy">Import Data</strong> to bulk-load your data.
                   </p>
                   <div className="flex items-center justify-center gap-3">
                     <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
-                      <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import CSV
+                      <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import Data
                     </Button>
                     <Button variant="primary" size="sm" onClick={onAdd}>
                       <PlusIcon className="h-3.5 w-3.5" /> Add SKU

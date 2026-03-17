@@ -132,7 +132,7 @@ export default function PortfolioPage() {
                   setActiveTab('sku');
                   document.getElementById('csv-import-trigger')?.click();
                 }}>
-                  <ArrowUpTrayIcon className="h-4 w-4" /> Import CSV
+                  <ArrowUpTrayIcon className="h-4 w-4" /> Import Data
                 </Button>
                 <Button variant="secondary" size="sm" onClick={handleAddSku}>
                   <PlusIcon className="h-4 w-4" /> Add SKU
@@ -158,7 +158,7 @@ export default function PortfolioPage() {
                   <button onClick={() => {
                     setActiveTab('sku');
                     document.getElementById('csv-import-trigger')?.click();
-                  }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Import CSV">
+                  }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Import Data">
                     <ArrowUpTrayIcon className="h-4 w-4" />
                   </button>
                   <button onClick={handleAddSku} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Add SKU">
