@@ -130,6 +130,8 @@ const s = StyleSheet.create({
   actionTitle: { fontSize: 9, fontWeight: 700, marginBottom: 2 },
   actionDetail: { fontSize: 8, color: C.muted, lineHeight: 1.4 },
   actionMeta: { fontSize: 7, color: C.muted, marginTop: 3, textTransform: 'uppercase', letterSpacing: 0.5 },
+  /* Badge */
+  badge: { fontSize: 7, fontWeight: 700, paddingVertical: 2, paddingHorizontal: 6, borderRadius: 3 },
   /* Footer */
   footer: {
     position: 'absolute',
@@ -147,18 +149,31 @@ const s = StyleSheet.create({
 });
 
 /* ── Helpers ───────────────────────────────────────────────── */
-const fmtN = (v) => {
-  if (v == null || isNaN(v)) return '—';
-  const abs = Math.abs(v);
-  if (abs >= 1e9) return `₦${(v / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `₦${(v / 1e6).toFixed(1)}M`;
-  if (abs >= 1e3) return `₦${(v / 1e3).toFixed(0)}K`;
-  return `₦${v.toFixed(0)}`;
-};
-
-const fmtPct = (v, decimals = 1) => {
-  if (v == null || isNaN(v)) return '—';
-  return `${Number(v).toFixed(decimals)}%`;
+const fmt = (v, type) => {
+  if (v === null || v === undefined || v === '') return '—';
+  if (type === 'pct') {
+    // value is 0-1 decimal, convert to percentage display
+    const num = parseFloat(v);
+    return isNaN(num) ? '—' : `${(num * 100).toFixed(1)}%`;
+  }
+  if (type === 'pctRaw') {
+    // value is already 0-100 scale, display as-is with %
+    const num = parseFloat(v);
+    return isNaN(num) ? '—' : `${num.toFixed(1)}%`;
+  }
+  if (type === 'naira') {
+    const num = parseFloat(v);
+    return isNaN(num) ? '—' : `NGN ${Number(num).toLocaleString('en-NG', { maximumFractionDigits: 0 })}`;
+  }
+  if (type === 'nairaK') {
+    const num = parseFloat(v);
+    if (isNaN(num)) return '—';
+    if (Math.abs(num) >= 1e9) return `NGN ${(num / 1e9).toFixed(1)}B`;
+    if (Math.abs(num) >= 1e6) return `NGN ${(num / 1e6).toFixed(1)}M`;
+    if (Math.abs(num) >= 1e3) return `NGN ${(num / 1e3).toFixed(0)}K`;
+    return `NGN ${num.toFixed(0)}`;
+  }
+  return String(v);
 };
 
 const today = () => {
@@ -169,7 +184,7 @@ const today = () => {
 /* ── Footer component ──────────────────────────────────────── */
 const PageFooter = ({ companyName }) => (
   <View style={s.footer} fixed>
-    <Text style={s.footerText}>MarginCOS · {companyName || 'Confidential'}</Text>
+    <Text style={s.footerText}>MarginCOS | {companyName || 'Confidential'}</Text>
     <Text style={s.footerText} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
   </View>
 );
@@ -188,8 +203,8 @@ const CoverPage = ({ companyName, periodLabel, skuCount }) => (
     </View>
     <View style={s.coverMeta}>
       <Text style={{ fontSize: 11, color: C.white, fontWeight: 700, marginBottom: 6 }}>{companyName || 'Your Company'}</Text>
-      <Text style={s.coverMeta}>Period: {periodLabel || 'Current'} · {skuCount || 0} active SKUs · Generated {today()}</Text>
-      <Text style={[s.coverMeta, { marginTop: 10 }]}>A product of Carthena Advisory · carthenaadvisory.com</Text>
+      <Text style={s.coverMeta}>Period: {periodLabel || 'Current'} | {skuCount || 0} active SKUs | Generated {today()}</Text>
+      <Text style={[s.coverMeta, { marginTop: 10 }]}>A product of Carthena Advisory | carthenaadvisory.com</Text>
     </View>
   </Page>
 );
@@ -210,22 +225,22 @@ const SummaryPage = ({ results, companyName }) => {
       <View style={s.kpiRow}>
         <View style={s.kpiCard}>
           <Text style={s.kpiLabel}>Total Revenue</Text>
-          <Text style={[s.kpiValue, { color: C.navy }]}>{fmtN(totalRevenue)}</Text>
+          <Text style={[s.kpiValue, { color: C.navy }]}>{fmt(totalRevenue, 'nairaK')}</Text>
           <Text style={s.kpiSub}>{skuCount} active SKUs</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.teal }]}>
           <Text style={s.kpiLabel}>Portfolio Margin</Text>
-          <Text style={[s.kpiValue, { color: C.teal }]}>{fmtPct(marginPct)}</Text>
-          <Text style={s.kpiSub}>{fmtN(totalCurrentMargin)} gross</Text>
+          <Text style={[s.kpiValue, { color: C.teal }]}>{fmt(marginPct, 'pctRaw')}</Text>
+          <Text style={s.kpiSub}>{fmt(totalCurrentMargin, 'nairaK')} gross</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
           <Text style={s.kpiLabel}>Revenue at Risk</Text>
-          <Text style={[s.kpiValue, { color: C.red }]}>{fmtN(p2?.totalAbsorbed)}</Text>
+          <Text style={[s.kpiValue, { color: C.red }]}>{fmt(p2?.totalAbsorbed, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Cost absorbed, not priced in</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
           <Text style={s.kpiLabel}>Repricing Upside</Text>
-          <Text style={[s.kpiValue, { color: C.gold }]}>{fmtN(p1?.totalGain)}</Text>
+          <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(p1?.totalGain, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Monthly opportunity</Text>
         </View>
       </View>
@@ -240,7 +255,7 @@ const SummaryPage = ({ results, companyName }) => {
             <View key={i} style={[s.actionCard, { borderLeftColor: a.color || C.teal }]}>
               <Text style={s.actionTitle}>{i + 1}. {a.title}</Text>
               <Text style={s.actionDetail}>{a.detail}</Text>
-              <Text style={s.actionMeta}>{a.pillar} · {a.timeline}</Text>
+              <Text style={s.actionMeta}>{a.pillar} | {a.timeline}</Text>
             </View>
           ))}
         </>
@@ -252,27 +267,27 @@ const SummaryPage = ({ results, companyName }) => {
 };
 
 /* ── P1 Pricing Intelligence Page ──────────────────────────── */
+/* Engine: marginPct 0-100, compGap 0-100 (already %), priceRealisation 0-100 */
 const PricingPage = ({ p1, companyName }) => {
   if (!p1?.results?.length) return null;
-  const rows = p1.results.slice(0, 20); // top 20 SKUs
+  const rows = p1.results.slice(0, 20);
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>P1 · Pricing Intelligence</Text>
+      <Text style={s.sectionTitle}>P1 | Pricing Intelligence</Text>
       <Text style={s.sectionSub}>
-        Price realisation score: {fmtPct(p1.priceRealisation)} · Total repricing opportunity: {fmtN(p1.totalGain)} /month
-        {p1.floorBreaches?.length > 0 ? ` · ${p1.floorBreaches.length} SKUs below margin floor` : ''}
+        Price realisation score: {fmt(p1.priceRealisation, 'pctRaw')} | Total repricing opportunity: {fmt(p1.totalGain, 'nairaK')} /month
+        {p1.floorBreaches?.length > 0 ? ` | ${p1.floorBreaches.length} SKUs below margin floor` : ''}
       </Text>
 
-      {/* KPI row */}
       <View style={s.kpiRow}>
         <View style={s.kpiCard}>
           <Text style={s.kpiLabel}>Price Realisation</Text>
-          <Text style={[s.kpiValue, { color: C.teal }]}>{fmtPct(p1.priceRealisation)}</Text>
+          <Text style={[s.kpiValue, { color: C.teal }]}>{fmt(p1.priceRealisation, 'pctRaw')}</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
           <Text style={s.kpiLabel}>WTP Gap</Text>
-          <Text style={[s.kpiValue, { color: C.gold }]}>{fmtN(p1.totalWTPGap)}</Text>
+          <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(p1.totalWTPGap, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Willingness-to-pay headroom</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
@@ -294,11 +309,13 @@ const PricingPage = ({ p1, companyName }) => {
       {rows.map((r, i) => (
         <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
           <Text style={[s.tableCell, { width: '25%' }]} numberOfLines={1}>{r.sku}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmtN(r.price)}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmtN(r.cogs)}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmtPct(r.marginPct)}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmtN(r.wtpGap)}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmtPct(r.compGap != null ? r.compGap * 100 : null)}</Text>
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.price, 'nairaK')}</Text>
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.cogs, 'nairaK')}</Text>
+          {/* marginPct is 0-100 from engine */}
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.marginPct, 'pctRaw')}</Text>
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.wtpGap, 'nairaK')}</Text>
+          {/* compGap is already 0-100 from engine (percentage) */}
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{r.compGap != null ? fmt(r.compGap, 'pctRaw') : '—'}</Text>
         </View>
       ))}
 
@@ -308,32 +325,33 @@ const PricingPage = ({ p1, companyName }) => {
 };
 
 /* ── P2 Cost Pass-Through Page ─────────────────────────────── */
+/* Engine: inf 0-1 decimal, pt 0-1 decimal, absorbedPct 0-100, portRecoveryPct 0-100, avgAbsorbedPct 0-100 */
 const CostPage = ({ p2, companyName }) => {
   if (!p2?.results?.length) return null;
   const rows = p2.results.slice(0, 20);
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>P2 · Cost Pass-Through</Text>
+      <Text style={s.sectionTitle}>P2 | Cost Pass-Through</Text>
       <Text style={s.sectionSub}>
-        Portfolio recovery rate: {fmtPct(p2.portRecoveryPct)} · Total cost absorbed: {fmtN(p2.totalAbsorbed)} /month
-        · Average SKU absorption: {fmtPct(p2.avgAbsorbedPct)}
+        Portfolio recovery rate: {fmt(p2.portRecoveryPct, 'pctRaw')} | Total cost absorbed: {fmt(p2.totalAbsorbed, 'nairaK')} /month
+        | Average SKU absorption: {fmt(p2.avgAbsorbedPct, 'pctRaw')}
       </Text>
 
       <View style={s.kpiRow}>
         <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
           <Text style={s.kpiLabel}>Total Absorbed</Text>
-          <Text style={[s.kpiValue, { color: C.red }]}>{fmtN(p2.totalAbsorbed)}</Text>
+          <Text style={[s.kpiValue, { color: C.red }]}>{fmt(p2.totalAbsorbed, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Monthly cost not passed through</Text>
         </View>
         <View style={s.kpiCard}>
           <Text style={s.kpiLabel}>Recovery Rate</Text>
-          <Text style={[s.kpiValue, { color: C.teal }]}>{fmtPct(p2.portRecoveryPct)}</Text>
+          <Text style={[s.kpiValue, { color: C.teal }]}>{fmt(p2.portRecoveryPct, 'pctRaw')}</Text>
           <Text style={s.kpiSub}>vs 70-75% benchmark</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
           <Text style={s.kpiLabel}>Cost Shock</Text>
-          <Text style={[s.kpiValue, { color: C.gold }]}>{fmtN(p2.totalCostShock)}</Text>
+          <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(p2.totalCostShock, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Total input cost inflation</Text>
         </View>
       </View>
@@ -344,17 +362,20 @@ const CostPage = ({ p2, companyName }) => {
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Inflation</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Pass-Thru</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Absorbed %</Text>
-        <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Shock ₦</Text>
-        <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Absorbed ₦</Text>
+        <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Shock</Text>
+        <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Absorbed</Text>
       </View>
       {rows.map((r, i) => (
         <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
           <Text style={[s.tableCell, { width: '28%' }]} numberOfLines={1}>{r.sku}</Text>
-          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmtPct(r.inf * 100)}</Text>
-          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmtPct(r.pt * 100)}</Text>
-          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmtPct(r.absorbedPct)}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmtN(r.shock)}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmtN(r.absorbed)}</Text>
+          {/* inf is 0-1 decimal */}
+          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.inf, 'pct')}</Text>
+          {/* pt is 0-1 decimal */}
+          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.pt, 'pct')}</Text>
+          {/* absorbedPct is 0-100 from engine */}
+          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.absorbedPct, 'pctRaw')}</Text>
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.shock, 'nairaK')}</Text>
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.absorbed, 'nairaK')}</Text>
         </View>
       ))}
 
@@ -364,14 +385,15 @@ const CostPage = ({ p2, companyName }) => {
 };
 
 /* ── P3 Channel Economics Page ─────────────────────────────── */
+/* Engine: contPct is 0-100 */
 const ChannelPage = ({ p3, companyName }) => {
   if (!p3?.channelResults?.length) return null;
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>P3 · Channel Economics</Text>
+      <Text style={s.sectionTitle}>P3 | Channel Economics</Text>
       <Text style={s.sectionSub}>
-        Contribution margin by channel · Distributor exposure: {fmtN(p3.totalDistExposure)}
+        Contribution margin by channel | Distributor exposure: {fmt(p3.totalDistExposure, 'nairaK')}
       </Text>
 
       <View style={s.kpiRow}>
@@ -381,7 +403,7 @@ const ChannelPage = ({ p3, companyName }) => {
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
           <Text style={s.kpiLabel}>Distributor Exposure</Text>
-          <Text style={[s.kpiValue, { color: C.gold }]}>{fmtN(p3.totalDistExposure)}</Text>
+          <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(p3.totalDistExposure, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Trade credit at risk</Text>
         </View>
       </View>
@@ -398,9 +420,10 @@ const ChannelPage = ({ p3, companyName }) => {
       {p3.channelResults.map((ch, i) => (
         <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
           <Text style={[s.tableCell, { width: '25%', fontWeight: 600 }]}>{ch.channel}</Text>
-          <Text style={[s.tableCell, { width: '20%', textAlign: 'right' }]}>{fmtN(ch.rev)}</Text>
-          <Text style={[s.tableCell, { width: '20%', textAlign: 'right' }]}>{fmtN(ch.contMargin)}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right', color: ch.contPct < 15 ? C.red : C.navy }]}>{fmtPct(ch.contPct)}</Text>
+          <Text style={[s.tableCell, { width: '20%', textAlign: 'right' }]}>{fmt(ch.rev, 'nairaK')}</Text>
+          <Text style={[s.tableCell, { width: '20%', textAlign: 'right' }]}>{fmt(ch.contMargin, 'nairaK')}</Text>
+          {/* contPct is 0-100 from engine */}
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right', color: ch.contPct < 15 ? C.red : C.navy }]}>{fmt(ch.contPct, 'pctRaw')}</Text>
           <Text style={[s.tableCell, { width: '10%', textAlign: 'right' }]}>{ch.skuCount}</Text>
           <Text style={[s.tableCell, { width: '10%', textAlign: 'right' }]}>{ch.vol?.toLocaleString() || '—'}</Text>
         </View>
@@ -412,6 +435,7 @@ const ChannelPage = ({ p3, companyName }) => {
 };
 
 /* ── P4 Trade Execution Page ───────────────────────────────── */
+/* Engine: depth 0-1, lift 0-1, bevLift already x100 (percentage), baseMargin is NAIRA (absolute), netImpact is NAIRA */
 const TradePage = ({ p4, companyName }) => {
   if (!p4?.results?.length) return null;
   const rows = p4.results.slice(0, 20);
@@ -419,15 +443,15 @@ const TradePage = ({ p4, companyName }) => {
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>P4 · Trade Execution</Text>
+      <Text style={s.sectionTitle}>P4 | Trade Execution</Text>
       <Text style={s.sectionSub}>
-        Promotional impact: {fmtN(p4.totalPromoImpact)} · {lossMaking} loss-making promotions identified
+        Promotional impact: {fmt(p4.totalPromoImpact, 'nairaK')} | {lossMaking} loss-making promotions identified
       </Text>
 
       <View style={s.kpiRow}>
         <View style={[s.kpiCard, { borderLeftColor: '#7C3AED' }]}>
           <Text style={s.kpiLabel}>Promo Impact</Text>
-          <Text style={[s.kpiValue, { color: '#7C3AED' }]}>{fmtN(p4.totalPromoImpact)}</Text>
+          <Text style={[s.kpiValue, { color: '#7C3AED' }]}>{fmt(p4.totalPromoImpact, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Net margin impact of promotions</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
@@ -439,25 +463,39 @@ const TradePage = ({ p4, companyName }) => {
 
       {/* Table */}
       <View style={s.tableHeader}>
-        <Text style={[s.tableHeaderCell, { width: '25%' }]}>SKU</Text>
-        <Text style={[s.tableHeaderCell, { width: '13%', textAlign: 'right' }]}>Depth</Text>
-        <Text style={[s.tableHeaderCell, { width: '13%', textAlign: 'right' }]}>Lift</Text>
-        <Text style={[s.tableHeaderCell, { width: '13%', textAlign: 'right' }]}>BEV Lift</Text>
-        <Text style={[s.tableHeaderCell, { width: '13%', textAlign: 'right' }]}>Net Impact</Text>
-        <Text style={[s.tableHeaderCell, { width: '10%', textAlign: 'right' }]}>Base %</Text>
-        <Text style={[s.tableHeaderCell, { width: '13%', textAlign: 'center' }]}>Profitable</Text>
+        <Text style={[s.tableHeaderCell, { width: '22%' }]}>SKU</Text>
+        <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'right' }]}>Depth</Text>
+        <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'right' }]}>Lift</Text>
+        <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>BEV Lift</Text>
+        <Text style={[s.tableHeaderCell, { width: '16%', textAlign: 'right' }]}>Net Impact</Text>
+        <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'right' }]}>Base Margin</Text>
+        <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'center' }]}>Status</Text>
       </View>
       {rows.map((r, i) => (
         <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
-          <Text style={[s.tableCell, { width: '25%' }]} numberOfLines={1}>{r.sku}</Text>
-          <Text style={[s.tableCell, { width: '13%', textAlign: 'right' }]}>{fmtPct(r.depth * 100)}</Text>
-          <Text style={[s.tableCell, { width: '13%', textAlign: 'right' }]}>{fmtPct(r.lift * 100)}</Text>
-          <Text style={[s.tableCell, { width: '13%', textAlign: 'right' }]}>{r.bevLift != null ? `${r.bevLift.toFixed(1)}×` : '—'}</Text>
-          <Text style={[s.tableCell, { width: '13%', textAlign: 'right' }]}>{fmtN(r.netImpact)}</Text>
-          <Text style={[s.tableCell, { width: '10%', textAlign: 'right' }]}>{fmtPct(r.baseMargin)}</Text>
-          <Text style={[s.tableCell, { width: '13%', textAlign: 'center', color: r.profitable ? C.teal : C.red, fontWeight: 700 }]}>
-            {r.profitable ? 'Yes' : 'No'}
+          <Text style={[s.tableCell, { width: '22%' }]} numberOfLines={1}>{r.sku}</Text>
+          {/* depth is 0-1 decimal */}
+          <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.depth, 'pct')}</Text>
+          {/* lift is 0-1 decimal */}
+          <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.lift, 'pct')}</Text>
+          {/* bevLift is already x100 from engine — display as percentage */}
+          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>
+            {r.bevLift != null ? `${parseFloat(r.bevLift).toFixed(1)}%` : '—'}
           </Text>
+          {/* netImpact is absolute naira */}
+          <Text style={[s.tableCell, { width: '16%', textAlign: 'right', color: r.profitable ? C.teal : C.red, fontWeight: 700 }]}>
+            {fmt(r.netImpact, 'nairaK')}
+          </Text>
+          {/* baseMargin is absolute naira (price - cogs) * vol, NOT a percentage */}
+          <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.baseMargin, 'nairaK')}</Text>
+          <View style={{ width: '12%', justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={[s.badge, {
+              color: r.profitable ? C.teal : C.red,
+              backgroundColor: r.profitable ? '#E8F5F5' : '#FEF2F2',
+            }]}>
+              {r.profitable ? 'Profitable' : 'Loss'}
+            </Text>
+          </View>
         </View>
       ))}
 
@@ -478,7 +516,7 @@ const DisclaimerPage = ({ companyName }) => (
     </Text>
     <View style={{ marginTop: 40 }}>
       <Text style={{ fontSize: 10, fontWeight: 700, color: C.navy, marginBottom: 4 }}>MarginCOS</Text>
-      <Text style={{ fontSize: 8, color: C.muted }}>A product of Carthena Advisory · carthenaadvisory.com</Text>
+      <Text style={{ fontSize: 8, color: C.muted }}>A product of Carthena Advisory | carthenaadvisory.com</Text>
       <Text style={{ fontSize: 8, color: C.muted, marginTop: 2 }}>Generated {today()}</Text>
     </View>
     <PageFooter companyName={companyName} />
@@ -491,8 +529,8 @@ export default function MarginCOSReport({ results, companyName, periodLabel }) {
 
   return (
     <Document
-      title={`MarginCOS Report – ${companyName || 'Portfolio'}`}
-      author="MarginCOS · Carthena Advisory"
+      title={`MarginCOS Report - ${companyName || 'Portfolio'}`}
+      author="MarginCOS | Carthena Advisory"
       subject="Margin Intelligence Report"
     >
       <CoverPage
