@@ -5,7 +5,7 @@ import {
 
 /* ── Fonts (TTF required — React-PDF cannot parse woff2) ──── */
 Font.register({
-  family: 'Playfair',
+  family: 'PlayfairDisplay',
   src: '/fonts/playfair-display-700.ttf',
   fontWeight: 700,
 });
@@ -52,7 +52,7 @@ const s = StyleSheet.create({
     height: '100%',
   },
   coverTitle: {
-    fontFamily: 'Playfair',
+    fontFamily: 'PlayfairDisplay',
     fontSize: 28,
     color: C.white,
     fontWeight: 700,
@@ -72,7 +72,7 @@ const s = StyleSheet.create({
   },
   /* Section headers */
   sectionTitle: {
-    fontFamily: 'Playfair',
+    fontFamily: 'PlayfairDisplay',
     fontSize: 16,
     fontWeight: 700,
     color: C.navy,
