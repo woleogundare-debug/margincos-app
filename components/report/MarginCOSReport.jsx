@@ -18,6 +18,9 @@ Font.register({
   ],
 });
 
+// Disable React-PDF's automatic hyphenation globally
+Font.registerHyphenationCallback(word => [word]);
+
 /* ── Brand palette ─────────────────────────────────────────── */
 const C = {
   navy:  '#1B2A4A',
