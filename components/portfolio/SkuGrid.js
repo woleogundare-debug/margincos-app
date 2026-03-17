@@ -506,33 +506,51 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
     const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
 
     if (isExcel) {
-      const XLSX = (await import('xlsx')).default;
+      const XLSXModule = await import('xlsx');
+      const XLSX = XLSXModule.default || XLSXModule;
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
-      // Fix 1 — find the correct sheet by name, fall back to last sheet
+      // Find SKU Data sheet by name, fall back to last sheet
       const targetSheet =
         workbook.Sheets['SKU Data'] ||
         workbook.Sheets[workbook.SheetNames[workbook.SheetNames.length - 1]];
 
-      // Fix 2 — produce 2D array with header: 1
+      // Produce 2D array — row 0 = field keys, row 1 = display labels (skip), row 2+ = data
       const allRows = XLSX.utils.sheet_to_json(targetSheet, {
         header: 1,
         defval: '',
       });
 
-      // Fix 3 — skip the display-label row (row index 1)
-      // Row 0 = field keys (sku_id, sku_name...) — keep as header
-      // Row 1 = display labels (SKU ID, Product Name...) — skip
-      // Row 2+ = actual data — keep
-      const rows = [allRows[0], ...allRows.slice(2)].filter(
+      if (!allRows || allRows.length < 3) {
+        setImportResult({ valid: [], errors: [{ row: 0, msg: 'No data rows found in the SKU Data sheet.' }] });
+        return;
+      }
+
+      const headers = allRows[0]; // field key row
+      // Skip row 1 (display labels), take rows 2+ as data
+      const dataRows = allRows.slice(2).filter(
         row => row.some(cell => cell !== '' && cell !== null && cell !== undefined)
       );
 
-      // Pass through existing pipeline unchanged
-      const text = rows.map(r => r.join(',')).join('\n');
-      const parsed = parseCSV(text);
-      const result = validateCSVRows(parsed);
+      // Build objects directly — skip CSV roundtrip to avoid comma/encoding issues
+      const rowObjects = dataRows.map(row => {
+        const obj = {};
+        headers.forEach((key, idx) => {
+          if (key) obj[String(key).trim()] = row[idx] !== undefined ? row[idx] : '';
+        });
+        return obj;
+      });
+
+      // Convert to 2D array format validateCSVRows expects:
+      // Row 0 = header keys, rows 1+ = values in same order
+      const headerRow = headers.map(h => String(h).trim());
+      const valueRows = rowObjects.map(obj =>
+        headerRow.map(key => obj[key] !== undefined ? String(obj[key]) : '')
+      );
+      const csvLike = [headerRow, ...valueRows];
+
+      const result = validateCSVRows(csvLike);
       setImportResult(result);
     } else {
       const reader = new FileReader();
