@@ -455,6 +455,16 @@ const getCoverSubtitle = (tier) => {
   return 'A pricing intelligence analysis across your active SKU portfolio — quantifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance.';
 };
 
+const getSummaryIntro = (tier, skuCount) => {
+  if (tier === 'enterprise') {
+    return `This report analyses ${skuCount} active SKUs across all eight analytical engines — pricing intelligence, cost pass-through, channel economics, trade execution, and advanced commercial diagnostics. Every margin opportunity is quantified in Naira.`;
+  }
+  if (tier === 'professional') {
+    return `This report analyses ${skuCount} active SKUs across four pillars — pricing intelligence, cost pass-through, channel economics, and trade execution. The analysis identifies actionable margin opportunities and quantifies recovery potential.`;
+  }
+  return `This report analyses ${skuCount} active SKUs across the Pricing Intelligence pillar — identifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance across your active portfolio.`;
+};
+
 const CoverPage = ({ companyName, periodLabel, skuCount, tier }) => (
   <Page size="A4" style={s.coverPage}>
     <View>
@@ -475,7 +485,7 @@ const CoverPage = ({ companyName, periodLabel, skuCount, tier }) => (
 );
 
 /* ── Executive Summary ─────────────────────────────────────── */
-const SummaryPage = ({ results, companyName }) => {
+const SummaryPage = ({ results, companyName, tier }) => {
   const { totalRevenue, totalCurrentMargin, skuCount, p1, p2, actions } = results;
   const marginPct = totalRevenue > 0 ? (totalCurrentMargin / totalRevenue * 100) : 0;
 
@@ -483,8 +493,7 @@ const SummaryPage = ({ results, companyName }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>Executive Summary</Text>
       <Text style={s.sectionSub}>
-        This report analyses {skuCount} active SKUs across pricing, cost pass-through, channel economics, and trade execution.
-        The analysis identifies actionable margin opportunities and quantifies recovery potential.
+        {getSummaryIntro(tier, skuCount)}
       </Text>
 
       <View style={s.kpiRow}>
@@ -1037,7 +1046,7 @@ export default function MarginCOSReport({ results, companyName, periodLabel, tie
       subject="Margin Intelligence Report"
     >
       <CoverPage companyName={companyName} periodLabel={periodLabel} skuCount={results.skuCount} tier={tier} />
-      <SummaryPage results={results} companyName={companyName} />
+      <SummaryPage results={results} companyName={companyName} tier={tier} />
       <PricingPage results={results} companyName={companyName} />
       <CostPage results={results} companyName={companyName} />
       <ChannelPage results={results} companyName={companyName} />
