@@ -305,7 +305,13 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 
   if (col.type === 'select') {
     let options = [];
-    if (col.key === 'category')        options = categories.map(c => ({ value: c, label: c }));
+    if (col.key === 'category') {
+      const baseOptions = categories.map(c => ({ value: c, label: c }));
+      // Prepend custom value if it doesn't exist in the taxonomy — preserves free-text imports
+      options = (local && !categories.includes(local))
+        ? [{ value: local, label: local }, ...baseOptions]
+        : baseOptions;
+    }
     else if (col.key === 'segment')    options = SEGMENTS.map(s => ({ value: s, label: s }));
     else if (col.key === 'primary_channel') options = PRIMARY_CHANNELS.map(c => ({ value: c.code, label: c.label }));
     else if (col.key === 'region')     options = REGIONS.map(r => ({ value: r, label: r }));
