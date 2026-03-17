@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { TIER_LIMITS } from '../../../lib/constants';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -11,6 +12,47 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   const { email, role, teamId, teamName, inviterName } = req.body;
+
+  // ── Seat cap enforcement ────────────────────────────────────
+  // Look up the team owner's tier, then count members + pending invites
+  const { data: ownerMember } = await supabase
+    .from('team_members')
+    .select('user_id')
+    .eq('team_id', teamId)
+    .eq('role', 'admin')
+    .limit(1)
+    .single();
+
+  if (ownerMember) {
+    const { data: ownerProfile } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', ownerMember.user_id)
+      .single();
+
+    const tier = ownerProfile?.tier || 'essentials';
+    const cap  = TIER_LIMITS[tier]?.maxMembers;
+
+    if (cap !== null && cap !== undefined) {
+      const { count: memberCount } = await supabase
+        .from('team_members')
+        .select('id', { count: 'exact', head: true })
+        .eq('team_id', teamId);
+
+      const { count: pendingCount } = await supabase
+        .from('team_invitations')
+        .select('id', { count: 'exact', head: true })
+        .eq('team_id', teamId)
+        .eq('status', 'pending');
+
+      if ((memberCount || 0) + (pendingCount || 0) >= cap) {
+        return res.status(403).json({
+          error: `Seat limit reached (${cap} on ${tier} plan). Upgrade to add more members.`,
+        });
+      }
+    }
+  }
+  // ── End seat cap enforcement ────────────────────────────────
 
   const { data: invite, error } = await supabase
     .from('team_invitations')

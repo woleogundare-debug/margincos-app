@@ -6,6 +6,7 @@ export function useAuth() {
   const [user,     setUser]     = useState(null);
   const [tier,     setTier]     = useState('essentials');
   const [isAdmin,  setIsAdmin]  = useState(false);
+  const [companyName, setCompanyName] = useState('');
   const [loading,  setLoading]  = useState(true);
 
   const fetchProfile = useCallback(async (userId) => {
@@ -19,6 +20,7 @@ export function useAuth() {
     if (data) {
       setTier(data.tier || 'essentials');
       setIsAdmin(data.is_admin || false);
+      setCompanyName(data.company_name || '');
     }
   }, []);
 
@@ -33,7 +35,7 @@ export function useAuth() {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
-      else { setTier('essentials'); setIsAdmin(false); }
+      else { setTier('essentials'); setIsAdmin(false); setCompanyName(''); }
       setLoading(false);
     });
 
@@ -50,6 +52,7 @@ export function useAuth() {
     user,
     tier,
     isAdmin,
+    companyName,
     loading,
     signOut,
     isEnterprise:   tier === 'enterprise',

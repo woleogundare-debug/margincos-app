@@ -4,6 +4,7 @@ import { getSupabaseClient } from '../lib/supabase/client';
 export function useTeam() {
   const [team, setTeam] = useState(null);
   const [members, setMembers] = useState([]);
+  const [pendingInvitations, setPendingInvitations] = useState([]);
   const [myRole, setMyRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -54,6 +55,14 @@ export function useTeam() {
       setMembers([]);
     }
 
+    // Fetch pending invitations for seat-count accuracy
+    const { data: pendingRows } = await supabase
+      .from('team_invitations')
+      .select('id, email, role, created_at')
+      .eq('team_id', membership.team_id)
+      .eq('status', 'pending');
+    setPendingInvitations(pendingRows || []);
+
     setLoading(false);
   }, []);
 
@@ -84,5 +93,5 @@ export function useTeam() {
 
   const isAdmin = myRole === 'admin';
 
-  return { team, members, myRole, isAdmin, loading, inviteMember, removeMember, loadTeam };
+  return { team, members, pendingInvitations, myRole, isAdmin, loading, inviteMember, removeMember, loadTeam };
 }

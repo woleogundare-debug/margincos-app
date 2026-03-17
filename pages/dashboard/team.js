@@ -5,9 +5,10 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { useTeam } from '../../hooks/useTeam';
 import { useAuth } from '../../hooks/useAuth';
 import { requireAuth } from '../../lib/supabase/server';
+import { TIER_LIMITS } from '../../lib/constants';
 
 export default function TeamPage() {
-  const { team, members, isAdmin, loading } = useTeam();
+  const { team, members, pendingInvitations, isAdmin, loading } = useTeam();
   const { user, tier } = useAuth();
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('member');
@@ -16,9 +17,17 @@ export default function TeamPage() {
   const [error, setError] = useState('');
 
   const isEnterprise = tier === 'enterprise' || tier === 'admin';
+  const isProfessionalOrAbove = tier === 'professional' || isEnterprise;
+  const seatCap = TIER_LIMITS[tier]?.maxMembers ?? null;
+  const usedSeats = members.length + (pendingInvitations?.length || 0);
+  const seatsRemaining = seatCap === null ? Infinity : seatCap - usedSeats;
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
+    if (seatsRemaining <= 0) {
+      setError(`Seat limit reached (${seatCap} on ${tier} plan). Upgrade to add more members.`);
+      return;
+    }
     setInviting(true);
     setError('');
     try {
@@ -31,7 +40,7 @@ export default function TeamPage() {
         .single();
       if (insertError) throw insertError;
 
-      await fetch('/api/team/invite', {
+      const apiRes = await fetch('/api/team/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -42,6 +51,10 @@ export default function TeamPage() {
           inviterName: user?.user_metadata?.full_name || user?.email || 'Your team admin',
         }),
       });
+      if (!apiRes.ok) {
+        const body = await apiRes.json().catch(() => ({}));
+        throw new Error(body.error || 'Failed to send invitation');
+      }
       setInviteSent(true);
       setInviteEmail('');
     } catch (err) {
@@ -76,15 +89,33 @@ export default function TeamPage() {
           </h1>
           <p className="text-slate-500 text-sm mb-8">{team?.name || 'Your team'} · {tier} plan</p>
 
-          {!isEnterprise && (
+          {/* Seat usage indicator */}
+          {isProfessionalOrAbove && seatCap !== null && (
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-navy">Seats used</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {usedSeats} of {seatCap} ({members.length} active{(pendingInvitations?.length || 0) > 0 ? ` + ${pendingInvitations.length} pending` : ''})
+                </p>
+              </div>
+              <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all" style={{
+                  width: `${Math.min(100, (usedSeats / seatCap) * 100)}%`,
+                  backgroundColor: usedSeats >= seatCap ? '#C0392B' : '#0D8F8F',
+                }} />
+              </div>
+            </div>
+          )}
+
+          {!isProfessionalOrAbove && (
             <div className="bg-purple-50 border border-purple-100 rounded-xl p-6 mb-8">
               <div className="flex items-start gap-3">
                 <LockIcon />
                 <div>
-                  <h3 className="font-semibold text-navy mb-1">Multi-user access is an Enterprise feature</h3>
-                  <p className="text-sm text-slate-600">Upgrade to Enterprise to invite your CFO, Commercial Director, and Sales team to collaborate on the same portfolio data.</p>
+                  <h3 className="font-semibold text-navy mb-1">Multi-user access requires Professional or Enterprise</h3>
+                  <p className="text-sm text-slate-600">Upgrade to invite your CFO, Commercial Director, and Sales team to collaborate on the same portfolio data.</p>
                   <Link href="/pricing" className="inline-block mt-3 text-sm font-semibold" style={{ color: '#C0392B' }}>
-                    View Enterprise plan &rarr;
+                    View plans &rarr;
                   </Link>
                 </div>
               </div>
@@ -102,7 +133,7 @@ export default function TeamPage() {
               )}
               {!loading && members.length === 0 && (
                 <div className="px-6 py-8 text-center text-slate-400 text-sm">
-                  No team members yet. {isEnterprise ? 'Invite your colleagues below.' : 'Upgrade to Enterprise to invite team members.'}
+                  No team members yet. {isProfessionalOrAbove ? 'Invite your colleagues below.' : 'Upgrade to Professional or Enterprise to invite team members.'}
                 </div>
               )}
               {members.map(m => (
@@ -125,8 +156,8 @@ export default function TeamPage() {
             </div>
           </div>
 
-          {/* Invite form — Enterprise only */}
-          {isAdmin && isEnterprise && (
+          {/* Invite form — Professional + Enterprise */}
+          {isAdmin && isProfessionalOrAbove && (
             <div className="bg-white rounded-xl border border-slate-100 p-6">
               <h2 className="font-semibold text-navy mb-4">Invite a team member</h2>
               {inviteSent && (

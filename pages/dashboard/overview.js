@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { KpiTile, ActionItem, EmptyState } from '../../components/dashboard/index';
@@ -11,8 +12,13 @@ import { useAnalysis } from '../../hooks/useAnalysis';
 import { fNAbs, fN } from '../../lib/formatters';
 import clsx from 'clsx';
 
+const DownloadReportButton = dynamic(
+  () => import('../../components/report/DownloadReportButton'),
+  { ssr: false }
+);
+
 export default function OverviewPage() {
-  const { user } = useAuth();
+  const { user, companyName, isProfessional } = useAuth();
   const { activePeriod, skuRows, tradeInvestment, loading: portfolioLoading } = usePortfolio(user?.id);
   const { results, running, ranAt, error, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
   const autoRanRef = useRef(false);
@@ -53,9 +59,18 @@ export default function OverviewPage() {
                   : `${skuRows.filter(r => r.active === 'Y' || r.active === true).length} SKUs in portfolio`}
               </p>
             </div>
-            <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>
-              {hasResults ? '↻ Re-run' : '▶ Run Analysis'}
-            </Button>
+            <div className="flex items-center gap-2">
+              {hasResults && isProfessional && (
+                <DownloadReportButton
+                  results={results}
+                  companyName={companyName}
+                  periodLabel={activePeriod?.label}
+                />
+              )}
+              <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>
+                {hasResults ? '↻ Re-run' : '▶ Run Analysis'}
+              </Button>
+            </div>
           </div>
         )}
 
