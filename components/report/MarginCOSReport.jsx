@@ -3,18 +3,18 @@ import {
   Document, Page, Text, View, StyleSheet, Font,
 } from '@react-pdf/renderer';
 
-/* ── Fonts ─────────────────────────────────────────────────── */
+/* ── Fonts (TTF required — React-PDF cannot parse woff2) ──── */
 Font.register({
   family: 'Playfair',
-  src: '/fonts/playfair-display-700.woff2',
+  src: '/fonts/playfair-display-700.ttf',
   fontWeight: 700,
 });
 Font.register({
   family: 'DMSans',
   fonts: [
-    { src: '/fonts/dm-sans-400.woff2', fontWeight: 400 },
-    { src: '/fonts/dm-sans-500.woff2', fontWeight: 500 },
-    { src: '/fonts/dm-sans-700.woff2', fontWeight: 700 },
+    { src: '/fonts/dm-sans-400.ttf', fontWeight: 400 },
+    { src: '/fonts/dm-sans-500.ttf', fontWeight: 500 },
+    { src: '/fonts/dm-sans-700.ttf', fontWeight: 700 },
   ],
 });
 
