@@ -61,6 +61,9 @@ const FEATURES = [
   { label: 'Dedicated account manager',             ess: false, pro: false, ent: true },
   { label: '4-week onboarding',                     ess: false, pro: false, ent: true },
   { label: 'Multi-user access',                     ess: false, pro: false, ent: true },
+  { label: 'Pricing Intelligence report (PDF)',     ess: true,  pro: true,  ent: true },
+  { label: 'Full P1-P4 margin intelligence report (PDF)', ess: false, pro: true, ent: true },
+  { label: 'Board-ready report with all pillars + advanced modules (PDF)', ess: false, pro: false, ent: true },
 ];
 
 const FAQS = [
@@ -198,6 +201,56 @@ export default function PricingPage() {
                 ))}
               </div>
             </div>
+
+            {/* Report feature callout */}
+            <div className="max-w-4xl mx-auto mb-16 rounded-2xl overflow-hidden border border-gray-100"
+              style={{ boxShadow: '0 2px 16px rgba(27,42,74,0.08)' }}>
+              <div className="p-8 md:p-10" style={{ backgroundColor: '#1B2A4A' }}>
+                <div className="flex items-start gap-6">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: 'rgba(13,143,143,0.2)' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D8F8F" strokeWidth="1.5">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold uppercase tracking-widest mb-2"
+                      style={{ color: '#0D8F8F' }}>
+                      Included on every plan
+                    </p>
+                    <h3 className="text-xl font-bold text-white mb-3"
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                      Board-ready Margin Intelligence Reports
+                    </h3>
+                    <p className="text-sm leading-relaxed mb-0" style={{ color: '#A8B8CC' }}>
+                      Every analysis generates a branded, multi-page PDF report — cover page, executive
+                      summary with priority actions, and a full pillar-by-pillar breakdown with consultant-grade
+                      narrative interpretation. Formatted to go directly to the CFO, MD, or board without
+                      further editing.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-6 pt-6 grid grid-cols-2 md:grid-cols-4 gap-4"
+                  style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                  {[
+                    { label: 'Essentials', desc: 'P1 Pricing Intelligence report' },
+                    { label: 'Professional', desc: 'Full P1–P4 pillar report' },
+                    { label: 'Enterprise', desc: 'Full report + advanced modules' },
+                    { label: 'All plans', desc: 'Branded PDF, instant download' },
+                  ].map((item, i) => (
+                    <div key={i}>
+                      <p className="text-xs font-semibold mb-1" style={{ color: '#0D8F8F' }}>{item.label}</p>
+                      <p className="text-xs" style={{ color: '#8899AA' }}>{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto items-start">
               {TIERS.map(tier => <PricingCard key={tier.key} tier={tier} annual={annual} formatPrice={formatPrice} />)}
             </div>

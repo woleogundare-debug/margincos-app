@@ -18,7 +18,7 @@ const DownloadReportButton = dynamic(
 );
 
 export default function OverviewPage() {
-  const { user, companyName, isProfessional } = useAuth();
+  const { user, companyName, isProfessional, isEnterprise } = useAuth();
   const { activePeriod, skuRows, tradeInvestment, loading: portfolioLoading } = usePortfolio(user?.id);
   const { results, running, ranAt, error, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
   const autoRanRef = useRef(false);
@@ -65,6 +65,7 @@ export default function OverviewPage() {
                   results={results}
                   companyName={companyName}
                   periodLabel={activePeriod?.label}
+                  isEnterprise={isEnterprise}
                 />
               )}
               <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>
