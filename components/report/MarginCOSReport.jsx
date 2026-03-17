@@ -6,16 +6,15 @@ import {
 /* ── Fonts ─────────────────────────────────────────────────── */
 Font.register({
   family: 'Playfair',
-  fonts: [
-    { src: '/fonts/PlayfairDisplay-Bold.woff2', fontWeight: 700 },
-  ],
+  src: '/fonts/playfair-display-700.woff2',
+  fontWeight: 700,
 });
 Font.register({
   family: 'DMSans',
   fonts: [
-    { src: '/fonts/DMSans-Regular.woff2', fontWeight: 400 },
-    { src: '/fonts/DMSans-Medium.woff2',  fontWeight: 500 },
-    { src: '/fonts/DMSans-Bold.woff2',    fontWeight: 700 },
+    { src: '/fonts/dm-sans-400.woff2', fontWeight: 400 },
+    { src: '/fonts/dm-sans-500.woff2', fontWeight: 500 },
+    { src: '/fonts/dm-sans-700.woff2', fontWeight: 700 },
   ],
 });
 
