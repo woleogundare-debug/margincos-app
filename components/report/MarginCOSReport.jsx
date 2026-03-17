@@ -442,7 +442,17 @@ const getM4Narrative = (results) => {
    ══════════════════════════════════════════════════════════════ */
 
 /* ── Cover ─────────────────────────────────────────────────── */
-const CoverPage = ({ companyName, periodLabel, skuCount }) => (
+const getCoverSubtitle = (tier) => {
+  if (tier === 'enterprise') {
+    return 'A full-spectrum margin intelligence analysis across pricing, cost recovery, channel economics, trade execution, and advanced commercial diagnostics — quantified in Naira across your active portfolio.';
+  }
+  if (tier === 'professional') {
+    return 'A comprehensive analysis of pricing intelligence, cost pass-through, channel economics, and trade execution across your active portfolio — every margin leak quantified in Naira.';
+  }
+  return 'A pricing intelligence analysis across your active SKU portfolio — quantifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance.';
+};
+
+const CoverPage = ({ companyName, periodLabel, skuCount, tier }) => (
   <Page size="A4" style={s.coverPage}>
     <View>
       <Text style={{ fontSize: 10, color: C.teal, fontWeight: 700, letterSpacing: 2, marginBottom: 24, textTransform: 'uppercase' }}>
@@ -450,7 +460,7 @@ const CoverPage = ({ companyName, periodLabel, skuCount }) => (
       </Text>
       <Text style={s.coverTitle}>Margin Intelligence Report</Text>
       <Text style={s.coverSub}>
-        A comprehensive analysis of pricing, cost recovery, channel economics, and trade execution across your portfolio.
+        {getCoverSubtitle(tier)}
       </Text>
     </View>
     <View style={s.coverMeta}>
@@ -858,7 +868,7 @@ const M2Page = ({ results, companyName }) => {
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(sc.projMarginPct, 'pctRaw')}</Text>
           <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
             <Text style={[s.badge, { color: sc.riskColor, backgroundColor: sc.riskBg }]}>
-              {sc.riskLevel}
+              {sc.riskLevel.replace(/^[^\w]+/, '')}
             </Text>
           </View>
         </View>
@@ -1014,7 +1024,7 @@ const DisclaimerPage = ({ companyName }) => (
 /* ══════════════════════════════════════════════════════════════
    MAIN DOCUMENT
    ══════════════════════════════════════════════════════════════ */
-export default function MarginCOSReport({ results, companyName, periodLabel, isEnterprise }) {
+export default function MarginCOSReport({ results, companyName, periodLabel, tier, isEnterprise }) {
   if (!results) return null;
 
   return (
@@ -1023,7 +1033,7 @@ export default function MarginCOSReport({ results, companyName, periodLabel, isE
       author="MarginCOS | Carthena Advisory"
       subject="Margin Intelligence Report"
     >
-      <CoverPage companyName={companyName} periodLabel={periodLabel} skuCount={results.skuCount} />
+      <CoverPage companyName={companyName} periodLabel={periodLabel} skuCount={results.skuCount} tier={tier} />
       <SummaryPage results={results} companyName={companyName} />
       <PricingPage results={results} companyName={companyName} />
       <CostPage results={results} companyName={companyName} />
