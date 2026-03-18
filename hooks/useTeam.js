@@ -56,12 +56,17 @@ export function useTeam() {
     }
 
     // Fetch pending invitations for seat-count accuracy
-    const { data: pendingRows } = await supabase
-      .from('team_invitations')
-      .select('id, email, role, created_at')
-      .eq('team_id', membership.team_id)
-      .eq('status', 'pending');
-    setPendingInvitations(pendingRows || []);
+    try {
+      const { data: pendingRows, error: inviteError } = await supabase
+        .from('team_invitations')
+        .select('id, email, role, created_at')
+        .eq('team_id', membership.team_id)
+        .eq('status', 'pending');
+      if (!inviteError) setPendingInvitations(pendingRows || []);
+      else setPendingInvitations([]);
+    } catch (err) {
+      setPendingInvitations([]);
+    }
 
     setLoading(false);
   }, []);
