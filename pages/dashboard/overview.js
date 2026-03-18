@@ -25,17 +25,20 @@ export default function OverviewPage() {
   const actionsSavedRef = useRef(null); // tracks ranAt timestamp of last saved actions
 
   const { team } = useTeam();
-  const { stats: actionStats, bulkAddFromAnalysis } = useActions(team?.id, activePeriod?.id);
+  const { stats: actionStats, bulkAddFromAnalysis, loadActions } = useActions(team?.id, activePeriod?.id);
 
-  // Auto-save actions to DB when analysis completes
+  // Auto-save actions to DB when analysis completes, then re-fetch so the
+  // action summary strip reflects the newly inserted rows immediately.
   useEffect(() => {
     if (ranAt && results?.actions?.length && team?.id && actionsSavedRef.current !== ranAt) {
       actionsSavedRef.current = ranAt;
-      bulkAddFromAnalysis(results.actions, activePeriod?.id).catch(err => {
-        console.error('Failed to save actions:', err);
-      });
+      bulkAddFromAnalysis(results.actions, activePeriod?.id)
+        .then(() => loadActions())
+        .catch(err => {
+          console.error('Failed to save actions:', err);
+        });
     }
-  }, [ranAt, results, team?.id, activePeriod?.id, bulkAddFromAnalysis]);
+  }, [ranAt, results, team?.id, activePeriod?.id, bulkAddFromAnalysis, loadActions]);
 
   // Auto-run analysis when portfolio data finishes loading.
   // This handles the flow: Portfolio "Run Analysis →" link → navigate here → auto-run.

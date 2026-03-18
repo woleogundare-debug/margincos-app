@@ -134,6 +134,14 @@ export function useActions(teamId, periodId) {
     return data;
   }, [teamId, periodId]);
 
+  // Force a re-fetch regardless of the dedup guard.
+  // Used by the Actions page visibilitychange listener to pick up actions
+  // that were inserted by bulkAddFromAnalysis on the Overview page.
+  const refresh = useCallback(() => {
+    lastFetchKey.current = null;
+    return loadActions();
+  }, [loadActions]);
+
   // Memoized stats — only recomputes when actions array reference changes
   const stats = useMemo(() => ({
     total:         actions.length,
@@ -149,7 +157,7 @@ export function useActions(teamId, periodId) {
 
   return {
     actions, loading, error, stats,
-    loadActions, addAction, updateAction,
+    loadActions, refresh, addAction, updateAction,
     resolveAction, dismissAction, bulkAddFromAnalysis,
   };
 }

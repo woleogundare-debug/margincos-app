@@ -23,22 +23,29 @@ export default function LoginPage() {
     if (!email || !password) { setError('Email and password are required.'); return; }
     setLoading(true);
     const sb = getSupabaseClient();
+
+    // Subscribe BEFORE calling signInWithPassword so we never miss the
+    // SIGNED_IN event that fires synchronously once the session is committed.
+    // The `navigated` flag prevents double-navigation when both SIGNED_IN and
+    // INITIAL_SESSION fire in rapid succession on the first login.
+    let navigated = false;
+    const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session && !navigated) {
+        navigated = true;
+        subscription.unsubscribe();
+        router.replace('/dashboard/portfolio');
+      }
+    });
+
     const { error: authError } = await sb.auth.signInWithPassword({ email, password });
-    setLoading(false);
     if (authError) {
+      subscription.unsubscribe();
       setError(authError.message === 'Invalid login credentials'
         ? 'Incorrect email or password.'
         : authError.message);
-    } else {
-      // Wait for Supabase to confirm the session is fully committed before
-      // navigating — prevents the dashboard auth guard from firing with user=null
-      const { data: { subscription } } = sb.auth.onAuthStateChange((event) => {
-        if (event === 'SIGNED_IN') {
-          subscription.unsubscribe();
-          router.replace('/dashboard/portfolio');
-        }
-      });
+      setLoading(false);
     }
+    // On success: keep the loading spinner — navigation will unmount this page.
   };
 
   const handleResetRequest = async () => {
