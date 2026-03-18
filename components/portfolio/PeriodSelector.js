@@ -43,7 +43,11 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
 
   const handleDelete = async (e, period) => {
     e.stopPropagation();
-    if (!confirm(`Delete "${period.label}"? This will permanently remove all SKU data for this period.`)) return;
+    const isActivePeriod = activePeriod?.id === period.id;
+    const message = isActivePeriod
+      ? `Delete "${period.label}"? This is your active period. All SKU data will be removed and the page will reset.`
+      : `Delete "${period.label}"? This will permanently remove all SKU data for this period.`;
+    if (!confirm(message)) return;
     setDeleting(period.id);
     try {
       await onDelete(period.id);
@@ -110,34 +114,35 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
                       </span>
                     </div>
 
-                    {/* Active checkmark */}
-                    {isActive && !isDeleting && (
-                      <CheckIcon className="w-4 h-4 text-teal flex-shrink-0" />
-                    )}
-
-                    {/* Delete spinner */}
-                    {isDeleting && (
-                      <svg className="animate-spin h-4 w-4 text-slate-400 flex-shrink-0" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                      </svg>
-                    )}
-
-                    {/* Delete button — only on non-active periods, visible on group hover */}
-                    {!isActive && !isDeleting && onDelete && (
-                      <button
-                        onClick={(e) => handleDelete(e, p)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0"
-                        title="Delete period">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                          stroke="#C0392B" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6"/>
-                          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                          <path d="M10 11v6M14 11v6"/>
-                          <path d="M9 6V4h6v2"/>
+                    {/* Right-side controls: checkmark + delete button (or spinner) */}
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      {isDeleting ? (
+                        <svg className="animate-spin h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                         </svg>
-                      </button>
-                    )}
+                      ) : (
+                        <>
+                          {isActive && (
+                            <CheckIcon className="w-4 h-4 text-teal" />
+                          )}
+                          {onDelete && (
+                            <button
+                              onClick={(e) => handleDelete(e, p)}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-50"
+                              title="Delete period">
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                stroke="#C0392B" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                                <path d="M10 11v6M14 11v6"/>
+                                <path d="M9 6V4h6v2"/>
+                              </svg>
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 );
               })}
