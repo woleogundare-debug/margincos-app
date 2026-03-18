@@ -82,7 +82,7 @@ export function useActions(teamId, periodId) {
     return updateAction(id, { status: 'dismissed' });
   };
 
-  const bulkAddFromAnalysis = async (engineActions, currentPeriodId) => {
+  const bulkAddFromAnalysis = useCallback(async (engineActions, currentPeriodId) => {
     if (!engineActions?.length || !teamId) return;
     const sb = getSupabaseClient();
     const rows = engineActions.map(a => ({
@@ -102,7 +102,7 @@ export function useActions(teamId, periodId) {
     if (error) throw error;
     setActions(prev => [...(data || []), ...prev]);
     return data;
-  };
+  }, [teamId, periodId]);
 
   // Summary stats
   const stats = {
