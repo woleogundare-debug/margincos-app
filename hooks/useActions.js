@@ -183,5 +183,6 @@ export function useActions(teamId, periodId) {
     actions, loading, error, stats,
     loadActions, refresh, addAction, updateAction,
     resolveAction, dismissAction, bulkAddFromAnalysis,
+    resetFetchKey: () => { lastFetchKey.current = null; },
   };
 }

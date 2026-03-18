@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -32,8 +32,12 @@ export default function ActionsPage() {
   const { activePeriod } = useAnalysisContext();
   const {
     actions, loading, stats,
-    updateAction, resolveAction, dismissAction,
+    updateAction, resolveAction, dismissAction, resetFetchKey,
   } = useActions(team?.id); // no periodId — show all actions across all periods
+
+  // Clear the dedup fetch key on unmount so navigating back always triggers a fresh load.
+  // Without this, lastFetchKey still holds the old key and loadActions() returns immediately.
+  useEffect(() => () => resetFetchKey(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [filter, setFilter] = useState('open');
   const [pillarFilter, setPillarFilter] = useState('all');
@@ -57,12 +61,9 @@ export default function ActionsPage() {
     setResolveNote('');
   };
 
-  // Pre-defined order so tabs render immediately on mount — not derived from loaded actions.
-  // While loading: show all 8 tabs. After load: show only tabs with actual actions.
-  const PILLAR_ORDER = ['P1', 'P2', 'P3', 'P4', 'M1', 'M2', 'M3', 'M4'];
-  const activePillars = loading
-    ? ['all', ...PILLAR_ORDER]
-    : ['all', ...PILLAR_ORDER.filter(p => actions.some(a => a.pillar === p))];
+  // Static list — always render all tabs immediately, regardless of load state.
+  // A tab with no matching actions simply shows the empty state; that's fine.
+  const PILLAR_ORDER = ['all', 'P1', 'P2', 'P3', 'P4', 'M1', 'M2', 'M3', 'M4'];
 
   return (
     <>
@@ -113,14 +114,14 @@ export default function ActionsPage() {
                     backgroundColor: filter === s ? '#1B2A4A' : 'transparent',
                     color: filter === s ? '#FFFFFF' : '#8899AA',
                   }}>
-                  {s === 'all' ? 'All' : STATUS_CONFIG[s]?.label}
+                  {s === 'all' ? 'All Status' : STATUS_CONFIG[s]?.label}
                 </button>
               ))}
             </div>
 
             {/* Pillar filter */}
             <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-              {activePillars.map(p => (
+              {PILLAR_ORDER.map(p => (
                 <button key={p}
                   onClick={() => setPillarFilter(p)}
                   className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all"
