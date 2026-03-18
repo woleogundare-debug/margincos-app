@@ -25,7 +25,7 @@ export default function PortfolioPage() {
   const {
     periods, activePeriod, skuRows, tradeInvestment,
     loading, saving,
-    createPeriod, selectPeriod,
+    createPeriod, selectPeriod, deletePeriod,
     saveSku, addSku, deleteSku,
     saveTradeInvestment,
     activeSkuCount, completeSkuCount,
@@ -89,6 +89,7 @@ export default function PortfolioPage() {
               activePeriod={activePeriod}
               onSelect={selectPeriod}
               onCreate={createPeriod}
+              onDelete={deletePeriod}
               loading={loading}
             />
           </div>
@@ -195,6 +196,7 @@ export default function PortfolioPage() {
                 activePeriod={activePeriod}
                 onSelect={selectPeriod}
                 onCreate={createPeriod}
+                onDelete={deletePeriod}
                 loading={loading}
               />
               {activeSkuCount > 0 && (

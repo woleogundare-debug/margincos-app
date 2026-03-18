@@ -152,6 +152,31 @@ export function usePortfolio(userId) {
     setSkuRows(prev => prev.filter(r => r.id !== id));
   }, []);
 
+  // ── Delete period (and all child rows) ───────────────────────
+  const deletePeriod = useCallback(async (periodId) => {
+    console.log('[deletePeriod] Deleting period:', periodId);
+    const res = await fetch('/api/periods/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ periodId }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      const msg = body.error || 'Failed to delete period';
+      console.error('[deletePeriod] API error:', msg);
+      throw new Error(msg);
+    }
+    console.log('[deletePeriod] Deleted successfully:', periodId);
+    // Remove from local state
+    setPeriods(prev => prev.filter(p => p.id !== periodId));
+    // If the deleted period was the active one, clear active state
+    if (activePeriod?.id === periodId) {
+      setActivePeriod(null);
+      setSkuRows([]);
+      setTradeInvestment([]);
+    }
+  }, [activePeriod]);
+
   // ── Save trade investment row ─────────────────────────────────
   const saveTradeInvestment = useCallback(async (row) => {
     if (!activePeriod?.id || !userId) {
@@ -209,7 +234,7 @@ export function usePortfolio(userId) {
   return {
     periods, activePeriod, skuRows, tradeInvestment,
     loading, saving, error,
-    createPeriod, selectPeriod, loadPeriods,
+    createPeriod, selectPeriod, loadPeriods, deletePeriod,
     saveSku, debouncedSaveSku, addSku, deleteSku,
     saveTradeInvestment,
     activeSkuCount, completeSkuCount,
