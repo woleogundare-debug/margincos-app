@@ -6,8 +6,7 @@ import { PillarCard, AnalysisTable, NarrativeBox, EmptyState } from '../../compo
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
-import { usePortfolio } from '../../hooks/usePortfolio';
-import { useAnalysis } from '../../hooks/useAnalysis';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import clsx from 'clsx';
 
@@ -168,9 +167,8 @@ function M4Module({ results }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function ModulesPage() {
-  const { user, tier } = useAuth();
-  const { activePeriod, skuRows, tradeInvestment } = usePortfolio(user?.id);
-  const { results, running, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
+  const { tier } = useAuth();
+  const { activePeriod, results, running, run, hasResults } = useAnalysisContext();
 
   return (
     <>
