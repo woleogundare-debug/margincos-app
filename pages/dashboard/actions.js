@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -32,18 +32,8 @@ export default function ActionsPage() {
   const { activePeriod } = useAnalysisContext();
   const {
     actions, loading, stats,
-    updateAction, resolveAction, dismissAction, refresh,
+    updateAction, resolveAction, dismissAction,
   } = useActions(team?.id); // no periodId — show all actions across all periods
-
-  // Re-fetch when the user navigates back to this tab after analysis runs on
-  // the Overview page — picks up M1-M4 and any other newly inserted actions.
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') refresh();
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
-  }, [refresh]);
 
   const [filter, setFilter] = useState('open');
   const [pillarFilter, setPillarFilter] = useState('all');

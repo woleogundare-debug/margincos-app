@@ -113,9 +113,28 @@ export function useActions(teamId, periodId) {
     if (!engineActions?.length || !teamId) return;
     const sb = getSupabaseClient();
     if (!sb) return;
+
+    // Dedup guard — if actions already exist for this team+period, skip the
+    // insert entirely and just refresh the display from the existing DB rows.
+    const effectivePeriodId = currentPeriodId || periodId || null;
+    let countQuery = sb
+      .from('action_items')
+      .select('*', { count: 'exact', head: true })
+      .eq('team_id', teamId);
+    if (effectivePeriodId) countQuery = countQuery.eq('period_id', effectivePeriodId);
+    const { count } = await countQuery;
+
+    if (count > 0) {
+      // Actions already persisted for this period — refresh display only.
+      lastFetchKey.current = null;
+      await loadActions();
+      return;
+    }
+
+    // No existing rows — safe to insert.
     const rows = engineActions.map(a => ({
       team_id: teamId,
-      period_id: currentPeriodId || periodId,
+      period_id: effectivePeriodId,
       title: a.title,
       detail: a.detail,
       pillar: PILLAR_MAP[a.pillar] || a.pillar,
@@ -132,7 +151,7 @@ export function useActions(teamId, periodId) {
     lastFetchKey.current = null;
     setActions(prev => [...(data || []), ...prev]);
     return data;
-  }, [teamId, periodId]);
+  }, [teamId, periodId, loadActions]);
 
   // Force a re-fetch regardless of the dedup guard.
   // Used by the Actions page visibilitychange listener to pick up actions

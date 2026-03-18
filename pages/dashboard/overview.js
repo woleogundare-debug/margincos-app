@@ -22,23 +22,44 @@ export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
   const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults } = useAnalysisContext();
   const autoRanRef = useRef(false);
-  const actionsSavedRef = useRef(null); // tracks ranAt timestamp of last saved actions
+  const lastSavedAt = useRef(null); // tracks ranAt timestamp of last saved actions
 
   const { team } = useTeam();
   const { stats: actionStats, bulkAddFromAnalysis, loadActions } = useActions(team?.id, activePeriod?.id);
 
-  // Auto-save actions to DB when analysis completes, then re-fetch so the
-  // action summary strip reflects the newly inserted rows immediately.
+  // Auto-save actions to DB when analysis completes.
+  // [ranAt] is the sole dependency — this effect fires exactly once per analysis
+  // run and never again until a new run produces a different ranAt value.
+  // Refs capture the latest values of bulkAddFromAnalysis / loadActions /
+  // activePeriod without adding them to the dep array (avoids cascade re-fires).
+  const bulkAddRef = useRef(bulkAddFromAnalysis);
+  const loadActionsRef = useRef(loadActions);
+  const activePeriodRef = useRef(activePeriod);
+  const resultsRef = useRef(results);
+  const teamRef = useRef(team);
+  bulkAddRef.current = bulkAddFromAnalysis;
+  loadActionsRef.current = loadActions;
+  activePeriodRef.current = activePeriod;
+  resultsRef.current = results;
+  teamRef.current = team;
+
   useEffect(() => {
-    if (ranAt && results?.actions?.length && team?.id && actionsSavedRef.current !== ranAt) {
-      actionsSavedRef.current = ranAt;
-      bulkAddFromAnalysis(results.actions, activePeriod?.id)
-        .then(() => loadActions())
-        .catch(err => {
-          console.error('Failed to save actions:', err);
-        });
-    }
-  }, [ranAt, results, team?.id, activePeriod?.id, bulkAddFromAnalysis, loadActions]);
+    if (!ranAt || !resultsRef.current || !teamRef.current?.id) return;
+    if (lastSavedAt.current === ranAt) return; // already saved this exact run
+    lastSavedAt.current = ranAt;
+
+    const save = async () => {
+      try {
+        if (resultsRef.current?.actions?.length) {
+          await bulkAddRef.current(resultsRef.current.actions, activePeriodRef.current?.id);
+          await loadActionsRef.current();
+        }
+      } catch (err) {
+        console.error('Failed to save actions:', err);
+      }
+    };
+    save();
+  }, [ranAt]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-run analysis when portfolio data finishes loading.
   // This handles the flow: Portfolio "Run Analysis →" link → navigate here → auto-run.
