@@ -57,7 +57,12 @@ export default function ActionsPage() {
     setResolveNote('');
   };
 
-  const pillars = ['all', ...new Set(actions.map(a => a.pillar))];
+  // Pre-defined order so tabs render immediately on mount — not derived from loaded actions.
+  // While loading: show all 8 tabs. After load: show only tabs with actual actions.
+  const PILLAR_ORDER = ['P1', 'P2', 'P3', 'P4', 'M1', 'M2', 'M3', 'M4'];
+  const activePillars = loading
+    ? ['all', ...PILLAR_ORDER]
+    : ['all', ...PILLAR_ORDER.filter(p => actions.some(a => a.pillar === p))];
 
   return (
     <>
@@ -115,7 +120,7 @@ export default function ActionsPage() {
 
             {/* Pillar filter */}
             <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-              {pillars.map(p => (
+              {activePillars.map(p => (
                 <button key={p}
                   onClick={() => setPillarFilter(p)}
                   className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all"
