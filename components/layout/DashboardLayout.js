@@ -8,7 +8,7 @@ import {
   ChartBarIcon, CurrencyDollarIcon,
   ArrowTrendingDownIcon, BuildingStorefrontIcon,
   SparklesIcon, RectangleStackIcon, ArrowRightOnRectangleIcon,
-  FolderOpenIcon, LockClosedIcon, UsersIcon,
+  FolderOpenIcon, LockClosedIcon, UsersIcon, CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 
 const NAV_SECTIONS = [
@@ -22,6 +22,7 @@ const NAV_SECTIONS = [
     label: 'ANALYSIS',
     items: [
       { href: '/dashboard/overview', label: 'Overview',  icon: ChartBarIcon },
+      { href: '/dashboard/actions',  label: 'Actions',   icon: CheckCircleIcon },
       { href: '/dashboard/pricing',  label: 'Pricing',   icon: CurrencyDollarIcon },
       { href: '/dashboard/cost',     label: 'Cost',       icon: ArrowTrendingDownIcon },
       { href: '/dashboard/channel',  label: 'Channel',    icon: BuildingStorefrontIcon },

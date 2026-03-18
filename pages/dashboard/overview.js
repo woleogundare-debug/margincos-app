@@ -9,6 +9,8 @@ import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { usePortfolio } from '../../hooks/usePortfolio';
 import { useAnalysis } from '../../hooks/useAnalysis';
+import { useTeam } from '../../hooks/useTeam';
+import { useActions } from '../../hooks/useActions';
 import { fNAbs, fN } from '../../lib/formatters';
 import clsx from 'clsx';
 
@@ -22,6 +24,20 @@ export default function OverviewPage() {
   const { activePeriod, skuRows, tradeInvestment, loading: portfolioLoading } = usePortfolio(user?.id);
   const { results, running, ranAt, error, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
   const autoRanRef = useRef(false);
+  const actionsSavedRef = useRef(null); // tracks ranAt timestamp of last saved actions
+
+  const { team } = useTeam();
+  const { stats: actionStats, bulkAddFromAnalysis } = useActions(team?.id, activePeriod?.id);
+
+  // Auto-save actions to DB when analysis completes
+  useEffect(() => {
+    if (ranAt && results?.actions?.length && team?.id && actionsSavedRef.current !== ranAt) {
+      actionsSavedRef.current = ranAt;
+      bulkAddFromAnalysis(results.actions, activePeriod?.id).catch(err => {
+        console.error('Failed to save actions:', err);
+      });
+    }
+  }, [ranAt, results, team?.id, activePeriod?.id, bulkAddFromAnalysis]);
 
   // Auto-run analysis when portfolio data finishes loading.
   // This handles the flow: Portfolio "Run Analysis →" link → navigate here → auto-run.
@@ -72,6 +88,49 @@ export default function OverviewPage() {
               <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>
                 {hasResults ? '↻ Re-run' : '▶ Run Analysis'}
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Action summary strip */}
+        {actionStats.open > 0 && (
+          <div className="mb-4 rounded-xl border border-gray-100 bg-white overflow-hidden"
+            style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+            <div className="flex items-center justify-between px-5 py-3.5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: '#FEF2F2' }}>
+                  <span className="text-sm font-bold" style={{ color: '#C0392B' }}>
+                    {actionStats.open}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: '#1B2A4A' }}>
+                    {actionStats.open} open action{actionStats.open !== 1 ? 's' : ''}
+                    {actionStats.totalValue > 0 && (
+                      <span style={{ color: '#0D8F8F' }}>
+                        {' '}&middot; {fNAbs(actionStats.totalValue)} recoverable
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-xs" style={{ color: '#8899AA' }}>
+                    {actionStats.resolved} of {actionStats.total} resolved this period
+                  </p>
+                </div>
+              </div>
+              <Link href="/dashboard/actions"
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white flex-shrink-0"
+                style={{ backgroundColor: '#1B2A4A' }}>
+                View Actions →
+              </Link>
+            </div>
+            {/* Progress bar */}
+            <div className="h-1 bg-gray-100">
+              <div className="h-1 transition-all"
+                style={{
+                  width: `${actionStats.total > 0 ? (actionStats.resolved / actionStats.total) * 100 : 0}%`,
+                  backgroundColor: '#0D8F8F',
+                }} />
             </div>
           </div>
         )}
