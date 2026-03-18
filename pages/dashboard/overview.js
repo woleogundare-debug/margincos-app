@@ -7,8 +7,7 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { KpiTile, ActionItem, EmptyState } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
-import { usePortfolio } from '../../hooks/usePortfolio';
-import { useAnalysis } from '../../hooks/useAnalysis';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { useTeam } from '../../hooks/useTeam';
 import { useActions } from '../../hooks/useActions';
 import { fNAbs, fN } from '../../lib/formatters';
@@ -21,8 +20,7 @@ const DownloadReportButton = dynamic(
 
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
-  const { activePeriod, skuRows, tradeInvestment, loading: portfolioLoading } = usePortfolio(user?.id);
-  const { results, running, ranAt, error, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
+  const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults } = useAnalysisContext();
   const autoRanRef = useRef(false);
   const actionsSavedRef = useRef(null); // tracks ranAt timestamp of last saved actions
 

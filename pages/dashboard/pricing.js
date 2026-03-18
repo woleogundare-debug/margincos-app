@@ -6,15 +6,11 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
-import { useAuth } from '../../hooks/useAuth';
-import { usePortfolio } from '../../hooks/usePortfolio';
-import { useAnalysis } from '../../hooks/useAnalysis';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 
 export default function PricingPage() {
-  const { user } = useAuth();
-  const { activePeriod, skuRows, tradeInvestment } = usePortfolio(user?.id);
-  const { results, running, ranAt, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
+  const { activePeriod, results, running, ranAt, run, hasResults } = useAnalysisContext();
   const p1 = results?.p1;
   const [tableExpanded, setTableExpanded] = useState(false);
 

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getSupabaseClient } from '../lib/supabase/client';
+import { AnalysisProvider } from '../contexts/AnalysisContext';
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }) {
@@ -20,5 +21,13 @@ export default function App({ Component, pageProps }) {
     return () => router.events.off('routeChangeComplete', handleRouteChange);
   }, [router]);
 
-  return <Component {...pageProps} />;
+  const isDashboard = router.pathname.startsWith('/dashboard');
+
+  return isDashboard ? (
+    <AnalysisProvider>
+      <Component {...pageProps} />
+    </AnalysisProvider>
+  ) : (
+    <Component {...pageProps} />
+  );
 }

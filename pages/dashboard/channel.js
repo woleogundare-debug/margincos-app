@@ -5,16 +5,12 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
-import { useAuth } from '../../hooks/useAuth';
-import { usePortfolio } from '../../hooks/usePortfolio';
-import { useAnalysis } from '../../hooks/useAnalysis';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs } from '../../lib/formatters';
 import { CHANNEL_LABELS } from '../../lib/formatters';
 
 export default function ChannelPage() {
-  const { user } = useAuth();
-  const { activePeriod, skuRows, tradeInvestment } = usePortfolio(user?.id);
-  const { results, running, run, hasResults } = useAnalysis(skuRows, tradeInvestment);
+  const { activePeriod, results, running, run, hasResults } = useAnalysisContext();
   const p3 = results?.p3;
 
   const [tableExpanded, setTableExpanded] = useState(false);
