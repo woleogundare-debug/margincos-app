@@ -2,10 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 
 const PILLAR_MAP = {
-  'Pricing Intelligence': 'P1',
-  'Cost Pass-Through':    'P2',
-  'Channel Economics':    'P3',
-  'Trade Execution':      'P4',
+  'Pricing Intelligence':    'P1',
+  'Cost Pass-Through':       'P2',
+  'Channel Economics':       'P3',
+  'Trade Execution':         'P4',
+  'SKU Rationalisation':     'M1',
+  'Inflation Resilience':    'M2',
+  'Trade Spend ROI':         'M3',
+  'Distributor Performance': 'M4',
 };
 
 const URGENCY_MAP = {
