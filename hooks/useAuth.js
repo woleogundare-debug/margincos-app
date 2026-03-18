@@ -28,11 +28,20 @@ export function useAuth() {
     const sb = getSupabaseClient();
     if (!sb) { setLoading(false); return; }
 
-    // Use onAuthStateChange as the single source of truth.
-    // INITIAL_SESSION fires once the client has read cookies/storage,
-    // so loading stays true until we have a definitive answer.
+    // Hydrate session immediately on mount — don't rely solely on INITIAL_SESSION
+    // which can fire before the browser client has read the session from cookies.
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setSession(session);
+        setUser(session.user);
+        fetchProfile(session.user.id);
+        setLoading(false);
+      }
+    });
+
+    // Keep the listener for subsequent auth changes (sign-in, sign-out, token refresh)
     const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
-      setSession(session);
+      setSession(session ?? null);
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
       else { setTier('essentials'); setIsAdmin(false); setCompanyName(''); }
