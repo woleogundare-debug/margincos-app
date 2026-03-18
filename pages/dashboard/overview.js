@@ -59,7 +59,7 @@ export default function OverviewPage() {
       }
     };
     save();
-  }, [ranAt]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ranAt, team?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-run analysis when portfolio data finishes loading.
   // This handles the flow: Portfolio "Run Analysis →" link → navigate here → auto-run.

@@ -114,24 +114,32 @@ export function useActions(teamId, periodId) {
     const sb = getSupabaseClient();
     if (!sb) return;
 
-    // Dedup guard — if actions already exist for this team+period, skip the
-    // insert entirely and just refresh the display from the existing DB rows.
     const effectivePeriodId = currentPeriodId || periodId || null;
+
+    // Dedup guard — null-aware period_id check.
+    // .eq() cannot match NULL rows in Supabase; use .is() for the null case.
+    // Skipping the clause entirely would count across ALL periods (false positive).
     let countQuery = sb
       .from('action_items')
       .select('*', { count: 'exact', head: true })
       .eq('team_id', teamId);
-    if (effectivePeriodId) countQuery = countQuery.eq('period_id', effectivePeriodId);
+
+    if (effectivePeriodId) {
+      countQuery = countQuery.eq('period_id', effectivePeriodId);
+    } else {
+      countQuery = countQuery.is('period_id', null);
+    }
+
     const { count } = await countQuery;
 
     if (count > 0) {
-      // Actions already persisted for this period — refresh display only.
+      // Actions already persisted for this exact team + period — refresh display only.
       lastFetchKey.current = null;
       await loadActions();
       return;
     }
 
-    // No existing rows — safe to insert.
+    // No existing rows for this exact team + period — safe to insert.
     const rows = engineActions.map(a => ({
       team_id: teamId,
       period_id: effectivePeriodId,
@@ -147,7 +155,6 @@ export function useActions(teamId, periodId) {
       .insert(rows)
       .select();
     if (error) throw error;
-    // Reset fetch key so a subsequent loadActions() can re-fetch fresh data
     lastFetchKey.current = null;
     setActions(prev => [...(data || []), ...prev]);
     return data;
