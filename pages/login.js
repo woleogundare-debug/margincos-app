@@ -4,12 +4,14 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { Button } from '../components/ui/Button';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 export default function LoginPage() {
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [error,    setError]    = useState('');
   const [loading,  setLoading]  = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
@@ -111,12 +113,26 @@ export default function LoginPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 mb-1.5">Password</label>
-                    <input
-                      type="password" autoComplete="current-password" required
-                      value={password} onChange={e => setPassword(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                      placeholder="••••••••"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        autoComplete="current-password" required
+                        value={password} onChange={e => setPassword(e.target.value)}
+                        className="w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(v => !v)}
+                        className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600 transition-colors"
+                        tabIndex={-1}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword
+                          ? <EyeSlashIcon className="w-4 h-4" />
+                          : <EyeIcon className="w-4 h-4" />}
+                      </button>
+                    </div>
                     <div className="text-right mt-1">
                       <button
                         type="button"
