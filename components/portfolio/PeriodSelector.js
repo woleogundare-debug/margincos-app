@@ -5,19 +5,32 @@ import { Button } from '../ui/Button';
 import { VERTICALS } from '../../lib/constants';
 import clsx from 'clsx';
 
+const MONTHS = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December',
+];
+const CURRENT_YEAR  = new Date().getFullYear();
+const YEARS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - 1 + i);
+// e.g. [2025, 2026, 2027, 2028, 2029]
+
 function formatPeriodDate(created_at) {
   if (!created_at) return null;
   return new Date(created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDelete, loading }) {
-  const [open,        setOpen]        = useState(false);
-  const [showModal,   setShowModal]   = useState(false);
-  const [form,        setForm]        = useState({ label: '', vertical: 'FMCG', company_name: '' });
-  const [creating,    setCreating]    = useState(false);
-  const [error,       setError]       = useState('');
-  const [deleting,    setDeleting]    = useState(null); // period id currently being deleted
+  const [open,          setOpen]          = useState(false);
+  const [showModal,     setShowModal]     = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(MONTHS[new Date().getMonth()]);
+  const [selectedYear,  setSelectedYear]  = useState(CURRENT_YEAR);
+  const [form,          setForm]          = useState({ vertical: 'FMCG', company_name: '' });
+  const [creating,      setCreating]      = useState(false);
+  const [error,         setError]         = useState('');
+  const [deleting,      setDeleting]      = useState(null); // period id currently being deleted
   const dropdownRef = useRef(null);
+
+  // Auto-generated label — canonical format for sorting and display
+  const periodLabel = `${selectedMonth} ${selectedYear}`;
 
   useEffect(() => {
     if (!open) return;
@@ -31,13 +44,15 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
   }, [open]);
 
   const handleCreate = async () => {
-    if (!form.label.trim()) { setError('Period label is required'); return; }
-    if (!form.vertical)     { setError('Vertical is required'); return; }
+    if (!form.vertical) { setError('Vertical is required'); return; }
     setCreating(true);
-    await onCreate(form);
+    await onCreate({ label: periodLabel, vertical: form.vertical, company_name: form.company_name });
     setCreating(false);
     setShowModal(false);
-    setForm({ label: '', vertical: 'FMCG', company_name: '' });
+    // Reset to current month/year for next creation
+    setSelectedMonth(MONTHS[new Date().getMonth()]);
+    setSelectedYear(CURRENT_YEAR);
+    setForm({ vertical: 'FMCG', company_name: '' });
     setError('');
   };
 
@@ -160,17 +175,36 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
       {/* New Period Modal */}
       <Modal open={showModal} onClose={() => setShowModal(false)} title="Create New Period">
         <div className="space-y-4">
+
+          {/* Month / Year picker */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-              Period Label <span className="text-red-500">*</span>
+              Period <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              placeholder="e.g. March 2026"
-              value={form.label}
-              onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-            />
+            <div className="flex gap-2">
+              <select
+                value={selectedMonth}
+                onChange={e => setSelectedMonth(e.target.value)}
+                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal bg-white"
+                style={{ color: '#1B2A4A' }}>
+                {MONTHS.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              <select
+                value={selectedYear}
+                onChange={e => setSelectedYear(Number(e.target.value))}
+                className="w-28 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal bg-white"
+                style={{ color: '#1B2A4A' }}>
+                {YEARS.map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+            <p className="text-xs mt-1.5" style={{ color: '#8899AA' }}>
+              Period label:{' '}
+              <span className="font-semibold" style={{ color: '#1B2A4A' }}>{periodLabel}</span>
+            </p>
           </div>
 
           <div>
