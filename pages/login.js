@@ -30,7 +30,14 @@ export default function LoginPage() {
         ? 'Incorrect email or password.'
         : authError.message);
     } else {
-      router.replace('/dashboard/portfolio');
+      // Wait for Supabase to confirm the session is fully committed before
+      // navigating — prevents the dashboard auth guard from firing with user=null
+      const { data: { subscription } } = sb.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_IN') {
+          subscription.unsubscribe();
+          router.replace('/dashboard/portfolio');
+        }
+      });
     }
   };
 
