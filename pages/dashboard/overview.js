@@ -50,8 +50,12 @@ export default function OverviewPage() {
 
     const save = async () => {
       try {
+        if (!activePeriodRef.current?.id) return; // never write period_id=null — would poison dedup guard
         if (resultsRef.current?.actions?.length) {
-          await bulkAddRef.current(resultsRef.current.actions, activePeriodRef.current?.id);
+          await bulkAddRef.current(
+            resultsRef.current.actions,
+            activePeriodRef.current?.id
+          );
           await loadActionsRef.current();
         }
       } catch (err) {
