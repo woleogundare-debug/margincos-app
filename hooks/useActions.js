@@ -22,9 +22,10 @@ export function useActions(teamId, periodId) {
 
   const loadActions = useCallback(async () => {
     if (!teamId) { setLoading(false); return; }
+    const sb = getSupabaseClient();
+    if (!sb) { setLoading(false); return; }
     setLoading(true);
     try {
-      const sb = getSupabaseClient();
       let query = sb
         .from('action_items')
         .select('*')
@@ -47,6 +48,7 @@ export function useActions(teamId, periodId) {
 
   const addAction = async (actionData) => {
     const sb = getSupabaseClient();
+    if (!sb) return null;
     const { data, error } = await sb
       .from('action_items')
       .insert([{ ...actionData, team_id: teamId, period_id: periodId }])
@@ -59,6 +61,7 @@ export function useActions(teamId, periodId) {
 
   const updateAction = async (id, updates) => {
     const sb = getSupabaseClient();
+    if (!sb) return null;
     const { data, error } = await sb
       .from('action_items')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -85,6 +88,7 @@ export function useActions(teamId, periodId) {
   const bulkAddFromAnalysis = useCallback(async (engineActions, currentPeriodId) => {
     if (!engineActions?.length || !teamId) return;
     const sb = getSupabaseClient();
+    if (!sb) return;
     const rows = engineActions.map(a => ({
       team_id: teamId,
       period_id: currentPeriodId || periodId,
