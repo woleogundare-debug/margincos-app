@@ -190,7 +190,7 @@ export default function PortfolioPage() {
             </div>
 
             {/* Row 2 — Period selector pill + portfolio summary */}
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-3 mb-6">
               <PeriodSelector
                 periods={periods}
                 activePeriod={activePeriod}
@@ -199,14 +199,17 @@ export default function PortfolioPage() {
                 onDelete={deletePeriod}
                 loading={loading}
               />
-              {activeSkuCount > 0 && (
-                <div className="flex items-center gap-3 text-xs text-slate-400">
-                  <span>{activeSkuCount} SKUs</span>
+              {activePeriod && activeSkuCount > 0 && (
+                <div className="hidden md:flex items-center gap-2">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                    style={{ backgroundColor: '#F4F6F8', color: '#1B2A4A' }}>
+                    {activeSkuCount} SKU{activeSkuCount !== 1 ? 's' : ''}
+                  </span>
                   {totalRevenue > 0 && (
-                    <>
-                      <span className="opacity-40">·</span>
-                      <span>{nairaCompact(totalRevenue)} revenue</span>
-                    </>
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                      style={{ backgroundColor: '#E8F5F5', color: '#0D8F8F' }}>
+                      {nairaCompact(totalRevenue)} revenue
+                    </span>
                   )}
                 </div>
               )}
