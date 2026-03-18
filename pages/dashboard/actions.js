@@ -3,9 +3,8 @@ import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { useActions } from '../../hooks/useActions';
-import { useAuth } from '../../hooks/useAuth';
 import { useTeam } from '../../hooks/useTeam';
-import { usePortfolio } from '../../hooks/usePortfolio';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 
 const PILLAR_COLORS = {
   P1: '#D4A843', P2: '#C0392B', P3: '#0D8F8F', P4: '#8A6BBE',
@@ -28,13 +27,13 @@ const fmtN = (v) => {
 };
 
 export default function ActionsPage() {
-  const { user } = useAuth();
   const { team } = useTeam();
-  const { activePeriod } = usePortfolio(user?.id);
+  // activePeriod from shared context — no separate usePortfolio instance needed
+  const { activePeriod } = useAnalysisContext();
   const {
     actions, loading, stats,
     updateAction, resolveAction, dismissAction,
-  } = useActions(team?.id, activePeriod?.id);
+  } = useActions(team?.id); // no periodId — show all actions across all periods
 
   const [filter, setFilter] = useState('open');
   const [pillarFilter, setPillarFilter] = useState('all');
@@ -42,6 +41,8 @@ export default function ActionsPage() {
   const [resolveNote, setResolveNote] = useState('');
 
   const filtered = useMemo(() => {
+    // Early return on All tab — skip .filter() entirely, return stable reference
+    if (filter === 'all' && pillarFilter === 'all') return actions;
     return actions.filter(a => {
       if (filter !== 'all' && a.status !== filter) return false;
       if (pillarFilter !== 'all' && a.pillar !== pillarFilter) return false;

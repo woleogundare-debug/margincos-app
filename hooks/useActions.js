@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 
 const PILLAR_MAP = {
@@ -24,8 +24,17 @@ export function useActions(teamId, periodId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Prevent redundant fetches when hook re-renders with identical args
+  const lastFetchKey = useRef(null);
+
   const loadActions = useCallback(async () => {
     if (!teamId) { setLoading(false); return; }
+
+    // Skip if we already loaded this exact teamId:periodId combination
+    const fetchKey = `${teamId}:${periodId ?? 'all'}`;
+    if (lastFetchKey.current === fetchKey) return;
+    lastFetchKey.current = fetchKey;
+
     const sb = getSupabaseClient();
     if (!sb) { setLoading(false); return; }
     setLoading(true);
@@ -40,7 +49,18 @@ export function useActions(teamId, periodId) {
 
       const { data, error } = await query;
       if (error) throw error;
-      setActions(data || []);
+
+      // Stabilise array reference — only update state when data actually changed.
+      // Prevents useMemo consumers from recomputing on identical payloads.
+      setActions(prev => {
+        if (!data || data.length === 0) return [];
+        if (
+          prev.length === data.length &&
+          prev[0]?.id === data[0]?.id &&
+          prev[prev.length - 1]?.id === data[data.length - 1]?.id
+        ) return prev; // same data — reuse reference, skip re-render cascade
+        return data;
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -108,21 +128,24 @@ export function useActions(teamId, periodId) {
       .insert(rows)
       .select();
     if (error) throw error;
+    // Reset fetch key so a subsequent loadActions() can re-fetch fresh data
+    lastFetchKey.current = null;
     setActions(prev => [...(data || []), ...prev]);
     return data;
   }, [teamId, periodId]);
 
-  // Summary stats
-  const stats = {
-    total: actions.length,
-    open: actions.filter(a => a.status === 'open').length,
-    inProgress: actions.filter(a => a.status === 'in_progress').length,
-    resolved: actions.filter(a => a.status === 'resolved').length,
-    totalValue: actions.reduce((sum, a) => sum + (a.value || 0), 0),
+  // Memoized stats — only recomputes when actions array reference changes
+  const stats = useMemo(() => ({
+    total:         actions.length,
+    open:          actions.filter(a => a.status === 'open').length,
+    inProgress:    actions.filter(a => a.status === 'in_progress').length,
+    resolved:      actions.filter(a => a.status === 'resolved').length,
+    dismissed:     actions.filter(a => a.status === 'dismissed').length,
+    totalValue:    actions.reduce((sum, a) => sum + (a.value || 0), 0),
     resolvedValue: actions
       .filter(a => a.status === 'resolved')
       .reduce((sum, a) => sum + (a.value || 0), 0),
-  };
+  }), [actions]);
 
   return {
     actions, loading, error, stats,
