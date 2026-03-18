@@ -8,34 +8,66 @@ const AnalysisContext = createContext(null);
 export function AnalysisProvider({ children }) {
   const { user } = useAuth();
 
+  // Single usePortfolio instance for the entire dashboard.
+  // All consumers (portfolio.js, overview.js, pillar pages) read from here,
+  // so SKU saves and period changes are immediately visible across all pages.
   const {
-    skuRows,
-    tradeInvestment,
     periods,
     activePeriod,
-    loading: portfolioLoading,
+    skuRows,
+    tradeInvestment,
+    loading,
+    saving,
+    error: portfolioError,
+    createPeriod,
+    selectPeriod,
+    loadPeriods,
+    deletePeriod,
+    saveSku,
+    debouncedSaveSku,
+    addSku,
+    deleteSku,
+    saveTradeInvestment,
+    activeSkuCount,
+    completeSkuCount,
   } = usePortfolio(user?.id);
 
   const {
     results,
     running,
     ranAt,
-    error,
+    error: analysisError,
     run,
     hasResults,
   } = useAnalysis(skuRows, tradeInvestment);
 
   return (
     <AnalysisContext.Provider value={{
-      skuRows,
-      tradeInvestment,
+      // ── Portfolio data ───────────────────────────────────────────
       periods,
       activePeriod,
-      portfolioLoading,
+      skuRows,
+      tradeInvestment,
+      loading,
+      portfolioLoading: loading, // backward-compat alias used by overview.js
+      saving,
+      // ── Portfolio CRUD ──────────────────────────────────────────
+      createPeriod,
+      selectPeriod,
+      loadPeriods,
+      deletePeriod,
+      saveSku,
+      debouncedSaveSku,
+      addSku,
+      deleteSku,
+      saveTradeInvestment,
+      activeSkuCount,
+      completeSkuCount,
+      // ── Analysis results ────────────────────────────────────────
       results,
       running,
       ranAt,
-      error,
+      error: analysisError || portfolioError,
       run,
       hasResults,
     }}>

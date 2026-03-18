@@ -8,7 +8,7 @@ import { SkuDetailPanel } from '../../components/portfolio/SkuDetailPanel';
 import { TradeInvestmentForm } from '../../components/portfolio/TradeInvestmentForm';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
-import { usePortfolio } from '../../hooks/usePortfolio';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { ArrowUpTrayIcon, PlusIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -21,7 +21,7 @@ function nairaCompact(v) {
 }
 
 export default function PortfolioPage() {
-  const { user, isProfessional, isEnterprise } = useAuth();
+  const { isProfessional, isEnterprise } = useAuth();
   const {
     periods, activePeriod, skuRows, tradeInvestment,
     loading, saving,
@@ -29,7 +29,7 @@ export default function PortfolioPage() {
     saveSku, addSku, deleteSku,
     saveTradeInvestment,
     activeSkuCount, completeSkuCount,
-  } = usePortfolio(user?.id);
+  } = useAnalysisContext();
 
   const [selectedRow, setSelectedRow] = useState(null);
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
