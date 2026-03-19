@@ -4,6 +4,14 @@ const nextConfig = {
   images: {
     domains: ['xdlcglpqyrbknirdjgbg.supabase.co'],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/',
+        destination: '/landing.html',
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     // @react-pdf/renderer uses Node APIs that must not be bundled server-side
     if (isServer) {
