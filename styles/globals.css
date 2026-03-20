@@ -155,6 +155,20 @@ button, a {
     linear-gradient(180deg, #1B2A4A 0%, #111D33 100%);
 }
 
+/* ── Homepage overflow guards ──────────────────────────────────────
+   These contain elements that overflow horizontally before hydration:
+   - body: no viewport-level overflow guard until JS runs
+   - .hero: clips 600px absolutely-positioned orb decorations
+   - .logo-bar: clips the max-content-width ticker track
+   - .cta-section: clips 800px/600px concentric ring pseudo-elements
+   All four rules live in landing.html's <style> block (styled-jsx prop)
+   so they only apply after hydration without this guard.
+------------------------------------------------------------------- */
+body        { overflow-x: hidden; }
+.hero       { overflow: hidden; }
+.logo-bar   { overflow: hidden; }
+.cta-section { overflow: hidden; }
+
 /* ── Homepage mobile overrides ─────────────────────────────────────
    These must live here (not in styled-jsx) because the homepage uses
    dangerouslySetInnerHTML — styled-jsx dynamic blocks are JS-injected
