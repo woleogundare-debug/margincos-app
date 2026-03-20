@@ -278,4 +278,14 @@ html, body  { overflow-x: hidden; }
   }
   .enterprise-sub { text-align: left !important; }
   .enterprise-modules { grid-template-columns: 1fr !important; }
+
+  /* ── Breakdown callout ── */
+  .breakdown-callout {
+    padding: 24px !important;
+    gap: 20px !important;
+  }
+  .callout-total { padding-bottom: 16px !important; }
+  .callout-total-val { font-size: 40px !important; }
+  .callout-stat-val { font-size: 20px !important; }
+  .callout-stats { gap: 14px !important; }
 }
