@@ -1399,9 +1399,10 @@ body {
   .nav-cta   { display: none; }
   .nav-hamburger { display: flex; }
   .hero { padding: 100px 24px 60px; }
-  .metrics-strip { grid-template-columns: 1fr; }
-  .metric-cell { padding: 24px; }
-  .metric-val { font-size: 36px; }
+  .metrics-strip { grid-template-columns: repeat(3, 1fr); gap: 1px; }
+  .metric-cell { padding: 20px 12px; }
+  .metric-val { font-size: 28px; }
+  .metric-label { font-size: 11px; }
   .section { padding: 60px 24px; }
   .pillars-layout { grid-template-columns: 1fr; gap: 40px; }
   .pillars-list { position: static; }
@@ -1632,15 +1633,44 @@ body {
 
 /* ─── Mobile: hide dashboard card, restore centered hero ─────── */
 @media (max-width: 900px) {
+  .hero {
+    align-items: center;
+  }
+  .hero-inner {
+    width: 100%;
+    max-width: 100%;
+  }
   .hero-content-row {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 32px;
     margin-bottom: 40px;
   }
   .hero-right { display: none; }
-  .hero-left { text-align: center; }
-  .hero-actions { justify-content: center !important; }
-  .hero-sub { margin: 0 auto 48px !important; }
+  .hero-left {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .hero-title {
+    text-align: center;
+    font-size: clamp(36px, 8vw, 56px);
+  }
+  .hero-sub {
+    text-align: center;
+    margin: 0 auto 40px !important;
+    max-width: 100%;
+  }
+  .hero-actions {
+    justify-content: center !important;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .btn-hero-primary, .btn-hero-secondary {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 
