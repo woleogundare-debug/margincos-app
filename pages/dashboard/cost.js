@@ -10,9 +10,12 @@ import { fNAbs } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 
 export default function CostPage() {
-  const { activePeriod, results, running, run, hasResults, comparisonResults } = useAnalysisContext();
+  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p2 = results?.p2;
-  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
+  const deltas = useMemo(() => {
+    if (!chronologicalDelta) return null;
+    return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
+  }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
 

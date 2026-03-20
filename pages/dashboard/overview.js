@@ -21,8 +21,11 @@ const DownloadReportButton = dynamic(
 
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
-  const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults, comparisonResults } = useAnalysisContext();
-  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
+  const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const deltas = useMemo(() => {
+    if (!chronologicalDelta) return null;
+    return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
+  }, [chronologicalDelta]);
   const autoRanRef = useRef(false);
   const lastSavedAt = useRef(null); // tracks ranAt timestamp of last saved actions
 

@@ -10,9 +10,12 @@ import { fNAbs, CHANNEL_LABELS } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 
 export default function ChannelPage() {
-  const { activePeriod, results, running, run, hasResults, comparisonResults } = useAnalysisContext();
+  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p3 = results?.p3;
-  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
+  const deltas = useMemo(() => {
+    if (!chronologicalDelta) return null;
+    return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
+  }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
   const weakChannels = p3?.channelResults?.filter(c => c.contPct < 15 && c.rev > 0) || [];

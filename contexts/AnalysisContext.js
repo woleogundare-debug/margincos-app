@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { useAuth } from '../hooks/useAuth';
@@ -86,6 +86,30 @@ export function AnalysisProvider({ children }) {
     setComparisonResults(null);
   }, [activePeriod?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Derive the comparison period's metadata from the periods array
+  const comparisonPeriodMeta = useMemo(() => {
+    if (!comparisonPeriodId || !periods?.length) return null;
+    return periods.find(p => p.id === comparisonPeriodId) || null;
+  }, [comparisonPeriodId, periods]);
+
+  // Chronological ordering: delta = later period results − earlier period results.
+  // Positive delta always means the metric improved over time, regardless of which
+  // period the user has active vs. selected as comparison.
+  const chronologicalDelta = useMemo(() => {
+    if (!results || !comparisonResults || !activePeriod || !comparisonPeriodMeta) return null;
+    const activeTime = new Date(activePeriod.created_at || 0).getTime();
+    const compTime   = new Date(comparisonPeriodMeta.created_at || 0).getTime();
+    if (activeTime >= compTime) {
+      // Active period is later (or equal) — delta = active − comparison
+      return { laterResults: results, earlierResults: comparisonResults,
+               laterPeriod: activePeriod, earlierPeriod: comparisonPeriodMeta };
+    } else {
+      // Comparison period is later — delta = comparison − active
+      return { laterResults: comparisonResults, earlierResults: results,
+               laterPeriod: comparisonPeriodMeta, earlierPeriod: activePeriod };
+    }
+  }, [results, comparisonResults, activePeriod, comparisonPeriodMeta]);
+
   return (
     <AnalysisContext.Provider value={{
       // ── Portfolio data ───────────────────────────────────────────
@@ -118,9 +142,12 @@ export function AnalysisProvider({ children }) {
       // ── Comparison period ────────────────────────────────────────
       comparisonPeriodId,
       comparisonResults,
+      comparisonPeriodMeta,
       comparisonLoading,
       loadComparisonPeriod,
       clearComparison,
+      // ── Chronological delta (later − earlier, always) ────────────
+      chronologicalDelta,
     }}>
       {children}
     </AnalysisContext.Provider>

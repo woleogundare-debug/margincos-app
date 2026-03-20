@@ -10,9 +10,12 @@ import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 
 export default function TradePage() {
-  const { activePeriod, results, running, run, hasResults, comparisonResults } = useAnalysisContext();
+  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p4 = results?.p4;
-  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
+  const deltas = useMemo(() => {
+    if (!chronologicalDelta) return null;
+    return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
+  }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
   const lossCount = p4?.results?.filter(r => !r.profitable).length || 0;

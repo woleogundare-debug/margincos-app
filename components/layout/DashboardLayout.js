@@ -61,6 +61,7 @@ function ComparisonBar() {
     periods,
     activePeriod,
     comparisonPeriodId,
+    comparisonPeriodMeta,
     comparisonLoading,
     loadComparisonPeriod,
     clearComparison,
@@ -97,11 +98,17 @@ function ComparisonBar() {
       {comparisonLoading && (
         <p className="text-[10px] mt-1.5 animate-pulse" style={{ color: '#D4A843' }}>Loading…</p>
       )}
-      {comparisonPeriodId && !comparisonLoading && activePeriod?.label && (
-        <p className="text-[10px] mt-1.5 truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          vs {activePeriod.label}
-        </p>
-      )}
+      {comparisonPeriodId && !comparisonLoading && activePeriod && comparisonPeriodMeta && (() => {
+        const activeTime = new Date(activePeriod.created_at || 0).getTime();
+        const compTime   = new Date(comparisonPeriodMeta.created_at || 0).getTime();
+        const earlier = activeTime <= compTime ? activePeriod.label : comparisonPeriodMeta.label;
+        const later   = activeTime <= compTime ? comparisonPeriodMeta.label : activePeriod.label;
+        return (
+          <p className="text-[10px] mt-1.5 truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {earlier} → {later}
+          </p>
+        );
+      })()}
     </div>
   );
 }

@@ -1,22 +1,51 @@
+import { useMemo } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { ModuleGate } from '../../components/modules/ModuleGate';
-import { PillarCard, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
+import { KpiTile, PillarCard, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { computeDeltas } from '../../lib/engine/delta';
 import { fNAbs, fN } from '../../lib/formatters';
 import clsx from 'clsx';
 
 // ── M1 ────────────────────────────────────────────────────────────────────
-function M1Module({ results }) {
+function M1Module({ results, deltas }) {
   const m1 = results?.m1;
   if (!m1) return <div className="py-8 text-center text-sm text-slate-400">Run analysis to see SKU classification.</div>;
 
   return (
     <>
+      {/* Delta KPIs — period-over-period trend */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <KpiTile
+          label="Margin at Stake"
+          value={fNAbs(m1.marginAtStake)}
+          pill="/month from dilutive SKUs"
+          accent="red"
+          delta={deltas?.m1?.marginAtStake && deltas.m1.marginAtStake.direction !== 'flat' && Math.abs(deltas.m1.marginAtStake.value) >= 1 ? {
+            label: fNAbs(Math.abs(deltas.m1.marginAtStake.value)),
+            direction: deltas.m1.marginAtStake.direction,
+            isPositive: false,
+          } : null}
+        />
+        <KpiTile
+          label="Dilutive SKUs"
+          value={m1.dilutiveCount}
+          pill="below portfolio avg margin"
+          accent="red"
+          delta={deltas?.m1?.dilutiveCount && deltas.m1.dilutiveCount.direction !== 'flat' && Math.abs(deltas.m1.dilutiveCount.value) >= 1 ? {
+            label: Math.abs(Math.round(deltas.m1.dilutiveCount.value)) + ' SKUs',
+            direction: deltas.m1.dilutiveCount.direction,
+            isPositive: false,
+          } : null}
+        />
+      </div>
+
+      {/* Classification breakdown */}
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="text-center p-4 bg-emerald-50 rounded-xl">
           <p className="text-2xl font-black text-emerald-700">{m1.results.filter(s => s.classification.includes('Protect')).length}</p>
@@ -50,12 +79,27 @@ function M1Module({ results }) {
 }
 
 // ── M2 ────────────────────────────────────────────────────────────────────
-function M2Module({ results }) {
+function M2Module({ results, deltas }) {
   const m2 = results?.m2;
   if (!m2) return <div className="py-8 text-center text-sm text-slate-400">Run analysis to see inflation scenarios.</div>;
 
   return (
     <>
+      {/* Delta KPI — worst-case scenario trend */}
+      <div className="mb-4">
+        <KpiTile
+          label="Zero Recovery Impact"
+          value={fN(m2.worstCase)}
+          pill="worst-case margin /month at 0% cost recovery"
+          accent="red"
+          delta={deltas?.m2?.worstCase && deltas.m2.worstCase.direction !== 'flat' && Math.abs(deltas.m2.worstCase.value) >= 1 ? {
+            label: fNAbs(Math.abs(deltas.m2.worstCase.value)),
+            direction: deltas.m2.worstCase.direction,
+            isPositive: false,
+          } : null}
+        />
+      </div>
+
       <AnalysisTable
         headers={['Recovery Rate', 'Cost Absorbed ₦/mo', 'Margin Change ₦/mo', 'Projected Margin %', 'Risk Level']}
         rows={m2.scenarios.map(s => [
@@ -74,7 +118,7 @@ function M2Module({ results }) {
 }
 
 // ── M3 ────────────────────────────────────────────────────────────────────
-function M3Module({ results }) {
+function M3Module({ results, deltas }) {
   const m3 = results?.m3;
   if (!m3?.hasData) return (
     <div className="py-8 text-center text-sm text-slate-400">
@@ -83,17 +127,32 @@ function M3Module({ results }) {
   );
   return (
     <>
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="text-center p-4 bg-slate-50 rounded-xl">
-          <p className="text-2xl font-black text-navy">{fNAbs(m3.totalSpend)}</p>
-          <p className="text-xs font-semibold text-slate-500 mt-1">Total Trade Spend/mo</p>
-        </div>
-        <div className="text-center p-4 bg-teal-50 rounded-xl">
-          <p className="text-2xl font-black text-teal">{m3.blendedROI != null ? m3.blendedROI.toFixed(2) + '×' : '—'}</p>
-          <p className="text-xs font-semibold text-teal-600 mt-1">Blended Portfolio ROI</p>
-        </div>
+      {/* KpiTile replaces plain stat boxes for delta-tracked metrics */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <KpiTile
+          label="Total Trade Spend"
+          value={fNAbs(m3.totalSpend)}
+          pill="/month"
+          accent="navy"
+          delta={deltas?.m3?.totalSpend && deltas.m3.totalSpend.direction !== 'flat' && Math.abs(deltas.m3.totalSpend.value) >= 1 ? {
+            label: fNAbs(Math.abs(deltas.m3.totalSpend.value)),
+            direction: deltas.m3.totalSpend.direction,
+            isPositive: false,
+          } : null}
+        />
+        <KpiTile
+          label="Blended Portfolio ROI"
+          value={m3.blendedROI != null ? m3.blendedROI.toFixed(2) + '×' : '—'}
+          pill="across all trade channels"
+          accent="teal"
+          delta={deltas?.m3?.blendedROI && deltas.m3.blendedROI.direction !== 'flat' && Math.abs(deltas.m3.blendedROI.value) >= 0.01 ? {
+            label: Math.abs(deltas.m3.blendedROI.value).toFixed(2) + '×',
+            direction: deltas.m3.blendedROI.direction,
+            isPositive: true,
+          } : null}
+        />
         <div className="text-center p-4 bg-amber-50 rounded-xl">
-          <p className="text-2xl font-black text-amber">{m3.bestChannel?.channel || '—'}</p>
+          <p className="text-2xl font-black text-amber-600">{m3.bestChannel?.channel || '—'}</p>
           <p className="text-xs font-semibold text-amber-700 mt-1">Best ROI Channel</p>
         </div>
       </div>
@@ -119,7 +178,7 @@ function M3Module({ results }) {
 }
 
 // ── M4 ────────────────────────────────────────────────────────────────────
-function M4Module({ results }) {
+function M4Module({ results, deltas }) {
   const m4 = results?.m4;
   if (!m4?.hasData) return (
     <div className="py-8 text-center text-sm text-slate-400">
@@ -128,20 +187,42 @@ function M4Module({ results }) {
   );
   return (
     <>
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="text-center p-4 bg-slate-50 rounded-xl">
           <p className="text-2xl font-black text-navy">{m4.totalDistributors}</p>
           <p className="text-xs font-semibold text-slate-500 mt-1">Distributors Scored</p>
         </div>
         <div className="text-center p-4 bg-teal-50 rounded-xl">
-          <p className="text-2xl font-black text-teal">{m4.avgContPct.toFixed(1)}%</p>
+          <p className="text-2xl font-black text-teal-700">{m4.avgContPct.toFixed(1)}%</p>
           <p className="text-xs font-semibold text-teal-600 mt-1">Avg True Contribution</p>
         </div>
-        <div className="text-center p-4 bg-red-50 rounded-xl">
-          <p className="text-2xl font-black text-red">{m4.renegotiateCount}</p>
-          <p className="text-xs font-semibold text-red-600 mt-1">Need Renegotiation</p>
-        </div>
+        <KpiTile
+          label="Need Renegotiation"
+          value={m4.renegotiateCount}
+          pill="distributors flagged"
+          accent="red"
+          delta={deltas?.m4?.renegotiateCount && deltas.m4.renegotiateCount.direction !== 'flat' && Math.abs(deltas.m4.renegotiateCount.value) >= 1 ? {
+            label: Math.abs(Math.round(deltas.m4.renegotiateCount.value)) + ' distrib.',
+            direction: deltas.m4.renegotiateCount.direction,
+            isPositive: false,
+          } : null}
+        />
       </div>
+      {m4.totalCreditCost > 0 && (
+        <div className="mb-4">
+          <KpiTile
+            label="Working Capital Credit Cost"
+            value={fNAbs(m4.totalCreditCost)}
+            pill="/month at 28% WACC"
+            accent="red"
+            delta={deltas?.m4?.totalCreditCost && deltas.m4.totalCreditCost.direction !== 'flat' && Math.abs(deltas.m4.totalCreditCost.value) >= 1 ? {
+              label: fNAbs(Math.abs(deltas.m4.totalCreditCost.value)),
+              direction: deltas.m4.totalCreditCost.direction,
+              isPositive: false,
+            } : null}
+          />
+        </div>
+      )}
       <AnalysisTable
         headers={['Distributor', 'Revenue ₦/mo', 'True Contrib. ₦/mo', 'Contrib. %', 'Rev Share %', 'Credit Cost ₦', 'Classification']}
         rows={m4.results.map(r => [
@@ -168,7 +249,12 @@ function M4Module({ results }) {
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function ModulesPage() {
   const { tier } = useAuth();
-  const { activePeriod, results, running, run, hasResults } = useAnalysisContext();
+  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+
+  const deltas = useMemo(() => {
+    if (!chronologicalDelta) return null;
+    return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
+  }, [chronologicalDelta]);
 
   return (
     <>
@@ -191,7 +277,7 @@ export default function ModulesPage() {
             <PillarCard title="M1 · SKU Portfolio Rationalisation"
               subtitle="Quadrant classification: Protect · Grow · Reprice · Review"
               accentColor="#7C3AED" ragStatus={null}>
-              <M1Module results={results} />
+              <M1Module results={results} deltas={deltas} />
             </PillarCard>
           </ModuleGate>
 
@@ -201,7 +287,7 @@ export default function ModulesPage() {
             <PillarCard title="M2 · Forward Inflation Scenario Engine"
               subtitle="Five scenarios: 0% → 100% cost recovery rate"
               accentColor="#DC2626" ragStatus={null}>
-              <M2Module results={results} />
+              <M2Module results={results} deltas={deltas} />
             </PillarCard>
           </ModuleGate>
 
@@ -211,7 +297,7 @@ export default function ModulesPage() {
             <PillarCard title="M3 · Trade Spend ROI Analyser"
               subtitle="ROI per channel · Blended portfolio ROI · Spend intensity"
               accentColor="#D97706" ragStatus={null}>
-              <M3Module results={results} />
+              <M3Module results={results} deltas={deltas} />
             </PillarCard>
           </ModuleGate>
 
@@ -221,7 +307,7 @@ export default function ModulesPage() {
             <PillarCard title="M4 · Distributor Performance Scorecard"
               subtitle="True contribution · Credit cost · 2×2 quadrant scoring"
               accentColor="#0D9488" ragStatus={null}>
-              <M4Module results={results} />
+              <M4Module results={results} deltas={deltas} />
             </PillarCard>
           </ModuleGate>
         </div>

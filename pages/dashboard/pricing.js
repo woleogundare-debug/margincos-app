@@ -11,9 +11,12 @@ import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 
 export default function PricingPage() {
-  const { activePeriod, results, running, ranAt, run, hasResults, comparisonResults } = useAnalysisContext();
+  const { activePeriod, results, running, ranAt, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p1 = results?.p1;
-  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
+  const deltas = useMemo(() => {
+    if (!chronologicalDelta) return null;
+    return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
+  }, [chronologicalDelta]);
   const [tableExpanded, setTableExpanded] = useState(false);
 
   const ragStatus = !hasResults ? 'grey'
