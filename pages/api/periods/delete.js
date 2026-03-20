@@ -43,6 +43,15 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: `Failed to delete trade investment rows: ${tradeError.message}` });
   }
 
+  const { error: actionsError } = await supabase
+    .from('action_items')
+    .delete()
+    .eq('period_id', periodId);
+
+  if (actionsError) {
+    return res.status(500).json({ error: `Failed to delete action items: ${actionsError.message}` });
+  }
+
   // Delete the period itself
   const { error: periodError } = await supabase
     .from('periods')
