@@ -1638,6 +1638,70 @@ body {
   .hero-sub { margin: 0 auto 48px !important; }
 }
 
+
+/* ─── TRUST STRIP ─────────────────────────────────────────────────────────────────────────── */
+.trust-strip-section {
+  background: var(--navy-dark);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 48px 48px;
+}
+.trust-strip-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.trust-stat {
+  text-align: center;
+  flex: 1;
+}
+.trust-stat-val {
+  display: block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.trust-stat-sub {
+  font-size: 18px;
+  color: var(--gold);
+}
+.trust-stat-label {
+  display: block;
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+}
+.trust-divider {
+  width: 1px;
+  height: 48px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+.trust-cta-link {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--teal);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(13,143,143,0.3);
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.trust-cta-link:hover {
+  color: #11B3B3;
+  border-color: rgba(13,143,143,0.6);
+}
+@media (max-width: 900px) {
+  .trust-strip-section { padding: 40px 24px; }
+  .trust-strip-inner { flex-direction: column; gap: 24px; }
+  .trust-divider { width: 48px; height: 1px; }
+}
 </style>
 
 <!-- Google Analytics -->
@@ -2217,77 +2281,26 @@ body {
   </div>
 </section>
 
-<!-- ── PRICING ─────────────────────────────────────────────────────────────────── -->
-<section class="section pricing-section" id="pricing">
-  <div class="reveal" style="text-align:center; max-width:560px; margin:0 auto;">
-    <div class="section-tag section-tag-gold">Transparent Pricing</div>
-    <h2 class="section-heading">Simple. Scalable. No surprises.</h2>
-    <p class="section-sub" style="margin:0 auto;">Every plan includes the PDF Margin Intelligence Report, Action Tracker, and Excel import. No ERP integration required.</p>
-  </div>
-  <div class="pricing-grid reveal">
-    <!-- Essentials -->
-    <div class="price-card">
-      <div class="price-tier-badge">Essentials</div>
-      <h3 class="price-name">Essentials</h3>
-      <p class="price-desc">Pricing intelligence for lean commercial teams starting their margin recovery journey.</p>
-      <div class="price-amount">
-        <div class="price-val">$250</div>
-        <div class="price-period">per month</div>
-        <span class="price-annual">$213/mo billed annually — save 15%</span>
-      </div>
-      <ul class="price-features">
-        <li>P1 Pricing Intelligence</li>
-        <li>PDF margin report (P1)</li>
-        <li>Action Tracker</li>
-        <li>1 team seat</li>
-        <li>Excel import</li>
-        <li>$450 implementation</li>
-      </ul>
-      <a href="/contact" class="btn-plan btn-plan-outline">Get Started</a>
+<!-- ── TRUST STRIP ────────────────────────────────────────────────────────────────────── -->
+<section class="trust-strip-section">
+  <div class="trust-strip-inner">
+    <div class="trust-stat">
+      <span class="trust-stat-val">From $250<span class="trust-stat-sub">/mo</span></span>
+      <span class="trust-stat-label">Simple, transparent pricing</span>
     </div>
-
-    <!-- Professional (featured) -->
-    <div class="price-card featured">
-      <div class="featured-label">Most Popular</div>
-      <div class="price-tier-badge">Professional</div>
-      <h3 class="price-name">Professional</h3>
-      <p class="price-desc">All four commercial pillars for CFOs and Commercial Directors managing full portfolios.</p>
-      <div class="price-amount">
-        <div class="price-val">$850</div>
-        <div class="price-period" style="color:rgba(255,255,255,0.35);">per month</div>
-        <span class="price-annual">$723/mo billed annually — save 15%</span>
-      </div>
-      <ul class="price-features">
-        <li>P1 Pricing Intelligence</li>
-        <li>P2 Cost Pass-Through</li>
-        <li>P3 Channel Economics</li>
-        <li>P4 Trade Execution</li>
-        <li>Full PDF report (P1–P4)</li>
-        <li>5 team seats</li>
-        <li>$1,300 implementation</li>
-      </ul>
-      <a href="/contact" class="btn-plan btn-plan-primary">Book a Diagnostic</a>
+    <div class="trust-divider"></div>
+    <div class="trust-stat">
+      <span class="trust-stat-val">No ERP</span>
+      <span class="trust-stat-label">Excel import — that's all it takes</span>
     </div>
-
-    <!-- Enterprise -->
-    <div class="price-card">
-      <div class="price-tier-badge">Enterprise</div>
-      <h3 class="price-name">Enterprise</h3>
-      <p class="price-desc">The full platform with advanced modules, unlimited seats, and managed onboarding.</p>
-      <div class="price-amount">
-        <div class="price-val">$2,400</div>
-        <div class="price-period">per month</div>
-        <span class="price-annual">$2,040/mo billed annually — save 15%</span>
-      </div>
-      <ul class="price-features">
-        <li>All P1–P4 pillars</li>
-        <li>M1–M4 Enterprise modules</li>
-        <li>Full 8-pillar PDF report</li>
-        <li>Unlimited team seats</li>
-        <li>4-week managed onboarding</li>
-        <li>Implementation included</li>
-      </ul>
-      <a href="/contact" class="btn-plan btn-plan-outline">Contact Sales</a>
+    <div class="trust-divider"></div>
+    <div class="trust-stat">
+      <span class="trust-stat-val">48 hrs</span>
+      <span class="trust-stat-label">From data to first diagnostic</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-stat">
+      <a href="/pricing" class="trust-cta-link">See full pricing →</a>
     </div>
   </div>
 </section>
