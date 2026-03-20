@@ -36,6 +36,11 @@ export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
   const [skuLimitError, setSkuLimitError] = useState(null);
 
+  // Tier enforcement helpers
+  const skuLimit   = TIER_LIMITS[tier]?.maxSkus ?? null;
+  const tierLabel  = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
+  const isOverSkuLimit = skuLimit !== null && activeSkuCount > skuLimit;
+
   // Compute total revenue from SKU rows
   const totalRevenue = useMemo(() => {
     return skuRows.reduce((sum, r) => {
@@ -64,28 +69,20 @@ export default function PortfolioPage() {
 
   const handleBulkImport = useCallback(async (rows) => {
     const limit = TIER_LIMITS[tier]?.maxSkus ?? null;
-    let allowedRows = rows;
 
-    if (limit !== null) {
-      const remaining = Math.max(0, limit - activeSkuCount);
-      if (rows.length > remaining) {
-        const skipped = rows.length - remaining;
-        const tierLabel = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
-        setSkuLimitError(
-          `Your ${tierLabel} plan supports up to ${limit} active SKUs. ` +
-          (remaining > 0
-            ? `Imported ${remaining} of ${rows.length} rows — ${skipped} row${skipped !== 1 ? 's' : ''} skipped.`
-            : `No rows imported — limit already reached.`)
-        );
-        allowedRows = rows.slice(0, remaining);
-      }
+    // Hard block — reject the entire import if it would exceed the tier cap
+    if (limit !== null && activeSkuCount + rows.length > limit) {
+      setSkuLimitError(
+        `Your ${tierLabel} plan supports up to ${limit} active SKUs. ` +
+        `You currently have ${activeSkuCount} — this import would add ${rows.length} more ` +
+        `(${activeSkuCount + rows.length} total). Upgrade your plan to continue.`
+      );
+      return;
     }
 
-    if (allowedRows.length === 0) return;
-
     const batchSize = 5;
-    for (let i = 0; i < allowedRows.length; i += batchSize) {
-      const batch = allowedRows.slice(i, i + batchSize);
+    for (let i = 0; i < rows.length; i += batchSize) {
+      const batch = rows.slice(i, i + batchSize);
       await Promise.all(batch.map(row => saveSku({
         ...row,
         _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -165,14 +162,27 @@ export default function PortfolioPage() {
                 <Button variant="secondary" size="sm" onClick={handleAddSku}>
                   <PlusIcon className="h-4 w-4" /> Add SKU
                 </Button>
-                <Link href="/dashboard/overview">
-                  <button className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shadow-sm" style={{ backgroundColor: '#C0392B' }}>
+                {isOverSkuLimit ? (
+                  <button
+                    onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active SKUs. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
+                    className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
+                    style={{ backgroundColor: '#C0392B' }}
+                  >
                     Run Analysis
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </button>
-                </Link>
+                ) : (
+                  <Link href="/dashboard/overview">
+                    <button className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shadow-sm" style={{ backgroundColor: '#C0392B' }}>
+                      Run Analysis
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </button>
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -206,14 +216,27 @@ export default function PortfolioPage() {
                   </button>
                 </div>
               </div>
-              <Link href="/dashboard/overview">
-                <button className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shadow-sm" style={{ backgroundColor: '#C0392B' }}>
+              {isOverSkuLimit ? (
+                <button
+                  onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active SKUs. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
+                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
+                  style={{ backgroundColor: '#C0392B' }}
+                >
                   Run Analysis
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </button>
-              </Link>
+              ) : (
+                <Link href="/dashboard/overview">
+                  <button className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shadow-sm" style={{ backgroundColor: '#C0392B' }}>
+                    Run Analysis
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
+                </Link>
+              )}
             </div>
 
             {/* Row 2 — Period selector pill + portfolio summary */}
