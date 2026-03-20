@@ -1046,14 +1046,33 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel) {
     );
   }
 
-  // Sentence 2 — what improved (if any)
+  // Sentence 2 — what improved (if any), worded by direction type
   if (improved.length > 0) {
-    const names = improved.map(m => m.name.toLowerCase()).join(', ');
-    parts.push(
-      improved.length === 1
-        ? `${improved[0].name.charAt(0).toUpperCase() + improved[0].name.slice(1)} showed positive movement over the period.`
-        : `Positive movement was recorded in ${names}.`
-    );
+    const hiUp   = improved.filter(m =>  m.positive); // higher-is-better, went up
+    const loDown = improved.filter(m => !m.positive); // lower-is-better, went down
+
+    if (hiUp.length > 0 && loDown.length > 0) {
+      const upNames = hiUp.map(m => m.name.toLowerCase()).join(' and ');
+      const dnNames = loDown.map(m => m.name.toLowerCase()).join(' and ');
+      const upCap   = upNames.charAt(0).toUpperCase() + upNames.slice(1);
+      parts.push(`${upCap} grew over the period, while ${dnNames} declined — both positive signals.`);
+    } else if (hiUp.length > 0) {
+      const names = hiUp.map(m => m.name.toLowerCase()).join(', ');
+      parts.push(
+        hiUp.length === 1
+          ? `${hiUp[0].name.charAt(0).toUpperCase() + hiUp[0].name.slice(1)} improved over the period.`
+          : `Positive movement was recorded in ${names}.`
+      );
+    } else {
+      // All improvements are lower-is-better metrics declining — make it explicit
+      const names = loDown.map(m => m.name.toLowerCase()).join(', ');
+      const cap   = names.charAt(0).toUpperCase() + names.slice(1);
+      parts.push(
+        loDown.length === 1
+          ? `${loDown[0].name.charAt(0).toUpperCase() + loDown[0].name.slice(1)} declined — a positive signal.`
+          : `${cap} all declined, reflecting improved cost discipline and tighter channel management.`
+      );
+    }
   }
 
   // Sentence 3 — what deteriorated, largest named specifically
@@ -1108,10 +1127,10 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
   const earlier = earlierPeriod?.label || 'Prior';
   const later   = laterPeriod?.label   || 'Current';
 
-  const trendArrow = (direction, isPositive) => {
-    if (direction === 'flat') return '→';
-    if (direction === 'up')   return isPositive ? '↑' : '↑';
-    return '↓';
+  const trendArrow = (direction) => {
+    if (direction === 'up')   return '+';
+    if (direction === 'down') return '-';
+    return '';
   };
 
   const trendColor = (direction, isPositive) => {
@@ -1151,7 +1170,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>Period-over-Period Comparison</Text>
       <Text style={s.sectionSub}>
-        {earlier} → {later} | Positive deltas reflect improvement in each metric direction.
+        {earlier} to {later} | Positive deltas reflect improvement in each metric direction.
       </Text>
 
       <View style={s.kpiRow}>
@@ -1163,8 +1182,8 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
               <Text style={s.kpiLabel}>{m.label}</Text>
               <Text style={[s.kpiValue, { color }]}>
                 {d && d.direction !== 'flat'
-                  ? `${trendArrow(d.direction, m.isPositive)} ${fmt(Math.abs(d.value), 'nairaK')}`
-                  : '→ No change'}
+                  ? `${trendArrow(d.direction)} ${fmt(Math.abs(d.value), 'nairaK')}`
+                  : 'No change'}
               </Text>
               <Text style={s.kpiSub}>
                 {d?.pctChange != null
@@ -1185,8 +1204,8 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
               <Text style={s.kpiLabel}>{m.label}</Text>
               <Text style={[s.kpiValue, { color }]}>
                 {d && d.direction !== 'flat'
-                  ? `${trendArrow(d.direction, m.isPositive)} ${fmt(Math.abs(d.value), 'nairaK')}`
-                  : '→ No change'}
+                  ? `${trendArrow(d.direction)} ${fmt(Math.abs(d.value), 'nairaK')}`
+                  : 'No change'}
               </Text>
               <Text style={s.kpiSub}>
                 {d?.pctChange != null
@@ -1208,22 +1227,25 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
         </View>
 
         {[
-          { label: 'Revenue',          curr: laterResults.totalRevenue,       prev: earlierResults.totalRevenue },
-          { label: 'Portfolio Margin', curr: laterResults.totalCurrentMargin,  prev: earlierResults.totalCurrentMargin },
-          { label: 'Revenue at Risk',  curr: laterResults.revenueAtRisk,       prev: earlierResults.revenueAtRisk },
-          { label: 'Pricing Gain',     curr: laterResults.p1?.totalGain,       prev: earlierResults.p1?.totalGain },
-          { label: 'Cost Absorbed',    curr: laterResults.p2?.totalAbsorbed,   prev: earlierResults.p2?.totalAbsorbed },
-          { label: 'Channel Exposure', curr: laterResults.p3?.totalDistExposure, prev: earlierResults.p3?.totalDistExposure },
+          { label: 'Revenue',          curr: laterResults.totalRevenue,           prev: earlierResults.totalRevenue,           pos: true  },
+          { label: 'Portfolio Margin', curr: laterResults.totalCurrentMargin,      prev: earlierResults.totalCurrentMargin,      pos: true  },
+          { label: 'Revenue at Risk',  curr: laterResults.revenueAtRisk,           prev: earlierResults.revenueAtRisk,           pos: false },
+          { label: 'Pricing Gain',     curr: laterResults.p1?.totalGain,           prev: earlierResults.p1?.totalGain,           pos: true  },
+          { label: 'Cost Absorbed',    curr: laterResults.p2?.totalAbsorbed,       prev: earlierResults.p2?.totalAbsorbed,       pos: false },
+          { label: 'Channel Exposure', curr: laterResults.p3?.totalDistExposure,   prev: earlierResults.p3?.totalDistExposure,   pos: false },
         ].map((row, i) => {
           const diff = (row.curr != null && row.prev != null) ? row.curr - row.prev : null;
           const diffPct = (diff != null && row.prev !== 0) ? (diff / Math.abs(row.prev) * 100) : null;
+          // Polarity-aware colour: improvement = teal, deterioration = red
+          const isImprovement = diff == null ? null
+            : row.pos ? diff >= 0 : diff <= 0;
+          const deltaColor = diff == null ? C.muted : isImprovement ? C.teal : C.red;
           return (
             <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
               <Text style={[s.tableCell, { width: '30%', fontWeight: 600 }]}>{row.label}</Text>
               <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.prev, 'nairaK')}</Text>
               <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.curr, 'nairaK')}</Text>
-              <Text style={[s.tableCell, { width: '20%', textAlign: 'right',
-                color: diff == null ? C.muted : diff >= 0 ? C.teal : C.red }]}>
+              <Text style={[s.tableCell, { width: '20%', textAlign: 'right', color: deltaColor }]}>
                 {diff != null
                   ? `${diff >= 0 ? '+' : ''}${fmt(diff, 'nairaK')}${diffPct != null ? ` (${diffPct.toFixed(1)}%)` : ''}`
                   : '—'}
