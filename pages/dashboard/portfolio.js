@@ -72,11 +72,7 @@ export default function PortfolioPage() {
 
     // Hard block — reject the entire import if it would exceed the tier cap
     if (limit !== null && activeSkuCount + rows.length > limit) {
-      setSkuLimitError(
-        `Your ${tierLabel} plan supports up to ${limit} active SKUs. ` +
-        `You currently have ${activeSkuCount} — this import would add ${rows.length} more ` +
-        `(${activeSkuCount + rows.length} total). Upgrade your plan to continue.`
-      );
+      setSkuLimitError(`Your ${tierLabel} plan supports up to ${limit} active SKUs. Upgrade your plan to continue.`);
       return;
     }
 
