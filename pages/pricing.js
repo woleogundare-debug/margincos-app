@@ -276,7 +276,7 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <section className="bg-white py-20 md:py-28">
+        <section className="bg-white pt-8 pb-20 md:pb-28">
           <div className="max-w-4xl mx-auto px-6">
             <h2 data-reveal className="opacity-0 text-xl md:text-2xl font-black text-navy text-center mb-12">Feature Comparison</h2>
             <div className="overflow-x-auto">
