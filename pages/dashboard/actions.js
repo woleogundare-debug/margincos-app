@@ -27,13 +27,18 @@ const fmtN = (v) => {
 };
 
 export default function ActionsPage() {
-  const { team } = useTeam();
+  const { team, loading: teamLoading } = useTeam();
   // activePeriod from shared context — no separate usePortfolio instance needed
   const { activePeriod } = useAnalysisContext();
   const {
-    actions, loading, stats,
+    actions, loading: actionsLoading, stats,
     updateAction, resolveAction, dismissAction, resetFetchKey,
   } = useActions(team?.id); // no periodId — show all actions across all periods
+
+  // Combined loading: keep spinner up while team is still resolving.
+  // Without this, useActions(null) fires early-return → loading=false before team loads,
+  // causing a brief empty-state flash before the real fetch kicks off.
+  const loading = teamLoading || actionsLoading;
 
   // Clear the dedup fetch key on unmount so navigating back always triggers a fresh load.
   // Without this, lastFetchKey still holds the old key and loadActions() returns immediately.
@@ -112,7 +117,13 @@ export default function ActionsPage() {
             <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
               {['all', 'open', 'in_progress', 'resolved', 'dismissed'].map(s => (
                 <button key={s}
-                  onClick={() => setFilter(s)}
+                  onClick={() => {
+                    setFilter(s);
+                    // Switching status = intent to see ALL items of that status.
+                    // Reset pillar filter so users don't get trapped seeing 1 item
+                    // because a pillar sub-filter was still active from a previous click.
+                    setPillarFilter('all');
+                  }}
                   className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all"
                   style={{
                     backgroundColor: filter === s ? '#1B2A4A' : 'transparent',

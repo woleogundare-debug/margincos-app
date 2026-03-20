@@ -248,12 +248,20 @@ export default function PortfolioPage() {
               {activePeriod && activeSkuCount > 0 && (
                 <div className="hidden md:flex items-center gap-2">
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                    style={{ backgroundColor: '#F4F6F8', color: '#1B2A4A' }}>
+                    style={{
+                      backgroundColor: '#E8F5F5',
+                      color: '#0D8F8F',
+                      border: '1px solid rgba(13, 143, 143, 0.2)',
+                    }}>
                     {activeSkuCount} SKU{activeSkuCount !== 1 ? 's' : ''}
                   </span>
                   {totalRevenue > 0 && (
                     <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                      style={{ backgroundColor: '#E8F5F5', color: '#0D8F8F' }}>
+                      style={{
+                        backgroundColor: '#E8F5F5',
+                        color: '#0D8F8F',
+                        border: '1px solid rgba(13, 143, 143, 0.2)',
+                      }}>
                       {nairaCompact(totalRevenue)} revenue
                     </span>
                   )}
