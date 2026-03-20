@@ -171,6 +171,22 @@ html, body  { overflow-x: hidden; }
 .logo-bar   { overflow: hidden; }
 .cta-section { overflow: hidden; position: relative; }
 
+/* ── Hero animation flash prevention ───────────────────────────────
+   landing.html's animation CSS is in styled-jsx and only injects after
+   React hydration (~200-400ms). Without this block, hero elements are
+   briefly visible at opacity:1 before the animation resets them to 0.
+   Setting opacity:0 here (SSG-safe, applied on first paint) means the
+   elements are invisible from the start; styled-jsx injection then fires
+   the fade-up animations with no preceding flash.
+   NOTE: CSS animations override author opacity once running, so the
+   final animated-to state (opacity:1) is not blocked by these rules.
+------------------------------------------------------------------- */
+.hero-badge,
+.hero-title,
+.hero-sub,
+.hero-actions,
+.metrics-strip { opacity: 0; }
+
 /* ── Homepage mobile overrides ─────────────────────────────────────
    These must live here (not in styled-jsx) because the homepage uses
    dangerouslySetInnerHTML — styled-jsx dynamic blocks are JS-injected
