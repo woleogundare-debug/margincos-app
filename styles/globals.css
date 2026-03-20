@@ -253,6 +253,18 @@ html, body  { overflow-x: hidden; }
     gap: 40px !important;
   }
   .pillars-list { position: static !important; }
+
+  /* ── Pillar panel — grid item min-width fix + content sizing ──
+     min-width:auto (CSS Grid default) prevents .pillars-display from
+     shrinking below its content size even with grid-template-columns:1fr,
+     causing the panel to bleed right. min-width:0 unlocks proper shrink.
+     Heading and metric sizes reduced for ~310px mobile content area. ── */
+  .pillars-display { min-width: 0 !important; }
+  .pillar-panel-title { font-size: 26px !important; }
+  .pillar-output-box { padding: 20px !important; }
+  .output-metric-row { gap: 12px !important; }
+  .output-metric-val { font-size: 20px !important; }
+
   .problem-grid { grid-template-columns: 1fr !important; }
   .breakdown-grid {
     grid-template-columns: 1fr !important;
