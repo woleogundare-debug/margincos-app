@@ -83,7 +83,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
     : '??';
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#F5F7FA' }}>
       {/* Mobile header bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3"
         style={{ backgroundColor: '#1B2A4A' }}>

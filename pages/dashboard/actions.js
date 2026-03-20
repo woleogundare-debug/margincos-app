@@ -90,10 +90,14 @@ export default function ActionsPage() {
               { label: 'Resolved',        value: stats.resolved,      color: '#0D8F8F' },
               { label: 'Value Recovered', value: fmtN(stats.resolvedValue), color: '#0D8F8F' },
             ].map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 px-4 py-3"
-                style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-                <p className="text-xs uppercase tracking-wider mb-1"
-                  style={{ color: '#8899AA' }}>{s.label}</p>
+              <div key={i} className="rounded-xl px-4 py-3 transition-all duration-150"
+                style={{
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #F5F7FA 100%)',
+                  border: '1px solid #E8ECF0',
+                  boxShadow: '0 1px 4px rgba(27, 42, 74, 0.04)',
+                }}>
+                <p className="text-[11px] font-bold uppercase tracking-[0.08em] mb-1"
+                  style={{ color: '#8896A7' }}>{s.label}</p>
                 <p className="text-xl font-bold"
                   style={{ color: s.color, fontFamily: "'Playfair Display', Georgia, serif" }}>
                   {s.value}
@@ -149,22 +153,23 @@ export default function ActionsPage() {
             <div className="space-y-3">
               {filtered.map(action => (
                 <div key={action.id}
-                  className="bg-white rounded-xl border border-gray-100 overflow-hidden"
-                  style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                  className="bg-white rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md"
+                  style={{ border: '1px solid #E8ECF0', boxShadow: '0 2px 8px rgba(27, 42, 74, 0.04)' }}>
 
                   {/* Left accent bar */}
                   <div className="flex">
-                    <div className="w-1 flex-shrink-0"
+                    <div className="w-[3px] flex-shrink-0"
                       style={{ backgroundColor: PILLAR_COLORS[action.pillar] || '#1B2A4A' }} />
                     <div className="flex-1 p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           {/* Pillar + urgency badges */}
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xs font-bold px-2 py-0.5 rounded"
+                            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md tracking-wide"
                               style={{
-                                backgroundColor: `${PILLAR_COLORS[action.pillar] || '#1B2A4A'}20`,
+                                backgroundColor: `${PILLAR_COLORS[action.pillar] || '#1B2A4A'}12`,
                                 color: PILLAR_COLORS[action.pillar] || '#1B2A4A',
+                                border: `1px solid ${PILLAR_COLORS[action.pillar] || '#1B2A4A'}25`,
                               }}>
                               {action.pillar}
                             </span>
@@ -236,14 +241,24 @@ export default function ActionsPage() {
                           )}
                           <button
                             onClick={() => { setResolveModal(action); setResolveNote(''); }}
-                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors"
-                            style={{ borderColor: '#0D8F8F', color: '#0D8F8F' }}>
+                            className="rounded-lg transition-colors"
+                            style={{
+                              backgroundColor: '#E6F5F5', color: '#0D8F8F',
+                              border: '1px solid rgba(13, 143, 143, 0.25)',
+                              fontWeight: 600, fontSize: '12px',
+                              padding: '6px 14px',
+                            }}>
                             Mark Resolved
                           </button>
                           <button
                             onClick={() => dismissAction(action.id)}
-                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ml-auto"
-                            style={{ borderColor: '#E5E8EC', color: '#8899AA' }}>
+                            className="rounded-lg transition-colors ml-auto"
+                            style={{
+                              backgroundColor: 'transparent', color: '#8896A7',
+                              border: '1px solid #E8ECF0',
+                              fontWeight: 500, fontSize: '12px',
+                              padding: '6px 14px',
+                            }}>
                             Dismiss
                           </button>
                         </div>

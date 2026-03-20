@@ -3,18 +3,28 @@ import { RagBadge } from '../ui/index';
 
 // ── KPI Tile ───────────────────────────────────────────────────────────────
 export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal' }) {
-  const accents = {
-    teal:   'border-teal/20 bg-teal-50/50',
-    red:    'border-red/20 bg-red-50/50',
-    amber:  'border-amber/20 bg-amber-50/50',
-    purple: 'border-purple/20 bg-purple-50/50',
+  const ACCENT_STYLES = {
+    teal:   'border-l-4 border-l-[#0D8F8F]',
+    red:    'border-l-4 border-l-[#C0392B]',
+    amber:  'border-l-4 border-l-[#D4A843]',
+    green:  'border-l-4 border-l-[#27AE60]',
+    navy:   'border-l-4 border-l-[#1B2A4A]',
   };
   return (
-    <div className={clsx('rounded-2xl border bg-white p-5 shadow-sm', accents[accent] || accents.teal)}>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{label}</p>
-      <p className="text-2xl font-black text-navy leading-none mb-2">{value ?? '—'}</p>
+    <div
+      className={clsx('rounded-2xl p-5 transition-all duration-200 hover:shadow-md', ACCENT_STYLES[accent] || ACCENT_STYLES.teal)}
+      style={{
+        background: 'linear-gradient(135deg, #FFFFFF 0%, #F5F7FA 100%)',
+        border: '1px solid #E8ECF0',
+        boxShadow: '0 2px 8px rgba(27, 42, 74, 0.06)',
+      }}>
+      <p className="text-[11px] font-bold text-[#8896A7] uppercase tracking-[0.1em] mb-1">{label}</p>
+      <p className="text-2xl font-black leading-none mb-2"
+        style={{ color: '#1B2A4A', fontFamily: "'Playfair Display', Georgia, serif" }}>
+        {value ?? '—'}
+      </p>
       {pill && (
-        <p className={clsx('text-xs font-semibold', pillColor || 'text-slate-400')}>{pill}</p>
+        <p className={clsx('text-xs font-semibold', pillColor || 'text-[#5A6B80]')}>{pill}</p>
       )}
     </div>
   );
@@ -27,7 +37,8 @@ export function PillarCard({ title, subtitle, accentColor, ragStatus, children }
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100"
         style={{ borderLeftWidth: 4, borderLeftColor: accentColor }}>
         <div>
-          <h3 className="text-sm font-bold text-navy">{title}</h3>
+          <h3 className="text-sm font-bold text-navy"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{title}</h3>
           {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
         </div>
         {ragStatus && <RagBadge status={ragStatus} />}
@@ -50,10 +61,10 @@ export function AnalysisTable({ headers, rows, emptyMessage }) {
     <div className="overflow-x-auto scrollbar-hide">
       <table className="w-full text-sm min-w-[600px]">
         <thead>
-          <tr className="border-b border-slate-100">
+          <tr className="border-b-2 border-[#E8ECF0]">
             {headers.map((h, i) => (
               <th key={i} className={clsx(
-                'pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap',
+                'pb-3 text-[11px] font-bold text-[#8896A7] uppercase tracking-[0.08em] whitespace-nowrap',
                 i === 0 ? 'text-left sticky left-0 bg-white z-10 pr-3' : 'text-right px-2'
               )}>{h}</th>
             ))}
@@ -61,14 +72,16 @@ export function AnalysisTable({ headers, rows, emptyMessage }) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className={clsx('border-b border-slate-50', i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50')}>
+            <tr key={i}
+              className="border-b border-[#F5F7FA] transition-colors duration-100 hover:bg-[#E6F5F5]/30"
+              style={{ backgroundColor: i % 2 === 0 ? '#FFFFFF' : '#F5F7FA' }}>
               {row.map((cell, j) => (
                 <td key={j} className={clsx(
                   'py-3 whitespace-nowrap',
-                  j === 0 ? 'text-left font-medium text-navy sticky left-0 z-10 pr-3' : 'text-right text-slate-600 px-2',
-                  j === 0 && (i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'),
+                  j === 0 ? 'text-left font-semibold text-[#1B2A4A] sticky left-0 z-10 pr-3' : 'text-right text-[#5A6B80] px-2 tabular-nums',
                   typeof cell === 'object' && cell?.className
-                )}>
+                )}
+                style={j === 0 ? { backgroundColor: 'inherit' } : undefined}>
                   {typeof cell === 'object' && cell?.content ? cell.content : cell}
                 </td>
               ))}
@@ -84,9 +97,9 @@ export function AnalysisTable({ headers, rows, emptyMessage }) {
 export function ActionItem({ action, index }) {
   const isPositive = action.value >= 0;
   return (
-    <div className="flex items-start gap-4 p-4 border-b border-slate-50 last:border-0">
-      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5"
-        style={{ background: action.color + '20', color: action.color }}>
+    <div className="flex items-start gap-4 p-4 border-b border-[#E8ECF0] last:border-0 transition-all duration-150 hover:bg-[#F5F7FA] rounded-lg">
+      <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5"
+        style={{ background: action.color + '15', color: action.color, border: `1.5px solid ${action.color}30` }}>
         {index + 1}
       </div>
       <div className="flex-1 min-w-0">
@@ -98,7 +111,8 @@ export function ActionItem({ action, index }) {
         </p>
       </div>
       <div className="text-right flex-shrink-0">
-        <p className={clsx('text-sm font-black', isPositive ? 'text-emerald-600' : 'text-red-500')}>
+        <p className="text-base font-black whitespace-nowrap"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif", color: isPositive ? '#27AE60' : '#C0392B' }}>
           {isPositive ? '+' : ''}{Math.abs(action.value) > 0 ? formatValue(Math.abs(action.value)) : '—'}
         </p>
         {action.value !== 0 && <p className="text-xs text-slate-400">/month</p>}
