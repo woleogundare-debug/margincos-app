@@ -157,17 +157,19 @@ button, a {
 
 /* ── Homepage overflow guards ──────────────────────────────────────
    These contain elements that overflow horizontally before hydration:
-   - body: no viewport-level overflow guard until JS runs
-   - .hero: clips 600px absolutely-positioned orb decorations
+   - html+body: iOS Safari requires BOTH for reliable overflow-x clipping
+   - .hero: position:relative needed so overflow:hidden clips the
+     absolutely-positioned 600px orbs (containing-block requirement)
    - .logo-bar: clips the max-content-width ticker track
-   - .cta-section: clips 800px/600px concentric ring pseudo-elements
-   All four rules live in landing.html's <style> block (styled-jsx prop)
+   - .cta-section: position:relative needed so overflow:hidden clips
+     the 800px/600px concentric ring pseudo-elements
+   All rules live in landing.html's <style> block (styled-jsx prop)
    so they only apply after hydration without this guard.
 ------------------------------------------------------------------- */
-body        { overflow-x: hidden; }
-.hero       { overflow: hidden; }
+html, body  { overflow-x: hidden; }
+.hero       { overflow: hidden; position: relative; }
 .logo-bar   { overflow: hidden; }
-.cta-section { overflow: hidden; }
+.cta-section { overflow: hidden; position: relative; }
 
 /* ── Homepage mobile overrides ─────────────────────────────────────
    These must live here (not in styled-jsx) because the homepage uses
