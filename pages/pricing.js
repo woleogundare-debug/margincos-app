@@ -22,12 +22,10 @@ function useScrollReveal() {
   return ref;
 }
 
-const CURRENCIES = [
-  { code: 'USD', symbol: '$', label: 'USD', rate: 1 },
-  { code: 'NGN', symbol: '₦', label: 'NGN', rate: 1650 },
-  { code: 'EUR', symbol: '€', label: 'EUR', rate: 0.92 },
-  { code: 'GBP', symbol: '£', label: 'GBP', rate: 0.79 },
-];
+// Fallback rates used until /api/exchange-rates responds (or on error).
+// These are overwritten by live data on every page load.
+const FALLBACK_RATES = { NGN: 1650, EUR: 0.92, GBP: 0.79 };
+
 
 const BASE_PRICES = {
   essentials: { monthly: 250, annual: 213, impl: 450 },
@@ -125,9 +123,34 @@ function FaqItem({ q, a }) {
 }
 
 export default function PricingPage() {
-  const [annual, setAnnual] = useState(false);
-  const [currency, setCurrency] = useState(CURRENCIES[0]);
+  const [annual, setAnnual]           = useState(false);
+  const [currencyCode, setCurrencyCode] = useState('USD');
+  const [rates, setRates]             = useState(FALLBACK_RATES);
+  const [ratesMeta, setRatesMeta]     = useState({ live: false, updatedAt: null, loading: true });
   const rootRef = useScrollReveal();
+
+  // Fetch live rates once on mount
+  useEffect(() => {
+    fetch('/api/exchange-rates')
+      .then(r => r.json())
+      .then(data => {
+        setRates(data.rates);
+        setRatesMeta({ live: data.live, updatedAt: data.updatedAt, loading: false });
+      })
+      .catch(() => {
+        setRatesMeta({ live: false, updatedAt: null, loading: false });
+      });
+  }, []);
+
+  // Build the currency list with up-to-date rates on every render
+  const currencies = [
+    { code: 'USD', symbol: '$', label: 'USD', rate: 1 },
+    { code: 'NGN', symbol: '₦', label: 'NGN', rate: rates.NGN },
+    { code: 'EUR', symbol: '€', label: 'EUR', rate: rates.EUR },
+    { code: 'GBP', symbol: '£', label: 'GBP', rate: rates.GBP },
+  ];
+
+  const currency = currencies.find(c => c.code === currencyCode) ?? currencies[0];
 
   const formatPrice = (usdAmount) => {
     if (usdAmount === 0) return 'Included';
@@ -246,16 +269,16 @@ export default function PricingPage() {
               </div>
               {/* Row 2 — Currency selector */}
               <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-1 py-1">
-                {CURRENCIES.map(c => (
+                {currencies.map(c => (
                   <button
                     key={c.code}
-                    onClick={() => setCurrency(c)}
+                    onClick={() => setCurrencyCode(c.code)}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                      currency.code === c.code
+                      currencyCode === c.code
                         ? 'text-white shadow-sm'
                         : 'text-gray-500 hover:text-navy'
                     }`}
-                    style={currency.code === c.code ? { backgroundColor: '#1B2A4A' } : {}}
+                    style={currencyCode === c.code ? { backgroundColor: '#1B2A4A' } : {}}
                   >
                     {c.symbol} {c.code}
                   </button>
@@ -268,9 +291,26 @@ export default function PricingPage() {
               {TIERS.map(tier => <PricingCard key={tier.key} tier={tier} annual={annual} formatPrice={formatPrice} />)}
             </div>
 
-            {/* 5 — Disclaimer */}
+            {/* 5 — Disclaimer with live-rate status */}
             <p className="text-center text-xs text-gray-400 mt-4">
-              All prices shown in {currency.label}. NGN rates are indicative and updated periodically. Contracts are invoiced in USD unless otherwise agreed.
+              All prices shown in {currency.label}.{' '}
+              {ratesMeta.loading ? (
+                <span>Fetching live rates…</span>
+              ) : ratesMeta.live ? (
+                <span>
+                  Rates live as of{' '}
+                  <span className="text-teal font-medium">
+                    {new Date(ratesMeta.updatedAt).toLocaleString('en-GB', {
+                      day: 'numeric', month: 'short', year: 'numeric',
+                      hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+                    })}
+                  </span>
+                  .
+                </span>
+              ) : (
+                <span>Rates are indicative estimates — live rates temporarily unavailable.</span>
+              )}{' '}
+              Contracts are invoiced in USD unless otherwise agreed.
             </p>
 
           </div>
