@@ -1016,7 +1016,7 @@ const M4Page = ({ results, companyName }) => {
 };
 
 /* ── Trend narrative generator ─────────────────────────────── */
-function generateTrendNarrative(deltas, earlierLabel, laterLabel) {
+function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, currSkuCount) {
   if (!deltas) return '';
 
   const metrics = [
@@ -1036,6 +1036,16 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel) {
   const deteriorated = metrics.filter(m => m.positive ? m.d.direction === 'down' : m.d.direction === 'up');
 
   const parts = [];
+
+  // Sentence 0 — SKU count context (only if portfolio size changed between periods)
+  if (prevSkuCount != null && currSkuCount != null && prevSkuCount !== currSkuCount) {
+    const diff = currSkuCount - prevSkuCount;
+    const abs  = Math.abs(diff);
+    const dir  = diff > 0 ? 'expanded' : 'contracted';
+    parts.push(
+      `Note: the active portfolio ${dir} from ${prevSkuCount} to ${currSkuCount} SKUs between ${earlierLabel} and ${laterLabel} — the ${diff > 0 ? 'addition' : 'removal'} of ${abs} SKU${abs !== 1 ? 's' : ''} means some revenue and margin movement below reflects structural portfolio change, not purely like-for-like commercial performance.`
+    );
+  }
 
   // Sentence 1 — opening: overall revenue direction
   const rev = deltas.portfolio?.revenue;
@@ -1226,6 +1236,27 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
           <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'right' }]}>Δ Change</Text>
         </View>
 
+        {/* SKU Count — context row, always first, styled distinctly */}
+        {(() => {
+          const prevCount = earlierResults.skuCount ?? null;
+          const currCount = laterResults.skuCount  ?? null;
+          const skuDiff   = (currCount != null && prevCount != null) ? currCount - prevCount : null;
+          return (
+            <View style={[s.tableRow, { backgroundColor: '#EEF2F7' }]}>
+              <Text style={[s.tableCell, { width: '30%', fontWeight: 700, fontSize: 7, textTransform: 'uppercase', letterSpacing: 0.5, color: C.navy }]}>
+                Active SKUs
+              </Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{prevCount ?? '—'}</Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{currCount ?? '—'}</Text>
+              <Text style={[s.tableCell, { width: '20%', textAlign: 'right', fontWeight: 700,
+                color: skuDiff == null ? C.muted : skuDiff === 0 ? C.muted : skuDiff > 0 ? C.teal : C.gold }]}>
+                {skuDiff != null ? `${skuDiff > 0 ? '+' : ''}${skuDiff} SKUs` : '—'}
+              </Text>
+            </View>
+          );
+        })()}
+
+        {/* Financial metric rows */}
         {[
           { label: 'Revenue',          curr: laterResults.totalRevenue,           prev: earlierResults.totalRevenue,           pos: true  },
           { label: 'Portfolio Margin', curr: laterResults.totalCurrentMargin,      prev: earlierResults.totalCurrentMargin,      pos: true  },
@@ -1241,7 +1272,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
             : row.pos ? diff >= 0 : diff <= 0;
           const deltaColor = diff == null ? C.muted : isImprovement ? C.teal : C.red;
           return (
-            <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+            <View key={i} style={[s.tableRow, i % 2 === 0 && s.tableRowAlt]}>
               <Text style={[s.tableCell, { width: '30%', fontWeight: 600 }]}>{row.label}</Text>
               <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.prev, 'nairaK')}</Text>
               <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.curr, 'nairaK')}</Text>
@@ -1279,7 +1310,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
           color: C.navy,
           lineHeight: 1.7,
         }}>
-          {generateTrendNarrative(deltas, earlier, later)}
+          {generateTrendNarrative(deltas, earlier, later, earlierResults.skuCount, laterResults.skuCount)}
         </Text>
       </View>
 
