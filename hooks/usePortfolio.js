@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
+import { TIER_LIMITS } from '../lib/constants';
 
-export function usePortfolio(userId) {
+export function usePortfolio(userId, tier = 'essentials') {
   const [periods,          setPeriods]          = useState([]);
   const [activePeriod,     setActivePeriod]     = useState(null);
   const [skuRows,          setSkuRows]          = useState([]);
@@ -124,6 +125,21 @@ export function usePortfolio(userId) {
 
   // ── Add new blank SKU ─────────────────────────────────────────
   const addSku = useCallback(async () => {
+    // Enforce tier SKU cap — null means unlimited
+    const limit = TIER_LIMITS[tier]?.maxSkus ?? null;
+    if (limit !== null) {
+      const currentCount = skuRows.filter(
+        r => r.active === 'Y' || r.active === true || r.active === 'y'
+      ).length;
+      if (currentCount >= limit) {
+        const tierLabel = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
+        return {
+          error: true,
+          message: `Your ${tierLabel} plan supports up to ${limit} active SKUs. Upgrade to add more.`,
+        };
+      }
+    }
+
     const tempId = `temp_${Date.now()}`;
     const blank = {
       _tempId: tempId,
@@ -136,7 +152,7 @@ export function usePortfolio(userId) {
     };
     setSkuRows(prev => [...prev, blank]);
     return tempId;
-  }, [activePeriod, userId]);
+  }, [activePeriod, userId, tier, skuRows]);
 
   // ── Soft-delete SKU ───────────────────────────────────────────
   const deleteSku = useCallback(async (id) => {

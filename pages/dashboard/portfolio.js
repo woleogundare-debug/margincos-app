@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -33,6 +33,7 @@ export default function PortfolioPage() {
 
   const [selectedRow, setSelectedRow] = useState(null);
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
+  const [skuLimitError, setSkuLimitError] = useState(null);
 
   // Compute total revenue from SKU rows
   const totalRevenue = useMemo(() => {
@@ -43,10 +44,15 @@ export default function PortfolioPage() {
     }, 0);
   }, [skuRows]);
 
-  const handleAddSku = async () => {
+  const handleAddSku = useCallback(async () => {
     setActiveTab('sku');
-    await addSku();
-  };
+    const result = await addSku();
+    if (result?.error) {
+      setSkuLimitError(result.message);
+    } else {
+      setSkuLimitError(null);
+    }
+  }, [addSku]);
 
   const handleSaveSku = async (row) => {
     await saveSku(row);
@@ -234,6 +240,32 @@ export default function PortfolioPage() {
                 </button>
               ))}
             </div>
+
+            {/* SKU limit error banner */}
+            {skuLimitError && (
+              <div className="flex items-start justify-between gap-3 px-4 py-3 mb-4 rounded-xl border border-amber-200 bg-amber-50 text-sm">
+                <div className="flex items-start gap-2 text-amber-800">
+                  <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <span>
+                    {skuLimitError}{' '}
+                    <Link href="/pricing" className="font-semibold underline underline-offset-2 hover:text-amber-900 transition-colors">
+                      View plans →
+                    </Link>
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSkuLimitError(null)}
+                  className="shrink-0 text-amber-500 hover:text-amber-700 transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
 
             {/* SKU Grid tab */}
             {activeTab === 'sku' && (

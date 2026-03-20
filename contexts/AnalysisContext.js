@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 const AnalysisContext = createContext(null);
 
 export function AnalysisProvider({ children }) {
-  const { user } = useAuth();
+  const { user, tier } = useAuth();
 
   // Single usePortfolio instance for the entire dashboard.
   // All consumers (portfolio.js, overview.js, pillar pages) read from here,
@@ -30,7 +30,7 @@ export function AnalysisProvider({ children }) {
     saveTradeInvestment,
     activeSkuCount,
     completeSkuCount,
-  } = usePortfolio(user?.id);
+  } = usePortfolio(user?.id, tier);
 
   const {
     results,
