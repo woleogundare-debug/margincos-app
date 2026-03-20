@@ -9,6 +9,7 @@ export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal' }
     amber:  '#D4A843',
     green:  '#27AE60',
     navy:   '#1B2A4A',
+    purple: '#8A6BBE',  // P4 Trade Execution pillar colour
   };
   return (
     <div
