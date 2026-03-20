@@ -94,7 +94,7 @@ function PricingCard({ tier, annual, formatPrice }) {
         {!annual && <p className="mt-1 text-xs font-semibold" style={{ color: '#0D8F8F' }}>Save {Math.round(ANNUAL_DISCOUNT * 100)}% with annual billing</p>}
         <p className="mt-3 text-xs text-slate-500 leading-relaxed">{tier.tagline}</p>
         <p className="mt-2 text-xs text-slate-400">
-          {prices.impl > 0 ? `+ ${formatPrice(prices.impl)} implementation` : '4-week onboarding included'}
+          {prices.impl > 0 ? `+ $${prices.impl.toLocaleString()} implementation` : '4-week onboarding included'}
         </p>
       </div>
       <Link href={tier.ctaHref}
@@ -310,8 +310,8 @@ export default function PricingPage() {
               ) : (
                 <span>Rates are indicative estimates — live rates temporarily unavailable.</span>
               )}{' '}
-              Contracts are invoiced in USD unless otherwise agreed.
-            </p>
+              Contracts are invoiced in USD unless otherwise agreed. Implementation fees are always shown and invoiced in USD.
+</p>
 
           </div>
         </section>
