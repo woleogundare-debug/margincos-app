@@ -181,43 +181,6 @@ export default function HomePage({ css, sectionsHtml }) {
 
       <style jsx global>{css}</style>
 
-      <style jsx global>{`
-        @media (max-width: 900px) {
-          .hero { padding: 100px 24px 60px !important; }
-          .hero-inner { width: 100% !important; max-width: 100% !important; }
-          .hero-content-row { grid-template-columns: 1fr !important; }
-          .hero-right { display: none !important; }
-          .hero-left {
-            text-align: center !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            width: 100% !important;
-          }
-          .hero-title { text-align: center !important; }
-          .hero-sub { text-align: center !important; margin: 0 auto 40px !important; }
-          .hero-actions {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            width: 100% !important;
-            gap: 12px !important;
-          }
-          .btn-hero-primary, .btn-hero-secondary {
-            width: 100% !important;
-            justify-content: center !important;
-            text-align: center !important;
-            box-sizing: border-box !important;
-          }
-          .metrics-strip {
-            grid-template-columns: repeat(3, 1fr) !important;
-          }
-          .metric-cell { padding: 20px 12px !important; }
-          .metric-val { font-size: 28px !important; }
-          .metric-label { font-size: 11px !important; }
-        }
-      `}</style>
-
       <PublicNav />
 
       <div dangerouslySetInnerHTML={{ __html: sectionsHtml }} />

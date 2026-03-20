@@ -1400,9 +1400,9 @@ body {
   .nav-hamburger { display: flex; }
   .hero { padding: 100px 24px 60px; }
   .metrics-strip { grid-template-columns: repeat(3, 1fr); gap: 1px; }
-  .metric-cell { padding: 20px 12px; }
-  .metric-val { font-size: 28px; }
-  .metric-label { font-size: 11px; }
+  .metric-cell { padding: 16px 10px; }
+  .metric-val { font-size: 26px; }
+  .metric-label { font-size: 10px; }
   .section { padding: 60px 24px; }
   .pillars-layout { grid-template-columns: 1fr; gap: 40px; }
   .pillars-list { position: static; }
@@ -1651,6 +1651,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
   }
   .hero-title {
     text-align: center;
@@ -1662,14 +1663,16 @@ body {
     max-width: 100%;
   }
   .hero-actions {
-    justify-content: center !important;
-    flex-wrap: wrap;
-    gap: 12px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    gap: 12px !important;
   }
   .btn-hero-primary, .btn-hero-secondary {
-    width: 100%;
-    justify-content: center;
-    text-align: center;
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
   }
 }
 
