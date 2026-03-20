@@ -90,7 +90,7 @@ function PricingCard({ tier, annual, formatPrice }) {
       <div className="mb-6">
         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{tier.name}</h3>
         <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-black text-navy">{formatPrice(price)}</span>
+          <span className="text-4xl font-black text-navy price-value">{formatPrice(price)}</span>
           <span className="text-sm text-slate-400 font-medium">/mo</span>
         </div>
         {!annual && <p className="mt-1 text-xs font-semibold" style={{ color: '#0D8F8F' }}>Save {Math.round(ANNUAL_DISCOUNT * 100)}% with annual billing</p>}
@@ -153,6 +153,9 @@ export default function PricingPage() {
         <meta name="twitter:title" content="Pricing — MarginCOS Margin Recovery Platform" />
         <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for Nigerian FMCG and manufacturing companies." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">
@@ -169,40 +172,8 @@ export default function PricingPage() {
 
         <section className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
-            <div className="flex flex-col items-center gap-4 mb-10">
-              {/* Row 1 — Monthly/Annual toggle */}
-              <div className="flex items-center gap-4">
-                <span className={`text-sm font-medium ${!annual ? 'text-navy' : 'text-gray-400'}`}>Monthly</span>
-                <button onClick={() => setAnnual(!annual)}
-                  className="relative w-12 h-6 rounded-full transition-colors flex-shrink-0"
-                  style={{ backgroundColor: annual ? '#0D8F8F' : '#D1D5DB' }}>
-                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${annual ? 'translate-x-6' : 'translate-x-0.5'}`} />
-                </button>
-                <span className={`text-sm font-medium ${annual ? 'text-navy' : 'text-gray-400'}`}>Annual</span>
-                {!annual && (
-                  <span className="text-sm font-semibold" style={{ color: '#0D8F8F' }}>(save 15%)</span>
-                )}
-              </div>
-              {/* Row 2 — Currency selector */}
-              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-1 py-1">
-                {CURRENCIES.map(c => (
-                  <button
-                    key={c.code}
-                    onClick={() => setCurrency(c)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                      currency.code === c.code
-                        ? 'text-white shadow-sm'
-                        : 'text-gray-500 hover:text-navy'
-                    }`}
-                    style={currency.code === c.code ? { backgroundColor: '#1B2A4A' } : {}}
-                  >
-                    {c.symbol} {c.code}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            {/* Report feature callout */}
+            {/* 1 — Board-ready report banner */}
             <div className="max-w-4xl mx-auto mb-16 rounded-2xl overflow-hidden border border-gray-100"
               style={{ boxShadow: '0 2px 16px rgba(27,42,74,0.08)' }}>
               <div className="p-8 md:p-10" style={{ backgroundColor: '#1B2A4A' }}>
@@ -251,87 +222,57 @@ export default function PricingPage() {
               </div>
             </div>
 
-            {/* ── PRICING CARDS ─────────────────────────────────────────────────── */}
-            <section className="pricing-cards-section">
-              <div className="pricing-cards-inner">
-                <div className="pricing-cards-header">
-                  <div className="section-tag-gold-pill">Transparent Pricing</div>
-                  <h2 className="pricing-cards-heading">Simple. Scalable. No surprises.</h2>
-                  <p className="pricing-cards-sub">Every plan includes the PDF Margin Intelligence Report, Action Tracker, and Excel import. No ERP integration required.</p>
-                </div>
-                <div className="pricing-cards-grid">
-                  {/* Essentials */}
-                  <div className="pc-card">
-                    <div className="pc-badge">Essentials</div>
-                    <h3 className="pc-name">Essentials</h3>
-                    <p className="pc-desc">Pricing intelligence for lean commercial teams starting their margin recovery journey.</p>
-                    <div className="pc-amount">
-                      <div className="pc-val">$250</div>
-                      <div className="pc-period">per month</div>
-                      <span className="pc-annual">$213/mo billed annually — save 15%</span>
-                    </div>
-                    <ul className="pc-features">
-                      <li>P1 Pricing Intelligence</li>
-                      <li>PDF margin report (P1)</li>
-                      <li>Action Tracker</li>
-                      <li>1 team seat</li>
-                      <li>Excel import</li>
-                      <li>$450 implementation</li>
-                    </ul>
-                    <a href="/contact" className="pc-btn pc-btn-outline">Get Started</a>
-                  </div>
-                  {/* Professional */}
-                  <div className="pc-card pc-featured">
-                    <div className="pc-featured-label">Most Popular</div>
-                    <div className="pc-badge">Professional</div>
-                    <h3 className="pc-name">Professional</h3>
-                    <p className="pc-desc">All four commercial pillars for CFOs and Commercial Directors managing full portfolios.</p>
-                    <div className="pc-amount">
-                      <div className="pc-val">$850</div>
-                      <div className="pc-period">per month</div>
-                      <span className="pc-annual">$723/mo billed annually — save 15%</span>
-                    </div>
-                    <ul className="pc-features">
-                      <li>P1 Pricing Intelligence</li>
-                      <li>P2 Cost Pass-Through</li>
-                      <li>P3 Channel Economics</li>
-                      <li>P4 Trade Execution</li>
-                      <li>Full PDF report (P1–P4)</li>
-                      <li>5 team seats</li>
-                      <li>$1,300 implementation</li>
-                    </ul>
-                    <a href="/contact" className="pc-btn pc-btn-primary">Book a Diagnostic</a>
-                  </div>
-                  {/* Enterprise */}
-                  <div className="pc-card">
-                    <div className="pc-badge">Enterprise</div>
-                    <h3 className="pc-name">Enterprise</h3>
-                    <p className="pc-desc">The full platform with advanced modules, unlimited seats, and managed onboarding.</p>
-                    <div className="pc-amount">
-                      <div className="pc-val">$2,400</div>
-                      <div className="pc-period">per month</div>
-                      <span className="pc-annual">$2,040/mo billed annually — save 15%</span>
-                    </div>
-                    <ul className="pc-features">
-                      <li>All P1–P4 pillars</li>
-                      <li>M1–M4 Enterprise modules</li>
-                      <li>Full 8-pillar PDF report</li>
-                      <li>Unlimited team seats</li>
-                      <li>4-week managed onboarding</li>
-                      <li>Implementation included</li>
-                    </ul>
-                    <a href="/contact" className="pc-btn pc-btn-outline">Contact Sales</a>
-                  </div>
-                </div>
-              </div>
-            </section>
+            {/* 2 — "Transparent Pricing" heading block */}
+            <div className="text-center max-w-[560px] mx-auto mb-12">
+              <div className="section-tag-gold-pill">Transparent Pricing</div>
+              <h2 className="pricing-cards-heading">Simple. Scalable. No surprises.</h2>
+              <p className="pricing-cards-sub">Every plan includes the PDF Margin Intelligence Report, Action Tracker, and Excel import. No ERP integration required.</p>
+            </div>
 
+            {/* 3 — Monthly/Annual toggle + currency switcher */}
+            <div className="flex flex-col items-center gap-4 mb-10">
+              {/* Row 1 — Monthly/Annual toggle */}
+              <div className="flex items-center gap-4">
+                <span className={`text-sm font-medium ${!annual ? 'text-navy' : 'text-gray-400'}`}>Monthly</span>
+                <button onClick={() => setAnnual(!annual)}
+                  className="relative w-12 h-6 rounded-full transition-colors flex-shrink-0"
+                  style={{ backgroundColor: annual ? '#0D8F8F' : '#D1D5DB' }}>
+                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${annual ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                </button>
+                <span className={`text-sm font-medium ${annual ? 'text-navy' : 'text-gray-400'}`}>Annual</span>
+                {!annual && (
+                  <span className="text-sm font-semibold" style={{ color: '#0D8F8F' }}>(save 15%)</span>
+                )}
+              </div>
+              {/* Row 2 — Currency selector */}
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-1 py-1">
+                {CURRENCIES.map(c => (
+                  <button
+                    key={c.code}
+                    onClick={() => setCurrency(c)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      currency.code === c.code
+                        ? 'text-white shadow-sm'
+                        : 'text-gray-500 hover:text-navy'
+                    }`}
+                    style={currency.code === c.code ? { backgroundColor: '#1B2A4A' } : {}}
+                  >
+                    {c.symbol} {c.code}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4 — Interactive pricing cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto items-start">
               {TIERS.map(tier => <PricingCard key={tier.key} tier={tier} annual={annual} formatPrice={formatPrice} />)}
             </div>
+
+            {/* 5 — Disclaimer */}
             <p className="text-center text-xs text-gray-400 mt-4">
               All prices shown in {currency.label}. NGN rates are indicative and updated periodically. Contracts are invoiced in USD unless otherwise agreed.
             </p>
+
           </div>
         </section>
 
@@ -397,19 +338,14 @@ export default function PricingPage() {
       </div>
 
       <style jsx global>{`
-        .pricing-cards-section {
-          padding: 80px 48px;
-          background: #F5F7FA;
+        /* Playfair Display on interactive price values */
+        .price-value {
+          font-family: 'Playfair Display', Georgia, serif !important;
+          letter-spacing: -0.03em;
+          font-weight: 700;
         }
-        .pricing-cards-inner {
-          max-width: 1100px;
-          margin: 0 auto;
-        }
-        .pricing-cards-header {
-          text-align: center;
-          max-width: 560px;
-          margin: 0 auto 60px;
-        }
+
+        /* Heading block styles */
         .section-tag-gold-pill {
           display: inline-block;
           font-size: 11px;
@@ -425,143 +361,17 @@ export default function PricingPage() {
         }
         .pricing-cards-heading {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(32px, 4vw, 48px);
+          font-size: clamp(28px, 4vw, 40px);
           font-weight: 700;
           color: #1B2A4A;
           letter-spacing: -0.03em;
           line-height: 1.1;
-          margin-bottom: 16px;
+          margin-bottom: 12px;
         }
         .pricing-cards-sub {
           font-size: 15px;
           color: #5A6B80;
           line-height: 1.7;
-        }
-        .pricing-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-          align-items: start;
-        }
-        .pc-card {
-          background: #fff;
-          border: 1px solid #E8ECF0;
-          border-radius: 20px;
-          padding: 40px 32px;
-          position: relative;
-          transition: all 0.3s;
-        }
-        .pc-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 40px rgba(27,42,74,0.12);
-          border-color: rgba(13,143,143,0.2);
-        }
-        .pc-featured {
-          background: #1B2A4A;
-          border-color: transparent;
-          transform: scale(1.02);
-          box-shadow: 0 12px 50px rgba(27,42,74,0.25);
-        }
-        .pc-featured:hover { transform: scale(1.02) translateY(-4px); }
-        .pc-featured-label {
-          position: absolute;
-          top: -14px; left: 50%;
-          transform: translateX(-50%);
-          background: #C0392B;
-          color: #fff;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          padding: 5px 16px;
-          border-radius: 100px;
-          white-space: nowrap;
-        }
-        .pc-badge {
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: #0D8F8F;
-          background: #E6F5F5;
-          padding: 4px 12px;
-          border-radius: 100px;
-          display: inline-block;
-          margin-bottom: 20px;
-        }
-        .pc-featured .pc-badge { background: rgba(13,143,143,0.15); }
-        .pc-name {
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: 24px;
-          font-weight: 700;
-          color: #1B2A4A;
-          margin-bottom: 8px;
-        }
-        .pc-featured .pc-name { color: #fff; }
-        .pc-desc { font-size: 14px; color: #5A6B80; margin-bottom: 28px; line-height: 1.5; }
-        .pc-featured .pc-desc { color: rgba(255,255,255,0.45); }
-        .pc-amount { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #E8ECF0; }
-        .pc-featured .pc-amount { border-color: rgba(255,255,255,0.07); }
-        .pc-val {
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: 44px;
-          font-weight: 700;
-          color: #1B2A4A;
-          letter-spacing: -0.03em;
-          line-height: 1;
-        }
-        .pc-featured .pc-val { color: #D4A843; }
-        .pc-period { font-size: 13px; color: #5A6B80; margin-top: 2px; }
-        .pc-featured .pc-period { color: rgba(255,255,255,0.35); }
-        .pc-annual { display: block; font-size: 12px; color: #27AE60; font-weight: 500; margin-top: 6px; }
-        .pc-features {
-          list-style: none;
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-bottom: 32px;
-        }
-        .pc-features li {
-          font-size: 14px;
-          color: #5A6B80;
-          padding-left: 20px;
-          position: relative;
-        }
-        .pc-features li::before {
-          content: '✓';
-          position: absolute;
-          left: 0;
-          color: #0D8F8F;
-          font-weight: 700;
-        }
-        .pc-featured .pc-features li { color: rgba(255,255,255,0.55); }
-        .pc-featured .pc-features li::before { color: #0D8F8F; }
-        .pc-btn {
-          display: block;
-          text-align: center;
-          text-decoration: none;
-          font-size: 14px;
-          font-weight: 600;
-          padding: 14px;
-          border-radius: 8px;
-          transition: all 0.2s;
-        }
-        .pc-btn-outline {
-          border: 1.5px solid #E8ECF0;
-          color: #1B2A4A;
-        }
-        .pc-btn-outline:hover { border-color: #0D8F8F; color: #0D8F8F; }
-        .pc-btn-primary {
-          background: #C0392B;
-          color: #fff;
-          border: none;
-        }
-        .pc-btn-primary:hover { background: #d44132; }
-        @media (max-width: 900px) {
-          .pricing-cards-section { padding: 60px 24px; }
-          .pricing-cards-grid { grid-template-columns: 1fr; }
-          .pc-featured { transform: none; }
         }
       `}</style>
     </>
