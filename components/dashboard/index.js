@@ -3,19 +3,20 @@ import { RagBadge } from '../ui/index';
 
 // ── KPI Tile ───────────────────────────────────────────────────────────────
 export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal' }) {
-  const ACCENT_STYLES = {
-    teal:   'border-l-4 border-l-[#0D8F8F]',
-    red:    'border-l-4 border-l-[#C0392B]',
-    amber:  'border-l-4 border-l-[#D4A843]',
-    green:  'border-l-4 border-l-[#27AE60]',
-    navy:   'border-l-4 border-l-[#1B2A4A]',
+  const ACCENT_COLORS = {
+    teal:   '#0D8F8F',
+    red:    '#C0392B',
+    amber:  '#D4A843',
+    green:  '#27AE60',
+    navy:   '#1B2A4A',
   };
   return (
     <div
-      className={clsx('rounded-2xl p-5 transition-all duration-200 hover:shadow-md', ACCENT_STYLES[accent] || ACCENT_STYLES.teal)}
+      className="rounded-2xl p-5 transition-all duration-200 hover:shadow-md"
       style={{
         background: 'linear-gradient(135deg, #FFFFFF 0%, #F5F7FA 100%)',
         border: '1px solid #E8ECF0',
+        borderLeft: `4px solid ${ACCENT_COLORS[accent] || ACCENT_COLORS.teal}`,
         boxShadow: '0 2px 8px rgba(27, 42, 74, 0.06)',
       }}>
       <p className="text-[11px] font-bold text-[#8896A7] uppercase tracking-[0.1em] mb-1">{label}</p>
@@ -73,8 +74,10 @@ export function AnalysisTable({ headers, rows, emptyMessage }) {
         <tbody>
           {rows.map((row, i) => (
             <tr key={i}
-              className="border-b border-[#F5F7FA] transition-colors duration-100 hover:bg-[#E6F5F5]/30"
-              style={{ backgroundColor: i % 2 === 0 ? '#FFFFFF' : '#F5F7FA' }}>
+              className={clsx(
+                'border-b border-[#F5F7FA] transition-colors duration-100 hover:bg-[#E6F5F5]/30',
+                i % 2 === 0 ? 'bg-white' : 'bg-[#F5F7FA]'
+              )}>
               {row.map((cell, j) => (
                 <td key={j} className={clsx(
                   'py-3 whitespace-nowrap',
