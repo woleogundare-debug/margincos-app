@@ -114,6 +114,7 @@ export default function OverviewPage() {
                   periodLabel={activePeriod?.label}
                   tier={tier}
                   isEnterprise={isEnterprise}
+                  chronologicalDelta={chronologicalDelta}
                 />
               )}
               <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>

@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Document, Page, Text, View, StyleSheet, Font,
 } from '@react-pdf/renderer';
+import { computeDeltas } from '../../lib/engine/delta';
 
 /* ── Fonts (TTF required — React-PDF cannot parse woff2) ──── */
 Font.register({
@@ -1014,6 +1015,146 @@ const M4Page = ({ results, companyName }) => {
   );
 };
 
+/* ── Period Comparison ─────────────────────────────────────── */
+const ComparisonPage = ({ chronologicalDelta, companyName }) => {
+  if (!chronologicalDelta) return null;
+  const { laterResults, earlierResults, laterPeriod, earlierPeriod } = chronologicalDelta;
+  const deltas = computeDeltas(laterResults, earlierResults);
+  if (!deltas) return null;
+
+  const earlier = earlierPeriod?.label || 'Prior';
+  const later   = laterPeriod?.label   || 'Current';
+
+  const trendArrow = (direction, isPositive) => {
+    if (direction === 'flat') return '→';
+    if (direction === 'up')   return isPositive ? '↑' : '↑';
+    return '↓';
+  };
+
+  const trendColor = (direction, isPositive) => {
+    if (direction === 'flat') return C.muted;
+    if (direction === 'up')   return isPositive ? C.teal : C.red;
+    return isPositive ? C.red : C.teal;
+  };
+
+  const metrics = [
+    {
+      label:      'Total Revenue',
+      sub:        'Monthly portfolio revenue',
+      delta:      deltas.portfolio.revenue,
+      isPositive: true,
+    },
+    {
+      label:      'Portfolio Margin',
+      sub:        'Gross contribution margin',
+      delta:      deltas.portfolio.totalCurrentMargin,
+      isPositive: true,
+    },
+    {
+      label:      'Revenue at Risk',
+      sub:        'Below-floor / WTP gap exposure',
+      delta:      deltas.portfolio.revenueAtRisk,
+      isPositive: false, // lower is better
+    },
+    {
+      label:      'Margin Protected',
+      sub:        'Repricing gain vs prior period',
+      delta:      deltas.portfolio.marginProtected,
+      isPositive: true,
+    },
+  ];
+
+  return (
+    <Page size="A4" style={s.page}>
+      <Text style={s.sectionTitle}>Period-over-Period Comparison</Text>
+      <Text style={s.sectionSub}>
+        {earlier} → {later} | Positive deltas reflect improvement in each metric direction.
+      </Text>
+
+      <View style={s.kpiRow}>
+        {metrics.slice(0, 2).map((m, i) => {
+          const d = m.delta;
+          const color = d ? trendColor(d.direction, m.isPositive) : C.muted;
+          return (
+            <View key={i} style={[s.kpiCard, { borderLeftColor: color }]}>
+              <Text style={s.kpiLabel}>{m.label}</Text>
+              <Text style={[s.kpiValue, { color }]}>
+                {d && d.direction !== 'flat'
+                  ? `${trendArrow(d.direction, m.isPositive)} ${fmt(Math.abs(d.value), 'nairaK')}`
+                  : '→ No change'}
+              </Text>
+              <Text style={s.kpiSub}>
+                {d?.pctChange != null
+                  ? `${d.pctChange > 0 ? '+' : ''}${d.pctChange.toFixed(1)}% · ${m.sub}`
+                  : m.sub}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+
+      <View style={s.kpiRow}>
+        {metrics.slice(2, 4).map((m, i) => {
+          const d = m.delta;
+          const color = d ? trendColor(d.direction, m.isPositive) : C.muted;
+          return (
+            <View key={i} style={[s.kpiCard, { borderLeftColor: color }]}>
+              <Text style={s.kpiLabel}>{m.label}</Text>
+              <Text style={[s.kpiValue, { color }]}>
+                {d && d.direction !== 'flat'
+                  ? `${trendArrow(d.direction, m.isPositive)} ${fmt(Math.abs(d.value), 'nairaK')}`
+                  : '→ No change'}
+              </Text>
+              <Text style={s.kpiSub}>
+                {d?.pctChange != null
+                  ? `${d.pctChange > 0 ? '+' : ''}${d.pctChange.toFixed(1)}% · ${m.sub}`
+                  : m.sub}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+
+      {/* Trend summary table */}
+      <View style={{ marginTop: 8 }}>
+        <View style={s.tableHeader}>
+          <Text style={[s.tableHeaderCell, { width: '30%' }]}>Metric</Text>
+          <Text style={[s.tableHeaderCell, { width: '25%', textAlign: 'right' }]}>{earlier}</Text>
+          <Text style={[s.tableHeaderCell, { width: '25%', textAlign: 'right' }]}>{later}</Text>
+          <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'right' }]}>Δ Change</Text>
+        </View>
+
+        {[
+          { label: 'Revenue',          curr: laterResults.totalRevenue,       prev: earlierResults.totalRevenue },
+          { label: 'Portfolio Margin', curr: laterResults.totalCurrentMargin,  prev: earlierResults.totalCurrentMargin },
+          { label: 'Revenue at Risk',  curr: laterResults.revenueAtRisk,       prev: earlierResults.revenueAtRisk },
+          { label: 'Pricing Gain',     curr: laterResults.p1?.totalGain,       prev: earlierResults.p1?.totalGain },
+          { label: 'Cost Absorbed',    curr: laterResults.p2?.totalAbsorbed,   prev: earlierResults.p2?.totalAbsorbed },
+          { label: 'Channel Exposure', curr: laterResults.p3?.totalDistExposure, prev: earlierResults.p3?.totalDistExposure },
+        ].map((row, i) => {
+          const diff = (row.curr != null && row.prev != null) ? row.curr - row.prev : null;
+          const diffPct = (diff != null && row.prev !== 0) ? (diff / Math.abs(row.prev) * 100) : null;
+          return (
+            <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+              <Text style={[s.tableCell, { width: '30%', fontWeight: 600 }]}>{row.label}</Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.prev, 'nairaK')}</Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.curr, 'nairaK')}</Text>
+              <Text style={[s.tableCell, { width: '20%', textAlign: 'right',
+                color: diff == null ? C.muted : diff >= 0 ? C.teal : C.red }]}>
+                {diff != null
+                  ? `${diff >= 0 ? '+' : ''}${fmt(diff, 'nairaK')}${diffPct != null ? ` (${diffPct.toFixed(1)}%)` : ''}`
+                  : '—'}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+
+      <PageFooter companyName={companyName} />
+    </Page>
+  );
+};
+
 /* ── Disclaimer ────────────────────────────────────────────── */
 const DisclaimerPage = ({ companyName }) => (
   <Page size="A4" style={s.page}>
@@ -1036,7 +1177,7 @@ const DisclaimerPage = ({ companyName }) => (
 /* ══════════════════════════════════════════════════════════════
    MAIN DOCUMENT
    ══════════════════════════════════════════════════════════════ */
-export default function MarginCOSReport({ results, companyName, periodLabel, tier, isEnterprise }) {
+export default function MarginCOSReport({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta }) {
   if (!results) return null;
 
   return (
@@ -1047,6 +1188,12 @@ export default function MarginCOSReport({ results, companyName, periodLabel, tie
     >
       <CoverPage companyName={companyName} periodLabel={periodLabel} skuCount={results.skuCount} tier={tier} />
       <SummaryPage results={results} companyName={companyName} tier={tier} />
+      {chronologicalDelta && (
+        <ComparisonPage
+          chronologicalDelta={chronologicalDelta}
+          companyName={companyName}
+        />
+      )}
       <PricingPage results={results} companyName={companyName} />
       <CostPage results={results} companyName={companyName} />
       <ChannelPage results={results} companyName={companyName} />
