@@ -226,6 +226,7 @@ body {
   margin-bottom: 36px;
   opacity: 0;
   animation: fade-up 0.6s 0.1s ease forwards;
+  animation-fill-mode: both;
 }
 .hero-badge::before {
   content: '';
@@ -249,6 +250,7 @@ body {
   margin-bottom: 28px;
   opacity: 0;
   animation: fade-up 0.7s 0.1s ease forwards;
+  animation-fill-mode: both;
 }
 .hero-title .accent { color: var(--gold); }
 .hero-title .teal   { color: var(--teal); }
@@ -262,6 +264,7 @@ body {
   margin: 0 0 48px;
   opacity: 0;
   animation: fade-up 0.7s 0.25s ease forwards;
+  animation-fill-mode: both;
 }
 
 .hero-actions {
@@ -270,6 +273,7 @@ body {
   margin-bottom: 0;
   opacity: 0;
   animation: fade-up 0.7s 0.4s ease forwards;
+  animation-fill-mode: both;
 }
 .btn-hero-primary {
   background: var(--red);
@@ -311,6 +315,7 @@ body {
   margin: 0;
   opacity: 0;
   animation: fade-up 0.7s 0.65s ease forwards;
+  animation-fill-mode: both;
 }
 .metric-cell {
   background: rgba(255,255,255,0.03);
@@ -1701,6 +1706,31 @@ body {
   .trust-strip-section { padding: 40px 24px; }
   .trust-strip-inner { flex-direction: column; gap: 24px; }
   .trust-divider { width: 48px; height: 1px; }
+}
+
+/* ─── MOBILE FIRST-LOAD FIXES ──────────────────────────────────────────────── */
+/* Ensure hero reveal children are visible without waiting for IntersectionObserver */
+.hero .reveal { opacity: 1 !important; transform: none !important; }
+
+/* Guarantee animations run on all mobile browsers */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge, .hero-title, .hero-sub, .hero-actions, .metrics-strip {
+    animation-play-state: running !important;
+  }
+}
+
+/* Users who prefer reduced motion: show content immediately */
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge, .hero-title, .hero-sub, .hero-actions, .metrics-strip {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 </style>
 

@@ -81,9 +81,21 @@ export default function HomePage({ css, sectionsHtml }) {
       });
     });
 
+    // Force reveal elements already in viewport on direct load
+    // (fallback for mobile where IntersectionObserver fires late)
+    const viewportRevealTimer = setTimeout(() => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add('visible');
+        }
+      });
+    }, 100);
+
     return () => {
       clearInterval(cycleInterval);
       clearTimeout(cycleTimer);
+      clearTimeout(viewportRevealTimer);
     };
   }, []);
 
