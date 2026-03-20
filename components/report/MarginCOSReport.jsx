@@ -1015,6 +1015,89 @@ const M4Page = ({ results, companyName }) => {
   );
 };
 
+/* ── Trend narrative generator ─────────────────────────────── */
+function generateTrendNarrative(deltas, earlierLabel, laterLabel) {
+  if (!deltas) return '';
+
+  const metrics = [
+    { name: 'Revenue',            d: deltas.portfolio?.revenue,            positive: true  },
+    { name: 'Portfolio margin',   d: deltas.portfolio?.totalCurrentMargin,  positive: true  },
+    { name: 'Revenue at risk',    d: deltas.portfolio?.revenueAtRisk,       positive: false },
+    { name: 'Repricing gain',     d: deltas.portfolio?.marginProtected,     positive: true  },
+    { name: 'Cost absorbed',      d: deltas.portfolio?.costAbsorbed,        positive: false },
+    { name: 'Channel exposure',   d: deltas.portfolio?.channelExposure,     positive: false },
+  ].filter(m => m.d && m.d.direction !== 'flat');
+
+  if (metrics.length === 0) {
+    return `No material movement was detected between ${earlierLabel} and ${laterLabel}. Both periods are broadly consistent across all six tracked metrics.`;
+  }
+
+  const improved    = metrics.filter(m => m.positive ? m.d.direction === 'up'   : m.d.direction === 'down');
+  const deteriorated = metrics.filter(m => m.positive ? m.d.direction === 'down' : m.d.direction === 'up');
+
+  const parts = [];
+
+  // Sentence 1 — opening: overall revenue direction
+  const rev = deltas.portfolio?.revenue;
+  if (rev && rev.direction !== 'flat') {
+    const pct = Math.abs(rev.pctChange || 0).toFixed(1);
+    parts.push(
+      `Portfolio revenue ${rev.direction === 'up' ? 'grew' : 'declined'} ${pct}% from ${earlierLabel} to ${laterLabel}.`
+    );
+  }
+
+  // Sentence 2 — what improved (if any)
+  if (improved.length > 0) {
+    const names = improved.map(m => m.name.toLowerCase()).join(', ');
+    parts.push(
+      improved.length === 1
+        ? `${improved[0].name.charAt(0).toUpperCase() + improved[0].name.slice(1)} showed positive movement over the period.`
+        : `Positive movement was recorded in ${names}.`
+    );
+  }
+
+  // Sentence 3 — what deteriorated, largest named specifically
+  if (deteriorated.length > 0) {
+    const sorted = [...deteriorated].sort((a, b) => Math.abs(b.d.value) - Math.abs(a.d.value));
+    const worst = sorted[0];
+    const worstPct = Math.abs(worst.d.pctChange || 0).toFixed(1);
+    const worstName = worst.name.charAt(0).toUpperCase() + worst.name.slice(1);
+
+    if (deteriorated.length === 1) {
+      parts.push(
+        `${worstName} moved unfavourably by ${worstPct}% and should be reviewed before the next period close.`
+      );
+    } else {
+      const otherNames = sorted.slice(1).map(m => m.name.toLowerCase()).join(' and ');
+      parts.push(
+        `${worstName} deteriorated by ${worstPct}%, alongside ${otherNames} — these areas require immediate attention to prevent further margin compression.`
+      );
+    }
+  }
+
+  // Sentence 4 — closing action statement
+  if (deteriorated.length > improved.length) {
+    // Identify the specific priority action based on the worst metric
+    const sorted = [...deteriorated].sort((a, b) => Math.abs(b.d.value) - Math.abs(a.d.value));
+    const actionMap = {
+      'Cost absorbed':    'Accelerating cost pass-through recovery is the highest-priority action to prevent the absorption gap compounding into next period.',
+      'Portfolio margin': 'Margin recovery should be the immediate commercial priority — review pricing and channel terms before the next period close.',
+      'Revenue at risk':  'Revenue at risk has widened — a targeted review of below-floor SKUs and WTP headroom capture is required.',
+      'Channel exposure': 'Channel economics have weakened — distributor margin and rebate terms should be reviewed as a priority.',
+      'Repricing gain':   'Pricing headroom capture has slowed — review the SKUs with the largest WTP gaps to recover margin pace.',
+      'Revenue':          'Top-line pressure requires investigation — volume, pricing, and channel mix should all be reviewed.',
+    };
+    const actionKey = sorted[0].name;
+    parts.push(actionMap[actionKey] || 'The balance of movement is negative — prioritise the highest-value corrective actions before the next reporting cycle.');
+  } else if (improved.length > deteriorated.length) {
+    parts.push('The overall trend is positive — areas of deterioration should be monitored to sustain momentum heading into the next period.');
+  } else if (improved.length > 0 && deteriorated.length > 0) {
+    parts.push('Performance is mixed — sustain the gains in improving metrics while addressing the deteriorating areas before they compound.');
+  }
+
+  return parts.join(' ');
+}
+
 /* ── Period Comparison ─────────────────────────────────────── */
 const ComparisonPage = ({ chronologicalDelta, companyName }) => {
   if (!chronologicalDelta) return null;
@@ -1148,6 +1231,34 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
             </View>
           );
         })}
+      </View>
+
+      {/* Trend Narrative */}
+      <View style={{
+        marginTop: 20,
+        padding: 16,
+        backgroundColor: '#F5F7FA',
+        borderRadius: 8,
+        borderLeftWidth: 3,
+        borderLeftColor: C.teal,
+      }}>
+        <Text style={{
+          fontSize: 7,
+          fontWeight: 700,
+          color: C.muted,
+          textTransform: 'uppercase',
+          letterSpacing: 1,
+          marginBottom: 8,
+        }}>
+          Trend Analysis
+        </Text>
+        <Text style={{
+          fontSize: 9.5,
+          color: C.navy,
+          lineHeight: 1.7,
+        }}>
+          {generateTrendNarrative(deltas, earlier, later)}
+        </Text>
       </View>
 
       <PageFooter companyName={companyName} />
