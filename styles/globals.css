@@ -161,10 +161,20 @@ button, a {
    and arrive after hydration, causing blank/misaligned first load.
 ------------------------------------------------------------------- */
 @media (max-width: 900px) {
+  /* ── Hero grid & container ── */
+  .hero {
+    padding: 100px 24px 60px !important;
+    align-items: center !important;
+  }
+  .hero-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
   .hero-content-row {
     grid-template-columns: 1fr !important;
     gap: 0 !important;
     margin-bottom: 40px !important;
+    width: 100% !important;
   }
   .hero-right { display: none !important; }
   .hero-left {
@@ -174,7 +184,10 @@ button, a {
     align-items: center !important;
     width: 100% !important;
   }
-  .hero-title { text-align: center !important; }
+  .hero-title {
+    text-align: center !important;
+    font-size: clamp(36px, 8vw, 56px) !important;
+  }
   .hero-sub {
     text-align: center !important;
     margin: 0 auto 40px !important;
@@ -194,10 +207,47 @@ button, a {
     text-align: center !important;
     box-sizing: border-box !important;
   }
+
+  /* ── Metrics strip ── */
   .metrics-strip {
     grid-template-columns: repeat(3, 1fr) !important;
   }
   .metric-cell { padding: 16px 10px !important; }
   .metric-val { font-size: 26px !important; }
   .metric-label { font-size: 10px !important; }
+
+  /* ── Trust strip ── */
+  .trust-strip-section { padding: 40px 24px !important; }
+  .trust-strip-inner {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+  .trust-divider { width: 48px !important; height: 1px !important; }
+
+  /* ── Section paddings & grid layouts ── */
+  .section { padding: 60px 24px !important; }
+  .cta-section { padding: 80px 24px !important; }
+  .logo-bar { padding: 40px 24px !important; }
+  .logo-row { gap: 16px !important; }
+  .problem-inner,
+  .breakdown-inner,
+  .enterprise-inner { padding: 0 24px !important; }
+  .pillars-layout {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  .pillars-list { position: static !important; }
+  .problem-grid { grid-template-columns: 1fr !important; }
+  .breakdown-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  .process-steps { grid-template-columns: 1fr !important; }
+  .process-steps::before { display: none !important; }
+  .enterprise-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .enterprise-sub { text-align: left !important; }
+  .enterprise-modules { grid-template-columns: 1fr !important; }
 }
