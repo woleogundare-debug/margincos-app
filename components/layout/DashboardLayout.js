@@ -44,7 +44,7 @@ const NAV_SECTIONS = [
 ];
 
 const TIER_COLORS = {
-  enterprise:   'bg-purple-100 text-purple-800',
+  enterprise:   'bg-[#FBF5E8] text-[#D4A843]',
   professional: 'bg-teal-100 text-teal-800',
   essentials:   'bg-slate-100 text-slate-600',
 };
