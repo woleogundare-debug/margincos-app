@@ -9,6 +9,7 @@ import { TradeInvestmentForm } from '../../components/portfolio/TradeInvestmentF
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { TIER_LIMITS } from '../../lib/constants';
 import { ArrowUpTrayIcon, PlusIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -21,7 +22,7 @@ function nairaCompact(v) {
 }
 
 export default function PortfolioPage() {
-  const { isProfessional, isEnterprise } = useAuth();
+  const { isProfessional, isEnterprise, tier } = useAuth();
   const {
     periods, activePeriod, skuRows, tradeInvestment,
     loading, saving,
@@ -61,16 +62,36 @@ export default function PortfolioPage() {
     }
   };
 
-  const handleBulkImport = async (rows) => {
+  const handleBulkImport = useCallback(async (rows) => {
+    const limit = TIER_LIMITS[tier]?.maxSkus ?? null;
+    let allowedRows = rows;
+
+    if (limit !== null) {
+      const remaining = Math.max(0, limit - activeSkuCount);
+      if (rows.length > remaining) {
+        const skipped = rows.length - remaining;
+        const tierLabel = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
+        setSkuLimitError(
+          `Your ${tierLabel} plan supports up to ${limit} active SKUs. ` +
+          (remaining > 0
+            ? `Imported ${remaining} of ${rows.length} rows — ${skipped} row${skipped !== 1 ? 's' : ''} skipped.`
+            : `No rows imported — limit already reached.`)
+        );
+        allowedRows = rows.slice(0, remaining);
+      }
+    }
+
+    if (allowedRows.length === 0) return;
+
     const batchSize = 5;
-    for (let i = 0; i < rows.length; i += batchSize) {
-      const batch = rows.slice(i, i + batchSize);
+    for (let i = 0; i < allowedRows.length; i += batchSize) {
+      const batch = allowedRows.slice(i, i + batchSize);
       await Promise.all(batch.map(row => saveSku({
         ...row,
         _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       })));
     }
-  };
+  }, [tier, activeSkuCount, saveSku]);
 
   return (
     <>
