@@ -28,8 +28,8 @@ const FALLBACK_RATES = { NGN: 1650, EUR: 0.92, GBP: 0.79 };
 
 
 const BASE_PRICES = {
-  essentials: { monthly: 250, annual: 213, impl: 450 },
-  professional: { monthly: 850, annual: 723, impl: 1300 },
+  essentials: { monthly: 250, annual: 213, impl: 100 },
+  professional: { monthly: 850, annual: 723, impl: 500 },
   enterprise: { monthly: 2400, annual: 2040, impl: 0 },
 };
 
@@ -310,7 +310,7 @@ export default function PricingPage() {
               ) : (
                 <span>Rates are indicative estimates — live rates temporarily unavailable.</span>
               )}{' '}
-              Contracts are invoiced in USD unless otherwise agreed. Implementation fees are always shown and invoiced in USD.
+              Contracts are invoiced in USD unless otherwise agreed. Implementation is one-off.
 </p>
 
           </div>
