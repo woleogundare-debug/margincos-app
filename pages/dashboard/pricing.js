@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { requireAuth } from '../../lib/supabase/server';
@@ -8,10 +8,12 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
+import { computeDeltas } from '../../lib/engine/delta';
 
 export default function PricingPage() {
-  const { activePeriod, results, running, ranAt, run, hasResults } = useAnalysisContext();
+  const { activePeriod, results, running, ranAt, run, hasResults, comparisonResults } = useAnalysisContext();
   const p1 = results?.p1;
+  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
   const [tableExpanded, setTableExpanded] = useState(false);
 
   const ragStatus = !hasResults ? 'grey'
@@ -39,13 +41,28 @@ export default function PricingPage() {
             {/* KPIs */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="P1 Repricing Opportunity" value={fN(p1.totalGain)} accent="teal"
-                pill="vs. current pricing" />
+                pill="vs. current pricing"
+                delta={deltas?.p1?.totalGain ? {
+                  label: fNAbs(Math.abs(deltas.p1.totalGain.value)),
+                  direction: deltas.p1.totalGain.direction,
+                  isPositive: true,
+                } : null} />
               <KpiTile label="WTP Headroom" value={fNAbs(p1.totalWTPGap)} accent="teal"
-                pill="Revenue left on table" />
+                pill="Revenue left on table"
+                delta={deltas?.p1?.totalWTPGap ? {
+                  label: fNAbs(Math.abs(deltas.p1.totalWTPGap.value)),
+                  direction: deltas.p1.totalWTPGap.direction,
+                  isPositive: true,
+                } : null} />
               <KpiTile label="Price Realisation"
                 value={(p1.priceRealisation || 0).toFixed(1) + '%'}
                 pill={p1.priceRealisation < 90 ? '⚠ Below 90% — pricing gap' : '✓ Strong realisation'}
-                accent={p1.priceRealisation < 90 ? 'amber' : 'teal'} />
+                accent={p1.priceRealisation < 90 ? 'amber' : 'teal'}
+                delta={deltas?.p1?.priceRealisation ? {
+                  label: Math.abs(deltas.p1.priceRealisation.value).toFixed(1) + 'pp',
+                  direction: deltas.p1.priceRealisation.direction,
+                  isPositive: true,
+                } : null} />
             </div>
 
             {/* Margin Floor Breaches */}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -7,10 +7,12 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
+import { computeDeltas } from '../../lib/engine/delta';
 
 export default function TradePage() {
-  const { activePeriod, results, running, run, hasResults } = useAnalysisContext();
+  const { activePeriod, results, running, run, hasResults, comparisonResults } = useAnalysisContext();
   const p4 = results?.p4;
+  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
   const lossCount = p4?.results?.filter(r => !r.profitable).length || 0;
@@ -38,7 +40,12 @@ export default function TradePage() {
               <KpiTile label="Net Promo Impact"
                 value={fN(p4.totalPromoImpact)}
                 pill={p4.totalPromoImpact >= 0 ? 'Net positive' : 'Net loss-making'}
-                accent={p4.totalPromoImpact >= 0 ? 'teal' : 'red'} />
+                accent={p4.totalPromoImpact >= 0 ? 'teal' : 'red'}
+                delta={deltas?.p4?.totalPromoImpact ? {
+                  label: fNAbs(Math.abs(deltas.p4.totalPromoImpact.value)),
+                  direction: deltas.p4.totalPromoImpact.direction,
+                  isPositive: true,
+                } : null} />
               <KpiTile label="Loss-Making Promos"
                 value={lossCount}
                 pill={lossCount > 0 ? 'Promo depth exceeds margin' : 'All promotions profitable'}

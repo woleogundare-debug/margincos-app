@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { useAuth } from '../../hooks/useAuth';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { LoadingSpinner } from '../ui/index';
 import {
   ChartBarIcon, CurrencyDollarIcon,
@@ -43,6 +44,67 @@ const NAV_SECTIONS = [
   },
 ];
 
+// Analysis pages that show the comparison period selector
+const COMPARISON_PAGES = [
+  '/dashboard/overview',
+  '/dashboard/pricing',
+  '/dashboard/cost',
+  '/dashboard/channel',
+  '/dashboard/trade',
+  '/dashboard/modules',
+];
+
+// Renders the "Compare with…" period selector — uses context directly.
+// Only mounted on analysis pages where comparison is meaningful.
+function ComparisonBar() {
+  const {
+    periods,
+    activePeriod,
+    comparisonPeriodId,
+    comparisonLoading,
+    loadComparisonPeriod,
+    clearComparison,
+  } = useAnalysisContext();
+
+  const otherPeriods = (periods || []).filter(p => p.id !== activePeriod?.id);
+  if (otherPeriods.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 flex-shrink-0"
+      style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest whitespace-nowrap">
+        Compare
+      </span>
+      <select
+        value={comparisonPeriodId || ''}
+        onChange={e => e.target.value ? loadComparisonPeriod(e.target.value) : clearComparison()}
+        className="flex-1 text-xs rounded-lg px-2 py-1 border-0 outline-none"
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.08)',
+          color: comparisonPeriodId ? '#D4A843' : 'rgba(255,255,255,0.5)',
+          maxWidth: '180px',
+        }}>
+        <option value="">No comparison</option>
+        {otherPeriods
+          .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+          .map(p => (
+            <option key={p.id} value={p.id} style={{ color: '#1B2A4A', backgroundColor: '#fff' }}>
+              {p.label}
+            </option>
+          ))}
+      </select>
+      {comparisonLoading && (
+        <span className="text-[10px] text-[#D4A843] animate-pulse whitespace-nowrap">Loading…</span>
+      )}
+      {comparisonPeriodId && !comparisonLoading && (
+        <span className="text-[10px] text-[#D4A843] whitespace-nowrap">
+          vs {periods.find(p => p.id === comparisonPeriodId)?.label}
+        </span>
+      )}
+    </div>
+  );
+}
+
 const TIER_COLORS = {
   enterprise:   'bg-[#FBF5E8] text-[#D4A843]',
   professional: 'bg-teal-100 text-teal-800',
@@ -52,6 +114,7 @@ const TIER_COLORS = {
 export function DashboardLayout({ children, title, activePeriod }) {
   const { user, tier, isEnterprise, signOut, loading } = useAuth();
   const router = useRouter();
+  const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -184,6 +247,9 @@ export function DashboardLayout({ children, title, activePeriod }) {
               </div>
             ))}
           </nav>
+
+          {/* Comparison period selector — analysis pages only */}
+          {showComparison && <ComparisonBar />}
 
           {/* User footer — always visible, pinned bottom */}
           <div className="px-3 py-4 border-t border-white/10 flex-shrink-0">

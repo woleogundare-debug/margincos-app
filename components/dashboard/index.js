@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { RagBadge } from '../ui/index';
 
 // ── KPI Tile ───────────────────────────────────────────────────────────────
-export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal' }) {
+export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal', delta = null }) {
   const ACCENT_COLORS = {
     teal:   '#0D8F8F',
     red:    '#C0392B',
@@ -25,6 +25,33 @@ export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal' }
         style={{ color: '#1B2A4A', fontFamily: "'Playfair Display', Georgia, serif" }}>
         {value ?? '—'}
       </p>
+      {delta && (
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '3px',
+            fontSize: '11px',
+            fontWeight: 700,
+            fontFamily: "'DM Sans', system-ui, sans-serif",
+            color: delta.direction === 'up'
+              ? (delta.isPositive ? '#27AE60' : '#C0392B')
+              : delta.direction === 'down'
+              ? (delta.isPositive ? '#C0392B' : '#27AE60')
+              : '#8896A7',
+            backgroundColor: delta.direction === 'up'
+              ? (delta.isPositive ? 'rgba(39,174,96,0.1)' : 'rgba(192,57,43,0.1)')
+              : delta.direction === 'down'
+              ? (delta.isPositive ? 'rgba(192,57,43,0.1)' : 'rgba(39,174,96,0.1)')
+              : '#E8ECF0',
+            padding: '2px 7px',
+            borderRadius: '6px',
+          }}>
+            {delta.direction === 'up' ? '▲' : delta.direction === 'down' ? '▼' : '—'}
+            {' '}{delta.label}
+          </span>
+        </div>
+      )}
       {pill && (
         <p className={clsx('text-xs font-semibold', pillColor || 'text-[#5A6B80]')}>{pill}</p>
       )}

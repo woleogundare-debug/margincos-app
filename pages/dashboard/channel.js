@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -6,12 +6,13 @@ import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState } from '..
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
-import { fNAbs } from '../../lib/formatters';
-import { CHANNEL_LABELS } from '../../lib/formatters';
+import { fNAbs, CHANNEL_LABELS } from '../../lib/formatters';
+import { computeDeltas } from '../../lib/engine/delta';
 
 export default function ChannelPage() {
-  const { activePeriod, results, running, run, hasResults } = useAnalysisContext();
+  const { activePeriod, results, running, run, hasResults, comparisonResults } = useAnalysisContext();
   const p3 = results?.p3;
+  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
   const weakChannels = p3?.channelResults?.filter(c => c.contPct < 15 && c.rev > 0) || [];
@@ -39,7 +40,12 @@ export default function ChannelPage() {
                 pill="Routes to market" accent="amber" />
               <KpiTile label="Distributor Exposure"
                 value={fNAbs(p3.totalDistExposure)}
-                pill="Revenue in distributor margin" accent="amber" />
+                pill="Revenue in distributor margin" accent="amber"
+                delta={deltas?.p3?.totalDistExposure ? {
+                  label: fNAbs(Math.abs(deltas.p3.totalDistExposure.value)),
+                  direction: deltas.p3.totalDistExposure.direction,
+                  isPositive: false,
+                } : null} />
               <KpiTile label="Weak Channels"
                 value={weakChannels.length}
                 pill={weakChannels.length > 0 ? 'Below 15% contribution' : 'All channels healthy'}

@@ -1,14 +1,21 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { useAuth } from '../hooks/useAuth';
+import { getSupabaseClient } from '../lib/supabase/client';
+import { runFullAnalysis } from '../lib/engine/analysis';
 
 const AnalysisContext = createContext(null);
 
 export function AnalysisProvider({ children }) {
   const { user, tier } = useAuth();
 
-  // Single usePortfolio instance for the entire dashboard.
+  // ── Comparison period state — entirely additive ──────────────────────────
+  const [comparisonPeriodId, setComparisonPeriodId] = useState(null);
+  const [comparisonResults,  setComparisonResults]  = useState(null);
+  const [comparisonLoading,  setComparisonLoading]  = useState(false);
+
+  // ── Single usePortfolio instance for the entire dashboard.
   // All consumers (portfolio.js, overview.js, pillar pages) read from here,
   // so SKU saves and period changes are immediately visible across all pages.
   const {
@@ -41,6 +48,44 @@ export function AnalysisProvider({ children }) {
     hasResults,
   } = useAnalysis(skuRows, tradeInvestment);
 
+  // ── Load a second period for comparison — does NOT touch primary state ───
+  const loadComparisonPeriod = useCallback(async (periodId) => {
+    if (!periodId || !user?.id) {
+      setComparisonPeriodId(null);
+      setComparisonResults(null);
+      return;
+    }
+    setComparisonLoading(true);
+    setComparisonPeriodId(periodId);
+    try {
+      const sb = getSupabaseClient();
+      const [skuRes, tradeRes] = await Promise.all([
+        sb.from('sku_rows').select('*').eq('period_id', periodId),
+        sb.from('trade_investment').select('*').eq('period_id', periodId),
+      ]);
+      if (skuRes.error) throw skuRes.error;
+      if (tradeRes.error) throw tradeRes.error;
+      const compResults = runFullAnalysis(skuRes.data || [], tradeRes.data || []);
+      setComparisonResults(compResults);
+    } catch (err) {
+      console.error('[loadComparisonPeriod] Failed:', err.message);
+      setComparisonResults(null);
+    } finally {
+      setComparisonLoading(false);
+    }
+  }, [user?.id]);
+
+  const clearComparison = useCallback(() => {
+    setComparisonPeriodId(null);
+    setComparisonResults(null);
+  }, []);
+
+  // Auto-clear comparison when the active period changes
+  useEffect(() => {
+    setComparisonPeriodId(null);
+    setComparisonResults(null);
+  }, [activePeriod?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <AnalysisContext.Provider value={{
       // ── Portfolio data ───────────────────────────────────────────
@@ -70,6 +115,12 @@ export function AnalysisProvider({ children }) {
       error: analysisError || portfolioError,
       run,
       hasResults,
+      // ── Comparison period ────────────────────────────────────────
+      comparisonPeriodId,
+      comparisonResults,
+      comparisonLoading,
+      loadComparisonPeriod,
+      clearComparison,
     }}>
       {children}
     </AnalysisContext.Provider>

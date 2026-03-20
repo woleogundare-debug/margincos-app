@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -11,6 +11,7 @@ import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { useTeam } from '../../hooks/useTeam';
 import { useActions } from '../../hooks/useActions';
 import { fNAbs, fN } from '../../lib/formatters';
+import { computeDeltas } from '../../lib/engine/delta';
 import clsx from 'clsx';
 
 const DownloadReportButton = dynamic(
@@ -20,7 +21,8 @@ const DownloadReportButton = dynamic(
 
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
-  const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults } = useAnalysisContext();
+  const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults, comparisonResults } = useAnalysisContext();
+  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
   const autoRanRef = useRef(false);
   const lastSavedAt = useRef(null); // tracks ranAt timestamp of last saved actions
 
@@ -214,6 +216,11 @@ export default function OverviewPage() {
                 value={fNAbs(results.totalRevenue)}
                 pill={`${results.skuCount} active SKUs`}
                 accent="teal"
+                delta={deltas?.portfolio?.revenue ? {
+                  label: fNAbs(Math.abs(deltas.portfolio.revenue.value)),
+                  direction: deltas.portfolio.revenue.direction,
+                  isPositive: true,
+                } : null}
               />
               <KpiTile
                 label="Portfolio Margin"
@@ -222,18 +229,33 @@ export default function OverviewPage() {
                   : '—'}
                 pill={fNAbs(results.totalCurrentMargin) + ' gross margin'}
                 accent="teal"
+                delta={deltas?.portfolio?.totalCurrentMargin ? {
+                  label: fNAbs(Math.abs(deltas.portfolio.totalCurrentMargin.value)),
+                  direction: deltas.portfolio.totalCurrentMargin.direction,
+                  isPositive: true,
+                } : null}
               />
               <KpiTile
                 label="Revenue at Risk"
                 value={fNAbs(results.revenueAtRisk)}
                 pill="Cost absorbed, not priced in"
                 accent="red"
+                delta={deltas?.portfolio?.revenueAtRisk ? {
+                  label: fNAbs(Math.abs(deltas.portfolio.revenueAtRisk.value)),
+                  direction: deltas.portfolio.revenueAtRisk.direction,
+                  isPositive: false,
+                } : null}
               />
               <KpiTile
                 label="P1 Opportunity"
                 value={results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : '₦0'}
                 pill="Repricing upside /month"
                 accent="amber"
+                delta={deltas?.portfolio?.marginProtected ? {
+                  label: fNAbs(Math.abs(deltas.portfolio.marginProtected.value)),
+                  direction: deltas.portfolio.marginProtected.direction,
+                  isPositive: true,
+                } : null}
               />
             </div>
 

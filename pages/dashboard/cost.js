@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -7,10 +7,12 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs } from '../../lib/formatters';
+import { computeDeltas } from '../../lib/engine/delta';
 
 export default function CostPage() {
-  const { activePeriod, results, running, run, hasResults } = useAnalysisContext();
+  const { activePeriod, results, running, run, hasResults, comparisonResults } = useAnalysisContext();
   const p2 = results?.p2;
+  const deltas = useMemo(() => computeDeltas(results, comparisonResults), [results, comparisonResults]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
 
@@ -34,15 +36,30 @@ export default function CostPage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Cost Absorbed" value={fNAbs(p2.totalAbsorbed)}
-                pill="Not priced in — margin erosion" accent="red" />
+                pill="Not priced in — margin erosion" accent="red"
+                delta={deltas?.p2?.totalAbsorbed ? {
+                  label: fNAbs(Math.abs(deltas.p2.totalAbsorbed.value)),
+                  direction: deltas.p2.totalAbsorbed.direction,
+                  isPositive: false,
+                } : null} />
               <KpiTile label="Total Cost Shock" value={fNAbs(p2.totalCostShock)}
-                pill="Gross input cost increase" accent="red" />
+                pill="Gross input cost increase" accent="red"
+                delta={deltas?.p2?.totalCostShock ? {
+                  label: fNAbs(Math.abs(deltas.p2.totalCostShock.value)),
+                  direction: deltas.p2.totalCostShock.direction,
+                  isPositive: false,
+                } : null} />
               <KpiTile label="Portfolio Recovery Rate"
                 value={(p2.portRecoveryPct || 0).toFixed(1) + '%'}
                 pill={p2.portRecoveryPct < 40
                   ? `⚠ Critical — BUA Foods benchmark: 75%`
                   : p2.portRecoveryPct < 70 ? '▲ Below benchmark (75%)' : '✓ Above benchmark'}
-                accent={p2.portRecoveryPct < 40 ? 'red' : p2.portRecoveryPct < 70 ? 'amber' : 'teal'} />
+                accent={p2.portRecoveryPct < 40 ? 'red' : p2.portRecoveryPct < 70 ? 'amber' : 'teal'}
+                delta={deltas?.p2?.portRecoveryPct ? {
+                  label: Math.abs(deltas.p2.portRecoveryPct.value).toFixed(1) + 'pp',
+                  direction: deltas.p2.portRecoveryPct.direction,
+                  isPositive: true,
+                } : null} />
             </div>
 
             {/* Mobile summary strip */}
