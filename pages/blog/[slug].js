@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import fs from 'fs';
@@ -66,15 +64,6 @@ export async function getStaticProps({ params }) {
 
 export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, excerpt, date, author, category, readTime, slug } = frontmatter;
-  const router = useRouter();
-  const isPrintMode = router.query.pdf === '1';
-
-  // Auto-trigger print (→ Save as PDF) when opened via Download button (?pdf=1)
-  useEffect(() => {
-    if (!isPrintMode) return;
-    const t = setTimeout(() => window.print(), 900);
-    return () => clearTimeout(t);
-  }, [isPrintMode]);
 
   const mdxComponents = { PassThroughChart, MarginLeakageChart };
 
@@ -106,7 +95,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
         `}</style>
       </Head>
 
-      <div className={isPrintMode ? 'no-print' : ''}><PublicNav /></div>
+      <PublicNav />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
       <section className="hero-mesh pt-32 pb-16 px-6">
@@ -162,13 +151,13 @@ export default function BlogPost({ frontmatter, mdxSource }) {
           </div>
 
           {/* Share / Download / Save */}
-          <ArticleActions title={title} />
+          <ArticleActions title={title} slug={slug} />
         </div>
       </div>
 
       {/* ── Article content ───────────────────────────────────── */}
       <article className="max-w-3xl mx-auto px-3 md:px-6 py-12">
-        <div className="bg-white rounded-2xl px-5 md:px-14 py-12">
+        <div id="article-content" className="bg-white rounded-2xl px-5 md:px-14 py-12">
 
           {/* McKinsey-style editorial lede */}
           {excerpt && (
@@ -278,7 +267,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
         </div>
       </article>
 
-      <div className={isPrintMode ? 'no-print' : ''}><PublicFooter /></div>
+      <PublicFooter />
     </>
   );
 }

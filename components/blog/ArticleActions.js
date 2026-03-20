@@ -90,11 +90,12 @@ const WhatsAppIcon = () => (
 );
 
 /* ── Main component ─────────────────────────────────────────── */
-export default function ArticleActions({ title }) {
-  const [shareOpen, setShareOpen] = useState(false);
-  const [copied,    setCopied]    = useState(false);
-  const [saved,     setSaved]     = useState(false);
-  const [url,       setUrl]       = useState('');
+export default function ArticleActions({ title, slug }) {
+  const [shareOpen,    setShareOpen]    = useState(false);
+  const [copied,       setCopied]       = useState(false);
+  const [saved,        setSaved]        = useState(false);
+  const [downloading,  setDownloading]  = useState(false);
+  const [url,          setUrl]          = useState('');
   const shareRef = useRef(null);
 
   // Capture URL client-side (SSR-safe)
@@ -122,10 +123,41 @@ export default function ArticleActions({ title }) {
     } catch (_) {}
   };
 
-  // Opens a clean print-ready version in a new tab → browser "Save as PDF"
-  const handleDownload = () => {
-    if (!url) return;
-    window.open(`${url}?pdf=1`, '_blank', 'noopener');
+  // Load html2pdf.js from CDN on first use, then generate a real PDF download
+  const handleDownload = async () => {
+    const el = document.getElementById('article-content');
+    if (!el) return;
+    setDownloading(true);
+    try {
+      // Dynamically load html2pdf bundle from CDN (only on click, not on page load)
+      if (!window.html2pdf) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          s.onload  = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+      const filename = slug
+        ? `${slug}.pdf`
+        : `${(title || 'article').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.pdf`;
+      await window.html2pdf()
+        .set({
+          margin:     [12, 14, 12, 14],
+          filename,
+          image:      { type: 'jpeg', quality: 0.97 },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
+          jsPDF:      { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak:  { mode: ['avoid-all', 'css'] },
+        })
+        .from(el)
+        .save();
+    } catch (err) {
+      console.error('[ArticleActions] PDF generation failed:', err);
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const btnBase   = 'flex flex-col items-center gap-1.5 transition-colors duration-150 cursor-pointer bg-transparent border-0 p-0';
@@ -186,15 +218,16 @@ export default function ArticleActions({ title }) {
         )}
       </div>
 
-      {/* ── Download (PDF in new tab) ── */}
+      {/* ── Download (direct PDF file, no dialog) ── */}
       <button
         onClick={handleDownload}
+        disabled={downloading}
         aria-label="Download as PDF"
         className={`${btnBase} hover:text-red-brand`}
-        style={{ color: '#8896A7' }}
+        style={{ color: downloading ? '#0D8F8F' : '#8896A7', opacity: downloading ? 0.7 : 1 }}
       >
         <DownloadIcon />
-        <span className={labelBase}>Download</span>
+        <span className={labelBase}>{downloading ? 'Saving…' : 'Download'}</span>
       </button>
 
       {/* ── Save (bookmark toggle) ── */}
