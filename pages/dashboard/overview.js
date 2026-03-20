@@ -216,7 +216,7 @@ export default function OverviewPage() {
                 value={fNAbs(results.totalRevenue)}
                 pill={`${results.skuCount} active SKUs`}
                 accent="teal"
-                delta={deltas?.portfolio?.revenue ? {
+                delta={deltas?.portfolio?.revenue && deltas.portfolio.revenue.direction !== 'flat' && Math.abs(deltas.portfolio.revenue.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.revenue.value)),
                   direction: deltas.portfolio.revenue.direction,
                   isPositive: true,
@@ -229,7 +229,7 @@ export default function OverviewPage() {
                   : '—'}
                 pill={fNAbs(results.totalCurrentMargin) + ' gross margin'}
                 accent="teal"
-                delta={deltas?.portfolio?.totalCurrentMargin ? {
+                delta={deltas?.portfolio?.totalCurrentMargin && deltas.portfolio.totalCurrentMargin.direction !== 'flat' && Math.abs(deltas.portfolio.totalCurrentMargin.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.totalCurrentMargin.value)),
                   direction: deltas.portfolio.totalCurrentMargin.direction,
                   isPositive: true,
@@ -240,7 +240,7 @@ export default function OverviewPage() {
                 value={fNAbs(results.revenueAtRisk)}
                 pill="Cost absorbed, not priced in"
                 accent="red"
-                delta={deltas?.portfolio?.revenueAtRisk ? {
+                delta={deltas?.portfolio?.revenueAtRisk && deltas.portfolio.revenueAtRisk.direction !== 'flat' && Math.abs(deltas.portfolio.revenueAtRisk.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.revenueAtRisk.value)),
                   direction: deltas.portfolio.revenueAtRisk.direction,
                   isPositive: false,
@@ -251,7 +251,7 @@ export default function OverviewPage() {
                 value={results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : '₦0'}
                 pill="Repricing upside /month"
                 accent="amber"
-                delta={deltas?.portfolio?.marginProtected ? {
+                delta={deltas?.portfolio?.marginProtected && deltas.portfolio.marginProtected.direction !== 'flat' && Math.abs(deltas.portfolio.marginProtected.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.marginProtected.value)),
                   direction: deltas.portfolio.marginProtected.direction,
                   isPositive: true,

@@ -70,21 +70,22 @@ function ComparisonBar() {
   if (otherPeriods.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 flex-shrink-0"
+    <div className="px-4 pb-4 pt-3 border-b border-white/10 flex-shrink-0"
       style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest whitespace-nowrap">
+      <p className="text-[10px] font-bold uppercase tracking-[0.1em] mb-2"
+        style={{ color: 'rgba(255,255,255,0.35)' }}>
         Compare
-      </span>
+      </p>
       <select
         value={comparisonPeriodId || ''}
         onChange={e => e.target.value ? loadComparisonPeriod(e.target.value) : clearComparison()}
-        className="flex-1 text-xs rounded-lg px-2 py-1 border-0 outline-none"
+        className="w-full rounded-lg px-2.5 py-1.5 text-xs outline-none truncate"
         style={{
           backgroundColor: 'rgba(255,255,255,0.08)',
+          border: '1px solid rgba(255,255,255,0.12)',
           color: comparisonPeriodId ? '#D4A843' : 'rgba(255,255,255,0.5)',
-          maxWidth: '180px',
         }}>
-        <option value="">No comparison</option>
+        <option value="" style={{ color: '#1B2A4A' }}>No comparison</option>
         {otherPeriods
           .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
           .map(p => (
@@ -94,12 +95,12 @@ function ComparisonBar() {
           ))}
       </select>
       {comparisonLoading && (
-        <span className="text-[10px] text-[#D4A843] animate-pulse whitespace-nowrap">Loading…</span>
+        <p className="text-[10px] mt-1.5 animate-pulse" style={{ color: '#D4A843' }}>Loading…</p>
       )}
-      {comparisonPeriodId && !comparisonLoading && (
-        <span className="text-[10px] text-[#D4A843] whitespace-nowrap">
-          vs {periods.find(p => p.id === comparisonPeriodId)?.label}
-        </span>
+      {comparisonPeriodId && !comparisonLoading && activePeriod?.label && (
+        <p className="text-[10px] mt-1.5 truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          vs {activePeriod.label}
+        </p>
       )}
     </div>
   );
