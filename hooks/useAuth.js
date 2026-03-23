@@ -12,15 +12,19 @@ export function useAuth() {
   const fetchProfile = useCallback(async (userId) => {
     const sb = getSupabaseClient();
     if (!sb) return;
-    const { data } = await sb
-      .from('profiles')
-      .select('tier, is_admin, company_name')
-      .eq('user_id', userId)
-      .single();
-    if (data) {
-      setTier(data.tier || 'essentials');
-      setIsAdmin(data.is_admin || false);
-      setCompanyName(data.company_name || '');
+    try {
+      const { data } = await sb
+        .from('profiles')
+        .select('tier, is_admin, company_name')
+        .eq('user_id', userId)
+        .single();
+      if (data) {
+        setTier(data.tier || 'essentials');
+        setIsAdmin(data.is_admin || false);
+        setCompanyName(data.company_name || '');
+      }
+    } catch (_) {
+      // Network error or missing profile row — silently fall back to 'essentials'
     }
   }, []);
 
@@ -34,8 +38,13 @@ export function useAuth() {
       if (session) {
         setSession(session);
         setUser(session.user);
-        await fetchProfile(session.user.id);
-        setLoading(false);
+        try {
+          await fetchProfile(session.user.id);
+        } finally {
+          setLoading(false);   // always fires — even if fetchProfile errors
+        }
+      } else {
+        setLoading(false);     // no session — don't leave spinner running forever
       }
     });
 
@@ -43,9 +52,18 @@ export function useAuth() {
     const { data: { subscription } } = sb.auth.onAuthStateChange(async (event, session) => {
       setSession(session ?? null);
       setUser(session?.user ?? null);
-      if (session?.user) await fetchProfile(session.user.id);
-      else { setTier('essentials'); setIsAdmin(false); setCompanyName(''); }
-      setLoading(false);
+      if (session?.user) {
+        try {
+          await fetchProfile(session.user.id);
+        } finally {
+          setLoading(false);   // always fires — even if fetchProfile errors
+        }
+      } else {
+        setTier('essentials');
+        setIsAdmin(false);
+        setCompanyName('');
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
