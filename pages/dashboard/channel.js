@@ -12,7 +12,7 @@ import { computeDeltas } from '../../lib/engine/delta';
 import { TIER_ACCESS } from '../../lib/constants';
 
 export default function ChannelPage() {
-  const { tier } = useAuth();
+  const { tier, loading: authLoading } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p3 = results?.p3;
   const deltas = useMemo(() => {
@@ -23,6 +23,18 @@ export default function ChannelPage() {
   const [tableExpanded, setTableExpanded] = useState(false);
 
   // Tier gate — all hooks called above, safe to early-return here
+  if (authLoading) {
+    return (
+      <>
+        <Head><title>Channel Economics | MarginCOS</title></Head>
+        <DashboardLayout title="Channel Economics" activePeriod={activePeriod}>
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
+          </div>
+        </DashboardLayout>
+      </>
+    );
+  }
   const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
   if (!access.pillars.includes('channel')) {
     return (

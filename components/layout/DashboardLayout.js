@@ -126,7 +126,11 @@ export function DashboardLayout({ children, title, activePeriod }) {
   const router = useRouter();
   const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
+  // Show all items while profile is loading — prevents nav items disappearing
+  // then reappearing once the profile resolves (~200ms flash).
+  const access = loading
+    ? TIER_ACCESS.enterprise
+    : (TIER_ACCESS[tier] || TIER_ACCESS.essentials);
 
   // ── Force password change (first-time login with temp password) ──────────────
   const [newPass,     setNewPass]     = useState('');
@@ -134,6 +138,8 @@ export function DashboardLayout({ children, title, activePeriod }) {
   const [passError,   setPassError]   = useState('');
   const [passLoading, setPassLoading] = useState(false);
   const [passSuccess, setPassSuccess] = useState(false);
+  const [showNewPass,     setShowNewPass]     = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const handlePasswordChange = useCallback(async () => {
     setPassError('');
@@ -210,24 +216,62 @@ export function DashboardLayout({ children, title, activePeriod }) {
             </div>
           ) : (
             <div className="space-y-3">
-              <input
-                type="password"
-                placeholder="New password (min. 8 characters)"
-                value={newPass}
-                onChange={e => setNewPass(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handlePasswordChange()}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent"
-                style={{ '--tw-ring-color': '#4DD9C0' }}
-              />
-              <input
-                type="password"
-                placeholder="Confirm new password"
-                value={confirmPass}
-                onChange={e => setConfirmPass(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handlePasswordChange()}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent"
-                style={{ '--tw-ring-color': '#4DD9C0' }}
-              />
+              <div className="relative">
+                <input
+                  type={showNewPass ? 'text' : 'password'}
+                  placeholder="New password (min. 8 characters)"
+                  value={newPass}
+                  onChange={e => setNewPass(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handlePasswordChange()}
+                  className="w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                  style={{ '--tw-ring-color': '#4DD9C0' }}
+                />
+                <button type="button" tabIndex={-1}
+                  onClick={() => setShowNewPass(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label={showNewPass ? 'Hide password' : 'Show password'}>
+                  {showNewPass ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  type={showConfirmPass ? 'text' : 'password'}
+                  placeholder="Confirm new password"
+                  value={confirmPass}
+                  onChange={e => setConfirmPass(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handlePasswordChange()}
+                  className="w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                  style={{ '--tw-ring-color': '#4DD9C0' }}
+                />
+                <button type="button" tabIndex={-1}
+                  onClick={() => setShowConfirmPass(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label={showConfirmPass ? 'Hide password' : 'Show password'}>
+                  {showConfirmPass ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
               {passError && (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-medium px-3 py-2.5 rounded-lg">
                   {passError}
