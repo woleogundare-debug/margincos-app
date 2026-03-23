@@ -30,20 +30,20 @@ export function useAuth() {
 
     // Hydrate session immediately on mount — don't rely solely on INITIAL_SESSION
     // which can fire before the browser client has read the session from cookies.
-    sb.auth.getSession().then(({ data: { session } }) => {
+    sb.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
         setSession(session);
         setUser(session.user);
-        fetchProfile(session.user.id);
+        await fetchProfile(session.user.id);
         setLoading(false);
       }
     });
 
     // Keep the listener for subsequent auth changes (sign-in, sign-out, token refresh)
-    const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = sb.auth.onAuthStateChange(async (event, session) => {
       setSession(session ?? null);
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
+      if (session?.user) await fetchProfile(session.user.id);
       else { setTier('essentials'); setIsAdmin(false); setCompanyName(''); }
       setLoading(false);
     });
