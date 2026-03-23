@@ -64,7 +64,8 @@ export function useAuth() {
     companyName,
     loading,
     signOut,
-    isEnterprise:   tier === 'enterprise',
-    isProfessional: tier === 'professional' || tier === 'enterprise',
+    isEnterprise:        tier === 'enterprise',
+    isProfessional:      tier === 'professional' || tier === 'enterprise',
+    mustChangePassword:  session?.user?.user_metadata?.must_change_password === true,
   };
 }

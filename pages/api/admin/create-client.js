@@ -44,7 +44,7 @@ export default async function handler(req, res) {
       email: adminEmail,
       password: tempPassword,
       email_confirm: true,
-      user_metadata: { full_name: adminName },
+      user_metadata: { full_name: adminName, must_change_password: true },
     });
     if (userError) throw userError;
 

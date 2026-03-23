@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { LoadingSpinner } from '../ui/index';
+import { getSupabaseClient } from '../../lib/supabase/client';
 import {
   ChartBarIcon, CurrencyDollarIcon,
   ArrowTrendingDownIcon, BuildingStorefrontIcon,
@@ -120,10 +121,36 @@ const TIER_COLORS = {
 };
 
 export function DashboardLayout({ children, title, activePeriod }) {
-  const { user, tier, isEnterprise, signOut, loading } = useAuth();
+  const { user, tier, isEnterprise, signOut, loading, mustChangePassword } = useAuth();
   const router = useRouter();
   const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // ── Force password change (first-time login with temp password) ──────────────
+  const [newPass,     setNewPass]     = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
+  const [passError,   setPassError]   = useState('');
+  const [passLoading, setPassLoading] = useState(false);
+  const [passSuccess, setPassSuccess] = useState(false);
+
+  const handlePasswordChange = useCallback(async () => {
+    setPassError('');
+    if (newPass.length < 8)          { setPassError('Password must be at least 8 characters.'); return; }
+    if (newPass !== confirmPass)      { setPassError('Passwords do not match.'); return; }
+    setPassLoading(true);
+    const sb = getSupabaseClient();
+    const { error } = await sb.auth.updateUser({
+      password: newPass,
+      data: { must_change_password: false },
+    });
+    setPassLoading(false);
+    if (error) { setPassError(error.message); return; }
+    setPassSuccess(true);
+    // Session will refresh via onAuthStateChange — modal disappears automatically
+    // once mustChangePassword becomes false. Clear fields ready for that.
+    setNewPass('');
+    setConfirmPass('');
+  }, [newPass, confirmPass]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -152,6 +179,76 @@ export function DashboardLayout({ children, title, activePeriod }) {
   const initials = user?.email
     ? user.email.slice(0, 2).toUpperCase()
     : '??';
+
+  // ── Force-change password modal ─────────────────────────────────────────────
+  if (mustChangePassword) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+        <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-100 shadow-xl p-8">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
+              style={{ backgroundColor: '#FEF2F2' }}>
+              <svg className="w-5 h-5" style={{ color: '#C0392B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-bold" style={{ color: '#1B2A4A' }}>Set your password</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              You&rsquo;re using a temporary password. Please set a permanent one to continue.
+            </p>
+          </div>
+
+          {passSuccess ? (
+            <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
+              <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="text-sm text-emerald-700 font-medium">Password updated — loading your dashboard…</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <input
+                type="password"
+                placeholder="New password (min. 8 characters)"
+                value={newPass}
+                onChange={e => setNewPass(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handlePasswordChange()}
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{ '--tw-ring-color': '#4DD9C0' }}
+              />
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPass}
+                onChange={e => setConfirmPass(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handlePasswordChange()}
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{ '--tw-ring-color': '#4DD9C0' }}
+              />
+              {passError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-medium px-3 py-2.5 rounded-lg">
+                  {passError}
+                </div>
+              )}
+              <button
+                onClick={handlePasswordChange}
+                disabled={passLoading || !newPass || !confirmPass}
+                className="w-full py-3 rounded-lg text-white font-semibold text-sm disabled:opacity-50 transition-colors"
+                style={{ backgroundColor: '#C0392B' }}
+              >
+                {passLoading ? 'Updating…' : 'Set Password & Continue'}
+              </button>
+            </div>
+          )}
+
+          <p className="text-xs text-slate-400 text-center mt-5">
+            Signed in as <span className="font-medium text-slate-500">{user?.email}</span>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#F5F7FA' }}>
