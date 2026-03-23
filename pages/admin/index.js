@@ -18,7 +18,6 @@ export default function AdminPanel() {
   const [showForm, setShowForm] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
-  const [token, setToken] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
   const [form, setForm] = useState({
@@ -39,8 +38,6 @@ export default function AdminPanel() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { router.push('/login'); return; }
 
-    setToken(session.access_token);
-
     const { data: profile } = await supabase
       .from('profiles')
       .select('is_superadmin')
@@ -49,12 +46,12 @@ export default function AdminPanel() {
 
     if (!profile?.is_superadmin) { router.push('/dashboard/portfolio'); return; }
 
-    loadClients(session.access_token);
+    loadClients();
   };
 
-  const loadClients = async (accessToken) => {
+  const loadClients = async () => {
     const res = await fetch('/api/admin/get-clients', {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      credentials: 'include',
     });
     const data = await res.json();
     setClients(data.teams || []);
@@ -71,10 +68,8 @@ export default function AdminPanel() {
 
     const res = await fetch('/api/admin/create-client', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(form),
     });
 
@@ -83,7 +78,7 @@ export default function AdminPanel() {
       setSuccess(`${form.companyName} created. Welcome email sent to ${form.adminEmail}.`);
       setForm({ companyName: '', tier: 'professional', adminName: '', adminEmail: '', tempPassword: generatePassword() });
       setShowForm(false);
-      loadClients(token);
+      loadClients();
     } else {
       setError(data.error || 'Something went wrong');
     }
@@ -96,16 +91,14 @@ export default function AdminPanel() {
     setDeletingId(teamId);
     const res = await fetch('/api/admin/delete-client', {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ teamId }),
     });
 
     const data = await res.json();
     if (data.success) {
-      loadClients(token);
+      loadClients();
     } else {
       alert('Delete failed: ' + data.error);
     }

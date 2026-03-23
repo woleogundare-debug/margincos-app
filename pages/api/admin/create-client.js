@@ -1,26 +1,23 @@
-import { createClient } from '@supabase/supabase-js';
+import { requireAuth, createSupabaseServiceClient } from '../../../lib/supabase/server';
 import { Resend } from 'resend';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  // Verify caller is superadmin
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
-  const token = authHeader.replace('Bearer ', '');
-  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !user) return res.status(401).json({ error: 'Unauthorized' });
+  // Verify caller identity via cookie-based session
+  const auth = await requireAuth(req, res);
+  if (auth.redirect) return res.status(401).json({ error: 'Unauthorized' });
 
-  const { data: profile } = await supabase
+  // All admin operations use the service role client
+  const serviceClient = createSupabaseServiceClient();
+
+  // Verify superadmin status from DB — not from client-supplied values
+  const { data: profile } = await serviceClient
     .from('profiles')
     .select('is_superadmin')
-    .eq('user_id', user.id)
+    .eq('user_id', auth.user.id)
     .single();
   if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
 
@@ -32,15 +29,15 @@ export default async function handler(req, res) {
 
   try {
     // 1. Create team
-    const { data: team, error: teamError } = await supabase
+    const { data: team, error: teamError } = await serviceClient
       .from('teams')
-      .insert([{ name: companyName, tier, created_by: user.id }])
+      .insert([{ name: companyName, tier, created_by: auth.user.id }])
       .select()
       .single();
     if (teamError) throw teamError;
 
     // 2. Create user in Supabase Auth
-    const { data: newUser, error: userError } = await supabase.auth.admin.createUser({
+    const { data: newUser, error: userError } = await serviceClient.auth.admin.createUser({
       email: adminEmail,
       password: tempPassword,
       email_confirm: true,
@@ -49,7 +46,7 @@ export default async function handler(req, res) {
     if (userError) throw userError;
 
     // 3. Create profile
-    await supabase.from('profiles').upsert({
+    await serviceClient.from('profiles').upsert({
       user_id: newUser.user.id,
       email: adminEmail,
       full_name: adminName,
@@ -59,7 +56,7 @@ export default async function handler(req, res) {
     });
 
     // 4. Add as team admin
-    await supabase.from('team_members').insert([{
+    await serviceClient.from('team_members').insert([{
       team_id: team.id,
       user_id: newUser.user.id,
       role: 'admin',

@@ -1,24 +1,20 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+import { requireAuth, createSupabaseServiceClient } from '../../../lib/supabase/server';
 
 export default async function handler(req, res) {
   if (req.method !== 'DELETE') return res.status(405).end();
 
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
-  const token = authHeader.replace('Bearer ', '');
+  // Verify caller identity via cookie-based session
+  const auth = await requireAuth(req, res);
+  if (auth.redirect) return res.status(401).json({ error: 'Unauthorized' });
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !user) return res.status(401).json({ error: 'Unauthorized' });
+  // All admin operations use the service role client
+  const serviceClient = createSupabaseServiceClient();
 
-  const { data: profile } = await supabase
+  // Verify superadmin status from DB
+  const { data: profile } = await serviceClient
     .from('profiles')
     .select('is_superadmin')
-    .eq('user_id', user.id)
+    .eq('user_id', auth.user.id)
     .single();
   if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
 
@@ -27,7 +23,7 @@ export default async function handler(req, res) {
 
   try {
     // Get all user_ids in this team before deleting
-    const { data: members } = await supabase
+    const { data: members } = await serviceClient
       .from('team_members')
       .select('user_id')
       .eq('team_id', teamId);
@@ -36,14 +32,14 @@ export default async function handler(req, res) {
 
     // Step 1 — Null out team_id on profiles FIRST (breaks FK constraint)
     if (userIds.length > 0) {
-      await supabase
+      await serviceClient
         .from('profiles')
         .update({ team_id: null })
         .in('user_id', userIds);
     }
 
     // Step 2 — Delete the team (cascades to team_members, team_invitations)
-    const { error: teamError } = await supabase
+    const { error: teamError } = await serviceClient
       .from('teams')
       .delete()
       .eq('id', teamId);
@@ -51,14 +47,14 @@ export default async function handler(req, res) {
 
     // Step 3 — Delete profiles
     if (userIds.length > 0) {
-      await supabase
+      await serviceClient
         .from('profiles')
         .delete()
         .in('user_id', userIds);
 
       // Step 4 — Delete auth users
       for (const userId of userIds) {
-        await supabase.auth.admin.deleteUser(userId);
+        await serviceClient.auth.admin.deleteUser(userId);
       }
     }
 
