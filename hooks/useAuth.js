@@ -34,36 +34,27 @@ export function useAuth() {
 
     // Hydrate session immediately on mount — don't rely solely on INITIAL_SESSION
     // which can fire before the browser client has read the session from cookies.
-    sb.auth.getSession().then(async ({ data: { session } }) => {
+    sb.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setSession(session);
         setUser(session.user);
-        try {
-          await fetchProfile(session.user.id);
-        } finally {
-          setLoading(false);   // always fires — even if fetchProfile errors
-        }
-      } else {
-        setLoading(false);     // no session — don't leave spinner running forever
+        fetchProfile(session.user.id); // fire-and-forget, try/catch inside
       }
+      setLoading(false); // always fires, regardless of session
     });
 
     // Keep the listener for subsequent auth changes (sign-in, sign-out, token refresh)
-    const { data: { subscription } } = sb.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
       setSession(session ?? null);
       setUser(session?.user ?? null);
       if (session?.user) {
-        try {
-          await fetchProfile(session.user.id);
-        } finally {
-          setLoading(false);   // always fires — even if fetchProfile errors
-        }
+        fetchProfile(session.user.id); // fire-and-forget
       } else {
         setTier('essentials');
         setIsAdmin(false);
         setCompanyName('');
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -72,6 +63,12 @@ export function useAuth() {
   const signOut = useCallback(async () => {
     const sb = getSupabaseClient();
     if (sb) await sb.auth.signOut();
+    // Force full-page navigation — clears all React state, hooks, and subscriptions.
+    // Don't rely on the state chain (onAuthStateChange → user=null → redirect effect)
+    // which can race across multiple useAuth instances.
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
   }, []);
 
   return {

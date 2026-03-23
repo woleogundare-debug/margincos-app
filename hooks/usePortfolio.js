@@ -25,10 +25,11 @@ export function usePortfolio(userId, tier = 'essentials') {
       .order('id', { ascending: false }); // sku_rows has no created_at; periods may — use id for safe ordering
     if (error) {
       console.error('[loadPeriods] Supabase error:', error.message, error.details, error.hint, error.code);
-    } else {
-      console.log('[loadPeriods] Found', (data || []).length, 'periods');
-      setPeriods(data || []);
+      setLoading(false); // prevent infinite spinner on DB error
+      return;
     }
+    console.log('[loadPeriods] Found', (data || []).length, 'periods');
+    setPeriods(data || []);
   }, [userId]);
 
   // ── Load SKU rows + trade investment for a period ─────────────
