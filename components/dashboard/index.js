@@ -182,3 +182,61 @@ export function EmptyState({ icon, title, description, action }) {
     </div>
   );
 }
+
+// ── Pillar gate — shown when a user's tier doesn't include this pillar ──────
+export function PillarGate({ requiredTier = 'Professional', pillarName = 'this pillar' }) {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="rounded-2xl p-10 text-center relative overflow-hidden max-w-md"
+        style={{
+          background: 'linear-gradient(135deg, #111D33 0%, #1B2A4A 60%, #2A3F66 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 4px 20px rgba(17, 29, 51, 0.3)',
+        }}>
+        {/* Gold accent line */}
+        <div style={{
+          position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+          width: '60px', height: '3px', borderRadius: '0 0 4px 4px',
+          background: 'linear-gradient(90deg, transparent, #D4A843, transparent)',
+        }} />
+
+        <div className="relative z-10">
+          <span style={{
+            display: 'inline-block', fontSize: '10px', fontWeight: 700,
+            letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: '#D4A843', background: 'rgba(212, 168, 67, 0.12)',
+            border: '1px solid rgba(212, 168, 67, 0.2)',
+            padding: '4px 12px', borderRadius: '100px', marginBottom: '16px',
+          }}>
+            {requiredTier}
+          </span>
+
+          <h3 style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: '22px', fontWeight: 700, color: '#FFFFFF',
+            marginBottom: '8px', letterSpacing: '-0.02em',
+          }}>
+            Unlock {pillarName}
+          </h3>
+
+          <p style={{
+            fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)',
+            maxWidth: '360px', margin: '0 auto 28px', lineHeight: 1.6,
+          }}>
+            {pillarName} is available on the {requiredTier} plan. Upgrade to access full
+            commercial intelligence across all four pillars.
+          </p>
+
+          <a href="/pricing" style={{
+            display: 'inline-block', padding: '12px 28px', borderRadius: '8px',
+            background: '#D4A843', color: '#1B2A4A',
+            fontSize: '13px', fontWeight: 700, textDecoration: 'none',
+            letterSpacing: '0.02em',
+          }}>
+            Upgrade Plan
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}

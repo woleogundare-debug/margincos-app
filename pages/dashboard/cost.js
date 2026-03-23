@@ -2,14 +2,17 @@ import { useState, useMemo } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
+import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState, PillarGate } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
+import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import { TIER_ACCESS } from '../../lib/constants';
 
 export default function CostPage() {
+  const { tier } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p2 = results?.p2;
   const deltas = useMemo(() => {
@@ -18,6 +21,19 @@ export default function CostPage() {
   }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
+
+  // Tier gate — all hooks called above, safe to early-return here
+  const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
+  if (!access.pillars.includes('cost')) {
+    return (
+      <>
+        <Head><title>Cost Pass-Through | MarginCOS</title></Head>
+        <DashboardLayout title="Cost Pass-Through" activePeriod={activePeriod}>
+          <PillarGate requiredTier="Professional" pillarName="Cost Pass-Through Analysis" />
+        </DashboardLayout>
+      </>
+    );
+  }
 
   const ragStatus = !hasResults ? 'grey'
     : p2?.avgAbsorbedPct > 60 ? 'red'
@@ -159,6 +175,6 @@ export default function CostPage() {
 
 export async function getServerSideProps({ req, res }) {
   const auth = await requireAuth(req, res);
-  if (auth.redirect) return auth;
+  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
   return { props: {} };
 }

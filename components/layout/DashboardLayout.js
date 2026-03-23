@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { LoadingSpinner } from '../ui/index';
 import { getSupabaseClient } from '../../lib/supabase/client';
+import { TIER_ACCESS } from '../../lib/constants';
 import {
   ChartBarIcon, CurrencyDollarIcon,
   ArrowTrendingDownIcon, BuildingStorefrontIcon,
@@ -26,9 +27,9 @@ const NAV_SECTIONS = [
       { href: '/dashboard/overview', label: 'Overview',  icon: ChartBarIcon },
       { href: '/dashboard/actions',  label: 'Actions',   icon: CheckCircleIcon },
       { href: '/dashboard/pricing',  label: 'Pricing',   icon: CurrencyDollarIcon },
-      { href: '/dashboard/cost',     label: 'Cost',       icon: ArrowTrendingDownIcon },
-      { href: '/dashboard/channel',  label: 'Channel',    icon: BuildingStorefrontIcon },
-      { href: '/dashboard/trade',    label: 'Trade',      icon: RectangleStackIcon },
+      { href: '/dashboard/cost',     label: 'Cost',       icon: ArrowTrendingDownIcon,  pillar: 'cost' },
+      { href: '/dashboard/channel',  label: 'Channel',    icon: BuildingStorefrontIcon, pillar: 'channel' },
+      { href: '/dashboard/trade',    label: 'Trade',      icon: RectangleStackIcon,     pillar: 'trade' },
     ],
   },
   {
@@ -125,6 +126,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
   const router = useRouter();
   const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
 
   // ── Force password change (first-time login with temp password) ──────────────
   const [newPass,     setNewPass]     = useState('');
@@ -316,41 +318,50 @@ export function DashboardLayout({ children, title, activePeriod }) {
 
           {/* Nav — scrollable area */}
           <nav className="flex-1 px-3 py-4 overflow-y-auto min-h-0">
-            {NAV_SECTIONS.map((section, si) => (
-              <div key={si}>
-                {section.label && (
-                  <div className="px-4 pt-5 pb-2 flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">{section.label}</span>
-                    <div className="flex-1 border-t border-white/10" />
+            {NAV_SECTIONS.map((section, si) => {
+              // Hide items the user's tier can't access; skip the section entirely if empty
+              const visibleItems = section.items.filter(({ pillar, requiresEnterprise: reqEnt }) => {
+                if (pillar && !access.pillars.includes(pillar)) return false;
+                if (reqEnt && !access.modules) return false;
+                return true;
+              });
+              if (visibleItems.length === 0) return null;
+              return (
+                <div key={si}>
+                  {section.label && (
+                    <div className="px-4 pt-5 pb-2 flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">{section.label}</span>
+                      <div className="flex-1 border-t border-white/10" />
+                    </div>
+                  )}
+                  <div className="space-y-0.5">
+                    {visibleItems.map(({ href, label, icon: Icon, requiresEnterprise: reqEnt }) => {
+                      const active = router.pathname === href || router.pathname.startsWith(href + '/');
+                      const locked = reqEnt && !isEnterprise;
+                      return (
+                        <Link key={href} href={href}
+                          onClick={() => setSidebarOpen(false)}
+                          className={clsx(
+                            'flex items-center gap-3 px-4 py-3.5 md:py-3 rounded-xl text-sm font-medium transition-all relative',
+                            active
+                              ? 'bg-white text-navy shadow-sm'
+                              : locked
+                                ? 'text-gray-500 hover:text-gray-400 hover:bg-white/5'
+                                : 'text-gray-300 hover:text-white hover:bg-white/10'
+                          )}>
+                          {active && (
+                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style={{ backgroundColor: '#C0392B' }} />
+                          )}
+                          <Icon className={clsx('w-5 h-5', active ? 'text-navy' : locked ? 'text-gray-500' : 'text-gray-400')} />
+                          {label}
+                          {locked && <LockClosedIcon className="w-3.5 h-3.5 text-gray-500 ml-auto" />}
+                        </Link>
+                      );
+                    })}
                   </div>
-                )}
-                <div className="space-y-0.5">
-                  {section.items.map(({ href, label, icon: Icon, requiresEnterprise: reqEnt }) => {
-                    const active = router.pathname === href || router.pathname.startsWith(href + '/');
-                    const locked = reqEnt && !isEnterprise;
-                    return (
-                      <Link key={href} href={href}
-                        onClick={() => setSidebarOpen(false)}
-                        className={clsx(
-                          'flex items-center gap-3 px-4 py-3.5 md:py-3 rounded-xl text-sm font-medium transition-all relative',
-                          active
-                            ? 'bg-white text-navy shadow-sm'
-                            : locked
-                              ? 'text-gray-500 hover:text-gray-400 hover:bg-white/5'
-                              : 'text-gray-300 hover:text-white hover:bg-white/10'
-                        )}>
-                        {active && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style={{ backgroundColor: '#C0392B' }} />
-                        )}
-                        <Icon className={clsx('w-5 h-5', active ? 'text-navy' : locked ? 'text-gray-500' : 'text-gray-400')} />
-                        {label}
-                        {locked && <LockClosedIcon className="w-3.5 h-3.5 text-gray-500 ml-auto" />}
-                      </Link>
-                    );
-                  })}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </nav>
 
           {/* Comparison period selector — analysis pages only */}

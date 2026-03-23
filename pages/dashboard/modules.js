@@ -318,6 +318,6 @@ export default function ModulesPage() {
 
 export async function getServerSideProps({ req, res }) {
   const auth = await requireAuth(req, res);
-  if (auth.redirect) return auth;
+  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
   return { props: {} };
 }

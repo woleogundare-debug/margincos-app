@@ -2,14 +2,17 @@ import { useState, useMemo } from 'react';
 import Head from 'next/head';
 import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
+import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState, PillarGate } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
+import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import { TIER_ACCESS } from '../../lib/constants';
 
 export default function TradePage() {
+  const { tier } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p4 = results?.p4;
   const deltas = useMemo(() => {
@@ -18,6 +21,20 @@ export default function TradePage() {
   }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
+
+  // Tier gate — all hooks called above, safe to early-return here
+  const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
+  if (!access.pillars.includes('trade')) {
+    return (
+      <>
+        <Head><title>Trade Execution | MarginCOS</title></Head>
+        <DashboardLayout title="Trade Execution" activePeriod={activePeriod}>
+          <PillarGate requiredTier="Professional" pillarName="Trade Execution" />
+        </DashboardLayout>
+      </>
+    );
+  }
+
   const lossCount = p4?.results?.filter(r => !r.profitable).length || 0;
   const ragStatus = !hasResults ? 'grey'
     : lossCount > 0 ? 'red'
@@ -149,6 +166,6 @@ export default function TradePage() {
 
 export async function getServerSideProps({ req, res }) {
   const auth = await requireAuth(req, res);
-  if (auth.redirect) return auth;
+  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
   return { props: {} };
 }
