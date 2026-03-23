@@ -85,7 +85,7 @@ export default async function handler(req, res) {
               <p style="margin: 4px 0; font-size: 14px; color: #1B2A4A;"><strong>Email:</strong> ${adminEmail}</p>
               <p style="margin: 4px 0; font-size: 14px; color: #1B2A4A;"><strong>Temporary password:</strong> ${tempPassword}</p>
             </div>
-            <p style="color: #5A6B80; font-size: 14px;">Please change your password on first login using the "Forgot password?" link.</p>
+            <p style="color: #5A6B80; font-size: 14px;">You'll be prompted to set a permanent password when you first sign in.</p>
             <div style="margin: 24px 0;">
               <a href="https://margincos.com/login" style="background: #C0392B; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-size: 15px; font-weight: 600;">
                 Sign In to MarginCOS →
