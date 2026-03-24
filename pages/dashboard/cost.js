@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import P2WaterfallChart from '../../components/charts/P2WaterfallChart';
 import { TIER_ACCESS } from '../../lib/constants';
 
 export default function CostPage() {
@@ -92,6 +93,9 @@ export default function CostPage() {
                   isPositive: true,
                 } : null} />
             </div>
+
+            {/* Cost Recovery Waterfall Chart */}
+            <P2WaterfallChart p2={p2} />
 
             {/* Mobile summary strip */}
             <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">

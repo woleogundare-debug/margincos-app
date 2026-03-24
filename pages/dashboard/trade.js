@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import P4PromoChart from '../../components/charts/P4PromoChart';
 import { TIER_ACCESS } from '../../lib/constants';
 
 export default function TradePage() {
@@ -83,6 +84,9 @@ export default function TradePage() {
                 pill={lossCount > 0 ? 'Promo depth exceeds margin' : 'All promotions profitable'}
                 accent={lossCount > 0 ? 'red' : 'teal'} />
             </div>
+
+            {/* Promotion Net Impact Chart */}
+            <P4PromoChart results={p4.results} />
 
             {/* Mobile summary strip */}
             <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">

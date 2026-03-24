@@ -9,6 +9,7 @@ import { Badge } from '../../components/ui/index';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import P1RepricingChart from '../../components/charts/P1RepricingChart';
 
 export default function PricingPage() {
   const { activePeriod, results, running, ranAt, run, hasResults, chronologicalDelta } = useAnalysisContext();
@@ -81,6 +82,9 @@ export default function PricingPage() {
                 </p>
               </div>
             )}
+
+            {/* Repricing Chart */}
+            <P1RepricingChart results={p1.results} />
 
             {/* Mobile summary strip */}
             <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">

@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, CHANNEL_LABELS } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import P3ChannelChart from '../../components/charts/P3ChannelChart';
 import { TIER_ACCESS } from '../../lib/constants';
 
 export default function ChannelPage() {
@@ -83,6 +84,9 @@ export default function ChannelPage() {
                 pill={weakChannels.length > 0 ? 'Below 15% contribution' : 'All channels healthy'}
                 accent={weakChannels.length > 0 ? 'red' : 'teal'} />
             </div>
+
+            {/* Channel Revenue vs Contribution Chart */}
+            <P3ChannelChart channelResults={p3.channelResults} />
 
             {/* Mobile summary strip */}
             <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">
