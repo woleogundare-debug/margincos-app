@@ -25,7 +25,8 @@ const fmt = (v) => {
   return `${sign}₦${abs.toFixed(0)}`;
 };
 
-const pct = (v) => (v == null ? '' : `${(v * 100).toFixed(1)}%`);
+// contPct is already 0-100 (not a decimal)
+const pct = (v) => (v == null ? '' : `${Number(v).toFixed(1)}%`);
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;

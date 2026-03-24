@@ -27,7 +27,8 @@ const fmt = (v) => {
   return `${sign}₦${abs.toFixed(0)}`;
 };
 
-const pct = (v) => (v == null ? '' : `${(v * 100).toFixed(1)}%`);
+// portRecoveryPct is already 0-100 (not a decimal)
+const pct = (v) => (v == null ? '' : `${Number(v).toFixed(1)}%`);
 
 export default function P2WaterfallChart({ p2 }) {
   if (!p2) return null;
