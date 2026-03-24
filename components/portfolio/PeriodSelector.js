@@ -27,6 +27,7 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
   const [creating,      setCreating]      = useState(false);
   const [error,         setError]         = useState('');
   const [deleting,      setDeleting]      = useState(null); // period id currently being deleted
+  const [deleteError,   setDeleteError]   = useState('');
   const dropdownRef = useRef(null);
 
   // Auto-generated label — canonical format for sorting and display
@@ -67,7 +68,8 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
     try {
       await onDelete(period.id);
     } catch (err) {
-      alert('Failed to delete period. Please try again.');
+      setDeleteError('Failed to delete period. Please try again.');
+      setTimeout(() => setDeleteError(''), 4000);
     } finally {
       setDeleting(null);
     }
@@ -162,6 +164,11 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
                 );
               })}
             </div>
+            {deleteError && (
+              <p style={{ fontSize: '11px', color: '#C0392B', padding: '6px 16px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", borderTop: '1px solid #FEE2E2', backgroundColor: '#FFF5F5' }}>
+                {deleteError}
+              </p>
+            )}
             <button
               onClick={() => { setOpen(false); setShowModal(true); }}
               className="w-full flex items-center gap-2 px-4 py-3 text-sm font-semibold text-teal hover:bg-teal-50 transition-colors border-t border-slate-100">

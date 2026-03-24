@@ -100,7 +100,8 @@ export default function AdminPanel() {
     if (data.success) {
       loadClients();
     } else {
-      alert('Delete failed: ' + data.error);
+      setError('Delete failed: ' + (data.error || 'Unknown error'));
+      setTimeout(() => setError(''), 5000);
     }
     setDeletingId(null);
   };
@@ -155,10 +156,15 @@ export default function AdminPanel() {
             </button>
           </div>
 
-          {/* Success message */}
+          {/* Success / top-level error messages */}
           {success && (
             <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 text-sm text-teal-800">
               {success}
+            </div>
+          )}
+          {error && !showForm && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-sm text-red-700">
+              {error}
             </div>
           )}
 
