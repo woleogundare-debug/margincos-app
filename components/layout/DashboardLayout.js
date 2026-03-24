@@ -90,7 +90,12 @@ function ComparisonBar() {
         }}>
         <option value="" style={{ color: '#1B2A4A' }}>No comparison</option>
         {otherPeriods
-          .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+          .sort((a, b) => {
+            // Sort by reporting month (label), not created_at — import order can differ from month order
+            const ta = new Date(a.label || 0).getTime() || 0;
+            const tb = new Date(b.label || 0).getTime() || 0;
+            return tb - ta; // most recent reporting month first
+          })
           .map(p => (
             <option key={p.id} value={p.id} style={{ color: '#1B2A4A', backgroundColor: '#fff' }}>
               {p.label}
@@ -101,8 +106,10 @@ function ComparisonBar() {
         <p className="text-[10px] mt-1.5 animate-pulse" style={{ color: '#D4A843' }}>Loading…</p>
       )}
       {comparisonPeriodId && !comparisonLoading && activePeriod && comparisonPeriodMeta && (() => {
-        const activeTime = new Date(activePeriod.created_at || 0).getTime();
-        const compTime   = new Date(comparisonPeriodMeta.created_at || 0).getTime();
+        // Use label-parsed month, not created_at, for the sidebar arrow label
+        const parseMonth = (label) => { const d = new Date(label || 0); return isNaN(d.getTime()) ? 0 : d.getTime(); };
+        const activeTime = parseMonth(activePeriod.label);
+        const compTime   = parseMonth(comparisonPeriodMeta.label);
         const earlier = activeTime <= compTime ? activePeriod.label : comparisonPeriodMeta.label;
         const later   = activeTime <= compTime ? comparisonPeriodMeta.label : activePeriod.label;
         return (

@@ -98,10 +98,20 @@ export function AnalysisProvider({ children }) {
   // Chronological ordering: delta = later period results − earlier period results.
   // Positive delta always means the metric improved over time, regardless of which
   // period the user has active vs. selected as comparison.
+  // NOTE: We parse the period LABEL ("March 2026", "February 2026") — not created_at.
+  // created_at reflects when the data was imported, which can be out of order
+  // (e.g. February data imported after March data). The label always carries the
+  // true reporting month. new Date("March 2026") → Mar 1 2026, which is reliable.
+  const parseReportingMonth = (label) => {
+    if (!label) return 0;
+    const d = new Date(label);
+    return isNaN(d.getTime()) ? 0 : d.getTime();
+  };
+
   const chronologicalDelta = useMemo(() => {
     if (!results || !comparisonResults || !activePeriod || !comparisonPeriodMeta) return null;
-    const activeTime = new Date(activePeriod.created_at || 0).getTime();
-    const compTime   = new Date(comparisonPeriodMeta.created_at || 0).getTime();
+    const activeTime = parseReportingMonth(activePeriod.label);
+    const compTime   = parseReportingMonth(comparisonPeriodMeta.label);
     if (activeTime >= compTime) {
       // Active period is later (or equal) — delta = active − comparison
       return { laterResults: results, earlierResults: comparisonResults,
