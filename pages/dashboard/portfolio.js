@@ -138,7 +138,7 @@ export default function PortfolioPage() {
               </h1>
               <div className="flex items-center justify-between gap-3">
                 {/* Left group: period selector + badges */}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-3 flex-shrink-0">
                   <PeriodSelector
                     periods={periods}
                     activePeriod={activePeriod}
@@ -181,7 +181,7 @@ export default function PortfolioPage() {
                   )}
                 </div>
                 {/* Right group: action buttons */}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-3 flex-shrink-0">
                   <Button variant="secondary" size="sm" onClick={() => {
                     const a = document.createElement('a');
                     a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
@@ -192,13 +192,13 @@ export default function PortfolioPage() {
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
                       <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg> Download Template
+                    </svg> Template
                   </Button>
                   <Button variant="secondary" size="sm" onClick={() => {
                     setActiveTab('sku');
                     document.getElementById('csv-import-trigger')?.click();
                   }}>
-                    <ArrowUpTrayIcon className="h-4 w-4" /> Import Data
+                    <ArrowUpTrayIcon className="h-4 w-4" /> Import
                   </Button>
                   <Button variant="secondary" size="sm" onClick={handleAddSku}>
                     <PlusIcon className="h-4 w-4" /> Add SKU
