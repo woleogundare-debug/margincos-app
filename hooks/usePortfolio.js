@@ -17,33 +17,33 @@ export function usePortfolio(userId, tier = 'essentials') {
   // ── Load all periods for this user ────────────────────────────
   const loadPeriods = useCallback(async () => {
     if (!userId) return;
-    console.log('[loadPeriods] Fetching for user:', userId);
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriods] Fetching for user:', userId);
     const { data, error } = await sb
       .from('periods')
       .select('*')
       .eq('user_id', userId)
       .order('id', { ascending: false }); // sku_rows has no created_at; periods may — use id for safe ordering
     if (error) {
-      console.error('[loadPeriods] Supabase error:', error.message, error.details, error.hint, error.code);
+      if (process.env.NODE_ENV !== 'production') console.error('[loadPeriods] Supabase error:', error.message, error.details, error.hint, error.code);
       setLoading(false); // prevent infinite spinner on DB error
       return;
     }
-    console.log('[loadPeriods] Found', (data || []).length, 'periods');
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriods] Found', (data || []).length, 'periods');
     setPeriods(data || []);
   }, [userId]);
 
   // ── Load SKU rows + trade investment for a period ─────────────
   const loadPeriodData = useCallback(async (periodId) => {
     if (!periodId) return;
-    console.log('[loadPeriodData] Fetching data for period:', periodId);
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Fetching data for period:', periodId);
     setLoading(true);
     const [skuRes, tradeRes] = await Promise.all([
       sb.from('sku_rows').select('*').eq('period_id', periodId),
       sb.from('trade_investment').select('*').eq('period_id', periodId),
     ]);
-    if (skuRes.error) console.error('[loadPeriodData] SKU fetch error:', skuRes.error.message, skuRes.error.code);
-    if (tradeRes.error) console.error('[loadPeriodData] Trade fetch error:', tradeRes.error.message, tradeRes.error.code);
-    console.log('[loadPeriodData] Loaded', (skuRes.data || []).length, 'SKUs,', (tradeRes.data || []).length, 'trade rows');
+    if (skuRes.error && process.env.NODE_ENV !== 'production') console.error('[loadPeriodData] SKU fetch error:', skuRes.error.message, skuRes.error.code);
+    if (tradeRes.error && process.env.NODE_ENV !== 'production') console.error('[loadPeriodData] Trade fetch error:', tradeRes.error.message, tradeRes.error.code);
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Loaded', (skuRes.data || []).length, 'SKUs,', (tradeRes.data || []).length, 'trade rows');
     setSkuRows(skuRes.data || []);
     setTradeInvestment(tradeRes.data || []);
     setLoading(false);
@@ -57,18 +57,18 @@ export function usePortfolio(userId, tier = 'essentials') {
 
   // ── Create new period ─────────────────────────────────────────
   const createPeriod = useCallback(async ({ label, vertical, company_name }) => {
-    console.log('[createPeriod] Inserting:', { user_id: userId, label, vertical });
+    if (process.env.NODE_ENV !== 'production') console.log('[createPeriod] Inserting:', { user_id: userId, label, vertical });
     const { data, error } = await sb.from('periods').insert({
       user_id: userId, label, vertical,
       company_name: company_name || null,
       is_active: true,
     }).select().single();
     if (error) {
-      console.error('[createPeriod] Supabase error:', error.message, error.details, error.hint, error.code);
+      if (process.env.NODE_ENV !== 'production') console.error('[createPeriod] Supabase error:', error.message, error.details, error.hint, error.code);
       setError(error.message);
       return null;
     }
-    console.log('[createPeriod] Created:', data.id);
+    if (process.env.NODE_ENV !== 'production') console.log('[createPeriod] Created:', data.id);
     await loadPeriods();
     await selectPeriod(data);
     return data;
@@ -78,7 +78,7 @@ export function usePortfolio(userId, tier = 'essentials') {
   const saveSku = useCallback(async (row) => {
     // Guard: don't attempt save without required context
     if (!activePeriod?.id || !userId) {
-      console.error('[saveSku] Aborted — missing context:', { period_id: activePeriod?.id, user_id: userId });
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted — missing context:', { period_id: activePeriod?.id, user_id: userId });
       return null;
     }
     setSaving(true);
@@ -91,7 +91,7 @@ export function usePortfolio(userId, tier = 'essentials') {
     payload.active = (a === true || a === 'Y' || a === 'y' || a === 'true' || a === 'Active') ? 'Y' : (a === false || a === 'N' || a === 'n' || a === 'false' || a === 'No' || a === 'Inactive') ? 'N' : 'Y';
     // For new rows (no id yet), remove id so Supabase auto-generates it
     if (!payload.id) delete payload.id;
-    console.log('[saveSku] Upserting:', { id: payload.id || '(new)', sku_id: payload.sku_id, period_id: payload.period_id, user_id: payload.user_id, user_id_type: typeof payload.user_id });
+    if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting:', { id: payload.id || '(new)', sku_id: payload.sku_id, period_id: payload.period_id, user_id: payload.user_id, user_id_type: typeof payload.user_id });
     const { data, error } = await sb
       .from('sku_rows')
       .upsert(payload, { onConflict: 'id' })
@@ -99,11 +99,11 @@ export function usePortfolio(userId, tier = 'essentials') {
       .single();
     setSaving(false);
     if (error) {
-      console.error('[saveSku] Supabase error:', error.message, error.details, error.hint);
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Supabase error:', error.message, error.details, error.hint);
       setError(error.message);
       return null;
     }
-    console.log('[saveSku] Saved successfully:', data.id);
+    if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Saved successfully:', data.id);
     setSkuRows(prev => {
       // Replace matching row — match on id OR _tempId for newly created rows
       const idx = prev.findIndex(r => r.id === data.id || (tempId && r._tempId === tempId));
@@ -161,17 +161,17 @@ export function usePortfolio(userId, tier = 'essentials') {
       setSkuRows(prev => prev.filter(r => r._tempId !== id && r.id !== id));
       return;
     }
-    console.log('[deleteSku] Soft-deleting:', id);
+    if (process.env.NODE_ENV !== 'production') console.log('[deleteSku] Soft-deleting:', id);
     const { error } = await sb.from('sku_rows').update({ active: 'N' }).eq('id', id);
     if (error) {
-      console.error('[deleteSku] Supabase error:', error.message, error.details, error.hint, error.code);
+      if (process.env.NODE_ENV !== 'production') console.error('[deleteSku] Supabase error:', error.message, error.details, error.hint, error.code);
     }
     setSkuRows(prev => prev.filter(r => r.id !== id));
   }, []);
 
   // ── Delete period (and all child rows) ───────────────────────
   const deletePeriod = useCallback(async (periodId) => {
-    console.log('[deletePeriod] Deleting period:', periodId);
+    if (process.env.NODE_ENV !== 'production') console.log('[deletePeriod] Deleting period:', periodId);
     const res = await fetch('/api/periods/delete', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -180,10 +180,10 @@ export function usePortfolio(userId, tier = 'essentials') {
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       const msg = body.error || 'Failed to delete period';
-      console.error('[deletePeriod] API error:', msg);
+      if (process.env.NODE_ENV !== 'production') console.error('[deletePeriod] API error:', msg);
       throw new Error(msg);
     }
-    console.log('[deletePeriod] Deleted successfully:', periodId);
+    if (process.env.NODE_ENV !== 'production') console.log('[deletePeriod] Deleted successfully:', periodId);
     // Remove from local state
     setPeriods(prev => prev.filter(p => p.id !== periodId));
     // If the deleted period was the active one, clear active state
@@ -197,23 +197,23 @@ export function usePortfolio(userId, tier = 'essentials') {
   // ── Save trade investment row ─────────────────────────────────
   const saveTradeInvestment = useCallback(async (row) => {
     if (!activePeriod?.id || !userId) {
-      console.error('[saveTradeInvestment] Aborted \u2014 missing context:', { period_id: activePeriod?.id, user_id: userId });
+      if (process.env.NODE_ENV !== 'production') console.error('[saveTradeInvestment] Aborted \u2014 missing context:', { period_id: activePeriod?.id, user_id: userId });
       return null;
     }
     const { _tempId, ...rest } = row;
     const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
-    console.log('[saveTradeInvestment] Upserting:', { channel: payload.channel, period_id: payload.period_id, user_id: payload.user_id });
+    if (process.env.NODE_ENV !== 'production') console.log('[saveTradeInvestment] Upserting:', { channel: payload.channel, period_id: payload.period_id, user_id: payload.user_id });
     const { data, error } = await sb
       .from('trade_investment')
       .upsert(payload, { onConflict: 'id' })
       .select()
       .single();
     if (error) {
-      console.error('[saveTradeInvestment] Supabase error:', error.message, error.details, error.hint, error.code);
+      if (process.env.NODE_ENV !== 'production') console.error('[saveTradeInvestment] Supabase error:', error.message, error.details, error.hint, error.code);
       setError(error.message);
       return null;
     }
-    console.log('[saveTradeInvestment] Saved:', data.id);
+    if (process.env.NODE_ENV !== 'production') console.log('[saveTradeInvestment] Saved:', data.id);
     setTradeInvestment(prev => {
       const idx = prev.findIndex(r => r.id === data.id);
       return idx >= 0 ? prev.map(r => r.id === data.id ? data : r) : [...prev, data];

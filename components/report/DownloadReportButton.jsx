@@ -8,6 +8,7 @@ import MarginCOSReport from './MarginCOSReport';
  */
 export default function DownloadReportButton({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta }) {
   const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleDownload = useCallback(async () => {
     if (!results || generating) return;
@@ -38,8 +39,9 @@ export default function DownloadReportButton({ results, companyName, periodLabel
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('PDF generation failed:', err);
-      alert('Report generation failed. Please try again.');
+      if (process.env.NODE_ENV !== 'production') console.error('PDF generation failed:', err);
+      setError('Report generation failed. Please try again.');
+      setTimeout(() => setError(null), 5000);
     } finally {
       setGenerating(false);
     }
@@ -48,24 +50,36 @@ export default function DownloadReportButton({ results, companyName, periodLabel
   if (!results) return null;
 
   return (
-    <button
-      onClick={handleDownload}
-      disabled={generating}
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all disabled:opacity-50"
-      style={{ backgroundColor: '#1B2A4A' }}
-    >
-      {generating ? (
-        <>
-          <SpinnerIcon />
-          Generating PDF…
-        </>
-      ) : (
-        <>
-          <DownloadIcon />
-          Download Report
-        </>
+    <div>
+      <button
+        onClick={handleDownload}
+        disabled={generating}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all disabled:opacity-50"
+        style={{ backgroundColor: '#1B2A4A' }}
+      >
+        {generating ? (
+          <>
+            <SpinnerIcon />
+            Generating PDF…
+          </>
+        ) : (
+          <>
+            <DownloadIcon />
+            Download Report
+          </>
+        )}
+      </button>
+      {error && (
+        <p style={{
+          fontSize: '12px',
+          color: '#C0392B',
+          marginTop: '8px',
+          fontWeight: 500,
+        }}>
+          {error}
+        </p>
       )}
-    </button>
+    </div>
   );
 }
 
