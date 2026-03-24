@@ -12,7 +12,7 @@ import { computeDeltas } from '../../lib/engine/delta';
 import { TIER_ACCESS } from '../../lib/constants';
 
 export default function TradePage() {
-  const { tier, loading: authLoading } = useAuth();
+  const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p4 = results?.p4;
   const deltas = useMemo(() => {
@@ -23,7 +23,7 @@ export default function TradePage() {
   const [tableExpanded, setTableExpanded] = useState(false);
 
   // Tier gate — all hooks called above, safe to early-return here
-  if (authLoading) {
+  if (authLoading || !profileLoaded) {
     return (
       <>
         <Head><title>Trade Execution | MarginCOS</title></Head>

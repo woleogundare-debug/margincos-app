@@ -122,13 +122,13 @@ const TIER_COLORS = {
 };
 
 export function DashboardLayout({ children, title, activePeriod }) {
-  const { user, tier, isEnterprise, signOut, loading, mustChangePassword } = useAuth();
+  const { user, tier, isEnterprise, signOut, loading, profileLoaded, mustChangePassword } = useAuth();
   const router = useRouter();
   const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // Show all items while profile is loading — prevents nav items disappearing
   // then reappearing once the profile resolves (~200ms flash).
-  const access = loading
+  const access = (loading || !profileLoaded)
     ? TIER_ACCESS.enterprise
     : (TIER_ACCESS[tier] || TIER_ACCESS.essentials);
 

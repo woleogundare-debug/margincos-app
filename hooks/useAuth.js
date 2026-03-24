@@ -7,7 +7,8 @@ export function useAuth() {
   const [tier,     setTier]     = useState('essentials');
   const [isAdmin,  setIsAdmin]  = useState(false);
   const [companyName, setCompanyName] = useState('');
-  const [loading,  setLoading]  = useState(true);
+  const [loading,       setLoading]       = useState(true);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   const fetchProfile = useCallback(async (userId) => {
     const sb = getSupabaseClient();
@@ -25,6 +26,8 @@ export function useAuth() {
       }
     } catch (_) {
       // Network error or missing profile row — silently fall back to 'essentials'
+    } finally {
+      setProfileLoaded(true); // tier is now known, one way or another
     }
   }, []);
 
@@ -38,7 +41,9 @@ export function useAuth() {
       if (session) {
         setSession(session);
         setUser(session.user);
-        fetchProfile(session.user.id); // fire-and-forget, try/catch inside
+        fetchProfile(session.user.id); // fire-and-forget; setProfileLoaded(true) fires inside
+      } else {
+        setProfileLoaded(true); // no session — no profile to load, mark as resolved
       }
       setLoading(false); // always fires, regardless of session
     });
@@ -53,6 +58,7 @@ export function useAuth() {
         setTier('essentials');
         setIsAdmin(false);
         setCompanyName('');
+        setProfileLoaded(true); // no session — mark as resolved so nothing spins
       }
       setLoading(false);
     });
@@ -78,6 +84,7 @@ export function useAuth() {
     isAdmin,
     companyName,
     loading,
+    profileLoaded,
     signOut,
     isEnterprise:        tier === 'enterprise',
     isProfessional:      tier === 'professional' || tier === 'enterprise',
