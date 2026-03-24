@@ -45,6 +45,7 @@ export function AnalysisProvider({ children }) {
     ranAt,
     error: analysisError,
     run,
+    clear,
     hasResults,
   } = useAnalysis(skuRows, tradeInvestment);
 
@@ -80,8 +81,10 @@ export function AnalysisProvider({ children }) {
     setComparisonResults(null);
   }, []);
 
-  // Auto-clear comparison when the active period changes
+  // Auto-clear results AND comparison when the active period changes
+  // This resets hasResults to false so the auto-run in overview.js fires with the new period's data
   useEffect(() => {
+    clear(); // wipe stale results so hasResults resets to false
     setComparisonPeriodId(null);
     setComparisonResults(null);
   }, [activePeriod?.id]); // eslint-disable-line react-hooks/exhaustive-deps

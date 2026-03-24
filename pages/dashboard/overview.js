@@ -27,6 +27,7 @@ export default function OverviewPage() {
     return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
   }, [chronologicalDelta]);
   const autoRanRef = useRef(false);
+  const prevPeriodRef = useRef(null);
   const lastSavedAt = useRef(null); // tracks ranAt timestamp of last saved actions
 
   const { team } = useTeam();
@@ -69,6 +70,16 @@ export default function OverviewPage() {
     };
     save();
   }, [ranAt, team?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset auto-run guard when the active period changes.
+  // Without this, autoRanRef stays true forever after the first run, blocking
+  // re-analysis when the user switches periods.
+  useEffect(() => {
+    if (activePeriod?.id && activePeriod.id !== prevPeriodRef.current) {
+      prevPeriodRef.current = activePeriod.id;
+      autoRanRef.current = false;
+    }
+  }, [activePeriod?.id]);
 
   // Auto-run analysis when portfolio data finishes loading.
   // This handles the flow: Portfolio "Run Analysis →" link → navigate here → auto-run.
