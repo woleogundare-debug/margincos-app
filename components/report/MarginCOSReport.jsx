@@ -563,10 +563,11 @@ const M1ChartPage = ({ results, companyName }) => {
           ))}
           {/* axis labels */}
           <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <SvgText fontFamily="DMSans" x={20} y={padT + iH / 2} fontSize={6.5} fill={C.muted} textAnchor="middle"
-            transform={`rotate(-90, 20, ${padT + iH / 2})`}>
-            SKU Margin %
-          </SvgText>
+          <G transform={`rotate(-90, 20, ${padT + iH / 2})`}>
+            <SvgText fontFamily="DMSans" x={20} y={padT + iH / 2} fontSize={6.5} fill={C.muted} textAnchor="middle">
+              SKU Margin %
+            </SvgText>
+          </G>
         </G>
       </Svg>
       {/* Classification legend */}
@@ -632,10 +633,11 @@ const M4ChartPage = ({ results, companyName }) => {
             <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
           ))}
           <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <SvgText fontFamily="DMSans" x={20} y={padT + iH / 2} fontSize={6.5} fill={C.muted} textAnchor="middle"
-            transform={`rotate(-90, 20, ${padT + iH / 2})`}>
-            True Contribution %
-          </SvgText>
+          <G transform={`rotate(-90, 20, ${padT + iH / 2})`}>
+            <SvgText fontFamily="DMSans" x={20} y={padT + iH / 2} fontSize={6.5} fill={C.muted} textAnchor="middle">
+              True Contribution %
+            </SvgText>
+          </G>
         </G>
       </Svg>
       {/* Classification legend */}
