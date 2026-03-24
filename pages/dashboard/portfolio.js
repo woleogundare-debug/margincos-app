@@ -131,12 +131,52 @@ export default function PortfolioPage() {
         {/* ── Active period content ── */}
         {activePeriod && !loading && (
           <>
-            {/* Row 1 — Page title + primary actions (Desktop) */}
-            <div className="hidden md:flex items-center justify-between mb-2">
-              <h1 className="text-2xl font-bold text-navy" style={{ fontFamily: "'Playfair Display', serif" }}>
+            {/* Row 1 — Unified header: title | period selector + badges + action buttons (Desktop) */}
+            <div className="hidden md:flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold text-navy shrink-0" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Portfolio Manager
               </h1>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <PeriodSelector
+                  periods={periods}
+                  activePeriod={activePeriod}
+                  onSelect={selectPeriod}
+                  onCreate={createPeriod}
+                  onDelete={deletePeriod}
+                  loading={loading}
+                />
+                {activePeriod && activeSkuCount > 0 && (
+                  <>
+                    <span style={{
+                      backgroundColor: '#1B2A4A',
+                      color: '#FFFFFF',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      padding: '6px 14px',
+                      borderRadius: '20px',
+                      fontFamily: "'DM Sans', sans-serif",
+                      letterSpacing: '0.01em',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {activeSkuCount} SKU{activeSkuCount !== 1 ? 's' : ''}
+                    </span>
+                    {totalRevenue > 0 && (
+                      <span style={{
+                        backgroundColor: '#1B2A4A',
+                        color: '#FFFFFF',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        padding: '6px 14px',
+                        borderRadius: '20px',
+                        fontFamily: "'DM Sans', sans-serif",
+                        letterSpacing: '0.01em',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {nairaCompact(totalRevenue)} revenue
+                      </span>
+                    )}
+                  </>
+                )}
                 <Button variant="secondary" size="sm" onClick={() => {
                   const a = document.createElement('a');
                   a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
@@ -235,8 +275,8 @@ export default function PortfolioPage() {
               )}
             </div>
 
-            {/* Row 2 — Period selector pill + portfolio summary */}
-            <div className="flex items-center gap-3 mb-6">
+            {/* Row 2 — Period selector (mobile only) */}
+            <div className="md:hidden flex items-center gap-3 mb-4">
               <PeriodSelector
                 periods={periods}
                 activePeriod={activePeriod}
@@ -245,28 +285,6 @@ export default function PortfolioPage() {
                 onDelete={deletePeriod}
                 loading={loading}
               />
-              {activePeriod && activeSkuCount > 0 && (
-                <div className="hidden md:flex items-center gap-2">
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                    style={{
-                      backgroundColor: '#E8F5F5',
-                      color: '#0D8F8F',
-                      border: '1px solid rgba(13, 143, 143, 0.2)',
-                    }}>
-                    {activeSkuCount} SKU{activeSkuCount !== 1 ? 's' : ''}
-                  </span>
-                  {totalRevenue > 0 && (
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                      style={{
-                        backgroundColor: '#E8F5F5',
-                        color: '#0D8F8F',
-                        border: '1px solid rgba(13, 143, 143, 0.2)',
-                      }}>
-                      {nairaCompact(totalRevenue)} revenue
-                    </span>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Tab bar: SKU Grid / Trade Investment */}

@@ -252,10 +252,10 @@ const P2WaterfallSvg = ({ p2 }) => {
             return (
               <G key={i}>
                 <Rect x={x} y={y} width={barW} height={h} fill={bar.color} rx={3} />
-                <SvgText fontFamily="DMSans"x={x + barW / 2} y={y - 5} fontSize={8} fill={bar.color} textAnchor="middle" fontWeight="700">
+                <SvgText fontFamily="DMSans" x={x + barW / 2} y={y - 5} fontSize={8} fill={bar.color} textAnchor="middle" fontWeight={700}>
                   {fmtN(bar.value)}
                 </SvgText>
-                <SvgText fontFamily="DMSans"x={x + barW / 2} y={H + 14} fontSize={8} fill={C.navy} textAnchor="middle">
+                <SvgText fontFamily="DMSans" x={x + barW / 2} y={H + 14} fontSize={8} fill={C.navy} textAnchor="middle">
                   {bar.label}
                 </SvgText>
               </G>
@@ -288,7 +288,7 @@ const P3ChannelSvg = ({ channelResults }) => {
               <G key={i}>
                 <Rect x={x}         y={barMaxH - hRev  + 10} width={bW} height={hRev}  fill={C.navy} rx={2} />
                 <Rect x={x + bW + gapBar} y={barMaxH - hCont + 10} width={bW} height={hCont} fill={C.teal} rx={2} />
-                <SvgText fontFamily="DMSans"x={x + bW + gapBar / 2} y={H + 14} fontSize={7} fill={C.navy} textAnchor="middle">
+                <SvgText fontFamily="DMSans" x={x + bW + gapBar / 2} y={H + 14} fontSize={7} fill={C.navy} textAnchor="middle">
                   {ch.channel?.length > 8 ? ch.channel.slice(0, 8) + '…' : ch.channel}
                 </SvgText>
               </G>
@@ -297,9 +297,9 @@ const P3ChannelSvg = ({ channelResults }) => {
           <Line x1={startX - 5} y1={barMaxH + 10} x2={W - 10} y2={barMaxH + 10} stroke={C.rule} strokeWidth={1} />
           {/* Legend */}
           <Rect x={startX} y={H + 22} width={8} height={8} fill={C.navy} rx={1} />
-          <SvgText fontFamily="DMSans"x={startX + 11} y={H + 29} fontSize={7} fill={C.muted}>Revenue</SvgText>
+          <SvgText fontFamily="DMSans" x={startX + 11} y={H + 29} fontSize={7} fill={C.muted}>Revenue</SvgText>
           <Rect x={startX + 65} y={H + 22} width={8} height={8} fill={C.teal} rx={1} />
-          <SvgText fontFamily="DMSans"x={startX + 76} y={H + 29} fontSize={7} fill={C.muted}>Contribution</SvgText>
+          <SvgText fontFamily="DMSans" x={startX + 76} y={H + 29} fontSize={7} fill={C.muted}>Contribution</SvgText>
         </G>
       </Svg>
     </View>
@@ -349,19 +349,19 @@ const M2ScenarioSvg = ({ scenarios }) => {
           {pts.map((p, i) => (
             <G key={i}>
               <Circle cx={p.x} cy={p.y} r={4} fill={C.teal} />
-              <SvgText fontFamily="DMSans"x={p.x} y={p.y - 7} fontSize={7} fill={C.teal} textAnchor="middle" fontWeight="700">
+              <SvgText fontFamily="DMSans" x={p.x} y={p.y - 7} fontSize={7} fill={C.teal} textAnchor="middle" fontWeight={700}>
                 {fmtN(p.value)}
               </SvgText>
-              <SvgText fontFamily="DMSans"x={p.x} y={H - 6} fontSize={7} fill={C.navy} textAnchor="middle">
+              <SvgText fontFamily="DMSans" x={p.x} y={H - 6} fontSize={7} fill={C.navy} textAnchor="middle">
                 {p.label}
               </SvgText>
             </G>
           ))}
           <Line x1={padL} y1={padT + innerH} x2={W - padR} y2={padT + innerH} stroke={C.rule} strokeWidth={1} />
-          <SvgText fontFamily="DMSans"x={padL - 5} y={padT + innerH / 2} fontSize={7} fill={C.muted} textAnchor="middle">
+          <SvgText fontFamily="DMSans" x={padL - 5} y={padT + innerH / 2} fontSize={7} fill={C.muted} textAnchor="middle">
             Margin
           </SvgText>
-          <SvgText fontFamily="DMSans"x={W / 2} y={H - 1} fontSize={7} fill={C.muted} textAnchor="middle">
+          <SvgText fontFamily="DMSans" x={W / 2} y={H - 1} fontSize={7} fill={C.muted} textAnchor="middle">
             Cost Recovery Rate
           </SvgText>
         </G>
@@ -397,7 +397,7 @@ const M3TradeROISvg = ({ results }) => {
             return (
               <G>
                 <Line x1={bx} y1={padT} x2={bx} y2={H - 20} stroke={C.gold} strokeWidth={1} strokeDasharray="4 3" />
-                <SvgText fontFamily="DMSans"x={bx + 2} y={padT + 8} fontSize={6} fill={C.gold}>Breakeven</SvgText>
+                <SvgText fontFamily="DMSans" x={bx + 2} y={padT + 8} fontSize={6} fill={C.gold}>Breakeven</SvgText>
               </G>
             );
           })()}
@@ -407,11 +407,11 @@ const M3TradeROISvg = ({ results }) => {
             const color = statusColor(r.status);
             return (
               <G key={i}>
-                <SvgText fontFamily="DMSans"x={labelW - 4} y={y + barH - 4} fontSize={8} fill={C.navy} textAnchor="end">
+                <SvgText fontFamily="DMSans" x={labelW - 4} y={y + barH - 4} fontSize={8} fill={C.navy} textAnchor="end">
                   {r.channel?.length > 10 ? r.channel.slice(0, 10) + '…' : r.channel}
                 </SvgText>
                 <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
-                <SvgText fontFamily="DMSans"x={labelW + Math.max(2, bw) + 4} y={y + barH - 4} fontSize={8} fill={color} fontWeight="700">
+                <SvgText fontFamily="DMSans" x={labelW + Math.max(2, bw) + 4} y={y + barH - 4} fontSize={8} fill={color} fontWeight={700}>
                   {r.roi?.toFixed(1)}x
                 </SvgText>
               </G>
@@ -452,11 +452,11 @@ const P1ChartPage = ({ results, companyName }) => {
             const color = (sku.compGap || 0) >= tealThresh ? C.teal : C.gold;
             return (
               <G key={i}>
-                <SvgText fontFamily="DMSans"x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
+                <SvgText fontFamily="DMSans" x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
                   {sku.sku?.length > 16 ? sku.sku.slice(0, 16) + '…' : sku.sku}
                 </SvgText>
                 <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
-                <SvgText fontFamily="DMSans"x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight="700">
+                <SvgText fontFamily="DMSans" x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight={700}>
                   {fmtN(sku.delta)}
                 </SvgText>
               </G>
@@ -465,9 +465,9 @@ const P1ChartPage = ({ results, companyName }) => {
           <Line x1={labelW} y1={padT + data.length * (barH + gap) + 6} x2={W - 20} y2={padT + data.length * (barH + gap) + 6} stroke={C.rule} strokeWidth={1} />
           {/* Legend */}
           <Rect x={labelW} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.teal} rx={1} />
-          <SvgText fontFamily="DMSans"x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Below competitors</SvgText>
+          <SvgText fontFamily="DMSans" x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Below competitors</SvgText>
           <Rect x={labelW + 120} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.gold} rx={1} />
-          <SvgText fontFamily="DMSans"x={labelW + 131} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Above competitors</SvgText>
+          <SvgText fontFamily="DMSans" x={labelW + 131} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Above competitors</SvgText>
         </G>
       </Svg>
       <PageFooter companyName={companyName} />
@@ -498,11 +498,11 @@ const P4ChartPage = ({ results, companyName }) => {
             const color = promo.profitable ? C.teal : C.red;
             return (
               <G key={i}>
-                <SvgText fontFamily="DMSans"x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
+                <SvgText fontFamily="DMSans" x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
                   {promo.sku?.length > 16 ? promo.sku.slice(0, 16) + '…' : promo.sku}
                 </SvgText>
                 <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
-                <SvgText fontFamily="DMSans"x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight="700">
+                <SvgText fontFamily="DMSans" x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight={700}>
                   {fmtN(impact)}
                 </SvgText>
               </G>
@@ -510,9 +510,9 @@ const P4ChartPage = ({ results, companyName }) => {
           })}
           <Line x1={labelW} y1={padT + data.length * (barH + gap) + 6} x2={W - 20} y2={padT + data.length * (barH + gap) + 6} stroke={C.rule} strokeWidth={1} />
           <Rect x={labelW} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.teal} rx={1} />
-          <SvgText fontFamily="DMSans"x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Profitable</SvgText>
+          <SvgText fontFamily="DMSans" x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Profitable</SvgText>
           <Rect x={labelW + 80} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.red} rx={1} />
-          <SvgText fontFamily="DMSans"x={labelW + 91} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Loss-making</SvgText>
+          <SvgText fontFamily="DMSans" x={labelW + 91} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Loss-making</SvgText>
         </G>
       </Svg>
       <PageFooter companyName={companyName} />
@@ -554,16 +554,16 @@ const M1ChartPage = ({ results, companyName }) => {
           <Line x1={padL} y1={padT + iH} x2={padL + iW} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
           {/* reference lines */}
           <Line x1={refX} y1={padT} x2={refX} y2={padT + iH} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans"x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>5% share</SvgText>
+          <SvgText fontFamily="DMSans" x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>5% share</SvgText>
           <Line x1={padL} y1={avgY} x2={padL + iW} y2={avgY} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans"x={padL + iW - 50} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgMargin.toFixed(1)}%</SvgText>
+          <SvgText fontFamily="DMSans" x={padL + iW - 50} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgMargin.toFixed(1)}%</SvgText>
           {/* dots */}
           {data.map((d, i) => (
             <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
           ))}
           {/* axis labels */}
-          <SvgText fontFamily="DMSans"x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <SvgText fontFamily="DMSans"x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
+          <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
+          <SvgText fontFamily="DMSans" x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
             SKU Margin %
           </SvgText>
         </G>
@@ -610,14 +610,14 @@ const M4ChartPage = ({ results, companyName }) => {
           <Line x1={padL} y1={padT} x2={padL} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
           <Line x1={padL} y1={padT + iH} x2={padL + iW} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
           <Line x1={refX} y1={padT} x2={refX} y2={padT + iH} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans"x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>10% share</SvgText>
+          <SvgText fontFamily="DMSans" x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>10% share</SvgText>
           <Line x1={padL} y1={avgY} x2={padL + iW} y2={avgY} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans"x={padL + iW - 60} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgCont.toFixed(1)}%</SvgText>
+          <SvgText fontFamily="DMSans" x={padL + iW - 60} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgCont.toFixed(1)}%</SvgText>
           {data.map((d, i) => (
             <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
           ))}
-          <SvgText fontFamily="DMSans"x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <SvgText fontFamily="DMSans"x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
+          <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
+          <SvgText fontFamily="DMSans" x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
             Contribution %
           </SvgText>
         </G>
