@@ -277,7 +277,7 @@ const P3ChannelSvg = ({ channelResults }) => {
   const barMaxH = 110; const startX = 50;
   return (
     <View style={{ marginBottom: 10 }}>
-      <Svg width={W} height={H + 30}>
+      <Svg width={W} height={H + 10}>
         <G>
           {data.map((ch, i) => {
             const groupW = bW * 2 + gapBar;
@@ -288,20 +288,26 @@ const P3ChannelSvg = ({ channelResults }) => {
               <G key={i}>
                 <Rect x={x}         y={barMaxH - hRev  + 10} width={bW} height={hRev}  fill={C.navy} rx={2} />
                 <Rect x={x + bW + gapBar} y={barMaxH - hCont + 10} width={bW} height={hCont} fill={C.teal} rx={2} />
-                <SvgText fontFamily="DMSans" x={x + bW + gapBar / 2} y={H + 14} fontSize={7} fill={C.navy} textAnchor="middle">
+                <SvgText fontFamily="DMSans" x={x + bW + gapBar / 2} y={H + 7} fontSize={7} fill={C.navy} textAnchor="middle">
                   {ch.channel?.length > 8 ? ch.channel.slice(0, 8) + '…' : ch.channel}
                 </SvgText>
               </G>
             );
           })}
           <Line x1={startX - 5} y1={barMaxH + 10} x2={W - 10} y2={barMaxH + 10} stroke={C.rule} strokeWidth={1} />
-          {/* Legend */}
-          <Rect x={startX} y={H + 22} width={8} height={8} fill={C.navy} rx={1} />
-          <SvgText fontFamily="DMSans" x={startX + 11} y={H + 29} fontSize={7} fill={C.muted}>Revenue</SvgText>
-          <Rect x={startX + 65} y={H + 22} width={8} height={8} fill={C.teal} rx={1} />
-          <SvgText fontFamily="DMSans" x={startX + 76} y={H + 29} fontSize={7} fill={C.muted}>Contribution</SvgText>
         </G>
       </Svg>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 10 }}>
+        {[
+          { label: 'Revenue', color: C.navy },
+          { label: 'Contribution', color: C.teal },
+        ].map((item, idx) => (
+          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: item.color }} />
+            <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans' }}>{item.label}</Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
@@ -436,7 +442,7 @@ const P1ChartPage = ({ results, companyName }) => {
     .slice(0, 15);
   const maxDelta = Math.max(...data.map(d => Math.abs(d.delta || 0)), 1);
   const barH = 28; const gap = 8; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
-  const H = padT + data.length * (barH + gap) + 30;
+  const H = padT + data.length * (barH + gap) + 12;
   const tealThresh = 0;
   return (
     <Page size="A4" style={s.page}>
@@ -463,13 +469,19 @@ const P1ChartPage = ({ results, companyName }) => {
             );
           })}
           <Line x1={labelW} y1={padT + data.length * (barH + gap) + 6} x2={W - 20} y2={padT + data.length * (barH + gap) + 6} stroke={C.rule} strokeWidth={1} />
-          {/* Legend */}
-          <Rect x={labelW} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.teal} rx={1} />
-          <SvgText fontFamily="DMSans" x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Below competitors</SvgText>
-          <Rect x={labelW + 120} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.gold} rx={1} />
-          <SvgText fontFamily="DMSans" x={labelW + 131} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Above competitors</SvgText>
         </G>
       </Svg>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 10 }}>
+        {[
+          { label: 'Below competitors', color: C.teal },
+          { label: 'Above competitors', color: C.gold },
+        ].map((item, idx) => (
+          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: item.color }} />
+            <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans' }}>{item.label}</Text>
+          </View>
+        ))}
+      </View>
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -483,7 +495,7 @@ const P4ChartPage = ({ results, companyName }) => {
     .slice(0, 15);
   const maxAbs = Math.max(...data.map(d => Math.abs(d.netImpact || 0)), 1);
   const barH = 28; const gap = 8; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
-  const H = padT + data.length * (barH + gap) + 30;
+  const H = padT + data.length * (barH + gap) + 12;
   return (
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P4 · Promotion Net Impact</Text>
@@ -509,12 +521,19 @@ const P4ChartPage = ({ results, companyName }) => {
             );
           })}
           <Line x1={labelW} y1={padT + data.length * (barH + gap) + 6} x2={W - 20} y2={padT + data.length * (barH + gap) + 6} stroke={C.rule} strokeWidth={1} />
-          <Rect x={labelW} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.teal} rx={1} />
-          <SvgText fontFamily="DMSans" x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Profitable</SvgText>
-          <Rect x={labelW + 80} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.red} rx={1} />
-          <SvgText fontFamily="DMSans" x={labelW + 91} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Loss-making</SvgText>
         </G>
       </Svg>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 10 }}>
+        {[
+          { label: 'Profitable', color: C.teal },
+          { label: 'Loss-making', color: C.red },
+        ].map((item, idx) => (
+          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: item.color }} />
+            <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans' }}>{item.label}</Text>
+          </View>
+        ))}
+      </View>
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -571,7 +590,7 @@ const M1ChartPage = ({ results, companyName }) => {
         </G>
       </Svg>
       {/* Classification legend */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 10 }}>
         {[
           { label: 'Protect', color: C.teal },
           { label: 'Grow', color: '#27AE60' },
@@ -579,8 +598,8 @@ const M1ChartPage = ({ results, companyName }) => {
           { label: 'Review', color: C.red },
         ].map((item, idx) => (
           <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color }} />
-            <Text style={{ fontSize: 7, color: C.muted, fontFamily: 'DMSans' }}>{item.label}</Text>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: item.color }} />
+            <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans' }}>{item.label}</Text>
           </View>
         ))}
       </View>
@@ -641,7 +660,7 @@ const M4ChartPage = ({ results, companyName }) => {
         </G>
       </Svg>
       {/* Classification legend */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 10 }}>
         {[
           { label: 'Strategic', color: C.teal },
           { label: 'Grow', color: '#27AE60' },
@@ -649,8 +668,8 @@ const M4ChartPage = ({ results, companyName }) => {
           { label: 'Review', color: C.red },
         ].map((item, idx) => (
           <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color }} />
-            <Text style={{ fontSize: 7, color: C.muted, fontFamily: 'DMSans' }}>{item.label}</Text>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: item.color }} />
+            <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans' }}>{item.label}</Text>
           </View>
         ))}
       </View>
