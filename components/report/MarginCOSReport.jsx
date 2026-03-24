@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Document, Page, Text, View, StyleSheet, Font,
+  Svg, Rect, Circle, Line, G, Text as SvgText, Path, Defs, LinearGradient, Stop,
 } from '@react-pdf/renderer';
 import { computeDeltas } from '../../lib/engine/delta';
 
@@ -157,6 +158,33 @@ const today = () => {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
+/* ── Chart helpers ─────────────────────────────────────────── */
+const fmtN = (v) => {
+  if (v == null) return '—';
+  const abs = Math.abs(v);
+  const sign = v < 0 ? '-' : '';
+  if (abs >= 1e9) return `${sign}NGN ${(abs / 1e9).toFixed(1)}B`;
+  if (abs >= 1e6) return `${sign}NGN ${(abs / 1e6).toFixed(0)}M`;
+  if (abs >= 1e3) return `${sign}NGN ${(abs / 1e3).toFixed(0)}K`;
+  return `${sign}NGN ${abs.toFixed(0)}`;
+};
+
+const TruncationNotice = ({ shown, total }) => (
+  <View style={{
+    marginTop: 6,
+    padding: '5 10',
+    backgroundColor: '#FFF8E6',
+    borderRadius: 4,
+    borderLeftWidth: 2,
+    borderLeftColor: C.gold,
+    flexDirection: 'row',
+  }}>
+    <Text style={{ fontSize: 8, color: C.gold, fontWeight: 700 }}>
+      {`Showing top ${shown} of ${total} SKUs — sorted by financial impact (largest first)`}
+    </Text>
+  </View>
+);
+
 /* ── Shared components ─────────────────────────────────────── */
 const PageFooter = ({ companyName }) => (
   <View style={s.footer} fixed>
@@ -193,6 +221,411 @@ const NarrativeBlock = ({ lines }) => (
     ))}
   </View>
 );
+
+/* ══════════════════════════════════════════════════════════════
+   SVG CHART COMPONENTS — Phase A (inline) + Phase B (dedicated pages)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Phase A: P2 Waterfall (Cost page inline) ─────────────── */
+const P2WaterfallSvg = ({ p2 }) => {
+  if (!p2) return null;
+  const shock    = p2.totalCostShock || 0;
+  const absorbed = p2.totalAbsorbed  || 0;
+  const recovered = shock - absorbed;
+  const max      = shock || 1;
+  const W = 460; const H = 140; const barW = 80; const gap = 60;
+  const barMaxH = 100;
+  const b = [
+    { label: 'Cost Shock',  value: shock,     color: C.navy },
+    { label: 'Recovered',   value: recovered, color: C.teal },
+    { label: 'Absorbed',    value: absorbed,  color: C.red  },
+  ];
+  const startX = 40;
+  return (
+    <View style={{ marginBottom: 10 }}>
+      <Svg width={W} height={H + 30}>
+        <G>
+          {b.map((bar, i) => {
+            const h = Math.max(4, (bar.value / max) * barMaxH);
+            const x = startX + i * (barW + gap);
+            const y = barMaxH - h + 10;
+            return (
+              <G key={i}>
+                <Rect x={x} y={y} width={barW} height={h} fill={bar.color} rx={3} />
+                <SvgText x={x + barW / 2} y={y - 5} fontSize={8} fill={bar.color} textAnchor="middle" fontWeight="700">
+                  {fmtN(bar.value)}
+                </SvgText>
+                <SvgText x={x + barW / 2} y={H + 14} fontSize={8} fill={C.navy} textAnchor="middle">
+                  {bar.label}
+                </SvgText>
+              </G>
+            );
+          })}
+          <Line x1={startX} y1={barMaxH + 10} x2={startX + 2 * (barW + gap) + barW} y2={barMaxH + 10} stroke={C.rule} strokeWidth={1} />
+        </G>
+      </Svg>
+    </View>
+  );
+};
+
+/* ── Phase A: P3 Channel Grouped Bars (Channel page inline) ── */
+const P3ChannelSvg = ({ channelResults }) => {
+  if (!channelResults?.length) return null;
+  const data = channelResults.slice(0, 6);
+  const maxRev = Math.max(...data.map(d => d.rev || 0)) || 1;
+  const W = 460; const H = 150; const bW = 22; const gapBar = 4; const gapGroup = 28;
+  const barMaxH = 110; const startX = 50;
+  return (
+    <View style={{ marginBottom: 10 }}>
+      <Svg width={W} height={H + 30}>
+        <G>
+          {data.map((ch, i) => {
+            const groupW = bW * 2 + gapBar;
+            const x = startX + i * (groupW + gapGroup);
+            const hRev  = Math.max(3, ((ch.rev || 0) / maxRev) * barMaxH);
+            const hCont = Math.max(3, ((ch.contMargin || 0) / maxRev) * barMaxH);
+            return (
+              <G key={i}>
+                <Rect x={x}         y={barMaxH - hRev  + 10} width={bW} height={hRev}  fill={C.navy} rx={2} />
+                <Rect x={x + bW + gapBar} y={barMaxH - hCont + 10} width={bW} height={hCont} fill={C.teal} rx={2} />
+                <SvgText x={x + bW + gapBar / 2} y={H + 14} fontSize={7} fill={C.navy} textAnchor="middle">
+                  {ch.channel?.length > 8 ? ch.channel.slice(0, 8) + '…' : ch.channel}
+                </SvgText>
+              </G>
+            );
+          })}
+          <Line x1={startX - 5} y1={barMaxH + 10} x2={W - 10} y2={barMaxH + 10} stroke={C.rule} strokeWidth={1} />
+          {/* Legend */}
+          <Rect x={startX} y={H + 22} width={8} height={8} fill={C.navy} rx={1} />
+          <SvgText x={startX + 11} y={H + 29} fontSize={7} fill={C.muted}>Revenue</SvgText>
+          <Rect x={startX + 65} y={H + 22} width={8} height={8} fill={C.teal} rx={1} />
+          <SvgText x={startX + 76} y={H + 29} fontSize={7} fill={C.muted}>Contribution</SvgText>
+        </G>
+      </Svg>
+    </View>
+  );
+};
+
+/* ── Phase A: M2 Scenario Area (M2 page inline) ───────────── */
+const M2ScenarioSvg = ({ scenarios }) => {
+  if (!scenarios?.length) return null;
+  const data = scenarios.map(s => ({
+    label: `${(s.recoveryRate * 100).toFixed(0)}%`,
+    value: s.projMargin || 0,
+    riskColor: s.riskColor || C.gold,
+  }));
+  const vals = data.map(d => d.value);
+  const minV = Math.min(...vals);
+  const maxV = Math.max(...vals) || 1;
+  const range = maxV - minV || 1;
+  const W = 460; const H = 130; const padL = 60; const padR = 20; const padT = 15; const padB = 28;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const n = data.length;
+  const pts = data.map((d, i) => {
+    const x = padL + (i / (n - 1)) * innerW;
+    const y = padT + innerH - ((d.value - minV) / range) * innerH;
+    return { x, y, ...d };
+  });
+  const polyline = pts.map(p => `${p.x},${p.y}`).join(' ');
+  const area = `M ${pts[0].x},${pts[0].y} ` +
+    pts.slice(1).map(p => `L ${p.x},${p.y}`).join(' ') +
+    ` L ${pts[n-1].x},${padT + innerH} L ${pts[0].x},${padT + innerH} Z`;
+  return (
+    <View style={{ marginBottom: 10 }}>
+      <Svg width={W} height={H}>
+        <Defs>
+          <LinearGradient id="scenGrad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%"   stopColor={C.teal} stopOpacity={0.25} />
+            <Stop offset="100%" stopColor={C.teal} stopOpacity={0.02} />
+          </LinearGradient>
+        </Defs>
+        <G>
+          {/* area fill */}
+          <Path d={area} fill="url(#scenGrad)" />
+          {/* line */}
+          <Path d={`M ${pts.map(p => `${p.x},${p.y}`).join(' L ')}`} stroke={C.teal} strokeWidth={2} fill="none" />
+          {/* dots */}
+          {pts.map((p, i) => (
+            <G key={i}>
+              <Circle cx={p.x} cy={p.y} r={4} fill={C.teal} />
+              <SvgText x={p.x} y={p.y - 7} fontSize={7} fill={C.teal} textAnchor="middle" fontWeight="700">
+                {fmtN(p.value)}
+              </SvgText>
+              <SvgText x={p.x} y={H - 6} fontSize={7} fill={C.navy} textAnchor="middle">
+                {p.label}
+              </SvgText>
+            </G>
+          ))}
+          <Line x1={padL} y1={padT + innerH} x2={W - padR} y2={padT + innerH} stroke={C.rule} strokeWidth={1} />
+          <SvgText x={padL - 5} y={padT + innerH / 2} fontSize={7} fill={C.muted} textAnchor="middle">
+            Margin
+          </SvgText>
+          <SvgText x={W / 2} y={H - 1} fontSize={7} fill={C.muted} textAnchor="middle">
+            Cost Recovery Rate
+          </SvgText>
+        </G>
+      </Svg>
+    </View>
+  );
+};
+
+/* ── Phase A: M3 Trade ROI Horizontal Bars (M3 page inline) ── */
+const M3TradeROISvg = ({ results }) => {
+  if (!results?.length) return null;
+  const statusColor = (status) => {
+    if (!status) return C.muted;
+    const sl = status.toLowerCase();
+    if (sl.includes('accretive')) return C.teal;
+    if (sl.includes('dilutive'))  return C.red;
+    return C.gold;
+  };
+  const data = results
+    .filter(r => r.roi != null)
+    .sort((a, b) => (b.roi || 0) - (a.roi || 0))
+    .slice(0, 8);
+  const maxROI = Math.max(...data.map(d => d.roi || 0), 1);
+  const barH = 16; const gap = 6; const labelW = 80; const barMaxW = 310; const W = 460; const padT = 10;
+  const H = padT + data.length * (barH + gap) + 20;
+  return (
+    <View style={{ marginBottom: 10 }}>
+      <Svg width={W} height={H}>
+        <G>
+          {/* breakeven line */}
+          {(() => {
+            const bx = labelW + (1 / maxROI) * barMaxW;
+            return (
+              <G>
+                <Line x1={bx} y1={padT} x2={bx} y2={H - 20} stroke={C.gold} strokeWidth={1} strokeDasharray="4 3" />
+                <SvgText x={bx + 2} y={padT + 8} fontSize={6} fill={C.gold}>Breakeven</SvgText>
+              </G>
+            );
+          })()}
+          {data.map((r, i) => {
+            const bw = ((r.roi || 0) / maxROI) * barMaxW;
+            const y  = padT + i * (barH + gap);
+            const color = statusColor(r.status);
+            return (
+              <G key={i}>
+                <SvgText x={labelW - 4} y={y + barH - 4} fontSize={8} fill={C.navy} textAnchor="end">
+                  {r.channel?.length > 10 ? r.channel.slice(0, 10) + '…' : r.channel}
+                </SvgText>
+                <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
+                <SvgText x={labelW + Math.max(2, bw) + 4} y={y + barH - 4} fontSize={8} fill={color} fontWeight="700">
+                  {r.roi?.toFixed(1)}x
+                </SvgText>
+              </G>
+            );
+          })}
+          <Line x1={labelW} y1={H - 18} x2={W - 30} y2={H - 18} stroke={C.rule} strokeWidth={1} />
+        </G>
+      </Svg>
+    </View>
+  );
+};
+
+/* ══════════════════════════════════════════════════════════════
+   PHASE B — DEDICATED CHART PAGES
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── P1 Chart Page ────────────────────────────────────────── */
+const P1ChartPage = ({ results, companyName }) => {
+  if (!results?.p1?.results?.length) return null;
+  const data = [...(results.p1.results)]
+    .sort((a, b) => (b.delta || 0) - (a.delta || 0))
+    .slice(0, 15);
+  const maxDelta = Math.max(...data.map(d => Math.abs(d.delta || 0)), 1);
+  const barH = 18; const gap = 5; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
+  const H = padT + data.length * (barH + gap) + 30;
+  const tealThresh = 0;
+  return (
+    <Page size="A4" style={s.page}>
+      <Text style={s.sectionTitle}>P1 · Repricing Opportunities</Text>
+      <Text style={s.sectionSub}>Top 15 SKUs by margin gain potential — sorted by price delta descending</Text>
+      <Svg width={W} height={H}>
+        <G>
+          {/* zero line */}
+          <Line x1={labelW} y1={padT} x2={labelW} y2={padT + data.length * (barH + gap)} stroke={C.rule} strokeWidth={1} />
+          {data.map((sku, i) => {
+            const bw = (Math.abs(sku.delta || 0) / maxDelta) * barMaxW;
+            const y  = padT + i * (barH + gap);
+            const color = (sku.compGap || 0) >= tealThresh ? C.teal : C.gold;
+            return (
+              <G key={i}>
+                <SvgText x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
+                  {sku.sku?.length > 16 ? sku.sku.slice(0, 16) + '…' : sku.sku}
+                </SvgText>
+                <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
+                <SvgText x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight="700">
+                  {fmtN(sku.delta)}
+                </SvgText>
+              </G>
+            );
+          })}
+          <Line x1={labelW} y1={padT + data.length * (barH + gap) + 6} x2={W - 20} y2={padT + data.length * (barH + gap) + 6} stroke={C.rule} strokeWidth={1} />
+          {/* Legend */}
+          <Rect x={labelW} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.teal} rx={1} />
+          <SvgText x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Below competitors</SvgText>
+          <Rect x={labelW + 120} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.gold} rx={1} />
+          <SvgText x={labelW + 131} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Above competitors</SvgText>
+        </G>
+      </Svg>
+      <PageFooter companyName={companyName} />
+    </Page>
+  );
+};
+
+/* ── P4 Chart Page ────────────────────────────────────────── */
+const P4ChartPage = ({ results, companyName }) => {
+  if (!results?.p4?.results?.length) return null;
+  const data = [...(results.p4.results)]
+    .sort((a, b) => (b.netImpact || 0) - (a.netImpact || 0))
+    .slice(0, 15);
+  const maxAbs = Math.max(...data.map(d => Math.abs(d.netImpact || 0)), 1);
+  const barH = 18; const gap = 5; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
+  const H = padT + data.length * (barH + gap) + 30;
+  return (
+    <Page size="A4" style={s.page}>
+      <Text style={s.sectionTitle}>P4 · Promotion Net Impact</Text>
+      <Text style={s.sectionSub}>Top 15 promotions by net margin impact — teal = profitable, red = loss-making</Text>
+      <Svg width={W} height={H}>
+        <G>
+          <Line x1={labelW} y1={padT} x2={labelW} y2={padT + data.length * (barH + gap)} stroke={C.rule} strokeWidth={1} />
+          {data.map((promo, i) => {
+            const impact = promo.netImpact || 0;
+            const bw = (Math.abs(impact) / maxAbs) * barMaxW;
+            const y = padT + i * (barH + gap);
+            const color = promo.profitable ? C.teal : C.red;
+            return (
+              <G key={i}>
+                <SvgText x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
+                  {promo.sku?.length > 16 ? promo.sku.slice(0, 16) + '…' : promo.sku}
+                </SvgText>
+                <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
+                <SvgText x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight="700">
+                  {fmtN(impact)}
+                </SvgText>
+              </G>
+            );
+          })}
+          <Line x1={labelW} y1={padT + data.length * (barH + gap) + 6} x2={W - 20} y2={padT + data.length * (barH + gap) + 6} stroke={C.rule} strokeWidth={1} />
+          <Rect x={labelW} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.teal} rx={1} />
+          <SvgText x={labelW + 11} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Profitable</SvgText>
+          <Rect x={labelW + 80} y={padT + data.length * (barH + gap) + 14} width={8} height={8} fill={C.red} rx={1} />
+          <SvgText x={labelW + 91} y={padT + data.length * (barH + gap) + 21} fontSize={7} fill={C.muted}>Loss-making</SvgText>
+        </G>
+      </Svg>
+      <PageFooter companyName={companyName} />
+    </Page>
+  );
+};
+
+/* ── M1 Chart Page ────────────────────────────────────────── */
+const M1ChartPage = ({ results, companyName }) => {
+  if (!results?.m1?.results?.length) return null;
+  const m1 = results.m1;
+  const data = m1.results.map(r => ({
+    x:    r.revShare || 0,
+    y:    r.skuMarginPct || 0,
+    sku:  r.sku,
+    color: r.classColor || C.muted,
+    cls:  r.classification,
+  }));
+  const avgMargin = m1.portfolioAvgMarginPct || 0;
+  const W = 499; const H = 300;
+  const padL = 50; const padR = 20; const padT = 20; const padB = 40;
+  const iW = W - padL - padR; const iH = H - padT - padB;
+  const maxX = Math.max(...data.map(d => d.x), 10) * 1.1;
+  const maxY = Math.max(...data.map(d => d.y), 10) * 1.1;
+  const minY = Math.min(...data.map(d => d.y), 0);
+  const rangeY = maxY - minY || 1;
+  const tx = (v) => padL + (v / maxX) * iW;
+  const ty = (v) => padT + iH - ((v - minY) / rangeY) * iH;
+  const avgY = ty(avgMargin);
+  const refX = tx(5);
+  return (
+    <Page size="A4" style={s.page}>
+      <Text style={s.sectionTitle}>M1 · SKU Portfolio Quadrant</Text>
+      <Text style={s.sectionSub}>Revenue share % vs SKU margin % · Reference lines at 5% share and portfolio average margin</Text>
+      <Svg width={W} height={H}>
+        <G>
+          {/* grid lines */}
+          <Line x1={padL} y1={padT} x2={padL} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
+          <Line x1={padL} y1={padT + iH} x2={padL + iW} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
+          {/* reference lines */}
+          <Line x1={refX} y1={padT} x2={refX} y2={padT + iH} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
+          <SvgText x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>5% share</SvgText>
+          <Line x1={padL} y1={avgY} x2={padL + iW} y2={avgY} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
+          <SvgText x={padL + iW - 50} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgMargin.toFixed(1)}%</SvgText>
+          {/* dots */}
+          {data.map((d, i) => (
+            <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
+          ))}
+          {/* axis labels */}
+          <SvgText x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
+          <SvgText x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
+            SKU Margin %
+          </SvgText>
+        </G>
+      </Svg>
+      <PageFooter companyName={companyName} />
+    </Page>
+  );
+};
+
+/* ── M4 Chart Page ────────────────────────────────────────── */
+const M4ChartPage = ({ results, companyName }) => {
+  if (!results?.m4?.results?.length) return null;
+  const m4 = results.m4;
+  const data = m4.results.map(r => ({
+    x:    r.revShare  || 0,
+    y:    r.contPct   || 0,
+    name: r.name,
+    color: (() => {
+      const cls = r.classification || '';
+      if (cls.includes('Strategic')) return C.teal;
+      if (cls.includes('Grow'))      return '#27AE60';
+      if (cls.includes('Renegotiate')) return C.gold;
+      return C.red;
+    })(),
+  }));
+  const avgCont = data.reduce((s, d) => s + d.y, 0) / (data.length || 1);
+  const W = 499; const H = 300;
+  const padL = 50; const padR = 20; const padT = 20; const padB = 40;
+  const iW = W - padL - padR; const iH = H - padT - padB;
+  const maxX = Math.max(...data.map(d => d.x), 10) * 1.1;
+  const maxY = Math.max(...data.map(d => d.y), 10) * 1.1;
+  const minY = Math.min(...data.map(d => d.y), 0);
+  const rangeY = maxY - minY || 1;
+  const tx = (v) => padL + (v / maxX) * iW;
+  const ty = (v) => padT + iH - ((v - minY) / rangeY) * iH;
+  const avgY = ty(avgCont);
+  const refX = tx(10);
+  return (
+    <Page size="A4" style={s.page}>
+      <Text style={s.sectionTitle}>M4 · Distributor Performance Matrix</Text>
+      <Text style={s.sectionSub}>Revenue share % vs true contribution % · Reference lines at 10% share and average contribution</Text>
+      <Svg width={W} height={H}>
+        <G>
+          <Line x1={padL} y1={padT} x2={padL} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
+          <Line x1={padL} y1={padT + iH} x2={padL + iW} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
+          <Line x1={refX} y1={padT} x2={refX} y2={padT + iH} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
+          <SvgText x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>10% share</SvgText>
+          <Line x1={padL} y1={avgY} x2={padL + iW} y2={avgY} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
+          <SvgText x={padL + iW - 60} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgCont.toFixed(1)}%</SvgText>
+          {data.map((d, i) => (
+            <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
+          ))}
+          <SvgText x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
+          <SvgText x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
+            Contribution %
+          </SvgText>
+        </G>
+      </Svg>
+      <PageFooter companyName={companyName} />
+    </Page>
+  );
+};
 
 /* ══════════════════════════════════════════════════════════════
    NARRATIVE GENERATORS — P1 through P4
@@ -543,7 +976,9 @@ const SummaryPage = ({ results, companyName, tier }) => {
 const PricingPage = ({ results, companyName }) => {
   const p1 = results?.p1;
   if (!p1?.results?.length) return null;
-  const rows = p1.results.slice(0, 20);
+  const sorted = [...p1.results].sort((a, b) => (b.delta || 0) - (a.delta || 0));
+  const rows = sorted.slice(0, 20);
+  const truncated = sorted.length > 20;
 
   return (
     <Page size="A4" style={s.page}>
@@ -590,6 +1025,7 @@ const PricingPage = ({ results, companyName }) => {
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{r.compGap != null ? fmt(r.compGap, 'pctRaw') : '—'}</Text>
         </View>
       ))}
+      {truncated && <TruncationNotice shown={20} total={sorted.length} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -599,7 +1035,9 @@ const PricingPage = ({ results, companyName }) => {
 const CostPage = ({ results, companyName }) => {
   const p2 = results?.p2;
   if (!p2?.results?.length) return null;
-  const rows = p2.results.slice(0, 20);
+  const sorted = [...p2.results].sort((a, b) => (b.absorbed || 0) - (a.absorbed || 0));
+  const rows = sorted.slice(0, 20);
+  const truncated = sorted.length > 20;
 
   return (
     <Page size="A4" style={s.page}>
@@ -628,6 +1066,7 @@ const CostPage = ({ results, companyName }) => {
       </View>
 
       <NarrativeBlock lines={getCostNarrative(results)} />
+      <P2WaterfallSvg p2={p2} />
 
       <View style={s.tableHeader}>
         <Text style={[s.tableHeaderCell, { width: '28%' }]}>SKU</Text>
@@ -647,6 +1086,7 @@ const CostPage = ({ results, companyName }) => {
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.absorbed, 'nairaK')}</Text>
         </View>
       ))}
+      {truncated && <TruncationNotice shown={20} total={sorted.length} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -677,6 +1117,7 @@ const ChannelPage = ({ results, companyName }) => {
       </View>
 
       <NarrativeBlock lines={getChannelNarrative(results)} />
+      <P3ChannelSvg channelResults={p3.channelResults} />
 
       <View style={s.tableHeader}>
         <Text style={[s.tableHeaderCell, { width: '25%' }]}>Channel</Text>
@@ -705,7 +1146,9 @@ const ChannelPage = ({ results, companyName }) => {
 const TradePage = ({ results, companyName }) => {
   const p4 = results?.p4;
   if (!p4?.results?.length) return null;
-  const rows = p4.results.slice(0, 20);
+  const sorted = [...p4.results].sort((a, b) => Math.abs(b.netImpact || 0) - Math.abs(a.netImpact || 0));
+  const rows = sorted.slice(0, 20);
+  const truncated = sorted.length > 20;
   const lossMaking = p4.results.filter(r => !r.profitable).length;
 
   return (
@@ -761,6 +1204,7 @@ const TradePage = ({ results, companyName }) => {
           </View>
         </View>
       ))}
+      {truncated && <TruncationNotice shown={20} total={sorted.length} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -775,6 +1219,7 @@ const M1Page = ({ results, companyName }) => {
   const m1 = results?.m1;
   if (!m1?.results?.length) return null;
   const rows = m1.results.slice(0, 25);
+  const truncated = m1.results.length > 25;
 
   return (
     <Page size="A4" style={s.page}>
@@ -827,6 +1272,7 @@ const M1Page = ({ results, companyName }) => {
           <Text style={[s.tableCell, { width: '18%', textAlign: 'right' }]}>{fmt(r.skuMarginAbs, 'nairaK')}</Text>
         </View>
       ))}
+      {truncated && <TruncationNotice shown={25} total={m1.results.length} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -863,6 +1309,7 @@ const M2Page = ({ results, companyName }) => {
       </View>
 
       <NarrativeBlock lines={getM2Narrative(results)} />
+      <M2ScenarioSvg scenarios={m2.scenarios} />
 
       <View style={s.tableHeader}>
         <Text style={[s.tableHeaderCell, { width: '18%' }]}>Recovery Rate</Text>
@@ -927,6 +1374,7 @@ const M3Page = ({ results, companyName }) => {
       </View>
 
       <NarrativeBlock lines={getM3Narrative(results)} />
+      <M3TradeROISvg results={m3.results} />
 
       <View style={s.tableHeader}>
         <Text style={[s.tableHeaderCell, { width: '20%' }]}>Channel</Text>
@@ -958,6 +1406,7 @@ const M4Page = ({ results, companyName }) => {
   const m4 = results?.m4;
   if (!m4?.hasData) return null;
   const rows = m4.results.slice(0, 20);
+  const truncated = m4.results.length > 20;
 
   return (
     <Page size="A4" style={s.page}>
@@ -1010,6 +1459,7 @@ const M4Page = ({ results, companyName }) => {
           </View>
         </View>
       ))}
+      {truncated && <TruncationNotice shown={20} total={m4.results.length} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -1359,13 +1809,17 @@ export default function MarginCOSReport({ results, companyName, periodLabel, tie
         />
       )}
       <PricingPage results={results} companyName={companyName} />
+      <P1ChartPage results={results} companyName={companyName} />
       <CostPage results={results} companyName={companyName} />
       <ChannelPage results={results} companyName={companyName} />
       <TradePage results={results} companyName={companyName} />
+      <P4ChartPage results={results} companyName={companyName} />
       {isEnterprise && <M1Page results={results} companyName={companyName} />}
+      {isEnterprise && <M1ChartPage results={results} companyName={companyName} />}
       {isEnterprise && <M2Page results={results} companyName={companyName} />}
       {isEnterprise && <M3Page results={results} companyName={companyName} />}
       {isEnterprise && <M4Page results={results} companyName={companyName} />}
+      {isEnterprise && <M4ChartPage results={results} companyName={companyName} />}
       <DisclaimerPage companyName={companyName} />
     </Document>
   );
