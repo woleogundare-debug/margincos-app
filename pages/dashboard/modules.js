@@ -9,6 +9,10 @@ import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { computeDeltas } from '../../lib/engine/delta';
+import M1QuadrantChart   from '../../components/charts/M1QuadrantChart';
+import M2ScenarioChart   from '../../components/charts/M2ScenarioChart';
+import M3TradeROIChart   from '../../components/charts/M3TradeROIChart';
+import M4DistributorChart from '../../components/charts/M4DistributorChart';
 import { fNAbs, fN } from '../../lib/formatters';
 import clsx from 'clsx';
 
@@ -60,6 +64,7 @@ function M1Module({ results, deltas }) {
           <p className="text-xs font-semibold text-red-600 mt-1">Review / Reprice</p>
         </div>
       </div>
+      <M1QuadrantChart results={m1.results} portfolioAvgMarginPct={m1.portfolioAvgMarginPct} />
       <AnalysisTable
         headers={['SKU', 'Category', 'Margin %', 'Rev Share %', 'vs. Avg', 'Classification', 'Action']}
         rows={m1.results.sort((a, b) => b.skuMarginPct - a.skuMarginPct).map(r => [
@@ -99,7 +104,7 @@ function M2Module({ results, deltas }) {
           } : null}
         />
       </div>
-
+      <M2ScenarioChart scenarios={m2.scenarios} totalCogsBase={m2.totalCogsBase} />
       <AnalysisTable
         headers={['Recovery Rate', 'Cost Absorbed ₦/mo', 'Margin Change ₦/mo', 'Projected Margin %', 'Risk Level']}
         rows={m2.scenarios.map(s => [
@@ -156,6 +161,7 @@ function M3Module({ results, deltas }) {
           <p className="text-xs font-semibold text-amber-700 mt-1">Best ROI Channel</p>
         </div>
       </div>
+      <M3TradeROIChart results={m3.results} />
       <AnalysisTable
         headers={['Channel', 'Total Spend ₦', 'Net Contribution ₦', 'ROI', 'Spend Intensity', 'Status']}
         rows={m3.results.map(r => [
@@ -223,6 +229,7 @@ function M4Module({ results, deltas }) {
           />
         </div>
       )}
+      <M4DistributorChart results={m4.results} />
       <AnalysisTable
         headers={['Distributor', 'Revenue ₦/mo', 'True Contrib. ₦/mo', 'Contrib. %', 'Rev Share %', 'Credit Cost ₦', 'Classification']}
         rows={m4.results.map(r => [
