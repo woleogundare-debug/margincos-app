@@ -435,7 +435,7 @@ const P1ChartPage = ({ results, companyName }) => {
     .sort((a, b) => (b.delta || 0) - (a.delta || 0))
     .slice(0, 15);
   const maxDelta = Math.max(...data.map(d => Math.abs(d.delta || 0)), 1);
-  const barH = 18; const gap = 5; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
+  const barH = 28; const gap = 8; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
   const H = padT + data.length * (barH + gap) + 30;
   const tealThresh = 0;
   return (
@@ -453,7 +453,7 @@ const P1ChartPage = ({ results, companyName }) => {
             return (
               <G key={i}>
                 <SvgText fontFamily="DMSans" x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
-                  {sku.sku?.length > 16 ? sku.sku.slice(0, 16) + '…' : sku.sku}
+                  {sku.sku?.length > 22 ? sku.sku.slice(0, 22) + '…' : sku.sku}
                 </SvgText>
                 <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
                 <SvgText fontFamily="DMSans" x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight={700}>
@@ -482,7 +482,7 @@ const P4ChartPage = ({ results, companyName }) => {
     .sort((a, b) => (b.netImpact || 0) - (a.netImpact || 0))
     .slice(0, 15);
   const maxAbs = Math.max(...data.map(d => Math.abs(d.netImpact || 0)), 1);
-  const barH = 18; const gap = 5; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
+  const barH = 28; const gap = 8; const labelW = 120; const barMaxW = 280; const W = 499; const padT = 20;
   const H = padT + data.length * (barH + gap) + 30;
   return (
     <Page size="A4" style={s.page}>
@@ -499,7 +499,7 @@ const P4ChartPage = ({ results, companyName }) => {
             return (
               <G key={i}>
                 <SvgText fontFamily="DMSans" x={labelW - 4} y={y + barH - 5} fontSize={7.5} fill={C.navy} textAnchor="end">
-                  {promo.sku?.length > 16 ? promo.sku.slice(0, 16) + '…' : promo.sku}
+                  {promo.sku?.length > 22 ? promo.sku.slice(0, 22) + '…' : promo.sku}
                 </SvgText>
                 <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={color} rx={2} />
                 <SvgText fontFamily="DMSans" x={labelW + Math.max(2, bw) + 4} y={y + barH - 5} fontSize={7.5} fill={color} fontWeight={700}>
@@ -535,9 +535,9 @@ const M1ChartPage = ({ results, companyName }) => {
   const W = 499; const H = 300;
   const padL = 50; const padR = 20; const padT = 20; const padB = 40;
   const iW = W - padL - padR; const iH = H - padT - padB;
-  const maxX = Math.max(...data.map(d => d.x), 10) * 1.1;
-  const maxY = Math.max(...data.map(d => d.y), 10) * 1.1;
-  const minY = Math.min(...data.map(d => d.y), 0);
+  const maxX = Math.max(...data.map(d => d.x)) + 2;
+  const maxY = Math.max(...data.map(d => d.y)) + 1;
+  const minY = Math.min(...data.map(d => d.y)) - 1;
   const rangeY = maxY - minY || 1;
   const tx = (v) => padL + (v / maxX) * iW;
   const ty = (v) => padT + iH - ((v - minY) / rangeY) * iH;
@@ -563,11 +563,26 @@ const M1ChartPage = ({ results, companyName }) => {
           ))}
           {/* axis labels */}
           <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <SvgText fontFamily="DMSans" x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
+          <SvgText fontFamily="DMSans" x={14} y={padT + iH / 2} fontSize={7} fill={C.muted} textAnchor="middle"
+            transform={`rotate(-90, 14, ${padT + iH / 2})`}>
             SKU Margin %
           </SvgText>
         </G>
       </Svg>
+      {/* Classification legend */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+        {[
+          { label: 'Protect', color: C.teal },
+          { label: 'Grow', color: '#27AE60' },
+          { label: 'Reprice', color: C.gold },
+          { label: 'Review', color: C.red },
+        ].map((item, idx) => (
+          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color }} />
+            <Text style={{ fontSize: 7, color: C.muted, fontFamily: 'DMSans' }}>{item.label}</Text>
+          </View>
+        ))}
+      </View>
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -593,9 +608,9 @@ const M4ChartPage = ({ results, companyName }) => {
   const W = 499; const H = 300;
   const padL = 50; const padR = 20; const padT = 20; const padB = 40;
   const iW = W - padL - padR; const iH = H - padT - padB;
-  const maxX = Math.max(...data.map(d => d.x), 10) * 1.1;
-  const maxY = Math.max(...data.map(d => d.y), 10) * 1.1;
-  const minY = Math.min(...data.map(d => d.y), 0);
+  const maxX = Math.max(...data.map(d => d.x)) + 2;
+  const maxY = Math.max(...data.map(d => d.y)) + 2;
+  const minY = Math.min(...data.map(d => d.y)) - 2;
   const rangeY = maxY - minY || 1;
   const tx = (v) => padL + (v / maxX) * iW;
   const ty = (v) => padT + iH - ((v - minY) / rangeY) * iH;
@@ -617,11 +632,26 @@ const M4ChartPage = ({ results, companyName }) => {
             <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
           ))}
           <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <SvgText fontFamily="DMSans" x={12} y={padT + iH / 2} fontSize={7.5} fill={C.muted} textAnchor="middle">
-            Contribution %
+          <SvgText fontFamily="DMSans" x={14} y={padT + iH / 2} fontSize={7} fill={C.muted} textAnchor="middle"
+            transform={`rotate(-90, 14, ${padT + iH / 2})`}>
+            True Contribution %
           </SvgText>
         </G>
       </Svg>
+      {/* Classification legend */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+        {[
+          { label: 'Strategic', color: C.teal },
+          { label: 'Grow', color: '#27AE60' },
+          { label: 'Renegotiate', color: C.gold },
+          { label: 'Review', color: C.red },
+        ].map((item, idx) => (
+          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color }} />
+            <Text style={{ fontSize: 7, color: C.muted, fontFamily: 'DMSans' }}>{item.label}</Text>
+          </View>
+        ))}
+      </View>
       <PageFooter companyName={companyName} />
     </Page>
   );

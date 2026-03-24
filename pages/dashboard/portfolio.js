@@ -131,36 +131,24 @@ export default function PortfolioPage() {
         {/* ── Active period content ── */}
         {activePeriod && !loading && (
           <>
-            {/* Row 1 — Unified header: title | period selector + badges + action buttons (Desktop) */}
-            <div className="hidden md:flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold text-navy shrink-0" style={{ fontFamily: "'Playfair Display', serif" }}>
+            {/* Desktop header — title above, controls below */}
+            <div className="hidden md:block mb-6">
+              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '28px', fontWeight: 700, color: '#1B2A4A', marginBottom: '16px' }}>
                 Portfolio Manager
               </h1>
-              <div className="flex items-center gap-2 flex-wrap justify-end">
-                <PeriodSelector
-                  periods={periods}
-                  activePeriod={activePeriod}
-                  onSelect={selectPeriod}
-                  onCreate={createPeriod}
-                  onDelete={deletePeriod}
-                  loading={loading}
-                />
-                {activePeriod && activeSkuCount > 0 && (
-                  <>
-                    <span style={{
-                      backgroundColor: '#1B2A4A',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      padding: '6px 14px',
-                      borderRadius: '20px',
-                      fontFamily: "'DM Sans', sans-serif",
-                      letterSpacing: '0.01em',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {activeSkuCount} SKU{activeSkuCount !== 1 ? 's' : ''}
-                    </span>
-                    {totalRevenue > 0 && (
+              <div className="flex items-center justify-between gap-3">
+                {/* Left group: period selector + badges */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <PeriodSelector
+                    periods={periods}
+                    activePeriod={activePeriod}
+                    onSelect={selectPeriod}
+                    onCreate={createPeriod}
+                    onDelete={deletePeriod}
+                    loading={loading}
+                  />
+                  {activePeriod && activeSkuCount > 0 && (
+                    <>
                       <span style={{
                         backgroundColor: '#1B2A4A',
                         color: '#FFFFFF',
@@ -172,53 +160,71 @@ export default function PortfolioPage() {
                         letterSpacing: '0.01em',
                         whiteSpace: 'nowrap',
                       }}>
-                        {nairaCompact(totalRevenue)} revenue
+                        {activeSkuCount} SKU{activeSkuCount !== 1 ? 's' : ''}
                       </span>
-                    )}
-                  </>
-                )}
-                <Button variant="secondary" size="sm" onClick={() => {
-                  const a = document.createElement('a');
-                  a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
-                  a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
-                  a.click();
-                }}>
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg> Download Template
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => {
-                  setActiveTab('sku');
-                  document.getElementById('csv-import-trigger')?.click();
-                }}>
-                  <ArrowUpTrayIcon className="h-4 w-4" /> Import Data
-                </Button>
-                <Button variant="secondary" size="sm" onClick={handleAddSku}>
-                  <PlusIcon className="h-4 w-4" /> Add SKU
-                </Button>
-                {isOverSkuLimit ? (
-                  <button
-                    onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active SKUs. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
-                    className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
-                    style={{ backgroundColor: '#C0392B' }}
-                  >
-                    Run Analysis
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </button>
-                ) : (
-                  <Link href="/dashboard/overview">
-                    <button className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shadow-sm" style={{ backgroundColor: '#C0392B' }}>
+                      {totalRevenue > 0 && (
+                        <span style={{
+                          backgroundColor: '#1B2A4A',
+                          color: '#FFFFFF',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          padding: '6px 14px',
+                          borderRadius: '20px',
+                          fontFamily: "'DM Sans', sans-serif",
+                          letterSpacing: '0.01em',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {nairaCompact(totalRevenue)} revenue
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+                {/* Right group: action buttons */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button variant="secondary" size="sm" onClick={() => {
+                    const a = document.createElement('a');
+                    a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
+                    a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
+                    a.click();
+                  }}>
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg> Download Template
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => {
+                    setActiveTab('sku');
+                    document.getElementById('csv-import-trigger')?.click();
+                  }}>
+                    <ArrowUpTrayIcon className="h-4 w-4" /> Import Data
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={handleAddSku}>
+                    <PlusIcon className="h-4 w-4" /> Add SKU
+                  </Button>
+                  {isOverSkuLimit ? (
+                    <button
+                      onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active SKUs. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
+                      className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
+                      style={{ backgroundColor: '#C0392B' }}
+                    >
                       Run Analysis
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </button>
-                  </Link>
-                )}
+                  ) : (
+                    <Link href="/dashboard/overview">
+                      <button className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shadow-sm" style={{ backgroundColor: '#C0392B' }}>
+                        Run Analysis
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </button>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
 
