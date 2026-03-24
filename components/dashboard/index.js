@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { RagBadge } from '../ui/index';
 
 // ── KPI Tile ───────────────────────────────────────────────────────────────
-export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal', delta = null }) {
+export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal', delta = null, description = null }) {
   const ACCENT_COLORS = {
     teal:   '#0D8F8F',
     red:    '#C0392B',
@@ -54,6 +54,9 @@ export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal', 
       )}
       {pill && (
         <p className={clsx('text-xs font-semibold', pillColor || 'text-[#5A6B80]')}>{pill}</p>
+      )}
+      {description && (
+        <p style={{ fontSize: '10px', color: '#8896A7', marginTop: '4px', fontFamily: "'DM Sans', system-ui, sans-serif", lineHeight: 1.4 }}>{description}</p>
       )}
     </div>
   );

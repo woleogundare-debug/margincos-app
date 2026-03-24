@@ -231,6 +231,7 @@ export default function OverviewPage() {
                 value={fNAbs(results.totalRevenue)}
                 pill={`${results.skuCount} active SKUs`}
                 accent="teal"
+                description="Monthly revenue across all active SKUs"
                 delta={deltas?.portfolio?.revenue && deltas.portfolio.revenue.direction !== 'flat' && Math.abs(deltas.portfolio.revenue.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.revenue.value)),
                   direction: deltas.portfolio.revenue.direction,
@@ -244,6 +245,7 @@ export default function OverviewPage() {
                   : '—'}
                 pill={fNAbs(results.totalCurrentMargin) + ' gross margin'}
                 accent="teal"
+                description="Weighted average gross margin across all active SKUs"
                 delta={deltas?.portfolio?.totalCurrentMargin && deltas.portfolio.totalCurrentMargin.direction !== 'flat' && Math.abs(deltas.portfolio.totalCurrentMargin.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.totalCurrentMargin.value)),
                   direction: deltas.portfolio.totalCurrentMargin.direction,
@@ -255,6 +257,7 @@ export default function OverviewPage() {
                 value={fNAbs(results.revenueAtRisk)}
                 pill="Cost absorbed, not priced in"
                 accent="red"
+                description="Revenue from SKUs priced below their cost floor"
                 delta={deltas?.portfolio?.revenueAtRisk && deltas.portfolio.revenueAtRisk.direction !== 'flat' && Math.abs(deltas.portfolio.revenueAtRisk.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.revenueAtRisk.value)),
                   direction: deltas.portfolio.revenueAtRisk.direction,
@@ -266,6 +269,7 @@ export default function OverviewPage() {
                 value={results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : '₦0'}
                 pill="Repricing upside /month"
                 accent="amber"
+                description="Monthly margin gain from optimal repricing"
                 delta={deltas?.portfolio?.marginProtected && deltas.portfolio.marginProtected.direction !== 'flat' && Math.abs(deltas.portfolio.marginProtected.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.marginProtected.value)),
                   direction: deltas.portfolio.marginProtected.direction,

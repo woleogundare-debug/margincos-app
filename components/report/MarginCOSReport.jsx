@@ -367,7 +367,7 @@ const M2ScenarioSvg = ({ scenarios }) => {
           <SvgText fontFamily="DMSans" x={padL - 5} y={padT + innerH / 2} fontSize={7} fill={C.muted} textAnchor="middle">
             Margin
           </SvgText>
-          <SvgText fontFamily="DMSans" x={W / 2} y={H - 1} fontSize={7} fill={C.muted} textAnchor="middle">
+          <SvgText fontFamily="DMSans" x={padL + innerW / 2} y={H - 1} fontSize={7} fill={C.muted} textAnchor="middle">
             Cost Recovery Rate
           </SvgText>
         </G>
@@ -552,7 +552,7 @@ const M1ChartPage = ({ results, companyName }) => {
   }));
   const avgMargin = m1.portfolioAvgMarginPct || 0;
   const W = 499; const H = 300;
-  const padL = 50; const padR = 20; const padT = 20; const padB = 40;
+  const padL = 36; const padR = 20; const padT = 32; const padB = 40;
   const iW = W - padL - padR; const iH = H - padT - padB;
   const maxX = Math.max(...data.map(d => d.x)) + 2;
   const maxY = Math.max(...data.map(d => d.y)) + 1;
@@ -566,6 +566,7 @@ const M1ChartPage = ({ results, companyName }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>M1 · SKU Portfolio Quadrant</Text>
       <Text style={s.sectionSub}>Revenue share % vs SKU margin % · Reference lines at 5% share and portfolio average margin</Text>
+      <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans', marginBottom: 4, marginLeft: 36 }}>↑ SKU Margin %</Text>
       <Svg width={W} height={H}>
         <G>
           {/* grid lines */}
@@ -582,11 +583,6 @@ const M1ChartPage = ({ results, companyName }) => {
           ))}
           {/* axis labels */}
           <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <G transform={`rotate(-90, 20, ${padT + iH / 2})`}>
-            <SvgText fontFamily="DMSans" x={20} y={padT + iH / 2} fontSize={6.5} fill={C.muted} textAnchor="middle">
-              SKU Margin %
-            </SvgText>
-          </G>
         </G>
       </Svg>
       {/* Classification legend */}
@@ -626,7 +622,7 @@ const M4ChartPage = ({ results, companyName }) => {
   }));
   const avgCont = data.reduce((s, d) => s + d.y, 0) / (data.length || 1);
   const W = 499; const H = 300;
-  const padL = 50; const padR = 20; const padT = 20; const padB = 40;
+  const padL = 36; const padR = 20; const padT = 32; const padB = 40;
   const iW = W - padL - padR; const iH = H - padT - padB;
   const maxX = Math.max(...data.map(d => d.x)) + 2;
   const maxY = Math.max(...data.map(d => d.y)) + 2;
@@ -640,6 +636,7 @@ const M4ChartPage = ({ results, companyName }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>M4 · Distributor Performance Matrix</Text>
       <Text style={s.sectionSub}>Revenue share % vs true contribution % · Reference lines at 10% share and average contribution</Text>
+      <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans', marginBottom: 4, marginLeft: 36 }}>↑ True Contribution %</Text>
       <Svg width={W} height={H}>
         <G>
           <Line x1={padL} y1={padT} x2={padL} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
@@ -652,11 +649,6 @@ const M4ChartPage = ({ results, companyName }) => {
             <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
           ))}
           <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-          <G transform={`rotate(-90, 20, ${padT + iH / 2})`}>
-            <SvgText fontFamily="DMSans" x={20} y={padT + iH / 2} fontSize={6.5} fill={C.muted} textAnchor="middle">
-              True Contribution %
-            </SvgText>
-          </G>
         </G>
       </Svg>
       {/* Classification legend */}

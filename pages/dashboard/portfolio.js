@@ -36,6 +36,7 @@ export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
   const [skuLimitError, setSkuLimitError] = useState(null);
   const [importProgress, setImportProgress] = useState('');
+  const [visibleCount, setVisibleCount] = useState(100);
 
   // Tier enforcement helpers
   const skuLimit   = TIER_LIMITS[tier]?.maxSkus ?? null;
@@ -352,18 +353,35 @@ export default function PortfolioPage() {
 
             {/* SKU Grid tab */}
             {activeTab === 'sku' && (
-              <SkuGrid
-                skuRows={skuRows}
-                onSave={handleSaveSku}
-                onAdd={handleAddSku}
-                onDelete={deleteSku}
-                onRowClick={setSelectedRow}
-                onBulkImport={handleBulkImport}
-                saving={saving}
-                activePeriod={activePeriod}
-                isProfessional={isProfessional}
-                isEnterprise={isEnterprise}
-              />
+              <>
+                <SkuGrid
+                  skuRows={skuRows.slice(0, visibleCount)}
+                  onSave={handleSaveSku}
+                  onAdd={handleAddSku}
+                  onDelete={deleteSku}
+                  onRowClick={setSelectedRow}
+                  onBulkImport={handleBulkImport}
+                  saving={saving}
+                  activePeriod={activePeriod}
+                  isProfessional={isProfessional}
+                  isEnterprise={isEnterprise}
+                />
+                {skuRows.length > visibleCount && (
+                  <div style={{ textAlign: 'center', padding: '16px 0' }}>
+                    <button
+                      onClick={() => setVisibleCount(v => v + 100)}
+                      style={{
+                        fontSize: '13px', fontWeight: 600, color: '#0D8F8F',
+                        background: 'rgba(13,143,143,0.08)', border: '1px solid rgba(13,143,143,0.2)',
+                        borderRadius: '8px', padding: '8px 20px', cursor: 'pointer',
+                        fontFamily: "'DM Sans', system-ui, sans-serif",
+                      }}
+                    >
+                      Show more ({skuRows.length - visibleCount} remaining)
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Trade Investment tab */}
