@@ -173,6 +173,13 @@ export function DashboardLayout({ children, title, activePeriod }) {
     }
   }, [loading, user, router]);
 
+  // Close sidebar on any route change (covers programmatic navigation, not just link clicks)
+  useEffect(() => {
+    const handleRouteChange = () => setSidebarOpen(false);
+    router.events.on('routeChangeStart', handleRouteChange);
+    return () => { router.events.off('routeChangeStart', handleRouteChange); };
+  }, [router.events]);
+
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
     if (sidebarOpen) {

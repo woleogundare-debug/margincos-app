@@ -1362,6 +1362,7 @@ const M2Page = ({ results, companyName }) => {
       <NarrativeBlock lines={getM2Narrative(results)} />
       <M2ScenarioSvg scenarios={m2.scenarios} />
 
+      <View style={{ marginTop: 20 }}>
       <View style={s.tableHeader}>
         <Text style={[s.tableHeaderCell, { width: '18%' }]}>Recovery Rate</Text>
         <Text style={[s.tableHeaderCell, { width: '16%', textAlign: 'right' }]}>Cost Shock</Text>
@@ -1384,6 +1385,7 @@ const M2Page = ({ results, companyName }) => {
           </View>
         </View>
       ))}
+      </View>
       <PageFooter companyName={companyName} />
     </Page>
   );

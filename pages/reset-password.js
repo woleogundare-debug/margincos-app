@@ -17,11 +17,16 @@ export default function ResetPassword() {
     if (password !== confirm) { setError('Passwords do not match.'); return; }
     if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
     setLoading(true);
-    const sb = getSupabaseClient();
-    const { error: updateError } = await sb.auth.updateUser({ password });
-    if (updateError) { setError(updateError.message); setLoading(false); return; }
-    setSuccess(true);
-    setTimeout(() => router.push('/login'), 2000);
+    try {
+      const sb = getSupabaseClient();
+      const { error: updateError } = await sb.auth.updateUser({ password });
+      if (updateError) { setError(updateError.message); setLoading(false); return; }
+      setSuccess(true);
+      setTimeout(() => router.push('/login'), 2000);
+    } catch (err) {
+      setError('Unable to update password. Please check your connection and try again.');
+      setLoading(false);
+    }
   };
 
   return (

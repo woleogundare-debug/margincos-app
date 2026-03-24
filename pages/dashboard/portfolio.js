@@ -35,6 +35,7 @@ export default function PortfolioPage() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
   const [skuLimitError, setSkuLimitError] = useState(null);
+  const [importProgress, setImportProgress] = useState('');
 
   // Tier enforcement helpers
   const skuLimit   = TIER_LIMITS[tier]?.maxSkus ?? null;
@@ -76,6 +77,7 @@ export default function PortfolioPage() {
       return;
     }
 
+    setImportProgress(`Importing ${rows.length} SKU${rows.length !== 1 ? 's' : ''}…`);
     const batchSize = 5;
     for (let i = 0; i < rows.length; i += batchSize) {
       const batch = rows.slice(i, i + batchSize);
@@ -83,7 +85,9 @@ export default function PortfolioPage() {
         ...row,
         _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       })));
+      setImportProgress(`Importing ${rows.length} SKU${rows.length !== 1 ? 's' : ''}… (${Math.min(i + batchSize, rows.length)}/${rows.length})`);
     }
+    setImportProgress('');
   }, [tier, activeSkuCount, saveSku]);
 
   return (
@@ -292,6 +296,13 @@ export default function PortfolioPage() {
                 loading={loading}
               />
             </div>
+
+            {/* Import progress indicator */}
+            {importProgress && (
+              <p style={{ fontSize: '12px', color: '#0D8F8F', marginBottom: '8px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif" }}>
+                {importProgress}
+              </p>
+            )}
 
             {/* Tab bar: SKU Grid / Trade Investment */}
             <div className="flex items-center gap-1 mb-4 border-b border-slate-200">
