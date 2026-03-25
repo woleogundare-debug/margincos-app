@@ -11,8 +11,6 @@ export default function RepricingGapChart() {
   ];
 
   const MAX_ABS = 474; // largest absolute value, used for scaling
-  // Each bar occupies up to 42% of total track width (leaving room for labels)
-  const TRACK_PCT = 42;
 
   const color = (gap) => gap >= 0 ? '#1A9E5C' : '#C0392B';
   const bgColor = (gap) => gap >= 0 ? 'rgba(26,158,92,0.08)' : 'rgba(192,57,43,0.07)';
@@ -43,57 +41,56 @@ export default function RepricingGapChart() {
 
       {/* Chart rows */}
       {skus.map((sku, i) => {
-        const barPct = (Math.abs(sku.gap) / MAX_ABS) * TRACK_PCT;
-        const isNeg  = sku.gap < 0;
-        const c      = color(sku.gap);
-        const bg     = bgColor(sku.gap);
+        const barPct = (Math.abs(sku.gap) / MAX_ABS) * 100;
+        const c   = color(sku.gap);
+        const bg  = bgColor(sku.gap);
 
         return (
           <div key={i} style={{
-            display: 'grid',
-            gridTemplateColumns: `${TRACK_PCT}% 1fr ${TRACK_PCT}%`,
+            display: 'flex',
             alignItems: 'center',
-            gap: '0',
+            gap: 8,
+            width: '100%',
             marginBottom: i < skus.length - 1 ? '10px' : 0,
             padding: '8px 10px',
             background: bg,
             borderRadius: '8px',
+            boxSizing: 'border-box',
           }}>
-            {/* Left side: negative bars grow rightward from right edge */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: '20px', paddingRight: '4px' }}>
-              {isNeg && (
-                <div style={{
-                  width: `${barPct / TRACK_PCT * 100}%`,
-                  height: '10px',
-                  background: c,
-                  borderRadius: '4px 0 0 4px',
-                  opacity: 0.85,
-                }} />
-              )}
+            {/* SKU name — fixed width, never wraps or clips the bar */}
+            <span style={{
+              fontSize: '12px',
+              fontWeight: 600,
+              color: '#1B2A4A',
+              width: 130,
+              flexShrink: 0,
+              textAlign: 'right',
+            }}>
+              {sku.name}
+            </span>
+
+            {/* Bar container — takes all remaining space, shrinks on mobile */}
+            <div style={{ flex: 1, minWidth: 0, height: '10px', position: 'relative' }}>
+              <div style={{
+                width: `${barPct}%`,
+                height: '10px',
+                background: c,
+                borderRadius: '0 4px 4px 0',
+                opacity: 0.85,
+              }} />
             </div>
 
-            {/* Centre: SKU name */}
-            <div style={{ textAlign: 'center', padding: '0 6px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#1B2A4A', whiteSpace: 'nowrap' }}>
-                {sku.name}
-              </span>
-            </div>
-
-            {/* Right side: positive bars grow leftward from left edge, value label */}
-            <div style={{ display: 'flex', alignItems: 'center', height: '20px', paddingLeft: '4px', gap: '6px' }}>
-              {!isNeg && (
-                <div style={{
-                  width: `${barPct / TRACK_PCT * 100}%`,
-                  height: '10px',
-                  background: c,
-                  borderRadius: '0 4px 4px 0',
-                  opacity: 0.85,
-                }} />
-              )}
-              <span style={{ fontSize: '12px', fontWeight: 700, color: c, whiteSpace: 'nowrap', marginLeft: isNeg ? 'auto' : '0' }}>
-                {sku.gap >= 0 ? '+' : ''}₦{Math.abs(sku.gap)}
-              </span>
-            </div>
+            {/* Value — fixed width, always stays inside the card */}
+            <span style={{
+              fontSize: '12px',
+              fontWeight: 700,
+              color: c,
+              width: 52,
+              flexShrink: 0,
+              textAlign: 'left',
+            }}>
+              {sku.gap >= 0 ? `+₦${sku.gap}` : `₦${Math.abs(sku.gap)}`}
+            </span>
           </div>
         );
       })}
