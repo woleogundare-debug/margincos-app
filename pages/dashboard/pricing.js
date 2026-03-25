@@ -19,6 +19,20 @@ export default function PricingPage() {
     return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
   }, [chronologicalDelta]);
   const [tableExpanded, setTableExpanded] = useState(false);
+  const [sortCol, setSortCol] = useState('delta');
+  const [sortDir, setSortDir] = useState('desc');
+
+  const handleSort = (col) => {
+    if (sortCol === col) setSortDir(d => d === 'desc' ? 'asc' : 'desc');
+    else { setSortCol(col); setSortDir('desc'); }
+  };
+  const si = (col) => sortCol === col ? (sortDir === 'desc' ? ' ↓' : ' ↑') : '';
+
+  const sorted = [...(p1?.results || [])].sort((a, b) => {
+    const av = a[sortCol] ?? 0;
+    const bv = b[sortCol] ?? 0;
+    return sortDir === 'desc' ? bv - av : av - bv;
+  });
 
   const ragStatus = !hasResults ? 'grey'
     : p1?.floorBreaches?.length > 0 ? 'red'
@@ -122,7 +136,7 @@ export default function PricingPage() {
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
                     headers={['SKU', 'RRP ₦', 'Margin %', 'Comp. Gap', 'Gain ₦/mo']}
-                    rows={p1.results.map(r => [
+                    rows={sorted.map(r => [
                       r.sku,
                       fNAbs(r.price),
                       r.marginPct.toFixed(1) + '%',
@@ -143,8 +157,14 @@ export default function PricingPage() {
               accentColor="#0D9488"
               ragStatus={ragStatus}>
               <AnalysisTable
-                headers={['SKU', 'Category', 'RRP ₦', 'Gross Margin %', 'Competitor Gap', 'WTP Gap ₦/mo', 'Repricing Gain ₦/mo']}
-                rows={p1.results.map(r => [
+                headers={[
+                  'SKU', 'Category', 'RRP ₦',
+                  <span key="marginPct" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('marginPct')}>Gross Margin %{si('marginPct')}</span>,
+                  'Competitor Gap',
+                  <span key="wtpGap" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('wtpGap')}>WTP Gap ₦/mo{si('wtpGap')}</span>,
+                  <span key="delta" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('delta')}>Repricing Gain ₦/mo{si('delta')}</span>,
+                ]}
+                rows={sorted.map(r => [
                   r.sku,
                   r.category,
                   fNAbs(r.price),

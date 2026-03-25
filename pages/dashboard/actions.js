@@ -46,18 +46,19 @@ export default function ActionsPage() {
 
   const [filter, setFilter] = useState('open');
   const [pillarFilter, setPillarFilter] = useState('all');
+  const [filterUrgency, setFilterUrgency] = useState('all');
   const [resolveModal, setResolveModal] = useState(null);
   const [resolveNote, setResolveNote] = useState('');
 
   const filtered = useMemo(() => {
-    // Early return on All tab — skip .filter() entirely, return stable reference
-    if (filter === 'all' && pillarFilter === 'all') return actions;
+    if (filter === 'all' && pillarFilter === 'all' && filterUrgency === 'all') return actions;
     return actions.filter(a => {
       if (filter !== 'all' && a.status !== filter) return false;
       if (pillarFilter !== 'all' && a.pillar !== pillarFilter) return false;
+      if (filterUrgency !== 'all' && a.urgency !== filterUrgency) return false;
       return true;
     });
-  }, [actions, filter, pillarFilter]);
+  }, [actions, filter, pillarFilter, filterUrgency]);
 
   const handleResolve = async () => {
     if (!resolveModal) return;
@@ -148,6 +149,25 @@ export default function ActionsPage() {
                 </button>
               ))}
             </div>
+
+            {/* Urgency filter */}
+            <select
+              value={filterUrgency}
+              onChange={e => setFilterUrgency(e.target.value)}
+              style={{
+                fontSize: '13px', fontFamily: "'DM Sans', system-ui, sans-serif",
+                color: filterUrgency === 'all' ? '#8899AA' : '#1B2A4A',
+                fontWeight: 600, padding: '6px 12px',
+                border: '1px solid #D1D9E0', borderRadius: '8px',
+                background: '#FFFFFF', cursor: 'pointer',
+                outline: 'none',
+              }}>
+              <option value="all">All urgency levels</option>
+              <option value="IMMEDIATE">Immediate</option>
+              <option value="THIS WEEK">This week</option>
+              <option value="WITHIN 14 DAYS">Within 14 days</option>
+              <option value="WITHIN 30 DAYS">Within 30 days</option>
+            </select>
           </div>
 
           {/* Action list */}

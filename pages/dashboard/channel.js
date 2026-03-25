@@ -22,6 +22,20 @@ export default function ChannelPage() {
   }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
+  const [sortCol, setSortCol] = useState('rev');
+  const [sortDir, setSortDir] = useState('desc');
+
+  const handleSort = (col) => {
+    if (sortCol === col) setSortDir(d => d === 'desc' ? 'asc' : 'desc');
+    else { setSortCol(col); setSortDir('desc'); }
+  };
+  const si = (col) => sortCol === col ? (sortDir === 'desc' ? ' ↓' : ' ↑') : '';
+
+  const sorted = [...(p3?.channelResults || [])].sort((a, b) => {
+    const av = a[sortCol] ?? 0;
+    const bv = b[sortCol] ?? 0;
+    return sortDir === 'desc' ? bv - av : av - bv;
+  });
 
   // Tier gate — all hooks called above, safe to early-return here
   if (authLoading || !profileLoaded) {
@@ -123,7 +137,7 @@ export default function ChannelPage() {
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
                     headers={['Channel', 'Revenue ₦/mo', 'Cont. %', 'Status']}
-                    rows={(p3.channelResults || []).map(c => [
+                    rows={sorted.map(c => [
                       CHANNEL_LABELS[c.channel] || c.channel,
                       fNAbs(c.rev),
                       c.contPct.toFixed(1) + '%',
@@ -146,8 +160,14 @@ export default function ChannelPage() {
               accentColor="#D97706"
               ragStatus={ragStatus}>
               <AnalysisTable
-                headers={['Channel', 'Revenue ₦/mo', 'Contribution ₦/mo', 'Cont. Margin %', 'SKUs', 'Status']}
-                rows={(p3.channelResults || []).map(c => [
+                headers={[
+                  'Channel',
+                  <span key="rev" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('rev')}>Revenue ₦/mo{si('rev')}</span>,
+                  <span key="contMargin" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('contMargin')}>Contribution ₦/mo{si('contMargin')}</span>,
+                  <span key="contPct" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('contPct')}>Cont. Margin %{si('contPct')}</span>,
+                  'SKUs', 'Status',
+                ]}
+                rows={sorted.map(c => [
                   CHANNEL_LABELS[c.channel] || c.channel,
                   fNAbs(c.rev),
                   fNAbs(c.contMargin),

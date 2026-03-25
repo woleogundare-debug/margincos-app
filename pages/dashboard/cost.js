@@ -22,6 +22,20 @@ export default function CostPage() {
   }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
+  const [sortCol, setSortCol] = useState('absorbed');
+  const [sortDir, setSortDir] = useState('desc');
+
+  const handleSort = (col) => {
+    if (sortCol === col) setSortDir(d => d === 'desc' ? 'asc' : 'desc');
+    else { setSortCol(col); setSortDir('desc'); }
+  };
+  const si = (col) => sortCol === col ? (sortDir === 'desc' ? ' ↓' : ' ↑') : '';
+
+  const sorted = [...(p2?.results || [])].sort((a, b) => {
+    const av = a[sortCol] ?? 0;
+    const bv = b[sortCol] ?? 0;
+    return sortDir === 'desc' ? bv - av : av - bv;
+  });
 
   // Tier gate — all hooks called above, safe to early-return here
   if (authLoading || !profileLoaded) {
@@ -130,7 +144,7 @@ export default function CostPage() {
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
                     headers={['SKU', 'Shock ₦/mo', 'Pass-Through', 'Absorbed ₦/mo']}
-                    rows={p2.results.map(r => [
+                    rows={sorted.map(r => [
                       r.sku,
                       fNAbs(r.shock),
                       (r.pt * 100).toFixed(0) + '%',
@@ -150,8 +164,15 @@ export default function CostPage() {
               accentColor="#DC2626"
               ragStatus={ragStatus}>
               <AnalysisTable
-                headers={['SKU', 'Category', 'Cost Shock ₦/mo', 'Pass-Through %', 'Absorbed ₦/mo', 'FX-Linked', <span>Source <span title="How the inflation rate was determined for this SKU" className="ml-0.5 text-gray-400 cursor-help">?</span></span>]}
-                rows={p2.results.map(r => [
+                headers={[
+                  'SKU', 'Category',
+                  <span key="shock" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('shock')}>Cost Shock ₦/mo{si('shock')}</span>,
+                  <span key="pt" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('pt')}>Pass-Through %{si('pt')}</span>,
+                  <span key="absorbed" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('absorbed')}>Absorbed ₦/mo{si('absorbed')}</span>,
+                  'FX-Linked',
+                  <span key="src">Source <span title="How the inflation rate was determined for this SKU" className="ml-0.5 text-gray-400 cursor-help">?</span></span>,
+                ]}
+                rows={sorted.map(r => [
                   r.sku, r.category,
                   fNAbs(r.shock),
                   { content: (

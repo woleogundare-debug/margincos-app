@@ -22,6 +22,20 @@ export default function TradePage() {
   }, [chronologicalDelta]);
 
   const [tableExpanded, setTableExpanded] = useState(false);
+  const [sortCol, setSortCol] = useState('netImpact');
+  const [sortDir, setSortDir] = useState('asc');
+
+  const handleSort = (col) => {
+    if (sortCol === col) setSortDir(d => d === 'desc' ? 'asc' : 'desc');
+    else { setSortCol(col); setSortDir('desc'); }
+  };
+  const si = (col) => sortCol === col ? (sortDir === 'desc' ? ' ↓' : ' ↑') : '';
+
+  const sorted = [...(p4?.results || [])].sort((a, b) => {
+    const av = a[sortCol] ?? 0;
+    const bv = b[sortCol] ?? 0;
+    return sortDir === 'desc' ? bv - av : av - bv;
+  });
 
   // Tier gate — all hooks called above, safe to early-return here
   if (authLoading || !profileLoaded) {
@@ -123,7 +137,7 @@ export default function TradePage() {
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
                     headers={['SKU', 'Depth', 'Lift', 'Impact ₦/mo', 'Status']}
-                    rows={(p4.results || []).sort((a, b) => a.netImpact - b.netImpact).map(r => [
+                    rows={sorted.map(r => [
                       r.sku,
                       (r.depth * 100).toFixed(1) + '%',
                       (r.lift * 100).toFixed(1) + '%',
@@ -149,8 +163,15 @@ export default function TradePage() {
                 </div>
               ) : (
                 <AnalysisTable
-                  headers={['SKU', 'Category', 'Promo Depth', 'Volume Lift', 'Break-even Lift', 'Net Impact ₦/mo', 'Status']}
-                  rows={p4.results.sort((a, b) => a.netImpact - b.netImpact).map(r => [
+                  headers={[
+                    'SKU', 'Category',
+                    <span key="depth" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('depth')}>Promo Depth{si('depth')}</span>,
+                    <span key="lift" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('lift')}>Volume Lift{si('lift')}</span>,
+                    'Break-even Lift',
+                    <span key="netImpact" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('netImpact')}>Net Impact ₦/mo{si('netImpact')}</span>,
+                    'Status',
+                  ]}
+                  rows={sorted.map(r => [
                     r.sku, r.category,
                     (r.depth * 100).toFixed(1) + '%',
                     (r.lift * 100).toFixed(1) + '%',

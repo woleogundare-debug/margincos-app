@@ -1681,7 +1681,11 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
       <View style={s.kpiRow}>
         {metrics.slice(0, 2).map((m, i) => {
           const d = m.delta;
-          const color = d ? trendColor(d.direction, m.isPositive) : C.muted;
+          // Explicit polarity: positiveDir is the direction that counts as good for this metric
+          const positiveDir = m.isPositive ? 'up' : 'down';
+          const color = d
+            ? d.direction === 'flat' ? C.muted : d.direction === positiveDir ? C.teal : C.red
+            : C.muted;
           return (
             <View key={i} style={[s.kpiCard, { borderLeftColor: color }]}>
               <Text style={s.kpiLabel}>{m.label}</Text>
@@ -1703,7 +1707,12 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
       <View style={s.kpiRow}>
         {metrics.slice(2, 4).map((m, i) => {
           const d = m.delta;
-          const color = d ? trendColor(d.direction, m.isPositive) : C.muted;
+          // Explicit polarity: positiveDir is the direction that counts as good for this metric
+          // Revenue at Risk has isPositive: false — declining is improvement → positiveDir = 'down'
+          const positiveDir = m.isPositive ? 'up' : 'down';
+          const color = d
+            ? d.direction === 'flat' ? C.muted : d.direction === positiveDir ? C.teal : C.red
+            : C.muted;
           return (
             <View key={i} style={[s.kpiCard, { borderLeftColor: color }]}>
               <Text style={s.kpiLabel}>{m.label}</Text>
