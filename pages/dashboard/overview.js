@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { KpiTile, ActionItem, EmptyState } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
@@ -366,10 +365,4 @@ export default function OverviewPage() {
       </DashboardLayout>
     </>
   );
-}
-
-export async function getServerSideProps({ req, res }) {
-  const auth = await requireAuth(req, res);
-  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
-  return { props: {} };
 }

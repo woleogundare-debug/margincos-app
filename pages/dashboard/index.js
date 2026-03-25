@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { requireAuth } from '../../lib/supabase/server';
 import { LoadingSpinner } from '../../components/ui/index';
 
 export default function DashboardIndex() {
@@ -11,10 +10,4 @@ export default function DashboardIndex() {
       <LoadingSpinner size="lg" />
     </div>
   );
-}
-
-export async function getServerSideProps({ req, res }) {
-  const auth = await requireAuth(req, res);
-  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
-  return { props: {} };
 }

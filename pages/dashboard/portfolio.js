@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
 import Head from 'next/head';
-import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { PeriodSelector } from '../../components/portfolio/PeriodSelector';
 import { SkuGrid } from '../../components/portfolio/SkuGrid';
@@ -409,10 +408,4 @@ export default function PortfolioPage() {
       </DashboardLayout>
     </>
   );
-}
-
-export async function getServerSideProps({ req, res }) {
-  const auth = await requireAuth(req, res);
-  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
-  return { props: {} };
 }

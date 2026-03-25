@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import Head from 'next/head';
-import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { useActions } from '../../hooks/useActions';
 import { useTeam } from '../../hooks/useTeam';
@@ -343,10 +342,4 @@ export default function ActionsPage() {
       </DashboardLayout>
     </>
   );
-}
-
-export async function getServerSideProps({ req, res }) {
-  const auth = await requireAuth(req, res);
-  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
-  return { props: {} };
 }

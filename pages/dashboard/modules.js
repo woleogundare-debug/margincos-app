@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import Head from 'next/head';
-import { requireAuth } from '../../lib/supabase/server';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { ModuleGate } from '../../components/modules/ModuleGate';
 import { KpiTile, PillarCard, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
@@ -321,10 +320,4 @@ export default function ModulesPage() {
       </DashboardLayout>
     </>
   );
-}
-
-export async function getServerSideProps({ req, res }) {
-  const auth = await requireAuth(req, res);
-  if (auth.redirect) return { redirect: { destination: '/login', permanent: false } };
-  return { props: {} };
 }
