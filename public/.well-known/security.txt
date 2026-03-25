@@ -1,0 +1,5 @@
+Contact: mailto:info@carthenaadvisory.com
+Preferred-Languages: en
+Canonical: https://margincos.com/.well-known/security.txt
+Policy: https://margincos.com/security
+Expires: 2027-03-25T00:00:00.000Z
