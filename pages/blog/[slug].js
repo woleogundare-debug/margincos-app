@@ -9,6 +9,8 @@ import { PublicNav } from '../../components/layout/PublicNav';
 import { PublicFooter } from '../../components/layout/PublicFooter';
 import PassThroughChart from '../../components/blog/PassThroughChart';
 import MarginLeakageChart from '../../components/blog/MarginLeakageChart';
+import RRPFloorChart from '../../components/blog/RRPFloorChart';
+import RepricingGapChart from '../../components/blog/RepricingGapChart';
 import ArticleActions from '../../components/blog/ArticleActions';
 
 export async function getStaticPaths() {
@@ -65,7 +67,7 @@ export async function getStaticProps({ params }) {
 export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, excerpt, date, author, category, readTime, slug } = frontmatter;
 
-  const mdxComponents = { PassThroughChart, MarginLeakageChart };
+  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart };
 
   return (
     <>
