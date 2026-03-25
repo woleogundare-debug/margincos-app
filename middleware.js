@@ -16,12 +16,10 @@ export async function middleware(req) {
         },
         set(name, value, options) {
           req.cookies.set({ name, value, ...options });
-          res = NextResponse.next({ request: { headers: req.headers } });
           res.cookies.set({ name, value, ...options });
         },
         remove(name, options) {
           req.cookies.set({ name, value: '', ...options });
-          res = NextResponse.next({ request: { headers: req.headers } });
           res.cookies.set({ name, value: '', ...options });
         },
       },
