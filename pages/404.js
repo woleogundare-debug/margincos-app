@@ -38,8 +38,7 @@ export default function Custom404() {
         }}>
           This page doesn&apos;t exist. You may have followed an outdated link or typed the URL incorrectly.
         </p>
-        <Link href="/dashboard/portfolio">
-          <a style={{
+        <Link href="/dashboard/portfolio" style={{
             display: 'inline-block',
             padding: '12px 28px',
             borderRadius: '10px',
@@ -50,17 +49,14 @@ export default function Custom404() {
             textDecoration: 'none',
           }}>
             Back to Dashboard
-          </a>
         </Link>
         <div style={{ marginTop: '16px' }}>
-          <Link href="/">
-            <a style={{
+          <Link href="/" style={{
               fontSize: '13px',
               color: '#0D8F8F',
               textDecoration: 'none',
             }}>
               or go to homepage
-            </a>
           </Link>
         </div>
       </div>

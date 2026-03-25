@@ -30,7 +30,6 @@ export default function TeamPage() {
     setInviting(true);
     setError('');
     try {
-      const { inviteMember } = useTeam;
       const supabase = (await import('../../lib/supabase/client')).getSupabaseClient();
       const { data, error: insertError } = await supabase
         .from('team_invitations')
