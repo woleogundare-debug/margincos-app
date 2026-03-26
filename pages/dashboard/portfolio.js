@@ -188,10 +188,6 @@ export default function PortfolioPage() {
                 </div>
                 {/* Right group: action buttons */}
                 <div className="flex items-center gap-3 flex-shrink-0">
-                  <ExportButton
-                    show={(isProfessional || isEnterprise) && skuRows.length > 0}
-                    onExport={() => exportPortfolio(skuRows)}
-                  />
                   <Button variant="secondary" size="sm" onClick={() => {
                     const a = document.createElement('a');
                     a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
@@ -328,6 +324,14 @@ export default function PortfolioPage() {
                   )}
                 </button>
               ))}
+              {activeTab === 'sku' && (
+                <div className="ml-auto pb-2">
+                  <ExportButton
+                    show={(isProfessional || isEnterprise) && skuRows.length > 0}
+                    onExport={() => exportPortfolio(skuRows)}
+                  />
+                </div>
+              )}
             </div>
 
             {/* SKU limit error banner */}
