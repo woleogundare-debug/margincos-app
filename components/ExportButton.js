@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download } from 'lucide-react';
+import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 /**
  * ExportButton — teal secondary button with spinner during export.
@@ -49,7 +49,7 @@ export default function ExportButton({ onExport, label = 'Export to Excel', show
         whiteSpace:     'nowrap',
       }}
     >
-      <Download size={14} strokeWidth={2.2} />
+      <ArrowDownTrayIcon className="h-3.5 w-3.5" />
       {loading ? 'Exporting…' : label}
     </button>
   );
