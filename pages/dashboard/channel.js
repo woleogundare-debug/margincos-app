@@ -10,6 +10,8 @@ import { fNAbs, CHANNEL_LABELS } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import P3ChannelChart from '../../components/charts/P3ChannelChart';
 import { TIER_ACCESS } from '../../lib/constants';
+import ExportButton from '../../components/ExportButton';
+import { exportP3ChannelEconomics } from '../../lib/exportToExcel';
 
 export default function ChannelPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
@@ -152,6 +154,12 @@ export default function ChannelPage() {
             </div>
 
             {/* Desktop: Channel summary */}
+            <div className="hidden md:flex justify-end mb-2">
+              <ExportButton
+                show={tier === 'professional' || tier === 'enterprise'}
+                onExport={() => exportP3ChannelEconomics(sorted, activePeriod?.label)}
+              />
+            </div>
             <div className="hidden md:block">
             <PillarCard
               title="Channel Contribution Analysis"

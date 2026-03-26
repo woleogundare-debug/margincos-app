@@ -10,6 +10,8 @@ import { fNAbs } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import P2WaterfallChart from '../../components/charts/P2WaterfallChart';
 import { TIER_ACCESS } from '../../lib/constants';
+import ExportButton from '../../components/ExportButton';
+import { exportP2CostPassThrough } from '../../lib/exportToExcel';
 
 export default function CostPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
@@ -156,6 +158,12 @@ export default function CostPage() {
             </div>
 
             {/* Desktop table */}
+            <div className="hidden md:flex justify-end mb-2">
+              <ExportButton
+                show={tier === 'professional' || tier === 'enterprise'}
+                onExport={() => exportP2CostPassThrough(sorted, activePeriod?.label)}
+              />
+            </div>
             <div className="hidden md:block">
             <PillarCard
               title="Cost Absorption by SKU"

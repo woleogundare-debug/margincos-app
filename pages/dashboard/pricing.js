@@ -5,12 +5,16 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { PillarCard, KpiTile, AnalysisTable, NarrativeBox, EmptyState } from '../../components/dashboard/index';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
+import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import P1RepricingChart from '../../components/charts/P1RepricingChart';
+import ExportButton from '../../components/ExportButton';
+import { exportP1PricingGap } from '../../lib/exportToExcel';
 
 export default function PricingPage() {
+  const { tier } = useAuth();
   const { activePeriod, results, running, ranAt, run, hasResults, chronologicalDelta } = useAnalysisContext();
   const p1 = results?.p1;
   const deltas = useMemo(() => {
@@ -149,6 +153,12 @@ export default function PricingPage() {
             </div>
 
             {/* Desktop: SKU Results (unchanged) */}
+            <div className="hidden md:flex justify-end mb-2">
+              <ExportButton
+                show={tier === 'professional' || tier === 'enterprise'}
+                onExport={() => exportP1PricingGap(sorted, activePeriod?.label)}
+              />
+            </div>
             <div className="hidden md:block">
             <PillarCard
               title="SKU Pricing Analysis"

@@ -11,6 +11,8 @@ import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { TIER_LIMITS } from '../../lib/constants';
 import { ArrowUpTrayIcon, PlusIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import ExportButton from '../../components/ExportButton';
+import { exportPortfolio } from '../../lib/exportToExcel';
 
 function nairaCompact(v) {
   if (!v || v === 0) return '₦0';
@@ -186,6 +188,10 @@ export default function PortfolioPage() {
                 </div>
                 {/* Right group: action buttons */}
                 <div className="flex items-center gap-3 flex-shrink-0">
+                  <ExportButton
+                    show={(isProfessional || isEnterprise) && skuRows.length > 0}
+                    onExport={() => exportPortfolio(skuRows)}
+                  />
                   <Button variant="secondary" size="sm" onClick={() => {
                     const a = document.createElement('a');
                     a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';

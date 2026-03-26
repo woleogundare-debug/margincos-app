@@ -3,7 +3,10 @@ import Head from 'next/head';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { useActions } from '../../hooks/useActions';
 import { useTeam } from '../../hooks/useTeam';
+import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import ExportButton from '../../components/ExportButton';
+import { exportActions } from '../../lib/exportToExcel';
 
 const PILLAR_COLORS = {
   P1: '#D4A843', P2: '#C0392B', P3: '#0D8F8F', P4: '#8A6BBE',
@@ -26,6 +29,7 @@ const fmtN = (v) => {
 };
 
 export default function ActionsPage() {
+  const { tier } = useAuth();
   const { team, loading: teamLoading } = useTeam();
   // activePeriod from shared context — no separate usePortfolio instance needed
   const { activePeriod } = useAnalysisContext();
@@ -78,13 +82,22 @@ export default function ActionsPage() {
 
           {/* Page header */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold mb-1"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", color: '#1B2A4A' }}>
-              Action Tracker
-            </h1>
-            <p className="text-sm" style={{ color: '#8899AA' }}>
-              Priority actions from your margin analysis — tracked from identification to resolution.
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold mb-1"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif", color: '#1B2A4A' }}>
+                  Action Tracker
+                </h1>
+                <p className="text-sm" style={{ color: '#8899AA' }}>
+                  Priority actions from your margin analysis — tracked from identification to resolution.
+                </p>
+              </div>
+              <ExportButton
+                show={tier === 'professional' || tier === 'enterprise'}
+                onExport={() => exportActions(filtered)}
+                label="Export Actions"
+              />
+            </div>
           </div>
 
           {/* Stats strip */}
