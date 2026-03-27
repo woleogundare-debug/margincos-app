@@ -105,10 +105,10 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
 
 /* ── Enterprise modules (all 4) ── */
 const MODULES = [
-  { mod: 'M1', title: 'SKU Portfolio Rationalisation', desc: 'Classify every SKU into a defend / reprice / delist framework based on margin contribution vs. strategic importance. Identify which SKUs are margin-dilutive, which to protect, and where to rationalise for portfolio health.', bg: 'bg-white border-purple/20' },
-  { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios and stress-test your pricing strategy against each. See how margin erodes at 15%, 25%, or 40% input cost inflation — and what pricing actions are needed to maintain floor margin.', bg: 'bg-gold-50/40 border-gold/20' },
-  { mod: 'M3', title: 'Commercial Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Surface which investments generate margin and which are destroying it — before the spend is committed.', bg: 'bg-white border-teal/20' },
-  { mod: 'M4', title: 'Partner Performance Scorecard', desc: 'Rank every distributor relationship by true net margin contribution after logistics, rebates, and credit costs. Identify who to reward, renegotiate, or exit.', bg: 'bg-gold-50/40 border-gold/20' },
+  { mod: 'M1', title: 'Portfolio Rationalisation', desc: 'Classify every item in your portfolio into a defend, reprice, or exit framework — based on margin contribution vs. strategic importance. Quantifies the margin at stake from underperforming items and names the specific candidates for action.', bg: 'bg-white border-purple/20' },
+  { mod: 'M2', title: 'Forward Scenario Engine', desc: 'Model your P&L under multiple cost inflation scenarios simultaneously. See how margin erodes at different input cost levels — and what pricing actions are needed to maintain your floor. Board-ready scenario table to anchor commercial commitments.', bg: 'bg-gold-50/40 border-gold/20' },
+  { mod: 'M3', title: 'Commercial Spend ROI Analyser', desc: 'Calculate the return on every Naira of commercial investment — by category, by channel, by period. Surface which spend generates margin and which destroys it, before the next commitment is made.', bg: 'bg-white border-teal/20' },
+  { mod: 'M4', title: 'Partner Performance Scorecard', desc: 'Rank every partner and customer relationship by true net margin contribution — after logistics, credit, rebates, and service costs. Identify which relationships to protect, which to renegotiate, and which are structurally loss-making.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
 
 export default function PlatformPage() {
@@ -227,7 +227,7 @@ export default function PlatformPage() {
               <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Enterprise</span>
               <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy">Advanced Intelligence Modules</h2>
               <p data-reveal className="opacity-0 mt-4 text-slate-500 leading-relaxed">
-                Enterprise clients access advanced analytical modules that go deeper — portfolio-level rationalisation, forward scenario planning, commercial spend analytics, and partner performance scorecards. These modules run on the same data and appear alongside the four core pillars.
+                Enterprise clients access four advanced analytical modules — portfolio rationalisation, forward scenario planning, commercial spend analytics, and partner performance scoring. These modules run on the same data and appear alongside the four core pillars.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

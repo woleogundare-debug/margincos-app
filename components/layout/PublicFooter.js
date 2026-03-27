@@ -51,10 +51,10 @@ export function PublicFooter() {
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Enterprise</h4>
             <nav className="space-y-2.5">
               {[
-                { label: 'SKU Rationalisation',    href: '/platform#m1' },
-                { label: 'Inflation Scenarios',     href: '/platform#m2' },
-                { label: 'Commercial Spend ROI',     href: '/platform#m3' },
-                { label: 'Partner Scorecard',        href: '/platform#m4' },
+                { label: 'Portfolio Rationalisation', href: '/platform#m1' },
+                { label: 'Forward Scenarios',         href: '/platform#m2' },
+                { label: 'Commercial Spend ROI',      href: '/platform#m3' },
+                { label: 'Partner Scorecard',         href: '/platform#m4' },
               ].map((l, i) => (
                 <Link key={i} href={l.href}
                   className="block text-xs text-white/50 hover:text-white transition-colors">

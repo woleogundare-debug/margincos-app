@@ -11,7 +11,7 @@ const sections = [
   },
   {
     title: '2. Service Description',
-    body: 'MarginCOS is a margin intelligence platform built for businesses across Nigeria and West Africa, currently serving FMCG, manufacturing, and retail companies. The Platform analyses commercial data across four pillars — Pricing Intelligence, Cost Pass-Through, Channel Economics, and Trade Execution — to identify margin recovery opportunities. Enterprise clients may also access advanced modules including Portfolio Rationalisation, Forward Inflation Scenario Engine, Commercial Spend ROI Analyser, and Partner Performance Scorecard.',
+    body: 'MarginCOS is a margin intelligence platform built for businesses across Nigeria and West Africa, currently serving FMCG, manufacturing, and retail companies. The Platform analyses commercial data across four pillars — Pricing Intelligence, Cost Pass-Through, Channel Economics, and Trade Execution — to identify margin recovery opportunities. Enterprise clients may also access advanced modules including Portfolio Rationalisation, Forward Scenario Engine, Commercial Spend ROI Analyser, and Partner Performance Scorecard.',
   },
   {
     title: '3. Account Registration and Access',
