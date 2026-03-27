@@ -3,7 +3,7 @@ import SectorPage from '../../components/platform/SectorPage';
 export default function FMCGPage() {
   return (
     <SectorPage
-      sectorName="FMCG & Manufacturing"
+      sectorName="FMCG"
       sectorSlug="fmcg"
       metaTitle="Margin Intelligence for Nigerian FMCG | MarginCOS"
       metaDescription="MarginCOS makes every margin leak visible across your FMCG portfolio — pricing gaps, cost pass-through failures, channel margin erosion, and trade investment waste. In Naira. In minutes."

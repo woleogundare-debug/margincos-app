@@ -8,7 +8,7 @@ import { getSupabaseClient } from '../../lib/supabase/client';
 /* ── Platform dropdown items ── */
 const PLATFORM_SECTORS = [
   { href: '/platform',             label: 'Overview',               soon: false, dividerBefore: false },
-  { href: '/platform/fmcg',        label: 'FMCG & Manufacturing',   soon: false, dividerBefore: true  },
+  { href: '/platform/fmcg',        label: 'FMCG',                   soon: false, dividerBefore: true  },
   { href: '/platform/manufacturing',label: 'Manufacturing',          soon: false, dividerBefore: false },
   { href: '/platform/retail',      label: 'Retail',                 soon: false, dividerBefore: false },
   { href: '/platform/logistics',   label: 'Logistics',              soon: true,  dividerBefore: true  },
