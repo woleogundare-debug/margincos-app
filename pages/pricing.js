@@ -67,7 +67,7 @@ const FEATURES = [
 const FAQS = [
   { q: 'Do I need to integrate my ERP?', a: 'No. MarginCOS works from exported commercial data entered directly into the platform. There is no ERP integration required — most teams are live within 48 hours.' },
   { q: 'How long does onboarding take?', a: 'Essentials and Professional clients are live within 48 hours. Enterprise includes a structured 4-week onboarding with a dedicated account manager.' },
-  { q: 'What data do I need to get started?', a: 'SKU-level pricing, COGS, volume, and channel data for your active portfolio. A CSV template is available inside the platform to guide data preparation.' },
+  { q: 'What data do I need to get started?', a: 'Pricing, cost, volume, and channel data for your active portfolio. A sector-specific data template is available inside the platform to guide data preparation.' },
   { q: 'Is my data shared with other clients?', a: 'No. Row-level security ensures each client\u2019s data is completely isolated at the database level. No client can see or access another\u2019s data.' },
   { q: 'Can I upgrade my plan?', a: 'Yes. Upgrades take effect immediately and are prorated for the remainder of your billing period.' },
 ];
@@ -161,7 +161,7 @@ export default function PricingPage() {
   return (
     <>
       <Head>
-        <title>Pricing — MarginCOS Margin Recovery Platform</title>
+        <title>Pricing Plans — MarginCOS Margin Recovery Platform</title>
         <meta name="description" content="MarginCOS pricing: three tiers from $250/month. Essentials for single-pillar pricing intelligence, Professional for full margin analysis, Enterprise for multi-user commercial analytics with dedicated onboarding. NGN, EUR and GBP rates available." />
         <link rel="canonical" href="https://margincos.com/pricing" />
         <meta property="og:title" content="Pricing — MarginCOS Margin Recovery Platform" />
