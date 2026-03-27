@@ -117,7 +117,7 @@ export default function PlatformPage() {
   return (
     <>
       <Head>
-        <title>Platform — Margin Intelligence for Nigerian Business | MarginCOS</title>
+        <title>Platform — Margin Intelligence for Nigerian Businesses | MarginCOS</title>
         <meta name="description" content="Explore MarginCOS's eight analytical engines: pricing intelligence, cost pass-through tracking, channel margin analysis, and commercial spend ROI — built for businesses across Nigeria and West Africa." />
         <link rel="canonical" href="https://margincos.com/platform" />
         <meta property="og:title" content="Platform — Pricing Intelligence & Margin Analytics | MarginCOS" />
