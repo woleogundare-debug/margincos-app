@@ -205,7 +205,7 @@ export default function ContactPage() {
                   <h3 className="text-lg font-bold text-navy mb-6">What to expect</h3>
                   <div className="space-y-6">
                     {[
-                      { num: '1', title: 'We review your portfolio data', desc: 'Share your SKU-level pricing, cost, and channel data \u2014 we prepare the analysis before the session.' },
+                      { num: '1', title: 'We review your portfolio data', desc: 'Share your product-level pricing, cost, and channel data \u2014 we prepare the analysis before the session.' },
                       { num: '2', title: 'Live 90-minute diagnostic', desc: 'We walk through the MarginCOS output together \u2014 pricing gaps, cost absorption, channel economics, and trade execution \u2014 on your real numbers.' },
                       { num: '3', title: 'You receive the full report', desc: 'A Naira-quantified margin recovery roadmap with prioritised actions and estimated impact per recommendation.' },
                     ].map((step, i) => (

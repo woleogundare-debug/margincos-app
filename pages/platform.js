@@ -250,7 +250,7 @@ export default function PlatformPage() {
             <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Data Entry</span>
             <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy mb-6">Your Data, Your Way</h2>
             <p data-reveal className="opacity-0 text-slate-500 leading-relaxed max-w-2xl mx-auto">
-              MarginCOS does not require an ERP integration. Clients enter their portfolio data directly into the platform — either SKU by SKU via the built-in form, or by uploading a CSV file for bulk import. A downloadable CSV template is available to guide data preparation. Most teams are live and running their first analysis within 48 hours.
+              MarginCOS does not require an ERP integration. Clients enter their portfolio data directly into the platform — either product by product via the built-in form, or by uploading a CSV file for bulk import. A downloadable CSV template is available to guide data preparation. Most teams are live and running their first analysis within 48 hours.
             </p>
           </div>
         </section>
