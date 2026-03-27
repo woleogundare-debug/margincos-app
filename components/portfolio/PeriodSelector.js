@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, PlusIcon, CalendarDaysIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { Modal } from '../ui/index';
 import { Button } from '../ui/Button';
-import { VERTICALS } from '../../lib/constants';
+import { SectorSelector } from './SectorSelector';
 import clsx from 'clsx';
 
 const MONTHS = [
@@ -215,15 +215,14 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-              Vertical <span className="text-red-500">*</span>
+            <label className="block text-xs font-semibold text-slate-600 mb-2">
+              Sector <span className="text-red-500">*</span>
             </label>
-            <select
+            <SectorSelector
               value={form.vertical}
-              onChange={e => setForm(f => ({ ...f, vertical: e.target.value }))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal bg-white">
-              {VERTICALS.map(v => <option key={v} value={v}>{v}</option>)}
-            </select>
+              onChange={vertical => setForm(f => ({ ...f, vertical }))}
+              showComingSoon={false}
+            />
           </div>
 
           <div>
