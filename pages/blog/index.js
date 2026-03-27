@@ -34,18 +34,18 @@ export default function BlogIndex({ posts }) {
     <>
       <Head>
         <title>Insights — MarginCOS</title>
-        <meta name="description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for Nigerian FMCG and manufacturing companies." />
+        <meta name="description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for Nigerian businesses." />
         <link rel="canonical" href="https://margincos.com/blog" />
         <meta property="og:title" content="Insights — MarginCOS" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/blog" />
-        <meta property="og:description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for Nigerian FMCG and manufacturing companies." />
+        <meta property="og:description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for Nigerian businesses." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Insights — MarginCOS" />
-        <meta name="twitter:description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for Nigerian FMCG and manufacturing companies." />
+        <meta name="twitter:description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for Nigerian businesses." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>
       <PublicNav />
@@ -57,7 +57,7 @@ export default function BlogIndex({ posts }) {
             Insights
           </h1>
           <p className="mt-4 text-base md:text-lg text-white/70 max-w-2xl mx-auto">
-            Practical thinking on margin recovery, pricing intelligence, and commercial strategy for Nigerian FMCG and manufacturing companies.
+            Practical thinking on margin recovery, pricing intelligence, and commercial strategy for Nigerian businesses.
           </p>
         </div>
       </section>

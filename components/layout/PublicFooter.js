@@ -17,7 +17,7 @@ export function PublicFooter() {
               </span>
             </Link>
             <p className="mt-3 text-xs text-white/70 leading-relaxed max-w-xs">
-              The Commercial Operating System for Margin Recovery. Built for FMCG, manufacturing, and retail companies navigating inflationary markets.
+              The Commercial Operating System for Margin Recovery. Built for Nigerian businesses navigating inflationary markets.
             </p>
             <p className="mt-4 text-xs text-white/60">
               A product of{' '}
@@ -53,8 +53,8 @@ export function PublicFooter() {
               {[
                 { label: 'SKU Rationalisation',    href: '/platform#m1' },
                 { label: 'Inflation Scenarios',     href: '/platform#m2' },
-                { label: 'Trade Spend ROI',         href: '/platform#m3' },
-                { label: 'Distributor Scorecard',   href: '/platform#m4' },
+                { label: 'Commercial Spend ROI',     href: '/platform#m3' },
+                { label: 'Partner Scorecard',        href: '/platform#m4' },
               ].map((l, i) => (
                 <Link key={i} href={l.href}
                   className="block text-xs text-white/50 hover:text-white transition-colors">

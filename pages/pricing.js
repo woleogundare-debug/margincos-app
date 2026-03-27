@@ -48,8 +48,8 @@ const FEATURES = [
   { label: 'Trade Execution (P4)',                  ess: false, pro: true,  ent: true },
   { label: 'SKU Portfolio Rationalisation (M1)',    ess: false, pro: false, ent: true },
   { label: 'Forward Inflation Scenario Engine (M2)',ess: false, pro: false, ent: true },
-  { label: 'Trade Spend ROI Analyser (M3)',         ess: false, pro: false, ent: true },
-  { label: 'Distributor Performance Scorecard (M4)',ess: false, pro: false, ent: true },
+  { label: 'Commercial Spend ROI Analyser (M3)',    ess: false, pro: false, ent: true },
+  { label: 'Partner Performance Scorecard (M4)',    ess: false, pro: false, ent: true },
   { label: 'CSV bulk import',                       ess: true,  pro: true,  ent: true },
   { label: 'Up to 50 SKUs',                         ess: true,  pro: false, ent: false },
   { label: 'Up to 200 SKUs',                        ess: false, pro: true,  ent: false },
@@ -161,20 +161,20 @@ export default function PricingPage() {
   return (
     <>
       <Head>
-        <title>Pricing — MarginCOS Margin Recovery Platform for Nigerian FMCG</title>
+        <title>Pricing — MarginCOS Margin Recovery Platform</title>
         <meta name="description" content="MarginCOS pricing: three tiers from $250/month. Essentials for single-pillar pricing intelligence, Professional for full margin analysis, Enterprise for multi-user commercial analytics with dedicated onboarding. NGN, EUR and GBP rates available." />
         <link rel="canonical" href="https://margincos.com/pricing" />
         <meta property="og:title" content="Pricing — MarginCOS Margin Recovery Platform" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/pricing" />
-        <meta property="og:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for Nigerian FMCG and manufacturing companies." />
+        <meta property="og:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses across Nigeria and West Africa." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
         <meta name="twitter:title" content="Pricing — MarginCOS Margin Recovery Platform" />
-        <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for Nigerian FMCG and manufacturing companies." />
+        <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses across Nigeria and West Africa." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -188,7 +188,7 @@ export default function PricingPage() {
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1 className="fade-in-up text-3xl md:text-5xl font-black text-white leading-tight">MarginCOS Pricing</h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              Purpose-built for FMCG and manufacturing companies in Nigeria and West Africa — with pricing in USD, NGN, EUR, and GBP. All plans include a 14-day pilot.
+              Built for businesses across Nigeria and West Africa — with pricing in USD, NGN, EUR, and GBP. All plans include a 14-day pilot.
             </p>
           </div>
         </section>

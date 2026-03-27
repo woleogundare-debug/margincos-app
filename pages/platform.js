@@ -107,8 +107,8 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
 const MODULES = [
   { mod: 'M1', title: 'SKU Portfolio Rationalisation', desc: 'Classify every SKU into a defend / reprice / delist framework based on margin contribution vs. strategic importance. Identify which SKUs are margin-dilutive, which to protect, and where to rationalise for portfolio health.', bg: 'bg-white border-purple/20' },
   { mod: 'M2', title: 'Forward Inflation Scenario Engine', desc: 'Model cost trajectories under multiple inflation scenarios and stress-test your pricing strategy against each. See how margin erodes at 15%, 25%, or 40% input cost inflation — and what pricing actions are needed to maintain floor margin.', bg: 'bg-gold-50/40 border-gold/20' },
-  { mod: 'M3', title: 'Trade Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Surface which investments generate margin and which are destroying it — before the spend is committed.', bg: 'bg-white border-teal/20' },
-  { mod: 'M4', title: 'Distributor Performance Scorecard', desc: 'Rank every distributor relationship by true net margin contribution after logistics, rebates, and credit costs. Identify who to reward, renegotiate, or exit.', bg: 'bg-gold-50/40 border-gold/20' },
+  { mod: 'M3', title: 'Commercial Spend ROI Analyser', desc: 'Calculate the return on every ₦ of trade investment by channel and spend category. Surface which investments generate margin and which are destroying it — before the spend is committed.', bg: 'bg-white border-teal/20' },
+  { mod: 'M4', title: 'Partner Performance Scorecard', desc: 'Rank every distributor relationship by true net margin contribution after logistics, rebates, and credit costs. Identify who to reward, renegotiate, or exit.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
 
 export default function PlatformPage() {
@@ -117,20 +117,20 @@ export default function PlatformPage() {
   return (
     <>
       <Head>
-        <title>Platform — Pricing Intelligence & Margin Analytics for Nigerian FMCG | MarginCOS</title>
-        <meta name="description" content="Explore MarginCOS's eight analytical engines: SKU pricing intelligence, cost pass-through tracking, channel margin analysis, and trade spend ROI — purpose-built for FMCG and manufacturing companies in Nigeria and West Africa." />
+        <title>Platform — Margin Intelligence for Nigerian Business | MarginCOS</title>
+        <meta name="description" content="Explore MarginCOS's eight analytical engines: pricing intelligence, cost pass-through tracking, channel margin analysis, and commercial spend ROI — built for businesses across Nigeria and West Africa." />
         <link rel="canonical" href="https://margincos.com/platform" />
         <meta property="og:title" content="Platform — Pricing Intelligence & Margin Analytics | MarginCOS" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/platform" />
-        <meta property="og:description" content="Eight analytical engines for SKU pricing intelligence, cost pass-through analysis, and trade spend ROI — purpose-built for Nigerian FMCG and manufacturing." />
+        <meta property="og:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for Nigerian businesses." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
         <meta name="twitter:title" content="Platform — Pricing Intelligence & Margin Analytics | MarginCOS" />
-        <meta name="twitter:description" content="Eight analytical engines for SKU pricing intelligence, cost pass-through analysis, and trade spend ROI — purpose-built for Nigerian FMCG and manufacturing." />
+        <meta name="twitter:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for Nigerian businesses." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>
 
@@ -144,7 +144,7 @@ export default function PlatformPage() {
               The MarginCOS Platform
             </h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              MarginCOS is a margin recovery platform purpose-built for Nigerian FMCG, manufacturing, and retail. Eight analytical engines work simultaneously across your portfolio — giving your CFO and Commercial Director real-time pricing intelligence, cost pass-through analysis, and trade spend ROI from a single Excel upload.
+              MarginCOS is a margin recovery platform built for Nigerian businesses navigating inflationary markets. Eight analytical engines work simultaneously across your portfolio — giving your CFO and Commercial Director real-time pricing intelligence, cost pass-through analysis, and commercial spend ROI from a single data upload.
             </p>
           </div>
         </section>
@@ -161,7 +161,7 @@ export default function PlatformPage() {
                 <div className="space-y-6">
                   {[
                     { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template — designed from the ground up for the realities of operating in Nigeria and similar high-inflation economies.' },
-                    { title: 'SKU-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every Naira figure is calculated at the individual SKU level.' },
+                    { title: 'SKU-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every Naira figure is calculated at the individual product or service line level.' },
                     { title: 'No ERP integration required', desc: 'Works from your existing commercial data. Enter via the in-app form or bulk import a CSV. Live in hours, not months.' },
                     { title: 'Output in ₦', desc: 'Every recommendation is quantified in Naira impact — not abstract percentages, but real recoverable revenue per action.' },
                   ].map((item, i) => (
@@ -194,14 +194,14 @@ export default function PlatformPage() {
             <div className="space-y-24">
               <div id="pricing-intelligence">
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
-                problem="Most FMCG companies in Nigeria reprice reactively, without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. Without a pricing strategy tool, the result is chronic under-pricing or poorly timed increases that erode volume."
-                delivers={['SKU-level pricing intelligence with competitor benchmarks in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations for FMCG portfolios']}
+                problem="Most businesses in Nigeria reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
+                delivers={['SKU-level pricing intelligence with competitor benchmarks in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations across your full portfolio']}
                 users={['CFO', 'Commercial Director']} />
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the SKU level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
-                delivers={['Cost pass-through rate vs. BUA Foods 75% benchmark for margin improvement', 'FX-linked cost decomposition by SKU for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
+                delivers={['Cost pass-through rate vs. industry benchmark — 70–75% for leading Nigerian businesses', 'FX-linked cost decomposition by SKU for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>
               <div id="channel-economics">
@@ -212,8 +212,8 @@ export default function PlatformPage() {
               </div>
               <div id="trade-execution">
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
-                problem="Trade investment is the largest untracked cost line in most FMCG P&Ls. Without trade spend ROI visibility, promotional depth routinely exceeds margin — with no mechanism to catch it before the spend is committed."
-                delivers={['Promotion profitability per SKU — revenue, cost, and net impact', 'Break-even lift calculation for trade spend ROI on every promo', 'Loss-making promotion flagging with margin-positive alternatives']}
+                problem="Commercial investment is the largest untracked cost line in most P&Ls. Without spend ROI visibility, promotional depth routinely exceeds margin — with no mechanism to catch it before the spend is committed."
+                delivers={['Promotion profitability per SKU — revenue, cost, and net impact', 'Break-even lift calculation for commercial spend ROI on every promotion', 'Loss-making promotion flagging with margin-positive alternatives']}
                 users={['Trade Marketing', 'Sales Director', 'CFO']} />
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function PlatformPage() {
               <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Enterprise</span>
               <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy">Advanced Intelligence Modules</h2>
               <p data-reveal className="opacity-0 mt-4 text-slate-500 leading-relaxed">
-                Enterprise clients access advanced analytical modules that go deeper — portfolio-level rationalisation, forward scenario planning, trade spend analytics, and distributor scorecards. These modules run on the same data and appear alongside the four core pillars.
+                Enterprise clients access advanced analytical modules that go deeper — portfolio-level rationalisation, forward scenario planning, commercial spend analytics, and partner performance scorecards. These modules run on the same data and appear alongside the four core pillars.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
