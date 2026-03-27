@@ -28,8 +28,8 @@ const FALLBACK_RATES = { NGN: 1650, EUR: 0.92, GBP: 0.79 };
 
 
 const BASE_PRICES = {
-  essentials: { monthly: 250, annual: 213, impl: 100 },
-  professional: { monthly: 850, annual: 723, impl: 500 },
+  essentials: { monthly: 250, annual: 213, impl: 450 },
+  professional: { monthly: 850, annual: 723, impl: 1300 },
   enterprise: { monthly: 2400, annual: 2040, impl: 0 },
 };
 
