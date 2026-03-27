@@ -13,7 +13,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, company, role, revenue, message } = req.body;
+  // Honeypot check — bots fill this field, humans don't
+  const { website, name, email, company, role, revenue, message } = req.body;
+
+  if (website && website.length > 0) {
+    // Silently return 200 so bots think submission succeeded
+    return res.status(200).json({ success: true });
+  }
 
   if (!name || !email || !company || !role) {
     return res.status(400).json({ error: 'Required fields missing' });

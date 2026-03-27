@@ -118,6 +118,24 @@ export default function ContactPage() {
                     onSubmit={handleSubmit}
                     className="space-y-5"
                   >
+                    {/* Honeypot — hidden from real users, bots will fill it */}
+                    <input
+                      type="text"
+                      name="website"
+                      value=""
+                      onChange={() => {}}
+                      autoComplete="off"
+                      tabIndex="-1"
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        left: '-9999px',
+                        width: '1px',
+                        height: '1px',
+                        opacity: 0,
+                        pointerEvents: 'none'
+                      }}
+                    />
                     {plan && <input type="hidden" name="plan" value={plan} />}
                     {formError && (
                       <div className="bg-red-50 border border-red-brand/20 rounded-xl p-4 text-sm text-red-brand">
