@@ -201,7 +201,7 @@ export default function PlatformPage() {
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the SKU level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
-                delivers={['Cost pass-through rate vs. industry benchmark — 70–75% for leading Nigerian businesses', 'FX-linked cost decomposition by product for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
+                delivers={['Cost pass-through rate vs. Carthena Advisory benchmark — 70–75% among commercially disciplined Nigerian businesses', 'FX-linked cost decomposition by product for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>
               <div id="channel-economics">
