@@ -195,25 +195,25 @@ export default function PlatformPage() {
               <div id="pricing-intelligence">
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
                 problem="Most businesses in Nigeria reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
-                delivers={['SKU-level pricing intelligence with competitor benchmarks in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations across your full portfolio']}
+                delivers={['Product-level pricing intelligence with competitor benchmarks in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations across your full portfolio']}
                 users={['CFO', 'Commercial Director']} />
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the SKU level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
-                delivers={['Cost pass-through rate vs. industry benchmark — 70–75% for leading Nigerian businesses', 'FX-linked cost decomposition by SKU for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
+                delivers={['Cost pass-through rate vs. industry benchmark — 70–75% for leading Nigerian businesses', 'FX-linked cost decomposition by product for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>
               <div id="channel-economics">
                 <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
                 problem="Gross margin looks healthy until logistics, distributor margin, trade credit costs, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable."
-                delivers={['Net route-to-market margin by channel including trade credit cost', 'Distributor performance ranking by true contribution', 'Weak channel identification with remediation actions']}
+                delivers={['Net route-to-market margin by channel including trade credit cost', 'Partner performance ranking by true contribution', 'Weak channel identification with remediation actions']}
                 users={['Commercial Director', 'Sales Director', 'Trade Marketing']} />
               </div>
               <div id="trade-execution">
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
                 problem="Commercial investment is the largest untracked cost line in most P&Ls. Without spend ROI visibility, promotional depth routinely exceeds margin — with no mechanism to catch it before the spend is committed."
-                delivers={['Promotion profitability per SKU — revenue, cost, and net impact', 'Break-even lift calculation for commercial spend ROI on every promotion', 'Loss-making promotion flagging with margin-positive alternatives']}
+                delivers={['Promotion profitability per product — revenue, cost, and net impact', 'Break-even lift calculation for commercial spend ROI on every promotion', 'Loss-making promotion flagging with margin-positive alternatives']}
                 users={['Trade Marketing', 'Sales Director', 'CFO']} />
               </div>
             </div>
