@@ -161,7 +161,7 @@ export default function PlatformPage() {
                 <div className="space-y-6">
                   {[
                     { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template — designed from the ground up for the realities of operating in Nigeria and similar high-inflation economies.' },
-                    { title: 'SKU-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every Naira figure is calculated at the individual product or service line level.' },
+                    { title: 'Product-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every Naira figure is calculated at the individual product or service line level.' },
                     { title: 'No ERP integration required', desc: 'Works from your existing commercial data. Enter via the in-app form or bulk import a CSV. Live in hours, not months.' },
                     { title: 'Output in ₦', desc: 'Every recommendation is quantified in Naira impact — not abstract percentages, but real recoverable revenue per action.' },
                   ].map((item, i) => (
@@ -200,7 +200,7 @@ export default function PlatformPage() {
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
-                problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the SKU level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
+                problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the product level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
                 delivers={['Cost pass-through rate vs. Carthena Advisory benchmark — 70–75% among commercially disciplined Nigerian businesses', 'FX-linked cost decomposition by product for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>

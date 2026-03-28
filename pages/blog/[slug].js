@@ -11,6 +11,9 @@ import PassThroughChart from '../../components/blog/PassThroughChart';
 import MarginLeakageChart from '../../components/blog/MarginLeakageChart';
 import RRPFloorChart from '../../components/blog/RRPFloorChart';
 import RepricingGapChart from '../../components/blog/RepricingGapChart';
+import DieselCostChart from '../../components/blog/DieselCostChart';
+import LaneCostFloorChart from '../../components/blog/LaneCostFloorChart';
+import FleetGapChart from '../../components/blog/FleetGapChart';
 import ArticleActions from '../../components/blog/ArticleActions';
 
 export async function getStaticPaths() {
@@ -67,7 +70,7 @@ export async function getStaticProps({ params }) {
 export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, excerpt, date, author, category, readTime, slug } = frontmatter;
 
-  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart };
+  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart };
 
   return (
     <>
