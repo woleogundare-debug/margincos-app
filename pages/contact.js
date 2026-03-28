@@ -35,6 +35,7 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [formLoadedAt] = useState(Date.now());
 
   // Pre-fill plan from query string (e.g. /contact?plan=professional)
   const plan = router.query.plan || '';
@@ -51,7 +52,7 @@ export default function ContactPage() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, _loadedAt: formLoadedAt }),
       });
 
       if (res.ok) {
