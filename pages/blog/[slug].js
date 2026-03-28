@@ -69,6 +69,7 @@ export async function getStaticProps({ params }) {
 
 export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, excerpt, date, author, category, readTime, slug } = frontmatter;
+  const metaDescription = excerpt || description;
 
   const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart };
 
@@ -76,18 +77,18 @@ export default function BlogPost({ frontmatter, mdxSource }) {
     <>
       <Head>
         <title>{title} — MarginCOS</title>
-        <meta name="description" content={description} />
+        <meta name="description" content={metaDescription} />
         <link rel="canonical" href={`https://margincos.com/blog/${slug}`} />
         <meta property="og:title" content={title} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://margincos.com/blog/${slug}`} />
-        <meta property="og:description" content={description} />
+        <meta property="og:description" content={metaDescription} />
         <meta property="og:image" content={`https://margincos.com/blog/${slug}-og.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
+        <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content={`https://margincos.com/blog/${slug}-og.png`} />
         <style>{`
           @media print {
