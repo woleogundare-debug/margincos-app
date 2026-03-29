@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
-import { PRIMARY_CHANNELS, TRADE_SPEND_CATEGORIES } from '../../lib/constants';
 import clsx from 'clsx';
 
 function nairaFormat(v) {
@@ -12,26 +11,31 @@ function nairaFormat(v) {
   return '₦' + n.toFixed(0);
 }
 
-export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId }) {
+export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId, cfg }) {
   const [matrix, setMatrix] = useState({});
   const [dirty,  setDirty]  = useState(false);
 
+  // Derive channel/category config from sector config
+  const ci           = cfg?.commercialInvestment;
+  const channels     = ci?.channels     || [];
+  const categories   = ci?.spendCategories || [];
+  const channelField = ci?.channelField  || 'channel';
+  const formTitle    = ci?.formTitle    || 'Monthly Trade Spend by Channel';
+  const formSubtitle = ci?.formSubtitle || 'Enter spend in Naira (₦) per category per channel';
+
   useEffect(() => {
     const m = {};
-    PRIMARY_CHANNELS.forEach(ch => {
-      const existing = tradeInvestment.find(r => r.channel === ch.code);
-      m[ch.code] = {
-        id:                existing?.id ?? null,
-        listing_fees:      existing?.listing_fees      ?? '',
-        coop_spend:        existing?.coop_spend        ?? '',
-        activation_budget: existing?.activation_budget ?? '',
-        gondola_payments:  existing?.gondola_payments  ?? '',
-        other_trade_spend: existing?.other_trade_spend ?? '',
-      };
+    channels.forEach(ch => {
+      const existing = (tradeInvestment || []).find(r => r[channelField] === ch.code);
+      const row = { id: existing?.id ?? null };
+      categories.forEach(cat => {
+        row[cat.key] = existing?.[cat.key] ?? '';
+      });
+      m[ch.code] = row;
     });
     setMatrix(m);
     setDirty(false);
-  }, [tradeInvestment]);
+  }, [tradeInvestment, cfg]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (ch, cat, val) => {
     setMatrix(prev => ({
@@ -43,26 +47,29 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
 
   const handleSave = async () => {
     for (const [ch, data] of Object.entries(matrix)) {
-      const total = TRADE_SPEND_CATEGORIES.reduce((s, c) => s + (parseFloat(data[c.key]) || 0), 0);
+      const total = categories.reduce((s, c) => s + (parseFloat(data[c.key]) || 0), 0);
       if (total > 0 || data.id) {
-        await onSave({
-          id:       data.id || undefined,
-          channel:  ch,
-          period_id: periodId,
-          ...Object.fromEntries(TRADE_SPEND_CATEGORIES.map(c => [c.key, parseFloat(data[c.key]) || 0])),
+        const row = {
+          id:           data.id || undefined,
+          [channelField]: ch,
+          period_id:    periodId,
+        };
+        categories.forEach(cat => {
+          row[cat.key] = parseFloat(data[cat.key]) || 0;
         });
+        await onSave(row);
       }
     }
     setDirty(false);
   };
 
-  const catTotals = TRADE_SPEND_CATEGORIES.reduce((acc, cat) => {
-    acc[cat.key] = PRIMARY_CHANNELS.reduce((s, ch) => s + (parseFloat(matrix[ch.code]?.[cat.key]) || 0), 0);
+  const catTotals = categories.reduce((acc, cat) => {
+    acc[cat.key] = channels.reduce((s, ch) => s + (parseFloat(matrix[ch.code]?.[cat.key]) || 0), 0);
     return acc;
   }, {});
 
-  const rowTotals = PRIMARY_CHANNELS.reduce((acc, ch) => {
-    acc[ch.code] = TRADE_SPEND_CATEGORIES.reduce((s, cat) => s + (parseFloat(matrix[ch.code]?.[cat.key]) || 0), 0);
+  const rowTotals = channels.reduce((acc, ch) => {
+    acc[ch.code] = categories.reduce((s, cat) => s + (parseFloat(matrix[ch.code]?.[cat.key]) || 0), 0);
     return acc;
   }, {});
 
@@ -72,8 +79,8 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
         <div>
-          <h3 className="text-sm font-bold text-navy">Monthly Trade Spend by Channel</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Enter spend in Naira (₦) per category per channel</p>
+          <h3 className="text-sm font-bold text-navy">{formTitle}</h3>
+          <p className="text-xs text-slate-400 mt-0.5">{formSubtitle}</p>
         </div>
         <div className="flex items-center gap-3">
           {grandTotal > 0 && (
@@ -94,10 +101,10 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
             <tr style={{ backgroundColor: '#E8EBF0' }}>
               <th className="px-0 py-3 text-left w-56">
                 <div className="bg-navy text-white px-4 py-2 text-xs font-semibold uppercase tracking-wide rounded-r-lg">
-                  Channel
+                  {channelField === 'contract_type' ? 'Contract Type' : 'Channel'}
                 </div>
               </th>
-              {TRADE_SPEND_CATEGORIES.map(cat => (
+              {categories.map(cat => (
                 <th key={cat.key} className="px-3 py-3 text-right text-xs font-semibold text-navy/70 uppercase tracking-wide">
                   <span className="flex items-center justify-end gap-1">
                     {cat.label}
@@ -109,7 +116,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
             </tr>
           </thead>
           <tbody>
-            {PRIMARY_CHANNELS.map((ch, ri) => {
+            {channels.map((ch, ri) => {
               const rowTotal = rowTotals[ch.code] || 0;
               return (
                 <tr key={ch.code} className={clsx(
@@ -121,7 +128,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
                       {ch.label}
                     </div>
                   </td>
-                  {TRADE_SPEND_CATEGORIES.map(cat => (
+                  {categories.map(cat => (
                     <td key={cat.key} className="px-2 py-1">
                       <div className="flex items-center justify-end">
                         <span className="text-slate-300 mr-0.5 text-[10px]">₦</span>
@@ -151,7 +158,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId 
                   Total
                 </div>
               </td>
-              {TRADE_SPEND_CATEGORIES.map(cat => (
+              {categories.map(cat => (
                 <td key={cat.key} className="px-3 py-3 text-right text-xs font-bold text-navy">
                   {catTotals[cat.key] > 0 ? nairaFormat(catTotals[cat.key]) : <span className="text-gray-400">₦0</span>}
                 </td>

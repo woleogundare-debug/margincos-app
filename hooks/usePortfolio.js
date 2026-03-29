@@ -35,16 +35,17 @@ export function usePortfolio(userId, tier = 'essentials') {
   // ── Load SKU/Lane rows + trade investment for a period ────────
   const loadPeriodData = useCallback(async (periodId, vertical) => {
     if (!periodId) return;
-    const tableName = vertical === 'Logistics' ? 'logistics_rows' : 'sku_rows';
-    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Fetching data for period:', periodId, 'table:', tableName);
+    const tableName   = vertical === 'Logistics' ? 'logistics_rows'                    : 'sku_rows';
+    const ciTableName = vertical === 'Logistics' ? 'logistics_commercial_investment'   : 'trade_investment';
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Fetching data for period:', periodId, 'table:', tableName, 'ci-table:', ciTableName);
     setLoading(true);
     const [skuRes, tradeRes] = await Promise.all([
       sb.from(tableName).select('*').eq('period_id', periodId),
-      sb.from('trade_investment').select('*').eq('period_id', periodId),
+      sb.from(ciTableName).select('*').eq('period_id', periodId),
     ]);
     if (skuRes.error && process.env.NODE_ENV !== 'production') console.error('[loadPeriodData] SKU fetch error:', skuRes.error.message, skuRes.error.code);
     if (tradeRes.error && process.env.NODE_ENV !== 'production') console.error('[loadPeriodData] Trade fetch error:', tradeRes.error.message, tradeRes.error.code);
-    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Loaded', (skuRes.data || []).length, 'SKUs,', (tradeRes.data || []).length, 'trade rows');
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Loaded', (skuRes.data || []).length, 'rows,', (tradeRes.data || []).length, 'CI rows');
     setSkuRows(skuRes.data || []);
     setTradeInvestment(tradeRes.data || []);
     setLoading(false);
@@ -209,17 +210,18 @@ export function usePortfolio(userId, tier = 'essentials') {
     }
   }, [activePeriod]);
 
-  // ── Save trade investment row ─────────────────────────────────
+  // ── Save trade/commercial investment row ──────────────────────
   const saveTradeInvestment = useCallback(async (row) => {
     if (!activePeriod?.id || !userId) {
       if (process.env.NODE_ENV !== 'production') console.error('[saveTradeInvestment] Aborted \u2014 missing context:', { period_id: activePeriod?.id, user_id: userId });
       return null;
     }
+    const ciTableName = activePeriod.vertical === 'Logistics' ? 'logistics_commercial_investment' : 'trade_investment';
     const { _tempId, ...rest } = row;
     const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
-    if (process.env.NODE_ENV !== 'production') console.log('[saveTradeInvestment] Upserting:', { channel: payload.channel, period_id: payload.period_id, user_id: payload.user_id });
+    if (process.env.NODE_ENV !== 'production') console.log('[saveTradeInvestment] Upserting to', ciTableName, ':', { period_id: payload.period_id, user_id: payload.user_id });
     const { data, error } = await sb
-      .from('trade_investment')
+      .from(ciTableName)
       .upsert(payload, { onConflict: 'id' })
       .select()
       .single();

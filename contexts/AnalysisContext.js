@@ -60,12 +60,13 @@ export function AnalysisProvider({ children }) {
     setComparisonPeriodId(periodId);
     try {
       const sb = getSupabaseClient();
-      // Determine the correct table for this comparison period
+      // Determine the correct tables for this comparison period
       const compPeriodMeta = periods?.find(p => p.id === periodId);
-      const tableName = compPeriodMeta?.vertical === 'Logistics' ? 'logistics_rows' : 'sku_rows';
+      const tableName   = compPeriodMeta?.vertical === 'Logistics' ? 'logistics_rows'                  : 'sku_rows';
+      const ciTableName = compPeriodMeta?.vertical === 'Logistics' ? 'logistics_commercial_investment' : 'trade_investment';
       const [skuRes, tradeRes] = await Promise.all([
         sb.from(tableName).select('*').eq('period_id', periodId),
-        sb.from('trade_investment').select('*').eq('period_id', periodId),
+        sb.from(ciTableName).select('*').eq('period_id', periodId),
       ]);
       if (skuRes.error) throw skuRes.error;
       if (tradeRes.error) throw tradeRes.error;
