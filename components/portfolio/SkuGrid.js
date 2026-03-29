@@ -541,9 +541,19 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         return;
       }
 
-      const headers = allRows[0]; // field key row
-      // Skip row 1 (display labels), take rows 2+ as data
-      const dataRows = allRows.slice(2).filter(
+      // Scan for the header row — find the row where any cell exactly equals 'sku_id'
+      let headerRowIndex = 0;
+      for (let i = 0; i < Math.min(allRows.length, 10); i++) {
+        const row = allRows[i];
+        if (row && row.some(cell => String(cell).trim().toLowerCase() === 'sku_id')) {
+          headerRowIndex = i;
+          break;
+        }
+      }
+
+      const headers = allRows[headerRowIndex];
+      // Display labels are the row immediately after the header row — skip it
+      const dataRows = allRows.slice(headerRowIndex + 2).filter(
         row => row.some(cell => cell !== '' && cell !== null && cell !== undefined)
       );
 
