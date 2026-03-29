@@ -33,10 +33,9 @@
   <circle cx="220" cy="158" r="12" fill="#EF4444" opacity="0.6"/>
   <text x="220" y="161" text-anchor="middle" font-size="7" fill="white" font-weight="700">F −₦3.2M</text>
   <!-- Annotation for E -->
-  <line x1="390" y1="165" x2="412" y2="150" stroke="#DC2626" stroke-width="1"/>
-  <rect x="386" y="136" width="52" height="26" fill="#FEE2E2" rx="3"/>
-  <text x="412" y="148" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="600">BOGOF</text>
-  <text x="412" y="158" text-anchor="middle" font-size="7" fill="#991B1B">Shelf display</text>
+  <line x1="392" y1="160" x2="410" y2="147" stroke="#DC2626" stroke-width="1"/>
+  <rect x="390" y="136" width="52" height="16" fill="#FEE2E2" rx="3"/>
+  <text x="416" y="148" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="600">BOGOF</text>
   <!-- Callout -->
   <rect x="18" y="230" width="180" height="20" fill="#FEE2E2" rx="4"/>
   <text x="26" y="244" font-size="9" fill="#991B1B" font-weight="600">3 campaigns loss-making (D, E, F)</text>
@@ -44,6 +43,6 @@
   <text x="214" y="244" font-size="9" fill="#991B1B" font-weight="600">Net loss from D+E+F: ₦17M vs ₦4.3M gain</text>
   <rect x="18" y="254" width="300" height="20" fill="#F3E8FF" rx="4"/>
   <text x="26" y="268" font-size="9" fill="#6D28D9" font-weight="600">Campaign E: requires 62% volume lift — actual recorded: 19%</text>
-  <rect x="18" y="278" width="230" height="14" fill="#DCFCE7" rx="3"/>
-  <text x="26" y="289" font-size="8" fill="#065F46" font-weight="600">Redirect E &amp; F budget to Campaign A model — ₦6.2M recoverable</text>
+  <rect x="18" y="278" width="280" height="14" fill="#DCFCE7" rx="3"/>
+  <text x="26" y="289" font-size="8" fill="#065F46" font-weight="600">Redirect E &amp; F spend to Campaign A — ₦6.2M recoverable</text>
 </svg>
