@@ -23,6 +23,7 @@ export default function ITServicesPage() {
             'Cost floor breach alerts with billing rate adjustment recommendations',
           ],
           roles: ['CEO', 'CFO', 'Head of Delivery'],
+          image: '/images/platform/it-services-p1.svg',
         },
         {
           id: 'P2',
@@ -34,6 +35,7 @@ export default function ITServicesPage() {
             'Contract escalation clause recommendations by engagement type',
           ],
           roles: ['CFO', 'Finance Director', 'Head of Commercial'],
+          image: '/images/platform/it-services-p2.svg',
         },
         {
           id: 'P3',
@@ -45,6 +47,7 @@ export default function ITServicesPage() {
             'Loss-making engagement identification with rate adjustment actions',
           ],
           roles: ['CEO', 'Head of Sales', 'Account Directors'],
+          image: '/images/platform/it-services-p3.svg',
         },
         {
           id: 'P4',
@@ -56,6 +59,7 @@ export default function ITServicesPage() {
             'Scope creep quantification in ₦ per engagement',
           ],
           roles: ['Head of Sales', 'Head of Delivery', 'CFO'],
+          image: '/images/platform/it-services-p4.svg',
         },
       ]}
       modules={[

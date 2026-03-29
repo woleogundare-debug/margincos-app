@@ -23,6 +23,7 @@ export default function AviationPage() {
             'Cost floor breach alerts with fare adjustment recommendations',
           ],
           roles: ['CFO', 'Chief Commercial Officer', 'Revenue Management'],
+          image: '/images/platform/aviation-p1.svg',
         },
         {
           id: 'P2',
@@ -34,6 +35,7 @@ export default function AviationPage() {
             'Fuel surcharge calibration recommendations by route and cabin class',
           ],
           roles: ['CFO', 'Head of Revenue Management', 'Fleet Planning'],
+          image: '/images/platform/aviation-p2.svg',
         },
         {
           id: 'P3',
@@ -45,6 +47,7 @@ export default function AviationPage() {
             'Loss-making route identification with schedule optimisation actions',
           ],
           roles: ['Chief Commercial Officer', 'Head of Network Planning', 'CFO'],
+          image: '/images/platform/aviation-p3.svg',
         },
         {
           id: 'P4',
@@ -56,6 +59,7 @@ export default function AviationPage() {
             'Loss-making fare identification with yield-positive alternatives',
           ],
           roles: ['Revenue Management', 'Marketing Director', 'CFO'],
+          image: '/images/platform/aviation-p4.svg',
         },
       ]}
       modules={[

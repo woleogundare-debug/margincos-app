@@ -54,7 +54,7 @@
   <rect x="18" y="258" width="240" height="20" fill="#F3E8FF" rx="4"/>
   <text x="26" y="272" font-size="9" fill="#6D28D9" font-weight="600">Deadhead cost: ₦3.4M on loss-making trips</text>
   <rect x="266" y="258" width="176" height="20" fill="#DCFCE7" rx="4"/>
-  <text x="274" y="272" font-size="9" fill="#065F46" font-weight="600">Backloading potential: ₦2.1M recoverable</text>
+  <text x="274" y="272" font-size="9" fill="#065F46" font-weight="600">Backhaul: ₦2.1M recoverable</text>
   <rect x="18" y="282" width="230" height="10" fill="#EFF6FF" rx="3"/>
-  <text x="26" y="290" font-size="7" fill="#1D4ED8" font-weight="600">Recommend: refuse Trip A at current rate — min ₦310/km or reroute</text>
+  <text x="26" y="290" font-size="7" fill="#1D4ED8" font-weight="600">Action: refuse Trip A below ₦310/km — reroute or renegotiate</text>
 </svg>

@@ -23,6 +23,7 @@ export default function TelecomsPage() {
             'Cost floor breach alerts with tariff adjustment recommendations per product',
           ],
           roles: ['CFO', 'Chief Commercial Officer', 'Head of Product'],
+          image: '/images/platform/telecoms-p1.svg',
         },
         {
           id: 'P2',
@@ -34,6 +35,7 @@ export default function TelecomsPage() {
             'Cost-reflective pricing recommendations by product tier',
           ],
           roles: ['CFO', 'CTO', 'Head of Network Operations'],
+          image: '/images/platform/telecoms-p2.svg',
         },
         {
           id: 'P3',
@@ -45,6 +47,7 @@ export default function TelecomsPage() {
             'Loss-making segment identification with remediation actions',
           ],
           roles: ['Chief Commercial Officer', 'Head of Sales', 'Head of Enterprise'],
+          image: '/images/platform/telecoms-p3.svg',
         },
         {
           id: 'P4',
@@ -56,6 +59,7 @@ export default function TelecomsPage() {
             'Loss-making bundle identification with margin-positive alternatives',
           ],
           roles: ['Head of Product', 'Marketing Director', 'CFO'],
+          image: '/images/platform/telecoms-p4.svg',
         },
       ]}
       modules={[

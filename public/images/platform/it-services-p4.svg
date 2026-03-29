@@ -1,0 +1,53 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P4 · Discount &amp; Scope ROI</text>
+  <rect x="344" y="12" width="100" height="20" fill="#0D8F8F" rx="10"/>
+  <text x="394" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">IT Services</text>
+  <text x="18" y="68" font-size="9" fill="#64748B">Engagement Profitability — Discount Depth vs. Net Margin</text>
+  <!-- Axes -->
+  <line x1="70" y1="210" x2="420" y2="210" stroke="#CBD5E1" stroke-width="1"/>
+  <line x1="70" y1="70" x2="70" y2="210" stroke="#CBD5E1" stroke-width="1"/>
+  <!-- Breakeven horizontal -->
+  <line x1="70" y1="150" x2="420" y2="150" stroke="#1B2A4A" stroke-width="1" stroke-dasharray="5,4" opacity="0.35"/>
+  <text x="424" y="153" font-size="8" fill="#1B2A4A" opacity="0.45">0%</text>
+  <!-- Zone shading -->
+  <rect x="70" y="70" width="350" height="80" fill="#DCFCE7" opacity="0.15"/>
+  <rect x="70" y="150" width="350" height="60" fill="#FEE2E2" opacity="0.15"/>
+  <!-- Axis labels -->
+  <text x="245" y="228" text-anchor="middle" font-size="8" fill="#94A3B8">Discount depth (%)</text>
+  <text x="22" y="143" transform="rotate(-90 22 143)" font-size="8" fill="#94A3B8" text-anchor="middle">Net margin (%)</text>
+  <text x="120" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">5%</text>
+  <text x="195" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">10%</text>
+  <text x="270" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">15%</text>
+  <text x="345" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">20%</text>
+  <text x="62" y="195" text-anchor="end" font-size="7" fill="#94A3B8">−10%</text>
+  <text x="62" y="153" text-anchor="end" font-size="7" fill="#94A3B8">0%</text>
+  <text x="62" y="110" text-anchor="end" font-size="7" fill="#94A3B8">+15%</text>
+  <text x="62" y="80" text-anchor="end" font-size="7" fill="#94A3B8">+25%</text>
+  <!-- Profitable engagements -->
+  <circle cx="120" cy="95" r="7" fill="#0D8F8F" opacity="0.8"/>
+  <circle cx="160" cy="110" r="9" fill="#0D8F8F" opacity="0.75"/>
+  <circle cx="210" cy="120" r="6" fill="#0D8F8F" opacity="0.7"/>
+  <circle cx="150" cy="100" r="5" fill="#D4A843" opacity="0.8"/>
+  <circle cx="190" cy="130" r="5" fill="#0D8F8F" opacity="0.65"/>
+  <circle cx="240" cy="125" r="7" fill="#D4A843" opacity="0.7"/>
+  <!-- Loss engagements -->
+  <circle cx="300" cy="170" r="8" fill="#C0392B" opacity="0.75"/>
+  <text x="300" y="173" text-anchor="middle" font-size="7" fill="white" font-weight="700">−8%</text>
+  <circle cx="350" cy="180" r="7" fill="#C0392B" opacity="0.7"/>
+  <text x="350" y="183" text-anchor="middle" font-size="7" fill="white" font-weight="700">−12%</text>
+  <circle cx="385" cy="190" r="6" fill="#C0392B" opacity="0.8"/>
+  <text x="385" y="193" text-anchor="middle" font-size="7" fill="white" font-weight="700">−18%</text>
+  <!-- Zone labels -->
+  <text x="380" y="90" font-size="8" fill="#065F46" font-weight="600" opacity="0.7">Profitable</text>
+  <text x="115" y="205" font-size="8" fill="#991B1B" font-weight="600" opacity="0.7">Loss zone</text>
+  <line x1="18" y1="234" x2="442" y2="234" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="18" y="246" width="200" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="26" y="260" font-size="9" fill="#991B1B" font-weight="600">3 engagements: discount above break-even</text>
+  <rect x="226" y="246" width="216" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="234" y="260" font-size="9" fill="#1D4ED8" font-weight="600">Max safe discount: 8% at current margin levels</text>
+  <rect x="18" y="270" width="240" height="20" fill="#F3E8FF" rx="4"/>
+  <text x="26" y="284" font-size="9" fill="#6D28D9" font-weight="600">Scope creep adds avg 22% cost on fixed-price deals</text>
+</svg>

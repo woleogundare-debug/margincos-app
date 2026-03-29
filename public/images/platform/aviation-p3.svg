@@ -1,0 +1,46 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P3 · Route &amp; Cabin Mix</text>
+  <rect x="340" y="12" width="104" height="20" fill="#0D8F8F" rx="10"/>
+  <text x="392" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Aviation</text>
+  <text x="18" y="68" font-size="9" fill="#64748B">Net Margin Contribution by Route — after Full Cost Allocation</text>
+  <!-- ABJ-LOS Business -->
+  <text x="18" y="95" font-size="10" fill="#1B2A4A" font-weight="600">ABJ–LOS Biz</text>
+  <rect x="145" y="83" width="208" height="14" fill="#0D8F8F" rx="2" opacity="0.85"/>
+  <text x="357" y="93" font-size="9" fill="#0D8F8F" font-weight="700">44.2%</text>
+  <!-- ABJ-LOS Economy -->
+  <text x="18" y="119" font-size="10" fill="#1B2A4A" font-weight="600">ABJ–LOS Eco</text>
+  <rect x="145" y="107" width="152" height="14" fill="#0D8F8F" rx="2" opacity="0.7"/>
+  <text x="301" y="117" font-size="9" fill="#0D8F8F" font-weight="700">32.3%</text>
+  <!-- LOS-PHC Economy -->
+  <text x="18" y="143" font-size="10" fill="#1B2A4A" font-weight="600">LOS–PHC Eco</text>
+  <rect x="145" y="131" width="100" height="14" fill="#D4A843" rx="2" opacity="0.8"/>
+  <text x="249" y="141" font-size="9" fill="#D4A843" font-weight="700">21.2%</text>
+  <!-- LOS-KAN Economy -->
+  <text x="18" y="167" font-size="10" fill="#1B2A4A" font-weight="600">LOS–KAN Eco</text>
+  <rect x="145" y="155" width="72" height="14" fill="#D4A843" rx="2" opacity="0.6"/>
+  <text x="221" y="165" font-size="9" fill="#D4A843" font-weight="700">15.3%</text>
+  <!-- Charter -->
+  <text x="18" y="191" font-size="10" fill="#1B2A4A" font-weight="600">Charter (Ad hoc)</text>
+  <rect x="145" y="179" width="44" height="14" fill="#C0392B" rx="2" opacity="0.7"/>
+  <text x="193" y="189" font-size="9" fill="#C0392B" font-weight="700">9.3%</text>
+  <text x="216" y="189" font-size="8" fill="#C0392B">← below 12% target</text>
+  <!-- KAN-LOS Promo -->
+  <text x="18" y="215" font-size="10" fill="#1B2A4A" font-weight="600">KAN–LOS Promo</text>
+  <rect x="145" y="203" width="20" height="14" fill="#C0392B" rx="2" opacity="0.8"/>
+  <text x="169" y="213" font-size="9" fill="#C0392B" font-weight="700">−4.1%</text>
+  <text x="218" y="213" font-size="8" fill="#C0392B">← loss-making</text>
+  <!-- Baseline and target lines -->
+  <line x1="145" y1="78" x2="145" y2="222" stroke="#CBD5E1" stroke-width="1"/>
+  <line x1="203" y1="78" x2="203" y2="222" stroke="#0D8F8F" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+  <text x="205" y="77" font-size="7" fill="#0D8F8F">Target 12%</text>
+  <line x1="18" y1="232" x2="442" y2="232" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="18" y="244" width="200" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="26" y="258" font-size="9" fill="#065F46" font-weight="600">ABJ–LOS Business: 44% margin per seat</text>
+  <rect x="226" y="244" width="216" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="234" y="258" font-size="9" fill="#991B1B" font-weight="600">Promo route KAN–LOS: structurally loss-making</text>
+  <rect x="18" y="268" width="240" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="26" y="282" font-size="9" fill="#1D4ED8" font-weight="600">Slot opportunity cost included in contribution calc</text>
+</svg>

@@ -1,0 +1,46 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P4 · Bundle &amp; Promotion ROI</text>
+  <rect x="344" y="12" width="100" height="20" fill="#D4A843" rx="10"/>
+  <text x="394" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Telecoms</text>
+  <text x="18" y="68" font-size="9" fill="#64748B">Per-Bundle Net Margin (₦/sub/mo) — Profitable vs Loss-Making</text>
+  <!-- Zero axis line -->
+  <line x1="230" y1="78" x2="230" y2="222" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="230" y="230" text-anchor="middle" font-size="8" fill="#94A3B8">₦0</text>
+  <text x="155" y="230" text-anchor="middle" font-size="7" fill="#94A3B8">−₦10k</text>
+  <text x="305" y="230" text-anchor="middle" font-size="7" fill="#94A3B8">+₦10k</text>
+  <text x="380" y="230" text-anchor="middle" font-size="7" fill="#94A3B8">+₦25k</text>
+  <!-- Business Unlimited -->
+  <text x="18" y="97" font-size="10" fill="#1B2A4A" font-weight="600">Business Unlimited</text>
+  <rect x="230" y="85" width="152" height="14" fill="#0D8F8F" rx="2" opacity="0.85"/>
+  <text x="386" y="95" font-size="9" fill="#0D8F8F" font-weight="700">+₦24.3k</text>
+  <!-- SME Data Plus -->
+  <text x="18" y="121" font-size="10" fill="#1B2A4A" font-weight="600">SME Data Plus</text>
+  <rect x="230" y="109" width="100" height="14" fill="#0D8F8F" rx="2" opacity="0.7"/>
+  <text x="334" y="119" font-size="9" fill="#0D8F8F" font-weight="700">+₦16k</text>
+  <!-- Family Share -->
+  <text x="18" y="145" font-size="10" fill="#1B2A4A" font-weight="600">Family Share</text>
+  <rect x="230" y="133" width="56" height="14" fill="#D4A843" rx="2" opacity="0.8"/>
+  <text x="290" y="143" font-size="9" fill="#D4A843" font-weight="700">+₦8.9k</text>
+  <!-- Basic Voice -->
+  <text x="18" y="169" font-size="10" fill="#1B2A4A" font-weight="600">Basic Voice</text>
+  <rect x="182" y="157" width="48" height="14" fill="#C0392B" rx="2" opacity="0.65"/>
+  <text x="178" y="167" text-anchor="end" font-size="9" fill="#C0392B" font-weight="700">−₦7.6k</text>
+  <!-- Double Data Promo -->
+  <text x="18" y="193" font-size="10" fill="#1B2A4A" font-weight="600">Double Data Promo</text>
+  <rect x="136" y="181" width="94" height="14" fill="#C0392B" rx="2" opacity="0.75"/>
+  <text x="132" y="191" text-anchor="end" font-size="9" fill="#C0392B" font-weight="700">−₦14.7k</text>
+  <!-- NCC Obligatory -->
+  <text x="18" y="217" font-size="10" fill="#1B2A4A" font-weight="600">NCC Obligatory</text>
+  <rect x="80" y="205" width="150" height="14" fill="#C0392B" rx="2" opacity="0.8"/>
+  <text x="76" y="215" text-anchor="end" font-size="9" fill="#C0392B" font-weight="700">−₦24k</text>
+  <line x1="18" y1="236" x2="442" y2="236" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="18" y="248" width="200" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="26" y="262" font-size="9" fill="#065F46" font-weight="600">3 bundles generating positive margin/sub</text>
+  <rect x="226" y="248" width="216" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="234" y="262" font-size="9" fill="#991B1B" font-weight="600">Promo bundles: subsidising below cost floor</text>
+  <rect x="18" y="272" width="240" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="26" y="286" font-size="9" fill="#1D4ED8" font-weight="600">NCC bundle cap: prioritise highest-margin slots</text>
+</svg>
