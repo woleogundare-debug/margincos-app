@@ -33,11 +33,16 @@ const LIVE_SECTORS = [
     icon: '🏪',
     desc: 'Category margin analysis, supplier cost pass-through tracking, and store-level or channel margin decomposition.',
   },
+  {
+    key: 'Logistics',
+    label: 'Logistics',
+    icon: '🚛',
+    desc: 'Lane-level cost floors, fuel cost recovery, backhaul economics, and customer profitability across your fleet operations.',
+  },
 ];
 
 /* ── Coming-soon sectors (non-selectable) ── */
 const SOON_SECTORS = [
-  { key: 'Logistics',          label: 'Logistics',          icon: '🚚' },
   { key: 'IT Services',        label: 'IT Services',         icon: '💻' },
   { key: 'Telecoms',           label: 'Telecoms',            icon: '📡' },
   { key: 'Aviation',           label: 'Aviation',            icon: '✈️' },

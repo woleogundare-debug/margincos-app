@@ -32,13 +32,14 @@ export function usePortfolio(userId, tier = 'essentials') {
     setPeriods(data || []);
   }, [userId]);
 
-  // ── Load SKU rows + trade investment for a period ─────────────
-  const loadPeriodData = useCallback(async (periodId) => {
+  // ── Load SKU/Lane rows + trade investment for a period ────────
+  const loadPeriodData = useCallback(async (periodId, vertical) => {
     if (!periodId) return;
-    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Fetching data for period:', periodId);
+    const tableName = vertical === 'Logistics' ? 'logistics_rows' : 'sku_rows';
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriodData] Fetching data for period:', periodId, 'table:', tableName);
     setLoading(true);
     const [skuRes, tradeRes] = await Promise.all([
-      sb.from('sku_rows').select('*').eq('period_id', periodId),
+      sb.from(tableName).select('*').eq('period_id', periodId),
       sb.from('trade_investment').select('*').eq('period_id', periodId),
     ]);
     if (skuRes.error && process.env.NODE_ENV !== 'production') console.error('[loadPeriodData] SKU fetch error:', skuRes.error.message, skuRes.error.code);
@@ -52,7 +53,7 @@ export function usePortfolio(userId, tier = 'essentials') {
   // ── Switch active period ───────────────────────────────────────
   const selectPeriod = useCallback(async (period) => {
     setActivePeriod(period);
-    await loadPeriodData(period.id);
+    await loadPeriodData(period.id, period.vertical);
   }, [loadPeriodData]);
 
   // ── Create new period ─────────────────────────────────────────
@@ -74,13 +75,14 @@ export function usePortfolio(userId, tier = 'essentials') {
     return data;
   }, [userId, loadPeriods, selectPeriod]);
 
-  // ── Save single SKU row (upsert, optimistic) ─────────────────
+  // ── Save single SKU/Lane row (upsert, optimistic) ────────────
   const saveSku = useCallback(async (row) => {
     // Guard: don't attempt save without required context
     if (!activePeriod?.id || !userId) {
       if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted — missing context:', { period_id: activePeriod?.id, user_id: userId });
       return null;
     }
+    const tableName = activePeriod.vertical === 'Logistics' ? 'logistics_rows' : 'sku_rows';
     setSaving(true);
     const tempId = row._tempId;
     // Strip _tempId — it's a client-only key, not a DB column
@@ -91,9 +93,10 @@ export function usePortfolio(userId, tier = 'essentials') {
     payload.active = (a === true || a === 'Y' || a === 'y' || a === 'true' || a === 'Active') ? 'Y' : (a === false || a === 'N' || a === 'n' || a === 'false' || a === 'No' || a === 'Inactive') ? 'N' : 'Y';
     // For new rows (no id yet), remove id so Supabase auto-generates it
     if (!payload.id) delete payload.id;
-    if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting:', { id: payload.id || '(new)', sku_id: payload.sku_id, period_id: payload.period_id, user_id: payload.user_id, user_id_type: typeof payload.user_id });
+    const pkField = activePeriod.vertical === 'Logistics' ? 'lane_id' : 'sku_id';
+    if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting to', tableName, ':', { id: payload.id || '(new)', [pkField]: payload[pkField], period_id: payload.period_id, user_id: payload.user_id });
     const { data, error } = await sb
-      .from('sku_rows')
+      .from(tableName)
       .upsert(payload, { onConflict: 'id' })
       .select()
       .single();
@@ -124,9 +127,9 @@ export function usePortfolio(userId, tier = 'essentials') {
     saveTimerRef.current[key] = setTimeout(() => saveSku(row), delay);
   }, [saveSku]);
 
-  // ── Add new blank SKU ─────────────────────────────────────────
+  // ── Add new blank SKU / Lane ──────────────────────────────────
   const addSku = useCallback(async () => {
-    // Enforce tier SKU cap — null means unlimited
+    // Enforce tier cap — null means unlimited
     const limit = TIER_LIMITS[tier]?.maxSkus ?? null;
     if (limit !== null) {
       const currentCount = skuRows.filter(
@@ -134,40 +137,52 @@ export function usePortfolio(userId, tier = 'essentials') {
       ).length;
       if (currentCount >= limit) {
         const tierLabel = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
+        const unit = activePeriod?.vertical === 'Logistics' ? 'lanes' : 'SKUs';
         return {
           error: true,
-          message: `Your ${tierLabel} plan supports up to ${limit} active SKUs. Upgrade to add more.`,
+          message: `Your ${tierLabel} plan supports up to ${limit} active ${unit}. Upgrade to add more.`,
         };
       }
     }
 
     const tempId = `temp_${Date.now()}`;
-    const blank = {
-      _tempId: tempId,
-      period_id: activePeriod?.id,
-      user_id: userId,
-      active: 'Y',
-      sku_id: '', sku_name: '', category: '',
-      segment: '', business_unit: '',
-      rrp: null, cogs_per_unit: null, monthly_volume_units: null,
-    };
+    const blank = activePeriod?.vertical === 'Logistics'
+      ? {
+          _tempId: tempId,
+          period_id: activePeriod?.id,
+          user_id: userId,
+          active: 'Y',
+          lane_id: '', lane_name: '', route_region: '', cargo_type: '',
+          contracted_rate_ngn: null, fully_loaded_cost_ngn: null,
+          distance_km: null, monthly_trips: null,
+        }
+      : {
+          _tempId: tempId,
+          period_id: activePeriod?.id,
+          user_id: userId,
+          active: 'Y',
+          sku_id: '', sku_name: '', category: '',
+          segment: '', business_unit: '',
+          rrp: null, cogs_per_unit: null, monthly_volume_units: null,
+        };
     setSkuRows(prev => [...prev, blank]);
     return tempId;
   }, [activePeriod, userId, tier, skuRows]);
 
-  // ── Soft-delete SKU ───────────────────────────────────────────
+  // ── Soft-delete SKU / Lane ────────────────────────────────────
   const deleteSku = useCallback(async (id) => {
     if (id.startsWith?.('temp_')) {
       setSkuRows(prev => prev.filter(r => r._tempId !== id && r.id !== id));
       return;
     }
-    if (process.env.NODE_ENV !== 'production') console.log('[deleteSku] Soft-deleting:', id);
-    const { error } = await sb.from('sku_rows').update({ active: 'N' }).eq('id', id);
+    const tableName = activePeriod?.vertical === 'Logistics' ? 'logistics_rows' : 'sku_rows';
+    if (process.env.NODE_ENV !== 'production') console.log('[deleteSku] Soft-deleting from', tableName, ':', id);
+    const { error } = await sb.from(tableName).update({ active: 'N' }).eq('id', id);
     if (error) {
       if (process.env.NODE_ENV !== 'production') console.error('[deleteSku] Supabase error:', error.message, error.details, error.hint, error.code);
     }
     setSkuRows(prev => prev.filter(r => r.id !== id));
-  }, []);
+  }, [activePeriod]);
 
   // ── Delete period (and all child rows) ───────────────────────
   const deletePeriod = useCallback(async (periodId) => {
@@ -244,8 +259,11 @@ export function usePortfolio(userId, tier = 'essentials') {
   // Stats for UI — active is stored as text 'Y'/'N' in Supabase
   const isActive = (r) => r.active === 'Y' || r.active === true || r.active === 'y';
   const activeSkuCount   = skuRows.filter(r => isActive(r) && !r._tempId).length;
+  const isLogisticsActive = activePeriod?.vertical === 'Logistics';
   const completeSkuCount = skuRows.filter(r =>
-    isActive(r) && r.sku_id && r.sku_name && r.category && r.rrp && r.cogs_per_unit && r.monthly_volume_units
+    isActive(r) && (isLogisticsActive
+      ? r.lane_id && r.lane_name && r.contracted_rate_ngn && r.fully_loaded_cost_ngn && r.distance_km && r.monthly_trips
+      : r.sku_id && r.sku_name && r.category && r.rrp && r.cogs_per_unit && r.monthly_volume_units)
   ).length;
 
   return {

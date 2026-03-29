@@ -46,6 +46,59 @@ const COLUMNS = [
   { key: 'promo_lift_pct',       label: 'Promo Lift %', group: 'trade', required: false, type: 'pct',    width: 'w-28',  tip: 'Expected volume uplift %.' },
 ];
 
+// ── Logistics column definitions ─────────────────────────────────────────────
+const LOGISTICS_COLUMNS = [
+  // Identity
+  { key: 'lane_id',       label: 'Lane ID',       group: 'identity', required: true,  type: 'text',   width: 'w-28', tip: 'Unique lane identifier.' },
+  { key: 'lane_name',     label: 'Lane',          group: 'identity', required: true,  type: 'text',   width: 'w-36', tip: 'Lane description, e.g. Lagos–Kano.' },
+  { key: 'route_region',  label: 'Route Region',  group: 'identity', required: true,  type: 'select', width: 'w-32', tip: 'Corridor classification.' },
+  { key: 'cargo_type',    label: 'Cargo Type',    group: 'identity', required: true,  type: 'select', width: 'w-28', tip: 'Type of cargo carried.' },
+  { key: 'fleet_division',label: 'Fleet Division',group: 'identity', required: false, type: 'text',   width: 'w-28', tip: 'Internal fleet division.' },
+  { key: 'active',        label: 'Active',        group: 'identity', required: true,  type: 'bool',   width: 'w-20', tip: 'Include in analysis.' },
+  // Lane Economics P1
+  { key: 'contracted_rate_ngn',    label: 'Contracted Rate (₦)',  group: 'pricing', required: true,  type: 'number', width: 'w-36', minWidth: 140, tip: 'Agreed rate per trip in Naira.' },
+  { key: 'fully_loaded_cost_ngn',  label: 'Fully-Loaded Cost (₦)',group: 'pricing', required: true,  type: 'number', width: 'w-36', minWidth: 140, tip: 'Total cost per trip.' },
+  { key: 'distance_km',            label: 'Distance (km)',        group: 'pricing', required: true,  type: 'number', width: 'w-24', tip: 'One-way distance in kilometres.' },
+  { key: 'market_rate_ngn',        label: 'Market Rate (₦)',      group: 'pricing', required: false, type: 'number', width: 'w-28', tip: 'Current spot/market rate for this lane.' },
+  { key: 'rate_sensitivity',       label: 'Rate Sensitivity',     group: 'pricing', required: false, type: 'number', width: 'w-24', tip: 'How trip volume responds to rate changes.' },
+  { key: 'proposed_rate_change_pct',label: 'Proposed Rate Chg %', group: 'pricing', required: false, type: 'pct',    width: 'w-28', tip: 'Intended rate adjustment.' },
+  { key: 'min_margin_floor_pct',   label: 'Min Margin Floor %',   group: 'pricing', required: false, type: 'pct',    width: 'w-28', tip: 'Minimum acceptable margin for this lane.' },
+  { key: 'rate_headroom_pct',      label: 'Rate Headroom %',      group: 'pricing', required: false, type: 'pct',    width: 'w-28', tip: 'Estimated headroom above current contracted rate.' },
+  // Backhaul
+  { key: 'return_lane_id',         label: 'Return Lane ID',       group: 'pricing', required: false, type: 'text',   width: 'w-28', tip: 'Paired return lane ID.' },
+  { key: 'backhaul_rate_ngn',      label: 'Backhaul Rate (₦)',    group: 'pricing', required: false, type: 'number', width: 'w-28', tip: 'Revenue on return leg.' },
+  { key: 'backhaul_cost_ngn',      label: 'Backhaul Cost (₦)',    group: 'pricing', required: false, type: 'number', width: 'w-28', tip: 'Cost of return leg.' },
+  { key: 'backhaul_recovery_pct',  label: 'Backhaul Recovery %',  group: 'pricing', required: false, type: 'pct',    width: 'w-28', tip: '% of return trips carrying paying cargo.' },
+  // Cost P2
+  { key: 'fuel_cost_per_km',          label: 'Fuel Cost/km (₦)',       group: 'cost', required: false, type: 'number', width: 'w-28', tip: 'Diesel cost per kilometre.' },
+  { key: 'driver_cost_per_trip',      label: 'Driver Cost/Trip (₦)',   group: 'cost', required: false, type: 'number', width: 'w-28', tip: 'Driver wages allocated per trip.' },
+  { key: 'maintenance_cost_per_trip', label: 'Maintenance/Trip (₦)',   group: 'cost', required: false, type: 'number', width: 'w-28', tip: 'Tyres, servicing, depreciation per trip.' },
+  { key: 'toll_levy_per_trip',        label: 'Tolls & Levies/Trip (₦)',group: 'cost', required: false, type: 'number', width: 'w-28', tip: 'Checkpoints, state levies, park fees per trip.' },
+  { key: 'cost_inflation_pct',        label: 'Cost Inflation %',       group: 'cost', required: false, type: 'pct',    width: 'w-24', tip: 'Percentage increase in operating costs.' },
+  { key: 'pass_through_rate',         label: 'Rate Recovery %',        group: 'cost', required: false, type: 'pct',    width: 'w-24', tip: '% of cost increase recovered via rate adjustment.' },
+  { key: 'prior_period_cost_ngn',     label: 'Prior Period Cost (₦)',  group: 'cost', required: false, type: 'number', width: 'w-28', tip: 'Previous period fully-loaded cost.' },
+  { key: 'fx_exposure_pct',           label: 'FX Exposure %',          group: 'cost', required: false, type: 'pct',    width: 'w-24', tip: '% of costs linked to FX.' },
+  // Fleet P3
+  { key: 'truck_id',             label: 'Truck ID',             group: 'channel', required: false, type: 'text',   width: 'w-24', tip: 'Asset identifier.' },
+  { key: 'truck_type',           label: 'Truck Type',           group: 'channel', required: false, type: 'select', width: 'w-28', tip: '10t / 20t / 30t / 40t / Trailer.' },
+  { key: 'contract_type',        label: 'Contract Type',        group: 'channel', required: true,  type: 'select', width: 'w-28', tip: 'Spot / Dedicated / Contracted.' },
+  { key: 'customer_name',        label: 'Customer',             group: 'channel', required: false, type: 'text',   width: 'w-32', tip: 'Shipper / client name.' },
+  { key: 'customer_margin_pct',  label: 'Customer Margin %',    group: 'channel', required: false, type: 'pct',    width: 'w-24', tip: 'Customer margin allocation.' },
+  { key: 'rebate_pct',           label: 'Rebate %',             group: 'channel', required: false, type: 'pct',    width: 'w-20', tip: 'Volume rebate percentage.' },
+  { key: 'payment_terms_days',   label: 'Payment Terms (Days)', group: 'channel', required: false, type: 'number', width: 'w-28', tip: 'Standard payment cycle in days.' },
+  { key: 'fuel_surcharge_clause',label: 'Fuel Surcharge',       group: 'channel', required: false, type: 'select', width: 'w-28', tip: 'Whether contract includes automatic fuel surcharge.' },
+  // Volume P4
+  { key: 'monthly_trips',       label: 'Monthly Trips',   group: 'trade', required: true,  type: 'number', width: 'w-24', minWidth: 100, tip: 'Number of trips per month on this lane.' },
+  { key: 'discount_depth_pct',  label: 'Discount Depth %',group: 'trade', required: false, type: 'pct',    width: 'w-24', tip: 'Volume discount offered.' },
+  { key: 'volume_response_pct', label: 'Volume Response %',group: 'trade', required: false, type: 'pct',    width: 'w-24', tip: 'Volume change from rate adjustment.' },
+  // Metadata (shown on identity tab for logistics)
+  { key: 'operating_region', label: 'Operating Region', group: 'meta', required: false, type: 'select', width: 'w-28', tip: 'Primary operating region.' },
+];
+
+function getColumns(vertical) {
+  return vertical === 'Logistics' ? LOGISTICS_COLUMNS : COLUMNS;
+}
+
 // Tab definitions — requiredTier: 'professional' means Professional or Enterprise
 const TABS = [
   { key: 'identity',     label: 'Identity',             groups: ['identity', 'ext-identity'] },
@@ -54,14 +107,6 @@ const TABS = [
   { key: 'channel',      label: 'Channel · P3',         groups: ['identity', 'channel'], requiredTier: 'professional' },
   { key: 'trade',        label: 'Trade · P4',           groups: ['identity', 'trade'],   requiredTier: 'professional' },
 ];
-
-const TAB_GROUP_LABELS = {
-  'ext-identity': 'IDENTITY',
-  pricing: 'PRICING INTELLIGENCE',
-  cost: 'COST PASS-THROUGH',
-  channel: 'CHANNEL ECONOMICS',
-  trade: 'TRADE EXECUTION',
-};
 
 // Mobile card fields per tab — keys match COLUMNS
 const CARD_FIELDS = {
@@ -108,6 +153,48 @@ const CARD_FIELDS = {
   ],
 };
 
+// Mobile card fields for Logistics vertical
+const LOGISTICS_CARD_FIELDS = {
+  identity: [
+    { key: 'lane_name',    label: 'Lane' },
+    { key: 'route_region', label: 'Route Region' },
+    { key: 'cargo_type',   label: 'Cargo Type' },
+    { key: 'fleet_division',label: 'Fleet Division' },
+  ],
+  pricing: [
+    { key: 'lane_name',              label: 'Lane' },
+    { key: 'contracted_rate_ngn',    label: 'Contracted Rate (₦)', fmt: 'currency' },
+    { key: 'fully_loaded_cost_ngn',  label: 'Fully-Loaded Cost (₦)', fmt: 'currency' },
+    { key: 'distance_km',            label: 'Distance (km)', fmt: 'number' },
+    { key: 'market_rate_ngn',        label: 'Market Rate (₦)', fmt: 'currency' },
+    { key: 'proposed_rate_change_pct',label: 'Proposed Rate Chg %', fmt: 'pct' },
+  ],
+  cost: [
+    { key: 'lane_name',           label: 'Lane' },
+    { key: 'fuel_cost_per_km',    label: 'Fuel Cost/km (₦)', fmt: 'currency' },
+    { key: 'cost_inflation_pct',  label: 'Cost Inflation %', fmt: 'pct' },
+    { key: 'pass_through_rate',   label: 'Rate Recovery %', fmt: 'pct' },
+    { key: 'fx_exposure_pct',     label: 'FX Exposure %', fmt: 'pct' },
+  ],
+  channel: [
+    { key: 'lane_name',          label: 'Lane' },
+    { key: 'contract_type',      label: 'Contract Type' },
+    { key: 'customer_name',      label: 'Customer' },
+    { key: 'customer_margin_pct',label: 'Customer Margin %', fmt: 'pct' },
+    { key: 'payment_terms_days', label: 'Payment Terms (Days)' },
+  ],
+  trade: [
+    { key: 'lane_name',           label: 'Lane' },
+    { key: 'monthly_trips',       label: 'Monthly Trips', fmt: 'number' },
+    { key: 'discount_depth_pct',  label: 'Discount Depth %', fmt: 'pct' },
+    { key: 'volume_response_pct', label: 'Volume Response %', fmt: 'pct' },
+  ],
+};
+
+function getCardFields(vertical) {
+  return vertical === 'Logistics' ? LOGISTICS_CARD_FIELDS : CARD_FIELDS;
+}
+
 function formatCardValue(val, fmt) {
   if (val === null || val === undefined || val === '') return null;
   if (fmt === 'currency') {
@@ -126,10 +213,8 @@ function formatCardValue(val, fmt) {
 }
 
 // ── CSV Import helpers ──
-const CSV_FIELDS = COLUMNS.filter(c => c.key !== 'active').map(c => c.key);
-const NUMERIC_KEYS = new Set(
-  COLUMNS.filter(c => c.type === 'number' || c.type === 'pct').map(c => c.key)
-);
+// CSV_FIELDS and NUMERIC_KEYS are derived dynamically inside the component
+// based on the active vertical — see getColumns(vertical) above.
 
 function parseCSV(text) {
   const rows = [];
@@ -164,7 +249,7 @@ function parseCSV(text) {
   return rows;
 }
 
-function validateCSVRows(rawRows) {
+function validateCSVRows(rawRows, primaryKey, csvFields, numericKeys) {
   if (rawRows.length < 2) return { valid: [], errors: [{ row: 0, msg: 'File is empty or has no data rows' }] };
   const headers = rawRows[0].map(h => h.trim().toLowerCase());
   const keyMap = {};
@@ -175,26 +260,27 @@ function validateCSVRows(rawRows) {
 
   for (let r = 1; r < rawRows.length; r++) {
     const cells = rawRows[r];
-    // Silently skip blank template rows — a row with no sku_id is empty filler, not user data
-    const skuIdIdx = keyMap['sku_id'];
-    if (skuIdIdx === undefined || !(cells[skuIdIdx] || '').toString().trim()) continue;
+    // Silently skip blank template rows — a row with no primary key is empty filler, not user data
+    const pkIdx = keyMap[primaryKey];
+    if (pkIdx === undefined || !(cells[pkIdx] || '').toString().trim()) continue;
     const rowErrors = [];
     const row = { active: true };
-    CSV_FIELDS.forEach(key => {
+    csvFields.forEach(key => {
       const idx = keyMap[key];
       const raw = idx !== undefined ? (cells[idx] || '').trim() : '';
-      if (NUMERIC_KEYS.has(key)) {
+      if (numericKeys.has(key)) {
         row[key] = raw === '' ? null : parseFloat(raw);
         if (raw !== '' && isNaN(row[key])) rowErrors.push(`${key}: "${raw}" is not a number`);
       } else {
         row[key] = raw || '';
       }
     });
-    if (!row.sku_id) rowErrors.push('sku_id is missing');
-    if (row.sku_id && seenIds.has(row.sku_id)) rowErrors.push(`Duplicate sku_id "${row.sku_id}"`);
-    if (row.sku_id) seenIds.add(row.sku_id);
+    const pkVal = row[primaryKey];
+    if (!pkVal) rowErrors.push(`${primaryKey} is missing`);
+    if (pkVal && seenIds.has(pkVal)) rowErrors.push(`Duplicate ${primaryKey} "${pkVal}"`);
+    if (pkVal) seenIds.add(pkVal);
     if (rowErrors.length > 0) {
-      errors.push({ row: r, sku: row.sku_id || `(row ${r})`, issues: rowErrors });
+      errors.push({ row: r, sku: pkVal || `(row ${r})`, issues: rowErrors });
     } else {
       valid.push(row);
     }
@@ -210,7 +296,7 @@ function downloadTemplate(cfg) {
 }
 
 // ── Import Preview Modal ──
-function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
+function ImportPreviewModal({ result, onConfirm, onCancel, importing, unitPlural }) {
   if (!result) return null;
   const { valid, errors } = result;
   return (
@@ -277,7 +363,7 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
           <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3">
             <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
             <Button variant="primary" size="md" onClick={onConfirm} loading={importing} disabled={valid.length === 0}>
-              Import {valid.length} SKUs
+              Import {valid.length} {unitPlural || 'SKUs'}
             </Button>
           </div>
         </div>
@@ -290,7 +376,7 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing }) {
 function CellInput({ col, value, onChange, onBlur, vertical }) {
   const isNumeric = col.type === 'number' || col.type === 'pct';
   const isCurrency = isNumeric && col.label.includes('₦');
-  const isVolume = col.key === 'monthly_volume_units';
+  const isVolume = col.key === 'monthly_volume_units' || col.key === 'monthly_trips';
   const useCommaFormat = isCurrency || isVolume;
 
   const formatForDisplay = (val) => {
@@ -302,23 +388,29 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 
   const [local, setLocal] = useState(() => formatForDisplay(value));
   useEffect(() => { setLocal(formatForDisplay(value)); }, [value]);
-  const { categories } = getTaxonomy(vertical || 'FMCG');
+  const taxonomy = getTaxonomy(vertical || 'FMCG');
+  const { categories } = taxonomy;
   const handleChange = (v) => { setLocal(v); onChange(v); };
 
   const baseClass = 'w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal rounded px-1.5 py-1.5 transition-all';
 
   if (col.type === 'select') {
     let options = [];
-    if (col.key === 'category') {
+    if (col.key === 'category' || col.key === 'route_region') {
       const baseOptions = categories.map(c => ({ value: c, label: c }));
       // Prepend custom value if it doesn't exist in the taxonomy — preserves free-text imports
       options = (local && !categories.includes(local))
         ? [{ value: local, label: local }, ...baseOptions]
         : baseOptions;
     }
-    else if (col.key === 'segment')    options = SEGMENTS.map(s => ({ value: s, label: s }));
+    else if (col.key === 'segment')         options = SEGMENTS.map(s => ({ value: s, label: s }));
     else if (col.key === 'primary_channel') options = PRIMARY_CHANNELS.map(c => ({ value: c.code, label: c.label }));
-    else if (col.key === 'region')     options = REGIONS.map(r => ({ value: r, label: r }));
+    else if (col.key === 'region')          options = REGIONS.map(r => ({ value: r, label: r }));
+    else if (col.key === 'cargo_type')      options = (taxonomy.segments || []).map(s => ({ value: s, label: s }));
+    else if (col.key === 'contract_type')   options = (taxonomy.channels || []).map(c => ({ value: c, label: c }));
+    else if (col.key === 'truck_type')      options = (taxonomy.truckTypes || []).map(t => ({ value: t, label: t }));
+    else if (col.key === 'operating_region') options = (taxonomy.regions || REGIONS).map(r => ({ value: r, label: r }));
+    else if (col.key === 'fuel_surcharge_clause') options = ['Yes', 'No', 'Partial'].map(v => ({ value: v, label: v }));
     return (
       <select value={local || ''} onChange={e => handleChange(e.target.value)} onBlur={onBlur}
         className={clsx(baseClass, 'cursor-pointer appearance-none')}>
@@ -385,9 +477,15 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
 }
 
 // ── Completeness dot ──
-function CompletenessDot({ row }) {
-  const requiredFilled = row.sku_id && row.sku_name && row.category && row.rrp && row.cogs_per_unit && row.monthly_volume_units && row.primary_channel;
-  const hasOptionalGaps = !row.competitor_price || !row.segment || !row.region;
+function CompletenessDot({ row, vertical }) {
+  let requiredFilled, hasOptionalGaps;
+  if (vertical === 'Logistics') {
+    requiredFilled = row.lane_id && row.lane_name && row.route_region && row.contracted_rate_ngn && row.fully_loaded_cost_ngn && row.distance_km && row.contract_type && row.monthly_trips;
+    hasOptionalGaps = !row.market_rate_ngn || !row.customer_name || !row.cargo_type;
+  } else {
+    requiredFilled = row.sku_id && row.sku_name && row.category && row.rrp && row.cogs_per_unit && row.monthly_volume_units && row.primary_channel;
+    hasOptionalGaps = !row.competitor_price || !row.segment || !row.region;
+  }
 
   let color = 'bg-red-400';   // required missing
   if (requiredFilled && hasOptionalGaps) color = 'bg-amber-400';
@@ -445,6 +543,15 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
 
   const vertical = activePeriod?.vertical || 'FMCG';
   const cfg = getSectorConfig(vertical);
+  const isLogistics = vertical === 'Logistics';
+  const primaryKey = isLogistics ? 'lane_id' : 'sku_id';
+
+  // Dynamic columns, CSV fields, and numeric keys — vary by vertical
+  const cols       = useMemo(() => getColumns(vertical), [vertical]);
+  const csvFields  = useMemo(() => cols.filter(c => c.key !== 'active').map(c => c.key), [cols]);
+  const numericKeys = useMemo(() => new Set(cols.filter(c => c.type === 'number' || c.type === 'pct').map(c => c.key)), [cols]);
+  const cardFields = useMemo(() => getCardFields(vertical), [vertical]);
+
   const tabCfgLabels = {
     pricing: cfg.p1.short,
     cost:    cfg.p2.short,
@@ -452,11 +559,19 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
     trade:   cfg.p4.short,
   };
 
-  // Detect duplicate SKU IDs
+  const tabGroupLabels = {
+    'ext-identity': 'IDENTITY',
+    pricing:  cfg.p1.name.toUpperCase(),
+    cost:     cfg.p2.name.toUpperCase(),
+    channel:  cfg.p3.name.toUpperCase(),
+    trade:    cfg.p4.name.toUpperCase(),
+  };
+
+  // Detect duplicate primary-key IDs
   const duplicateSkuIds = useMemo(() => {
     const counts = {};
     skuRows.forEach(r => {
-      const id = r.sku_id?.trim();
+      const id = r[primaryKey]?.trim();
       if (id) counts[id] = (counts[id] || 0) + 1;
     });
     return new Set(Object.keys(counts).filter(k => counts[k] > 1));
@@ -464,7 +579,10 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
 
   // Determine visible columns based on active tab
   const currentTab = TABS.find(t => t.key === activeTab) || TABS[0];
-  const visibleCols = COLUMNS.filter(c => currentTab.groups.includes(c.group));
+  const tabGroups = isLogistics && activeTab === 'identity'
+    ? ['identity', 'meta']   // show operating_region on identity tab for logistics
+    : currentTab.groups;
+  const visibleCols = cols.filter(c => tabGroups.includes(c.group));
 
   // ── Flush logic ──
   const flushPendingEdits = useCallback(() => {
@@ -516,11 +634,25 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
     };
   }, [flushPendingEdits]);
 
+  // Refs so handleFileSelect can access current values without stale closure
+  const verticalRef = useRef(vertical);
+  const primaryKeyRef = useRef(primaryKey);
+  const csvFieldsRef = useRef(csvFields);
+  const numericKeysRef = useRef(numericKeys);
+  useEffect(() => { verticalRef.current = vertical; }, [vertical]);
+  useEffect(() => { primaryKeyRef.current = primaryKey; }, [primaryKey]);
+  useEffect(() => { csvFieldsRef.current = csvFields; }, [csvFields]);
+  useEffect(() => { numericKeysRef.current = numericKeys; }, [numericKeys]);
+
   // ── File Import (CSV + Excel) ──
   const handleFileSelect = useCallback(async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+    const v = verticalRef.current;
+    const pk = primaryKeyRef.current;
+    const fields = csvFieldsRef.current;
+    const numKeys = numericKeysRef.current;
 
     if (isExcel) {
       const XLSXModule = await import('xlsx');
@@ -528,9 +660,10 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
-      // Find SKU Data sheet by name, fall back to last sheet
+      // Find data sheet — accept 'SKU Data', 'Lane Data', or fall back to last sheet
       const targetSheet =
         workbook.Sheets['SKU Data'] ||
+        workbook.Sheets['Lane Data'] ||
         workbook.Sheets[workbook.SheetNames[workbook.SheetNames.length - 1]];
 
       // Produce 2D array — row 0 = field keys, row 1 = display labels (skip), row 2+ = data
@@ -540,15 +673,17 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       });
 
       if (!allRows || allRows.length < 3) {
-        setImportResult({ valid: [], errors: [{ row: 0, msg: 'No data rows found in the SKU Data sheet.' }] });
+        const sheetLabel = v === 'Logistics' ? 'Lane Data' : 'SKU Data';
+        setImportResult({ valid: [], errors: [{ row: 0, msg: `No data rows found in the ${sheetLabel} sheet.` }] });
         return;
       }
 
-      // Scan for the header row — find the row where any cell exactly equals 'sku_id'
+      // Scan for header row — find row where any cell equals 'sku_id' or 'lane_id'
+      const headerAnchors = ['sku_id', 'lane_id'];
       let headerRowIndex = 0;
       for (let i = 0; i < Math.min(allRows.length, 10); i++) {
         const row = allRows[i];
-        if (row && row.some(cell => String(cell).trim().toLowerCase() === 'sku_id')) {
+        if (row && row.some(cell => headerAnchors.includes(String(cell).trim().toLowerCase()))) {
           headerRowIndex = i;
           break;
         }
@@ -577,14 +712,14 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       );
       const csvLike = [headerRow, ...valueRows];
 
-      const result = validateCSVRows(csvLike);
+      const result = validateCSVRows(csvLike, pk, fields, numKeys);
       setImportResult(result);
     } else {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const text = ev.target.result;
         const rawRows = parseCSV(text);
-        const result = validateCSVRows(rawRows);
+        const result = validateCSVRows(rawRows, pk, fields, numKeys);
         setImportResult(result);
       };
       reader.readAsText(file);
@@ -645,14 +780,14 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         {skuRows.length === 0 && (
           <div className="text-center py-12 px-4">
             <p className="text-sm text-slate-400 mb-4">
-              Tap <strong className="text-navy">+ Add SKU</strong> to begin, or <strong className="text-navy">Import Data</strong> to bulk-load.
+              Tap <strong className="text-navy">+ {cfg.addButtonLabel}</strong> to begin, or <strong className="text-navy">Import Data</strong> to bulk-load.
             </p>
             <div className="flex items-center justify-center gap-3">
               <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
                 <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import Data
               </Button>
               <Button variant="primary" size="sm" onClick={onAdd}>
-                <PlusIcon className="h-3.5 w-3.5" /> Add SKU
+                <PlusIcon className="h-3.5 w-3.5" /> {cfg.addButtonLabel}
               </Button>
             </div>
           </div>
@@ -661,7 +796,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
           <div className="space-y-3 px-4 pt-3 pb-4">
             {skuRows.map((row, idx) => {
               const rowKey = row.id || row._tempId;
-              const fields = CARD_FIELDS[activeTab] || CARD_FIELDS.identity;
+              const fields = cardFields[activeTab] || cardFields.identity;
               const isActive = row.active === true || row.active === 'Y' || row.active === 'y' || row.active === 'Active';
               return (
                 <div key={rowKey} className="bg-white rounded-xl border border-gray-100 overflow-hidden sku-card-enter"
@@ -670,9 +805,9 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                   <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50"
                     style={{ backgroundColor: '#F8FAFC' }}>
                     <div className="flex items-center gap-2 min-w-0">
-                      <CompletenessDot row={row} />
+                      <CompletenessDot row={row} vertical={vertical} />
                       <span className="text-sm font-semibold truncate" style={{ color: '#1B2A4A' }}>
-                        {row.sku_id || `SKU ${idx + 1}`}
+                        {row[primaryKey] || `${cfg.unit} ${idx + 1}`}
                       </span>
                     </div>
                     <span className={clsx('text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0',
@@ -716,7 +851,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
             {/* Mobile add button */}
             <button onClick={onAdd}
               className="w-full py-3 text-xs font-semibold rounded-xl border border-dashed border-slate-200 text-navy/40 hover:text-navy hover:border-navy/30 transition-colors flex items-center justify-center gap-1.5">
-              <PlusIcon className="h-3.5 w-3.5" /> Add SKU
+              <PlusIcon className="h-3.5 w-3.5" /> {cfg.addButtonLabel}
             </button>
           </div>
         )}
@@ -744,9 +879,9 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                   <th className="w-8" />
                   {groups.map(g => (
                     <th key={g.group} colSpan={g.span} className="px-2 py-2 text-left">
-                      {TAB_GROUP_LABELS[g.group] && (
+                      {tabGroupLabels[g.group] && (
                         <span className="text-xs font-semibold text-teal uppercase tracking-widest">
-                          {TAB_GROUP_LABELS[g.group]}
+                          {tabGroupLabels[g.group]}
                         </span>
                       )}
                     </th>
@@ -777,14 +912,14 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
               <tr>
                 <td colSpan={visibleCols.length + 2} className="py-16 text-center">
                   <p className="text-sm text-slate-400 mb-4">
-                    Click <strong className="text-navy">+ Add SKU</strong> to begin building your portfolio, or <strong className="text-navy">Import Data</strong> to bulk-load your data.
+                    Click <strong className="text-navy">+ {cfg.addButtonLabel}</strong> to begin building your portfolio, or <strong className="text-navy">Import Data</strong> to bulk-load your data.
                   </p>
                   <div className="flex items-center justify-center gap-3">
                     <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
                       <ArrowUpTrayIcon className="h-3.5 w-3.5" /> Import Data
                     </Button>
                     <Button variant="primary" size="sm" onClick={onAdd}>
-                      <PlusIcon className="h-3.5 w-3.5" /> Add SKU
+                      <PlusIcon className="h-3.5 w-3.5" /> {cfg.addButtonLabel}
                     </Button>
                   </div>
                 </td>
@@ -805,7 +940,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                   {visibleCols.map(col => {
                     const val = pendingEdits.current[rowKey]?.[col.key] ?? row[col.key];
                     const isEmpty = col.required && (val === '' || val === null || val === undefined);
-                    const isDuplicate = col.key === 'sku_id' && val && duplicateSkuIds.has(val.toString().trim());
+                    const isDuplicate = col.key === primaryKey && val && duplicateSkuIds.has(val.toString().trim());
                     return (
                       <td key={col.key}
                         className={clsx(
@@ -815,7 +950,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                           isDuplicate && 'bg-red-50'
                         )}
                         style={col.minWidth ? { minWidth: col.minWidth } : undefined}
-                        title={isDuplicate ? `Duplicate SKU ID "${val}" — each row must have a unique ID` : undefined}>
+                        title={isDuplicate ? `Duplicate ${primaryKey} "${val}" — each row must have a unique ID` : undefined}>
                         <div className={clsx(isDuplicate && 'ring-1 ring-red-400 rounded')}>
                           <CellInput
                             col={col} value={val} vertical={vertical}
@@ -843,7 +978,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
           <button onClick={onAdd}
             className="w-full py-3 text-xs font-semibold text-navy/40 hover:text-navy hover:bg-slate-50 transition-colors border-t border-slate-100 flex items-center justify-center gap-1.5">
             <PlusIcon className="h-3.5 w-3.5" />
-            Add SKU
+            {cfg.addButtonLabel}
           </button>
         )}
       </div>
@@ -851,7 +986,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       {/* Footer: row count + save status */}
       <div className="flex items-center justify-between px-5 py-2.5 border-t border-slate-100 bg-slate-50/40">
         <span className="text-[11px] text-slate-400">
-          {skuRows.length} SKU{skuRows.length !== 1 ? 's' : ''}
+          {skuRows.length} {skuRows.length !== 1 ? cfg.unitPlural : cfg.unit}
         </span>
         <span className={clsx('text-[11px] font-medium flex items-center gap-1.5',
           saveStatus === 'saved' && 'text-emerald-500',
@@ -888,6 +1023,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         onConfirm={handleImportConfirm}
         onCancel={() => setImportResult(null)}
         importing={importing}
+        unitPlural={cfg.unitPlural}
       />
     </div>
   );
