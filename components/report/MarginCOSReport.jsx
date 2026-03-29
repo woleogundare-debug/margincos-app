@@ -1196,7 +1196,7 @@ const TradePage = ({ results, companyName, cfg }) => {
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>P4 | Trade Execution</Text>
+      <Text style={s.sectionTitle}>{cfg.pdf.p4Section}</Text>
       <Text style={s.sectionSub}>
         Promotional impact: {fmt(p4.totalPromoImpact, 'nairaK')} | {lossMaking} loss-making promotions identified
       </Text>
