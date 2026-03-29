@@ -47,7 +47,7 @@ export function AnalysisProvider({ children }) {
     run,
     clear,
     hasResults,
-  } = useAnalysis(skuRows, tradeInvestment);
+  } = useAnalysis(skuRows, tradeInvestment, activePeriod?.vertical);
 
   // ── Load a second period for comparison — does NOT touch primary state ───
   const loadComparisonPeriod = useCallback(async (periodId) => {
@@ -69,7 +69,7 @@ export function AnalysisProvider({ children }) {
       ]);
       if (skuRes.error) throw skuRes.error;
       if (tradeRes.error) throw tradeRes.error;
-      const compResults = runFullAnalysis(skuRes.data || [], tradeRes.data || []);
+      const compResults = runFullAnalysis(skuRes.data || [], tradeRes.data || [], compPeriodMeta?.vertical);
       setComparisonResults(compResults);
     } catch (err) {
       console.error('[loadComparisonPeriod] Failed:', err.message);

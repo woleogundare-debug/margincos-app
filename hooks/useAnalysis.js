@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { runFullAnalysis } from '../lib/engine/analysis';
 
-export function useAnalysis(skuRows, tradeInvestment) {
+export function useAnalysis(skuRows, tradeInvestment, vertical) {
   const [results,   setResults]   = useState(null);
   const [running,   setRunning]   = useState(false);
   const [ranAt,     setRanAt]     = useState(null);
@@ -17,7 +17,7 @@ export function useAnalysis(skuRows, tradeInvestment) {
     // Use setTimeout to yield to the UI before the computation
     setTimeout(() => {
       try {
-        const result = runFullAnalysis(skuRows, tradeInvestment || []);
+        const result = runFullAnalysis(skuRows, tradeInvestment || [], vertical);
         if (!result) {
           setError('No active SKUs found. Mark at least one SKU as active.');
         } else {
@@ -30,7 +30,7 @@ export function useAnalysis(skuRows, tradeInvestment) {
         setRunning(false);
       }
     }, 50);
-  }, [skuRows, tradeInvestment]);
+  }, [skuRows, tradeInvestment, vertical]);
 
   const clear = useCallback(() => {
     setResults(null);

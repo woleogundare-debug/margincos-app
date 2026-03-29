@@ -308,11 +308,13 @@ export default function PortfolioPage() {
               </p>
             )}
 
-            {/* Tab bar: Portfolio / Trade Investment */}
+            {/* Tab bar: Portfolio / Trade Investment (Trade Investment hidden for Logistics) */}
             <div className="flex items-center gap-1 mb-4 border-b border-slate-200">
               {[
                 { key: 'sku', label: cfg.portfolioTab },
-                { key: 'trade', label: 'Trade Investment' },
+                ...(activePeriod?.vertical !== 'Logistics'
+                  ? [{ key: 'trade', label: 'Trade Investment' }]
+                  : []),
               ].map(tab => (
                 <button key={tab.key} onClick={() => setActiveTab(tab.key)}
                   className={`px-4 py-2.5 text-sm font-semibold transition-all relative ${
@@ -395,8 +397,8 @@ export default function PortfolioPage() {
               </>
             )}
 
-            {/* Trade Investment tab */}
-            {activeTab === 'trade' && (
+            {/* Trade Investment tab — only for non-Logistics verticals */}
+            {activeTab === 'trade' && activePeriod?.vertical !== 'Logistics' && (
               <TradeInvestmentForm
                 tradeInvestment={tradeInvestment}
                 onSave={saveTradeInvestment}

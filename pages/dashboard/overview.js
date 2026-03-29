@@ -114,8 +114,8 @@ export default function OverviewPage() {
               </p>
               <p className="text-xs text-slate-400 mt-0.5">
                 {hasResults
-                  ? `Last run: ${ranAt?.toLocaleTimeString()} · ${results?.skuCount} active SKUs`
-                  : `${skuRows.filter(r => r.active === 'Y' || r.active === true).length} SKUs in portfolio`}
+                  ? `Last run: ${ranAt?.toLocaleTimeString()} · ${results?.skuCount} active ${cfg.unitPlural}`
+                  : `${skuRows.filter(r => r.active === 'Y' || r.active === true).length} ${cfg.unitPlural} in portfolio`}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -231,7 +231,7 @@ export default function OverviewPage() {
               <KpiTile
                 label="Total Revenue"
                 value={fNAbs(results.totalRevenue)}
-                pill={`${results.skuCount} active SKUs`}
+                pill={`${results.skuCount} active ${cfg.unitPlural}`}
                 accent="teal"
                 description="Monthly revenue across all active SKUs"
                 delta={deltas?.portfolio?.revenue && deltas.portfolio.revenue.direction !== 'flat' && Math.abs(deltas.portfolio.revenue.value) >= 1 ? {
