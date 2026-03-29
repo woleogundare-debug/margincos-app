@@ -11,7 +11,7 @@ const PLATFORM_SECTORS = [
   { href: '/platform/fmcg',        label: 'FMCG',                   soon: false, dividerBefore: true  },
   { href: '/platform/manufacturing',label: 'Manufacturing',          soon: false, dividerBefore: false },
   { href: '/platform/retail',      label: 'Retail',                 soon: false, dividerBefore: false },
-  { href: '/platform/logistics',   label: 'Logistics',              soon: true,  dividerBefore: true  },
+  { href: '/platform/logistics',   label: 'Logistics',              soon: false, dividerBefore: true  },
   { href: '/platform/it-services', label: 'IT Services',            soon: true,  dividerBefore: false },
   { href: '/platform/telecoms',    label: 'Telecoms',               soon: true,  dividerBefore: false },
   { href: '/platform/aviation',    label: 'Aviation',               soon: true,  dividerBefore: false },

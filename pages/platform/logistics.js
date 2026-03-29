@@ -65,7 +65,7 @@ export default function LogisticsPage() {
         { id: 'M4', name: 'Customer Profitability Scorecard', desc: 'Rank every customer relationship by true net margin contribution after capacity, fuel, and credit costs. Identify who to reward, renegotiate, or exit.' },
       ]}
       ctaText="See what MarginCOS finds in your logistics operation"
-      isLive={false}
+      isLive={true}
     />
   );
 }
