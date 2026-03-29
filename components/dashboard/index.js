@@ -63,14 +63,25 @@ export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal', 
 }
 
 // ── Pillar Card ────────────────────────────────────────────────────────────
-export function PillarCard({ title, subtitle, accentColor, ragStatus, children }) {
+// Optional `code` prop (e.g. "M1", "P2") renders as a coloured pill left of the title.
+export function PillarCard({ code, title, subtitle, accentColor, ragStatus, children }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100"
         style={{ borderLeftWidth: 4, borderLeftColor: accentColor }}>
-        <div>
-          <h3 className="text-sm font-bold text-navy"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{title}</h3>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2.5 mb-0.5">
+            {code && (
+              <span
+                className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md flex-shrink-0"
+                style={{ backgroundColor: accentColor + '20', color: accentColor }}
+              >
+                {code}
+              </span>
+            )}
+            <h3 className="text-sm font-bold text-navy"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{title}</h3>
+          </div>
           {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
         </div>
         {ragStatus && <RagBadge status={ragStatus} />}

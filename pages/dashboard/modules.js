@@ -278,46 +278,60 @@ export default function ModulesPage() {
           </div>
         )}
 
-        <div className="space-y-6">
+        <div className="space-y-12">
           {/* M1 */}
-          <ModuleGate tier={tier} moduleName={`M1 · ${cfg.m1.name}`}
-            description={`Classifies every ${cfg.unit} into a strategic quadrant based on margin and revenue share. Identifies dilutive ${cfg.unitPlural}, delist candidates, and high-value defenders.`}>
-            <PillarCard title={`M1 · ${cfg.m1.name}`}
-              subtitle="Quadrant classification: Protect · Grow · Reprice · Review"
-              accentColor="#7C3AED" ragStatus={null}>
-              <M1Module results={results} deltas={deltas} cfg={cfg} />
-            </PillarCard>
-          </ModuleGate>
+          <section>
+            <ModuleGate tier={tier} moduleName={`M1 · ${cfg.m1.name}`}
+              description={`Classifies every ${cfg.unit} into a strategic quadrant based on margin and revenue share. Identifies dilutive ${cfg.unitPlural}, delist candidates, and high-value defenders.`}>
+              <PillarCard code="M1" title={cfg.m1.name}
+                subtitle="Quadrant classification: Protect · Grow · Reprice · Review"
+                accentColor="#7C3AED" ragStatus={null}>
+                <M1Module results={results} deltas={deltas} cfg={cfg} />
+              </PillarCard>
+            </ModuleGate>
+          </section>
+
+          <hr className="border-slate-200" />
 
           {/* M2 */}
-          <ModuleGate tier={tier} moduleName={`M2 · ${cfg.m2.name}`}
-            description="Projects margin impact under five cost recovery scenarios from 0% to 100%. Identifies the minimum recovery rate required to defend the portfolio.">
-            <PillarCard title={`M2 · ${cfg.m2.name}`}
-              subtitle="Five scenarios: 0% → 100% cost recovery rate"
-              accentColor="#DC2626" ragStatus={null}>
-              <M2Module results={results} deltas={deltas} cfg={cfg} />
-            </PillarCard>
-          </ModuleGate>
+          <section>
+            <ModuleGate tier={tier} moduleName={`M2 · ${cfg.m2.name}`}
+              description="Projects margin impact under five cost recovery scenarios from 0% to 100%. Identifies the minimum recovery rate required to defend the portfolio.">
+              <PillarCard code="M2" title={cfg.m2.name}
+                subtitle="Five scenarios: 0% → 100% cost recovery rate"
+                accentColor="#DC2626" ragStatus={null}>
+                <M2Module results={results} deltas={deltas} cfg={cfg} />
+              </PillarCard>
+            </ModuleGate>
+          </section>
+
+          <hr className="border-slate-200" />
 
           {/* M3 */}
-          <ModuleGate tier={tier} moduleName={`M3 · ${cfg.m3.name}`}
-            description="Computes return on trade investment by channel. Identifies dilutive spend, accretive channels, and reallocation opportunities.">
-            <PillarCard title={`M3 · ${cfg.m3.name}`}
-              subtitle="ROI per channel · Blended portfolio ROI · Spend intensity"
-              accentColor="#D97706" ragStatus={null}>
-              <M3Module results={results} deltas={deltas} cfg={cfg} />
-            </PillarCard>
-          </ModuleGate>
+          <section>
+            <ModuleGate tier={tier} moduleName={`M3 · ${cfg.m3.name}`}
+              description="Computes return on trade investment by channel. Identifies dilutive spend, accretive channels, and reallocation opportunities.">
+              <PillarCard code="M3" title={cfg.m3.name}
+                subtitle="ROI per channel · Blended portfolio ROI · Spend intensity"
+                accentColor="#D97706" ragStatus={null}>
+                <M3Module results={results} deltas={deltas} cfg={cfg} />
+              </PillarCard>
+            </ModuleGate>
+          </section>
+
+          <hr className="border-slate-200" />
 
           {/* M4 */}
-          <ModuleGate tier={tier} moduleName={`M4 · ${cfg.m4.name}`}
-            description={`Scores every named ${cfg.fields.partner.toLowerCase()} on true contribution margin (net of margin, rebates, logistics, and credit cost). Classifies into Strategic, Grow, Renegotiate, Review.`}>
-            <PillarCard title={`M4 · ${cfg.m4.name}`}
-              subtitle="True contribution · Credit cost · 2×2 quadrant scoring"
-              accentColor="#0D9488" ragStatus={null}>
-              <M4Module results={results} deltas={deltas} cfg={cfg} />
-            </PillarCard>
-          </ModuleGate>
+          <section>
+            <ModuleGate tier={tier} moduleName={`M4 · ${cfg.m4.name}`}
+              description={`Scores every named ${cfg.fields.partner.toLowerCase()} on true contribution margin (net of margin, rebates, logistics, and credit cost). Classifies into Strategic, Grow, Renegotiate, Review.`}>
+              <PillarCard code="M4" title={cfg.m4.name}
+                subtitle="True contribution · Credit cost · 2×2 quadrant scoring"
+                accentColor="#0D9488" ragStatus={null}>
+                <M4Module results={results} deltas={deltas} cfg={cfg} />
+              </PillarCard>
+            </ModuleGate>
+          </section>
         </div>
       </DashboardLayout>
     </>
