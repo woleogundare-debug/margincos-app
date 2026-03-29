@@ -4,6 +4,7 @@ import {
   Svg, Rect, Circle, Line, G, Text as SvgText, Path, Defs, LinearGradient, Stop,
 } from '@react-pdf/renderer';
 import { computeDeltas } from '../../lib/engine/delta';
+import { getSectorConfig } from '../../lib/sectorConfig';
 
 /* ── Fonts (TTF required — React-PDF cannot parse woff2) ──── */
 Font.register({
@@ -169,7 +170,7 @@ const fmtN = (v) => {
   return `${sign}NGN ${abs.toFixed(0)}`;
 };
 
-const TruncationNotice = ({ shown, total }) => (
+const TruncationNotice = ({ shown, total, unitPlural }) => (
   <View style={{
     marginTop: 6,
     padding: '5 10',
@@ -180,7 +181,7 @@ const TruncationNotice = ({ shown, total }) => (
     flexDirection: 'row',
   }}>
     <Text style={{ fontSize: 8, color: C.gold, fontWeight: 700 }}>
-      {`Showing top ${shown} of ${total} SKUs — sorted by financial impact (largest first)`}
+      {`Showing top ${shown} of ${total} ${unitPlural} — sorted by financial impact (largest first)`}
     </Text>
   </View>
 );
@@ -435,7 +436,7 @@ const M3TradeROISvg = ({ results }) => {
    ══════════════════════════════════════════════════════════════ */
 
 /* ── P1 Chart Page ────────────────────────────────────────── */
-const P1ChartPage = ({ results, companyName }) => {
+const P1ChartPage = ({ results, companyName, cfg }) => {
   if (!results?.p1?.results?.length) return null;
   const data = [...(results.p1.results)]
     .sort((a, b) => (b.delta || 0) - (a.delta || 0))
@@ -447,7 +448,7 @@ const P1ChartPage = ({ results, companyName }) => {
   return (
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P1 · Repricing Opportunities</Text>
-      <Text style={s.sectionSub}>Top 15 SKUs by margin gain potential — sorted by price delta descending</Text>
+      <Text style={s.sectionSub}>{`Top 15 ${cfg.unitPlural} by margin gain potential — sorted by price delta descending`}</Text>
       <Svg width={W} height={H}>
         <G>
           {/* zero line */}
@@ -540,7 +541,7 @@ const P4ChartPage = ({ results, companyName }) => {
 };
 
 /* ── M1 Chart Page ────────────────────────────────────────── */
-const M1ChartPage = ({ results, companyName }) => {
+const M1ChartPage = ({ results, companyName, cfg }) => {
   if (!results?.m1?.results?.length) return null;
   const m1 = results.m1;
   const data = m1.results.map(r => ({
@@ -564,9 +565,9 @@ const M1ChartPage = ({ results, companyName }) => {
   const refX = tx(5);
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>M1 · SKU Portfolio Quadrant</Text>
-      <Text style={s.sectionSub}>Revenue share % vs SKU margin % · Reference lines at 5% share and portfolio average margin</Text>
-      <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans', marginBottom: 4, marginLeft: 36 }}>↑ SKU Margin %</Text>
+      <Text style={s.sectionTitle}>{`M1 · ${cfg.unitName} Portfolio Quadrant`}</Text>
+      <Text style={s.sectionSub}>{`Revenue share % vs ${cfg.unit} margin % · Reference lines at 5% share and portfolio average margin`}</Text>
+      <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans', marginBottom: 4, marginLeft: 36 }}>{`↑ ${cfg.unitName} Margin %`}</Text>
       <Svg width={W} height={H}>
         <G>
           {/* grid lines */}
@@ -605,7 +606,7 @@ const M1ChartPage = ({ results, companyName }) => {
 };
 
 /* ── M4 Chart Page ────────────────────────────────────────── */
-const M4ChartPage = ({ results, companyName }) => {
+const M4ChartPage = ({ results, companyName, cfg }) => {
   if (!results?.m4?.results?.length) return null;
   const m4 = results.m4;
   const data = m4.results.map(r => ({
@@ -634,7 +635,7 @@ const M4ChartPage = ({ results, companyName }) => {
   const refX = tx(10);
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>M4 · Distributor Performance Matrix</Text>
+      <Text style={s.sectionTitle}>{`M4 · ${cfg.fields.partner} Performance Matrix`}</Text>
       <Text style={s.sectionSub}>Revenue share % vs true contribution % · Reference lines at 10% share and average contribution</Text>
       <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans', marginBottom: 4, marginLeft: 36 }}>↑ True Contribution %</Text>
       <Svg width={W} height={H}>
@@ -674,7 +675,7 @@ const M4ChartPage = ({ results, companyName }) => {
    NARRATIVE GENERATORS — P1 through P4
    ══════════════════════════════════════════════════════════════ */
 
-const getPricingNarrative = (results) => {
+const getPricingNarrative = (results, cfg) => {
   const p1 = results?.p1 || {};
   const skus = p1.results || [];
   const realisation = p1.priceRealisation || 0;
@@ -687,29 +688,29 @@ const getPricingNarrative = (results) => {
   if (realisation >= 90) {
     lines.push(`Your portfolio is achieving ${realisation.toFixed(1)}% of its willingness-to-pay potential — a strong realisation score that indicates pricing is broadly aligned with market tolerance.`);
   } else if (realisation >= 75) {
-    lines.push(`At ${realisation.toFixed(1)}% price realisation, your portfolio is capturing most but not all of its available pricing headroom. A targeted repricing exercise on the highest-gap SKUs would close this without broad price exposure.`);
+    lines.push(`At ${realisation.toFixed(1)}% price realisation, your portfolio is capturing most but not all of its available pricing headroom. A targeted repricing exercise on the highest-gap ${cfg.unitPlural} would close this without broad price exposure.`);
   } else {
-    lines.push(`A price realisation score of ${realisation.toFixed(1)}% indicates significant underpricing across the portfolio. Consumer willingness-to-pay has not been fully tested — this is recoverable margin that does not require new volume.`);
+    lines.push(`A price realisation score of ${realisation.toFixed(1)}% indicates significant underpricing across the portfolio. Willingness-to-pay has not been fully tested — this is recoverable margin that does not require new volume.`);
   }
 
   if (totalGain > 0) {
-    lines.push(`Proposed price adjustments on ${underpriced} SKU${underpriced !== 1 ? 's' : ''} would add ${fmt(totalGain, 'nairaK')} per month in margin without volume impact, based on elasticity modelling against current RRP and competitor price anchors.`);
+    lines.push(`Proposed price adjustments on ${underpriced} ${underpriced !== 1 ? cfg.unitPlural : cfg.unit} would add ${fmt(totalGain, 'nairaK')} per month in margin without volume impact, based on elasticity modelling against current pricing and competitor anchors.`);
   }
 
   if (wtpGap > 0) {
-    lines.push(`A combined ${fmt(wtpGap, 'nairaK')} in untapped willingness-to-pay headroom exists across the portfolio. This represents the gap between current pricing and the price point at which volume loss would begin — the priority is to sequence price moves from lowest-elasticity SKUs first.`);
+    lines.push(`A combined ${fmt(wtpGap, 'nairaK')} in untapped willingness-to-pay headroom exists across the portfolio. This represents the gap between current pricing and the price point at which volume loss would begin — the priority is to sequence price moves from lowest-elasticity ${cfg.unitPlural} first.`);
   }
 
   if (floorBreaches > 0) {
-    lines.push(`${floorBreaches} SKU${floorBreaches !== 1 ? 's are' : ' is'} currently priced below the minimum margin floor. Immediate corrective action is required — these SKUs are diluting portfolio margin with every unit sold.`);
+    lines.push(`${floorBreaches} ${floorBreaches !== 1 ? cfg.unitPlural + ' are' : cfg.unit + ' is'} currently priced below the minimum margin floor. Immediate corrective action is required — these ${cfg.unitPlural} are diluting portfolio margin with every unit sold.`);
   } else {
-    lines.push(`No SKUs are currently breaching the minimum margin floor — the portfolio is structurally sound on pricing floor compliance.`);
+    lines.push(`No ${cfg.unitPlural} are currently breaching the minimum margin floor — the portfolio is structurally sound on pricing floor compliance.`);
   }
 
   return lines;
 };
 
-const getCostNarrative = (results) => {
+const getCostNarrative = (results, cfg) => {
   const p2 = results?.p2 || {};
   const skus = p2.results || [];
   const portRecovery = p2.portRecoveryPct || 0;
@@ -719,11 +720,11 @@ const getCostNarrative = (results) => {
   const lines = [];
 
   if (portRecovery >= 70) {
-    lines.push(`Your portfolio is recovering ${portRecovery.toFixed(1)}% of input cost inflation through pricing — broadly in line with the 70-75% benchmark achieved by Nigerian FMCG leaders operating in comparable categories.`);
+    lines.push(`Your portfolio is recovering ${portRecovery.toFixed(1)}% of input cost inflation through pricing — broadly in line with the 70-75% benchmark achieved by market leaders operating in comparable categories.`);
   } else if (portRecovery >= 50) {
     lines.push(`At a ${portRecovery.toFixed(1)}% cost recovery rate, the portfolio is absorbing a meaningful portion of input cost inflation that peer companies are successfully passing through. The gap to the 70-75% leadership benchmark is ${(72.5 - portRecovery).toFixed(1)} percentage points.`);
   } else {
-    lines.push(`A cost recovery rate of ${portRecovery.toFixed(1)}% is significantly below the 70-75% benchmark among Nigerian FMCG leaders. The portfolio is absorbing ${fmt(totalAbsorbed, 'nairaK')} per month in inflation costs that the market would likely accept being priced through.`);
+    lines.push(`A cost recovery rate of ${portRecovery.toFixed(1)}% is significantly below the 70-75% benchmark among market leaders. The portfolio is absorbing ${fmt(totalAbsorbed, 'nairaK')} per month in inflation costs that the market would likely accept being priced through.`);
   }
 
   if (totalAbsorbed > 0 && totalShock > 0) {
@@ -732,14 +733,14 @@ const getCostNarrative = (results) => {
   }
 
   if (highAbsorption > 0) {
-    lines.push(`${highAbsorption} SKU${highAbsorption !== 1 ? 's' : ''} ${highAbsorption !== 1 ? 'are' : 'is'} absorbing more than 70% of their individual cost inflation. These represent the highest-priority intervention — either a pricing revision or a contractual cost-indexed escalation clause with distributors is required.`);
+    lines.push(`${highAbsorption} ${highAbsorption !== 1 ? cfg.unitPlural : cfg.unit} ${highAbsorption !== 1 ? 'are' : 'is'} absorbing more than 70% of their individual cost inflation. These represent the highest-priority intervention — either a pricing revision or a contractual cost-indexed escalation clause is required.`);
   }
 
-  lines.push(`The window for cost pass-through narrows as inflationary periods extend — consumer price expectations reset around the new market level, making delayed recovery progressively harder. Early action on high-absorption SKUs preserves more recovery optionality than deferred action.`);
+  lines.push(`The window for cost pass-through narrows as inflationary periods extend — price expectations reset around the new market level, making delayed recovery progressively harder. Early action on high-absorption ${cfg.unitPlural} preserves more recovery optionality than deferred action.`);
   return lines;
 };
 
-const getChannelNarrative = (results) => {
+const getChannelNarrative = (results, cfg) => {
   const p3 = results?.p3 || {};
   const channels = p3.channelResults || [];
   const distExposure = p3.totalDistExposure || results?.distExposure || 0;
@@ -751,7 +752,7 @@ const getChannelNarrative = (results) => {
   if (bestChannel && worstChannel && bestChannel.channel !== worstChannel.channel) {
     lines.push(`Channel contribution margins range from ${fmt(worstChannel.contPct, 'pctRaw')} (${worstChannel.channel}) to ${fmt(bestChannel.contPct, 'pctRaw')} (${bestChannel.channel}). This spread of ${((bestChannel.contPct - worstChannel.contPct)).toFixed(1)} percentage points indicates the route-to-market architecture requires review — not all channels are earning their cost of capital.`);
   } else if (channels.length > 0) {
-    lines.push(`Channel economics show varying contribution margins across active routes-to-market. Understanding the true net contribution per channel — after trade credit cost, logistics, and distributor margin — is essential for allocating volume and promotional investment correctly.`);
+    lines.push(`Channel economics show varying contribution margins across active routes-to-market. Understanding the true net contribution per channel — after trade credit cost, logistics, and ${cfg.fields.partner.toLowerCase()} margin — is essential for allocating volume and investment correctly.`);
   }
 
   if (lowContrib > 0) {
@@ -759,10 +760,10 @@ const getChannelNarrative = (results) => {
   }
 
   if (distExposure > 0) {
-    lines.push(`Distributor credit exposure of ${fmt(distExposure, 'nairaK')} represents capital tied up in the trade that carries an implicit financing cost. In a naira-volatile environment, extended credit terms to open market distributors represent a compounding margin drag that rarely appears in standard P&L reporting.`);
+    lines.push(`${cfg.fields.partner} credit exposure of ${fmt(distExposure, 'nairaK')} represents capital tied up in the trade that carries an implicit financing cost. Extended credit terms represent a compounding margin drag that rarely appears in standard P&L reporting.`);
   }
 
-  lines.push(`The priority action is to renegotiate distributor margin terms and reduce credit days on the lowest-contribution channels before increasing volume allocation. Improving channel economics by 2-3 percentage points on the weakest route typically yields more margin per naira than equivalent promotional spend.`);
+  lines.push(`The priority action is to renegotiate ${cfg.fields.partner.toLowerCase()} margin terms and reduce credit days on the lowest-contribution channels before increasing volume allocation. Improving channel economics by 2-3 percentage points on the weakest route typically yields more margin per naira than equivalent spend.`);
   return lines;
 };
 
@@ -790,7 +791,7 @@ const getTradeNarrative = (results) => {
   }
 
   if (lossMaking > 0) {
-    lines.push(`For each loss-making promotion, the options are: (1) reduce discount depth until the required breakeven lift becomes achievable, (2) negotiate a guaranteed volume commitment from the trade partner, or (3) exit the promotion entirely and redeploy the investment into a channel or SKU with a confirmed positive ROI.`);
+    lines.push(`For each loss-making promotion, the options are: (1) reduce discount depth until the required breakeven lift becomes achievable, (2) negotiate a guaranteed volume commitment from the trade partner, or (3) exit the promotion entirely and redeploy the investment into a channel or item with a confirmed positive ROI.`);
   }
   return lines;
 };
@@ -799,7 +800,7 @@ const getTradeNarrative = (results) => {
    NARRATIVE GENERATORS — M1 through M4
    ══════════════════════════════════════════════════════════════ */
 
-const getM1Narrative = (results) => {
+const getM1Narrative = (results, cfg) => {
   const m1 = results?.m1 || {};
   const skus = m1.results || [];
   const total = skus.length;
@@ -812,24 +813,24 @@ const getM1Narrative = (results) => {
   const avgMargin = m1.portfolioAvgMarginPct || 0;
   const lines = [];
 
-  lines.push(`Of ${total} active SKUs, ${protect} are classified as Protect (high margin, high volume), ${grow} as Grow (high margin, low volume), ${reprice} as Reprice (low margin, high volume), and ${review} as Review (low margin, low volume). This distribution determines where management attention and investment should be concentrated.`);
+  lines.push(`Of ${total} active ${cfg.unitPlural}, ${protect} are classified as Protect (high margin, high volume), ${grow} as Grow (high margin, low volume), ${reprice} as Reprice (low margin, high volume), and ${review} as Review (low margin, low volume). This distribution determines where management attention and investment should be concentrated.`);
 
   if (dilutive > 0) {
-    lines.push(`${dilutive} SKU${dilutive !== 1 ? 's are' : ' is'} below the portfolio average margin of ${avgMargin.toFixed(1)}%, collectively contributing ${fmt(dilutiveMargin, 'nairaK')} in below-average margin. These dilutive SKUs compress the overall portfolio margin — the question is whether their volume contribution justifies the margin drag.`);
+    lines.push(`${dilutive} ${dilutive !== 1 ? cfg.unitPlural + ' are' : cfg.unit + ' is'} below the portfolio average margin of ${avgMargin.toFixed(1)}%, collectively contributing ${fmt(dilutiveMargin, 'nairaK')} in below-average margin. These dilutive ${cfg.unitPlural} compress the overall portfolio margin — the question is whether their volume contribution justifies the margin drag.`);
   }
 
   if (review > 0) {
-    lines.push(`The ${review} SKU${review !== 1 ? 's' : ''} in the Review quadrant (low margin, low volume) are the strongest delist candidates. Exiting these SKUs would simplify the portfolio, reduce operational complexity, and remove the margin dilution they create — without material revenue impact given their low volume share.`);
+    lines.push(`The ${review} ${review !== 1 ? cfg.unitPlural : cfg.unit} in the Review quadrant (low margin, low volume) are the strongest exit candidates. Exiting these ${cfg.unitPlural} would simplify the portfolio, reduce operational complexity, and remove the margin dilution they create — without material revenue impact given their low volume share.`);
   }
 
   if (reprice > 0) {
-    lines.push(`The ${reprice} Reprice SKU${reprice !== 1 ? 's' : ''} present the highest-value opportunity — high-volume products that are underperforming on margin. A targeted pricing adjustment on these SKUs would have disproportionate portfolio impact due to their volume base.`);
+    lines.push(`The ${reprice} Reprice ${reprice !== 1 ? cfg.unitPlural : cfg.unit} present the highest-value opportunity — high-volume items that are underperforming on margin. A targeted pricing adjustment on these ${cfg.unitPlural} would have disproportionate portfolio impact due to their volume base.`);
   }
 
   return lines;
 };
 
-const getM2Narrative = (results) => {
+const getM2Narrative = (results, cfg) => {
   const m2 = results?.m2 || {};
   const scenarios = m2.scenarios || [];
   const totalCogsBase = m2.totalCogsBase || 0;
@@ -845,15 +846,15 @@ const getM2Narrative = (results) => {
     lines.push(`Under a 40% input cost inflation scenario with zero price recovery, portfolio margin would decline by ${fmt(Math.abs(zeroRecovery?.marginChange || worstCase), 'nairaK')} per month — the worst-case exposure. At 50% recovery, the decline moderates to ${fmt(Math.abs(halfRecovery?.marginChange || 0), 'nairaK')}, and at full recovery the portfolio is protected.`);
 
     if (zeroRecovery?.projMarginPct != null) {
-      lines.push(`The zero-recovery scenario would compress the portfolio margin to ${zeroRecovery.projMarginPct.toFixed(1)}%, a ${Math.abs(zeroRecovery.pctPtChange).toFixed(1)} percentage point decline from the current baseline. At this level, several SKUs would be operating below breakeven.`);
+      lines.push(`The zero-recovery scenario would compress the portfolio margin to ${zeroRecovery.projMarginPct.toFixed(1)}%, a ${Math.abs(zeroRecovery.pctPtChange).toFixed(1)} percentage point decline from the current baseline. At this level, several ${cfg.unitPlural} would be operating below breakeven.`);
     }
   }
 
   if (totalCogsBase > 0) {
-    lines.push(`The portfolio has a monthly COGS base of ${fmt(totalCogsBase, 'nairaK')}. Every 10 percentage points of unrecovered inflation adds ${fmt(totalCogsBase * 0.04, 'nairaK')} per month in absorbed cost. The compounding effect over a quarter makes early pricing action significantly more valuable than delayed recovery.`);
+    lines.push(`The portfolio has a monthly cost base of ${fmt(totalCogsBase, 'nairaK')}. Every 10 percentage points of unrecovered inflation adds ${fmt(totalCogsBase * 0.04, 'nairaK')} per month in absorbed cost. The compounding effect over a quarter makes early pricing action significantly more valuable than delayed recovery.`);
   }
 
-  lines.push(`The recommended approach is to pre-index pricing to the most likely inflation scenario rather than reacting to cost increases after they materialise. Companies that establish cost-indexed pricing clauses with distributors before inflationary pressure peaks recover 15-20% more of the cost shock than those that negotiate retroactively.`);
+  lines.push(`The recommended approach is to pre-index pricing to the most likely inflation scenario rather than reacting to cost increases after they materialise. Companies that establish cost-indexed pricing clauses with ${cfg ? cfg.fields.partner.toLowerCase() + 's' : 'partners'} before inflationary pressure peaks recover 15-20% more of the cost shock than those that negotiate retroactively.`);
   return lines;
 };
 
@@ -887,9 +888,9 @@ const getM3Narrative = (results) => {
   return lines;
 };
 
-const getM4Narrative = (results) => {
+const getM4Narrative = (results, cfg) => {
   const m4 = results?.m4 || {};
-  if (!m4.hasData) return ['No distributor data was recorded in this period. Adding distributor-level margin, rebate, and credit terms data will enable a full performance scorecard.'];
+  if (!m4.hasData) return [`No ${cfg.fields.partner.toLowerCase()} data was recorded in this period. Adding ${cfg.fields.partner.toLowerCase()}-level margin, rebate, and credit terms data will enable a full performance scorecard.`];
 
   const distributors = m4.results || [];
   const totalDist = m4.totalDistributors || 0;
@@ -900,18 +901,18 @@ const getM4Narrative = (results) => {
   const reviewDist = distributors.filter(d => d.classification.includes('Review')).length;
   const lines = [];
 
-  lines.push(`The portfolio operates through ${totalDist} active distributor${totalDist !== 1 ? 's' : ''} with an average true net contribution of ${avgCont.toFixed(1)}%. ${strategic} ${strategic !== 1 ? 'are' : 'is'} classified as Strategic (high margin, high volume) — these are the relationships to protect and invest in selectively.`);
+  lines.push(`The portfolio operates through ${totalDist} active ${totalDist !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} with an average true net contribution of ${avgCont.toFixed(1)}%. ${strategic} ${strategic !== 1 ? 'are' : 'is'} classified as Strategic (high margin, high volume) — these are the relationships to protect and invest in selectively.`);
 
   if (renegotiate > 0) {
-    lines.push(`${renegotiate} distributor${renegotiate !== 1 ? 's' : ''} ${renegotiate !== 1 ? 'are' : 'is'} classified as Renegotiate — high volume but dilutive net contribution. These relationships carry disproportionate revenue but are eroding portfolio margin through excessive distributor margins, rebates, or credit terms. Restructuring these terms is the single highest-impact action.`);
+    lines.push(`${renegotiate} ${renegotiate !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} ${renegotiate !== 1 ? 'are' : 'is'} classified as Renegotiate — high volume but dilutive net contribution. These relationships carry disproportionate revenue but are eroding portfolio margin through excessive ${cfg.fields.partner.toLowerCase()} margins, rebates, or credit terms. Restructuring these terms is the single highest-impact action.`);
   }
 
   if (totalCredit > 0) {
-    lines.push(`Implicit credit financing cost across all distributors totals ${fmt(totalCredit, 'nairaK')} per month. This hidden cost of trade credit — calculated at the working capital rate against outstanding credit days — rarely appears in standard channel P&L but directly reduces true net contribution.`);
+    lines.push(`Implicit credit financing cost across all ${cfg.fields.partner.toLowerCase()}s totals ${fmt(totalCredit, 'nairaK')} per month. This hidden cost of trade credit — calculated at the working capital rate against outstanding credit days — rarely appears in standard channel P&L but directly reduces true net contribution.`);
   }
 
   if (reviewDist > 0) {
-    lines.push(`${reviewDist} distributor${reviewDist !== 1 ? 's' : ''} ${reviewDist !== 1 ? 'are' : 'is'} in the Review quadrant — low margin and low volume. These relationships should be evaluated for continuation. Exiting the bottom-quartile distributor relationships and consolidating volume through Strategic and Grow-classified partners typically improves portfolio contribution by 2-4 percentage points.`);
+    lines.push(`${reviewDist} ${renegotiate !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} ${reviewDist !== 1 ? 'are' : 'is'} in the Review quadrant — low margin and low volume. These relationships should be evaluated for continuation. Exiting the bottom-quartile ${cfg.fields.partner.toLowerCase()} relationships and consolidating volume through Strategic and Grow-classified partners typically improves portfolio contribution by 2-4 percentage points.`);
   }
 
   return lines;
@@ -922,27 +923,27 @@ const getM4Narrative = (results) => {
    ══════════════════════════════════════════════════════════════ */
 
 /* ── Cover ─────────────────────────────────────────────────── */
-const getCoverSubtitle = (tier) => {
+const getCoverSubtitle = (tier, cfg) => {
   if (tier === 'enterprise') {
     return 'A full-spectrum margin intelligence analysis across pricing, cost recovery, channel economics, trade execution, and advanced commercial diagnostics — quantified in Naira across your active portfolio.';
   }
   if (tier === 'professional') {
     return 'A comprehensive analysis of pricing intelligence, cost pass-through, channel economics, and trade execution across your active portfolio — every margin leak quantified in Naira.';
   }
-  return 'A pricing intelligence analysis across your active SKU portfolio — quantifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance.';
+  return `A pricing intelligence analysis across your active ${cfg.unit} portfolio — quantifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance.`;
 };
 
-const getSummaryIntro = (tier, skuCount) => {
+const getSummaryIntro = (tier, skuCount, cfg) => {
   if (tier === 'enterprise') {
-    return `This report analyses ${skuCount} active SKUs across all eight analytical engines — pricing intelligence, cost pass-through, channel economics, trade execution, and advanced commercial diagnostics. Every margin opportunity is quantified in Naira.`;
+    return `This report analyses ${skuCount} active ${cfg.unitPlural} across all eight analytical engines — pricing intelligence, cost pass-through, channel economics, trade execution, and advanced commercial diagnostics. Every margin opportunity is quantified in Naira.`;
   }
   if (tier === 'professional') {
-    return `This report analyses ${skuCount} active SKUs across four pillars — pricing intelligence, cost pass-through, channel economics, and trade execution. The analysis identifies actionable margin opportunities and quantifies recovery potential.`;
+    return `This report analyses ${skuCount} active ${cfg.unitPlural} across four pillars — pricing intelligence, cost pass-through, channel economics, and trade execution. The analysis identifies actionable margin opportunities and quantifies recovery potential.`;
   }
-  return `This report analyses ${skuCount} active SKUs across the Pricing Intelligence pillar — identifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance across your active portfolio.`;
+  return `This report analyses ${skuCount} active ${cfg.unitPlural} across the Pricing Intelligence pillar — identifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance across your active portfolio.`;
 };
 
-const CoverPage = ({ companyName, periodLabel, skuCount, tier }) => (
+const CoverPage = ({ companyName, periodLabel, skuCount, tier, cfg }) => (
   <Page size="A4" style={s.coverPage}>
     <View>
       <Text style={{ fontSize: 10, color: C.teal, fontWeight: 700, letterSpacing: 2, marginBottom: 24, textTransform: 'uppercase' }}>
@@ -950,19 +951,19 @@ const CoverPage = ({ companyName, periodLabel, skuCount, tier }) => (
       </Text>
       <Text style={s.coverTitle}>Margin Intelligence Report</Text>
       <Text style={s.coverSub}>
-        {getCoverSubtitle(tier)}
+        {getCoverSubtitle(tier, cfg)}
       </Text>
     </View>
     <View style={s.coverMeta}>
       <Text style={{ fontSize: 11, color: C.white, fontWeight: 700, marginBottom: 6 }}>{companyName || 'Your Company'}</Text>
-      <Text style={s.coverMeta}>Period: {periodLabel || 'Current'} | {skuCount || 0} active SKUs | Generated {today()}</Text>
+      <Text style={s.coverMeta}>{`Period: ${periodLabel || 'Current'} | ${skuCount || 0} active ${cfg.unitPlural} | Generated ${today()}`}</Text>
       <Text style={[s.coverMeta, { marginTop: 10 }]}>A product of Carthena Advisory | carthenaadvisory.com</Text>
     </View>
   </Page>
 );
 
 /* ── Executive Summary ─────────────────────────────────────── */
-const SummaryPage = ({ results, companyName, tier }) => {
+const SummaryPage = ({ results, companyName, tier, cfg }) => {
   const { totalRevenue, totalCurrentMargin, skuCount, p1, p2, actions } = results;
   const marginPct = totalRevenue > 0 ? (totalCurrentMargin / totalRevenue * 100) : 0;
 
@@ -970,14 +971,14 @@ const SummaryPage = ({ results, companyName, tier }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>Executive Summary</Text>
       <Text style={s.sectionSub}>
-        {getSummaryIntro(tier, skuCount)}
+        {getSummaryIntro(tier, skuCount, cfg)}
       </Text>
 
       <View style={s.kpiRow}>
         <View style={s.kpiCard}>
           <Text style={s.kpiLabel}>Total Revenue</Text>
           <Text style={[s.kpiValue, { color: C.navy }]}>{fmt(totalRevenue, 'nairaK')}</Text>
-          <Text style={s.kpiSub}>{skuCount} active SKUs</Text>
+          <Text style={s.kpiSub}>{`${skuCount} active ${cfg.unitPlural}`}</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.teal }]}>
           <Text style={s.kpiLabel}>Portfolio Margin</Text>
@@ -1016,7 +1017,7 @@ const SummaryPage = ({ results, companyName, tier }) => {
 };
 
 /* ── P1 Pricing Intelligence ───────────────────────────────── */
-const PricingPage = ({ results, companyName }) => {
+const PricingPage = ({ results, companyName, cfg }) => {
   const p1 = results?.p1;
   if (!p1?.results?.length) return null;
   const sorted = [...p1.results].sort((a, b) => (b.delta || 0) - (a.delta || 0));
@@ -1027,8 +1028,8 @@ const PricingPage = ({ results, companyName }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P1 | Pricing Intelligence</Text>
       <Text style={s.sectionSub}>
-        Price realisation score: {fmt(p1.priceRealisation, 'pctRaw')} | Total repricing opportunity: {fmt(p1.totalGain, 'nairaK')} /month
-        {p1.floorBreaches?.length > 0 ? ` | ${p1.floorBreaches.length} SKUs below margin floor` : ''}
+        {`Price realisation score: ${fmt(p1.priceRealisation, 'pctRaw')} | Total repricing opportunity: ${fmt(p1.totalGain, 'nairaK')} /month`}
+        {p1.floorBreaches?.length > 0 ? ` | ${p1.floorBreaches.length} ${cfg.unitPlural} below margin floor` : ''}
       </Text>
 
       <View style={s.kpiRow}>
@@ -1044,14 +1045,14 @@ const PricingPage = ({ results, companyName }) => {
         <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
           <Text style={s.kpiLabel}>Floor Breaches</Text>
           <Text style={[s.kpiValue, { color: C.red }]}>{p1.floorBreaches?.length || 0}</Text>
-          <Text style={s.kpiSub}>SKUs below margin floor</Text>
+          <Text style={s.kpiSub}>{`${cfg.unitPlural} below margin floor`}</Text>
         </View>
       </View>
 
-      <NarrativeBlock lines={getPricingNarrative(results)} />
+      <NarrativeBlock lines={getPricingNarrative(results, cfg)} />
 
       <View style={s.tableHeader}>
-        <Text style={[s.tableHeaderCell, { width: '25%' }]}>SKU</Text>
+        <Text style={[s.tableHeaderCell, { width: '25%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Price</Text>
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>COGS</Text>
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Margin %</Text>
@@ -1068,14 +1069,14 @@ const PricingPage = ({ results, companyName }) => {
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{r.compGap != null ? fmt(r.compGap, 'pctRaw') : '—'}</Text>
         </View>
       ))}
-      {truncated && <TruncationNotice shown={20} total={sorted.length} />}
+      {truncated && <TruncationNotice shown={20} total={sorted.length} unitPlural={cfg.unitPlural} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
 };
 
 /* ── P2 Cost Pass-Through ──────────────────────────────────── */
-const CostPage = ({ results, companyName }) => {
+const CostPage = ({ results, companyName, cfg }) => {
   const p2 = results?.p2;
   if (!p2?.results?.length) return null;
   const sorted = [...p2.results].sort((a, b) => (b.absorbed || 0) - (a.absorbed || 0));
@@ -1086,8 +1087,7 @@ const CostPage = ({ results, companyName }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P2 | Cost Pass-Through</Text>
       <Text style={s.sectionSub}>
-        Portfolio recovery rate: {fmt(p2.portRecoveryPct, 'pctRaw')} | Total cost absorbed: {fmt(p2.totalAbsorbed, 'nairaK')} /month
-        | Average SKU absorption: {fmt(p2.avgAbsorbedPct, 'pctRaw')}
+        {`Portfolio recovery rate: ${fmt(p2.portRecoveryPct, 'pctRaw')} | Total cost absorbed: ${fmt(p2.totalAbsorbed, 'nairaK')} /month | Average ${cfg.unit} absorption: ${fmt(p2.avgAbsorbedPct, 'pctRaw')}`}
       </Text>
 
       <View style={s.kpiRow}>
@@ -1108,11 +1108,11 @@ const CostPage = ({ results, companyName }) => {
         </View>
       </View>
 
-      <NarrativeBlock lines={getCostNarrative(results)} />
+      <NarrativeBlock lines={getCostNarrative(results, cfg)} />
       <P2WaterfallSvg p2={p2} />
 
       <View style={s.tableHeader}>
-        <Text style={[s.tableHeaderCell, { width: '28%' }]}>SKU</Text>
+        <Text style={[s.tableHeaderCell, { width: '28%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Inflation</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Pass-Thru</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Absorbed %</Text>
@@ -1129,14 +1129,14 @@ const CostPage = ({ results, companyName }) => {
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.absorbed, 'nairaK')}</Text>
         </View>
       ))}
-      {truncated && <TruncationNotice shown={20} total={sorted.length} />}
+      {truncated && <TruncationNotice shown={20} total={sorted.length} unitPlural={cfg.unitPlural} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
 };
 
 /* ── P3 Channel Economics ──────────────────────────────────── */
-const ChannelPage = ({ results, companyName }) => {
+const ChannelPage = ({ results, companyName, cfg }) => {
   const p3 = results?.p3;
   if (!p3?.channelResults?.length) return null;
 
@@ -1144,7 +1144,7 @@ const ChannelPage = ({ results, companyName }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P3 | Channel Economics</Text>
       <Text style={s.sectionSub}>
-        Contribution margin by channel | Distributor exposure: {fmt(p3.totalDistExposure, 'nairaK')}
+        {`Contribution margin by channel | ${cfg.fields.partner} exposure: ${fmt(p3.totalDistExposure, 'nairaK')}`}
       </Text>
 
       <View style={s.kpiRow}>
@@ -1153,13 +1153,13 @@ const ChannelPage = ({ results, companyName }) => {
           <Text style={[s.kpiValue, { color: C.navy }]}>{p3.channelResults.length}</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
-          <Text style={s.kpiLabel}>Distributor Exposure</Text>
+          <Text style={s.kpiLabel}>{`${cfg.fields.partner} Exposure`}</Text>
           <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(p3.totalDistExposure, 'nairaK')}</Text>
           <Text style={s.kpiSub}>Trade credit at risk</Text>
         </View>
       </View>
 
-      <NarrativeBlock lines={getChannelNarrative(results)} />
+      <NarrativeBlock lines={getChannelNarrative(results, cfg)} />
       <P3ChannelSvg channelResults={p3.channelResults} />
 
       <View style={s.tableHeader}>
@@ -1167,7 +1167,7 @@ const ChannelPage = ({ results, companyName }) => {
         <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'right' }]}>Revenue</Text>
         <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'right' }]}>Contribution</Text>
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Cont. %</Text>
-        <Text style={[s.tableHeaderCell, { width: '10%', textAlign: 'right' }]}>SKUs</Text>
+        <Text style={[s.tableHeaderCell, { width: '10%', textAlign: 'right' }]}>{cfg.unitPlural}</Text>
         <Text style={[s.tableHeaderCell, { width: '10%', textAlign: 'right' }]}>Vol</Text>
       </View>
       {p3.channelResults.map((ch, i) => (
@@ -1186,7 +1186,7 @@ const ChannelPage = ({ results, companyName }) => {
 };
 
 /* ── P4 Trade Execution ────────────────────────────────────── */
-const TradePage = ({ results, companyName }) => {
+const TradePage = ({ results, companyName, cfg }) => {
   const p4 = results?.p4;
   if (!p4?.results?.length) return null;
   const sorted = [...p4.results].sort((a, b) => Math.abs(b.netImpact || 0) - Math.abs(a.netImpact || 0));
@@ -1217,7 +1217,7 @@ const TradePage = ({ results, companyName }) => {
       <NarrativeBlock lines={getTradeNarrative(results)} />
 
       <View style={s.tableHeader}>
-        <Text style={[s.tableHeaderCell, { width: '22%' }]}>SKU</Text>
+        <Text style={[s.tableHeaderCell, { width: '22%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'right' }]}>Depth</Text>
         <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'right' }]}>Lift</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>BEV Lift</Text>
@@ -1247,7 +1247,7 @@ const TradePage = ({ results, companyName }) => {
           </View>
         </View>
       ))}
-      {truncated && <TruncationNotice shown={20} total={sorted.length} />}
+      {truncated && <TruncationNotice shown={20} total={sorted.length} unitPlural={cfg.unitPlural} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
@@ -1257,8 +1257,8 @@ const TradePage = ({ results, companyName }) => {
    ENTERPRISE MODULE PAGES — M1 through M4
    ══════════════════════════════════════════════════════════════ */
 
-/* ── M1 SKU Portfolio Rationalisation ──────────────────────── */
-const M1Page = ({ results, companyName }) => {
+/* ── M1 Portfolio Rationalisation ──────────────────────────── */
+const M1Page = ({ results, companyName, cfg }) => {
   const m1 = results?.m1;
   if (!m1?.results?.length) return null;
   const rows = m1.results.slice(0, 25);
@@ -1266,9 +1266,9 @@ const M1Page = ({ results, companyName }) => {
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>M1 | SKU Portfolio Rationalisation</Text>
+      <Text style={s.sectionTitle}>{`M1 | ${cfg.unitName} Portfolio Rationalisation`}</Text>
       <Text style={s.sectionSub}>
-        Portfolio avg margin: {fmt(m1.portfolioAvgMarginPct, 'pctRaw')} | {m1.dilutiveCount} dilutive SKUs | Margin at stake: {fmt(m1.marginAtStake, 'nairaK')}
+        {`Portfolio avg margin: ${fmt(m1.portfolioAvgMarginPct, 'pctRaw')} | ${m1.dilutiveCount} dilutive ${cfg.unitPlural} | Margin at stake: ${fmt(m1.marginAtStake, 'nairaK')}`}
       </Text>
 
       <View style={s.kpiRow}>
@@ -1278,21 +1278,21 @@ const M1Page = ({ results, companyName }) => {
           <Text style={s.kpiSub}>Portfolio average</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
-          <Text style={s.kpiLabel}>Dilutive SKUs</Text>
+          <Text style={s.kpiLabel}>{`Dilutive ${cfg.unitPlural}`}</Text>
           <Text style={[s.kpiValue, { color: C.red }]}>{m1.dilutiveCount}</Text>
           <Text style={s.kpiSub}>Below average margin</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
           <Text style={s.kpiLabel}>Margin at Stake</Text>
           <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(m1.marginAtStake, 'nairaK')}</Text>
-          <Text style={s.kpiSub}>From dilutive SKUs</Text>
+          <Text style={s.kpiSub}>{`From dilutive ${cfg.unitPlural}`}</Text>
         </View>
       </View>
 
-      <NarrativeBlock lines={getM1Narrative(results)} />
+      <NarrativeBlock lines={getM1Narrative(results, cfg)} />
 
       <View style={s.tableHeader}>
-        <Text style={[s.tableHeaderCell, { width: '22%' }]}>SKU</Text>
+        <Text style={[s.tableHeaderCell, { width: '22%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Margin %</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Rev Share</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>vs Avg</Text>
@@ -1315,14 +1315,14 @@ const M1Page = ({ results, companyName }) => {
           <Text style={[s.tableCell, { width: '18%', textAlign: 'right' }]}>{fmt(r.skuMarginAbs, 'nairaK')}</Text>
         </View>
       ))}
-      {truncated && <TruncationNotice shown={25} total={m1.results.length} />}
+      {truncated && <TruncationNotice shown={25} total={m1.results.length} unitPlural={cfg.unitPlural} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
 };
 
 /* ── M2 Forward Inflation Scenario ─────────────────────────── */
-const M2Page = ({ results, companyName }) => {
+const M2Page = ({ results, companyName, cfg }) => {
   const m2 = results?.m2;
   if (!m2?.scenarios?.length) return null;
 
@@ -1351,7 +1351,7 @@ const M2Page = ({ results, companyName }) => {
         </View>
       </View>
 
-      <NarrativeBlock lines={getM2Narrative(results)} />
+      <NarrativeBlock lines={getM2Narrative(results, cfg)} />
       <M2ScenarioSvg scenarios={m2.scenarios} />
 
       <View style={{ marginTop: 20 }}>
@@ -1384,7 +1384,7 @@ const M2Page = ({ results, companyName }) => {
 };
 
 /* ── M3 Trade Spend ROI ────────────────────────────────────── */
-const M3Page = ({ results, companyName }) => {
+const M3Page = ({ results, companyName, cfg }) => {
   const m3 = results?.m3;
   if (!m3?.hasData) return null;
   const rows = m3.results || [];
@@ -1418,7 +1418,7 @@ const M3Page = ({ results, companyName }) => {
         )}
       </View>
 
-      <NarrativeBlock lines={getM3Narrative(results)} />
+      <NarrativeBlock lines={getM3Narrative(results, cfg)} />
       <M3TradeROISvg results={m3.results} />
 
       <View style={s.tableHeader}>
@@ -1446,8 +1446,8 @@ const M3Page = ({ results, companyName }) => {
   );
 };
 
-/* ── M4 Distributor Performance Scorecard ──────────────────── */
-const M4Page = ({ results, companyName }) => {
+/* ── M4 Partner Performance Scorecard ──────────────────────── */
+const M4Page = ({ results, companyName, cfg }) => {
   const m4 = results?.m4;
   if (!m4?.hasData) return null;
   const rows = m4.results.slice(0, 20);
@@ -1455,14 +1455,14 @@ const M4Page = ({ results, companyName }) => {
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>M4 | Distributor Performance Scorecard</Text>
+      <Text style={s.sectionTitle}>{`M4 | ${cfg.fields.partner} Performance Scorecard`}</Text>
       <Text style={s.sectionSub}>
-        {m4.totalDistributors} distributors | Avg net contribution: {fmt(m4.avgContPct, 'pctRaw')} | Credit financing cost: {fmt(m4.totalCreditCost, 'nairaK')} /month
+        {`${m4.totalDistributors} ${cfg.fields.partner.toLowerCase()}s | Avg net contribution: ${fmt(m4.avgContPct, 'pctRaw')} | Credit financing cost: ${fmt(m4.totalCreditCost, 'nairaK')} /month`}
       </Text>
 
       <View style={s.kpiRow}>
         <View style={s.kpiCard}>
-          <Text style={s.kpiLabel}>Distributors</Text>
+          <Text style={s.kpiLabel}>{cfg.fields.partner}s</Text>
           <Text style={[s.kpiValue, { color: C.navy }]}>{m4.totalDistributors}</Text>
           <Text style={s.kpiSub}>Active relationships</Text>
         </View>
@@ -1478,10 +1478,10 @@ const M4Page = ({ results, companyName }) => {
         </View>
       </View>
 
-      <NarrativeBlock lines={getM4Narrative(results)} />
+      <NarrativeBlock lines={getM4Narrative(results, cfg)} />
 
       <View style={s.tableHeader}>
-        <Text style={[s.tableHeaderCell, { width: '20%' }]}>Distributor</Text>
+        <Text style={[s.tableHeaderCell, { width: '20%' }]}>{cfg.fields.partner}</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Revenue</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>True Cont.</Text>
         <Text style={[s.tableHeaderCell, { width: '10%', textAlign: 'right' }]}>Cont. %</Text>
@@ -1504,14 +1504,14 @@ const M4Page = ({ results, companyName }) => {
           </View>
         </View>
       ))}
-      {truncated && <TruncationNotice shown={20} total={m4.results.length} />}
+      {truncated && <TruncationNotice shown={20} total={m4.results.length} unitPlural={cfg.unitPlural} />}
       <PageFooter companyName={companyName} />
     </Page>
   );
 };
 
 /* ── Trend narrative generator ─────────────────────────────── */
-function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, currSkuCount) {
+function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, currSkuCount, cfg) {
   if (!deltas) return '';
 
   const metrics = [
@@ -1537,8 +1537,10 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
     const diff = currSkuCount - prevSkuCount;
     const abs  = Math.abs(diff);
     const dir  = diff > 0 ? 'expanded' : 'contracted';
+    const unitPlural = cfg ? cfg.unitPlural : 'SKUs';
+    const unitWord = cfg ? cfg.unit : 'SKU';
     parts.push(
-      `Note: the active portfolio ${dir} from ${prevSkuCount} to ${currSkuCount} SKUs between ${earlierLabel} and ${laterLabel} — the ${diff > 0 ? 'addition' : 'removal'} of ${abs} SKU${abs !== 1 ? 's' : ''} means some revenue and margin movement below reflects structural portfolio change, not purely like-for-like commercial performance.`
+      `Note: the active portfolio ${dir} from ${prevSkuCount} to ${currSkuCount} ${unitPlural} between ${earlierLabel} and ${laterLabel} — the ${diff > 0 ? 'addition' : 'removal'} of ${abs} ${abs !== 1 ? unitPlural : unitWord} means some revenue and margin movement below reflects structural portfolio change, not purely like-for-like commercial performance.`
     );
   }
 
@@ -1603,12 +1605,14 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
   if (deteriorated.length > improved.length) {
     // Identify the specific priority action based on the worst metric
     const sorted = [...deteriorated].sort((a, b) => Math.abs(b.d.value) - Math.abs(a.d.value));
+    const unitPlural = cfg ? cfg.unitPlural : 'SKUs';
+    const partnerLabel = cfg ? cfg.fields.partner : 'Distributor';
     const actionMap = {
       'Cost absorbed':    'Accelerating cost pass-through recovery is the highest-priority action to prevent the absorption gap compounding into next period.',
       'Portfolio margin': 'Margin recovery should be the immediate commercial priority — review pricing and channel terms before the next period close.',
-      'Revenue at risk':  'Revenue at risk has widened — a targeted review of below-floor SKUs and WTP headroom capture is required.',
-      'Channel exposure': 'Channel economics have weakened — distributor margin and rebate terms should be reviewed as a priority.',
-      'Repricing gain':   'Pricing headroom capture has slowed — review the SKUs with the largest WTP gaps to recover margin pace.',
+      'Revenue at risk':  `Revenue at risk has widened — a targeted review of below-floor ${unitPlural} and WTP headroom capture is required.`,
+      'Channel exposure': `Channel economics have weakened — ${partnerLabel.toLowerCase()} margin and rebate terms should be reviewed as a priority.`,
+      'Repricing gain':   `Pricing headroom capture has slowed — review the ${unitPlural} with the largest WTP gaps to recover margin pace.`,
       'Revenue':          'Top-line pressure requires investigation — volume, pricing, and channel mix should all be reviewed.',
     };
     const actionKey = sorted[0].name;
@@ -1623,7 +1627,7 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
 }
 
 /* ── Period Comparison ─────────────────────────────────────── */
-const ComparisonPage = ({ chronologicalDelta, companyName }) => {
+const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
   if (!chronologicalDelta) return null;
   const { laterResults, earlierResults, laterPeriod, earlierPeriod } = chronologicalDelta;
   const deltas = computeDeltas(laterResults, earlierResults);
@@ -1748,13 +1752,13 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
           return (
             <View style={[s.tableRow, { backgroundColor: '#EEF2F7' }]}>
               <Text style={[s.tableCell, { width: '30%', fontWeight: 700, fontSize: 7, textTransform: 'uppercase', letterSpacing: 0.5, color: C.navy }]}>
-                Active SKUs
+                {`Active ${cfg.unitPlural}`}
               </Text>
               <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{prevCount ?? '—'}</Text>
               <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{currCount ?? '—'}</Text>
               <Text style={[s.tableCell, { width: '20%', textAlign: 'right', fontWeight: 700,
                 color: skuDiff == null ? C.muted : skuDiff === 0 ? C.muted : skuDiff > 0 ? C.teal : C.gold }]}>
-                {skuDiff != null ? `${skuDiff > 0 ? '+' : ''}${skuDiff} SKUs` : '—'}
+                {skuDiff != null ? `${skuDiff > 0 ? '+' : ''}${skuDiff} ${Math.abs(skuDiff) !== 1 ? cfg.unitPlural : cfg.unit}` : '—'}
               </Text>
             </View>
           );
@@ -1814,7 +1818,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName }) => {
           color: C.navy,
           lineHeight: 1.7,
         }}>
-          {generateTrendNarrative(deltas, earlier, later, earlierResults.skuCount, laterResults.skuCount)}
+          {generateTrendNarrative(deltas, earlier, later, earlierResults.skuCount, laterResults.skuCount, cfg)}
         </Text>
       </View>
 
@@ -1845,8 +1849,9 @@ const DisclaimerPage = ({ companyName }) => (
 /* ══════════════════════════════════════════════════════════════
    MAIN DOCUMENT
    ══════════════════════════════════════════════════════════════ */
-export default function MarginCOSReport({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta }) {
+export default function MarginCOSReport({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta, vertical }) {
   if (!results) return null;
+  const cfg = getSectorConfig(vertical);
 
   return (
     <Document
@@ -1854,26 +1859,27 @@ export default function MarginCOSReport({ results, companyName, periodLabel, tie
       author="MarginCOS | Carthena Advisory"
       subject="Margin Intelligence Report"
     >
-      <CoverPage companyName={companyName} periodLabel={periodLabel} skuCount={results.skuCount} tier={tier} />
-      <SummaryPage results={results} companyName={companyName} tier={tier} />
+      <CoverPage companyName={companyName} periodLabel={periodLabel} skuCount={results.skuCount} tier={tier} cfg={cfg} />
+      <SummaryPage results={results} companyName={companyName} tier={tier} cfg={cfg} />
       {chronologicalDelta && (
         <ComparisonPage
           chronologicalDelta={chronologicalDelta}
           companyName={companyName}
+          cfg={cfg}
         />
       )}
-      <PricingPage results={results} companyName={companyName} />
-      <P1ChartPage results={results} companyName={companyName} />
-      <CostPage results={results} companyName={companyName} />
-      <ChannelPage results={results} companyName={companyName} />
-      <TradePage results={results} companyName={companyName} />
-      <P4ChartPage results={results} companyName={companyName} />
-      {isEnterprise && <M1Page results={results} companyName={companyName} />}
-      {isEnterprise && <M1ChartPage results={results} companyName={companyName} />}
-      {isEnterprise && <M2Page results={results} companyName={companyName} />}
-      {isEnterprise && <M3Page results={results} companyName={companyName} />}
-      {isEnterprise && <M4Page results={results} companyName={companyName} />}
-      {isEnterprise && <M4ChartPage results={results} companyName={companyName} />}
+      <PricingPage results={results} companyName={companyName} cfg={cfg} />
+      <P1ChartPage results={results} companyName={companyName} cfg={cfg} />
+      <CostPage results={results} companyName={companyName} cfg={cfg} />
+      <ChannelPage results={results} companyName={companyName} cfg={cfg} />
+      <TradePage results={results} companyName={companyName} cfg={cfg} />
+      <P4ChartPage results={results} companyName={companyName} cfg={cfg} />
+      {isEnterprise && <M1Page results={results} companyName={companyName} cfg={cfg} />}
+      {isEnterprise && <M1ChartPage results={results} companyName={companyName} cfg={cfg} />}
+      {isEnterprise && <M2Page results={results} companyName={companyName} cfg={cfg} />}
+      {isEnterprise && <M3Page results={results} companyName={companyName} cfg={cfg} />}
+      {isEnterprise && <M4Page results={results} companyName={companyName} cfg={cfg} />}
+      {isEnterprise && <M4ChartPage results={results} companyName={companyName} cfg={cfg} />}
       <DisclaimerPage companyName={companyName} />
     </Document>
   );

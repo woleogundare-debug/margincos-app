@@ -233,7 +233,7 @@ export default function OverviewPage() {
                 value={fNAbs(results.totalRevenue)}
                 pill={`${results.skuCount} active ${cfg.unitPlural}`}
                 accent="teal"
-                description="Monthly revenue across all active SKUs"
+                description={`Monthly revenue across all active ${cfg.unitPlural}`}
                 delta={deltas?.portfolio?.revenue && deltas.portfolio.revenue.direction !== 'flat' && Math.abs(deltas.portfolio.revenue.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.revenue.value)),
                   direction: deltas.portfolio.revenue.direction,
@@ -247,7 +247,7 @@ export default function OverviewPage() {
                   : '—'}
                 pill={fNAbs(results.totalCurrentMargin) + ' gross margin'}
                 accent="teal"
-                description="Weighted average gross margin across all active SKUs"
+                description={`Weighted average gross margin across all active ${cfg.unitPlural}`}
                 delta={deltas?.portfolio?.totalCurrentMargin && deltas.portfolio.totalCurrentMargin.direction !== 'flat' && Math.abs(deltas.portfolio.totalCurrentMargin.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.totalCurrentMargin.value)),
                   direction: deltas.portfolio.totalCurrentMargin.direction,
@@ -259,7 +259,7 @@ export default function OverviewPage() {
                 value={fNAbs(results.revenueAtRisk)}
                 pill="Cost absorbed, not priced in"
                 accent="red"
-                description="Revenue from SKUs priced below their cost floor"
+                description={`Revenue from ${cfg.unitPlural} priced below their cost floor`}
                 delta={deltas?.portfolio?.revenueAtRisk && deltas.portfolio.revenueAtRisk.direction !== 'flat' && Math.abs(deltas.portfolio.revenueAtRisk.value) >= 1 ? {
                   label: fNAbs(Math.abs(deltas.portfolio.revenueAtRisk.value)),
                   direction: deltas.portfolio.revenueAtRisk.direction,

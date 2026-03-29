@@ -77,11 +77,11 @@ export default function PortfolioPage() {
 
     // Hard block — reject the entire import if it would exceed the tier cap
     if (limit !== null && activeSkuCount + rows.length > limit) {
-      setSkuLimitError(`Your ${tierLabel} plan supports up to ${limit} active SKUs. Upgrade your plan to continue.`);
+      setSkuLimitError(`Your ${tierLabel} plan supports up to ${limit} active ${cfg.unitPlural}. Upgrade your plan to continue.`);
       return;
     }
 
-    setImportProgress(`Importing ${rows.length} SKU${rows.length !== 1 ? 's' : ''}…`);
+    setImportProgress(`Importing ${rows.length} ${rows.length !== 1 ? cfg.unitPlural : cfg.unit}…`);
     const batchSize = 5;
     for (let i = 0; i < rows.length; i += batchSize) {
       const batch = rows.slice(i, i + batchSize);
@@ -89,10 +89,10 @@ export default function PortfolioPage() {
         ...row,
         _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       })));
-      setImportProgress(`Importing ${rows.length} SKU${rows.length !== 1 ? 's' : ''}… (${Math.min(i + batchSize, rows.length)}/${rows.length})`);
+      setImportProgress(`Importing ${rows.length} ${rows.length !== 1 ? cfg.unitPlural : cfg.unit}… (${Math.min(i + batchSize, rows.length)}/${rows.length})`);
     }
     setImportProgress('');
-  }, [tier, activeSkuCount, saveSku]);
+  }, [tier, activeSkuCount, saveSku, cfg]);
 
   return (
     <>
@@ -213,7 +213,7 @@ export default function PortfolioPage() {
                   </Button>
                   {isOverSkuLimit ? (
                     <button
-                      onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active SKUs. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
+                      onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active ${cfg.unitPlural}. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
                       className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
                       style={{ backgroundColor: '#C0392B' }}
                     >
@@ -268,7 +268,7 @@ export default function PortfolioPage() {
               </div>
               {isOverSkuLimit ? (
                 <button
-                  onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active SKUs. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
+                  onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active ${cfg.unitPlural}. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
                   className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
                   style={{ backgroundColor: '#C0392B' }}
                 >

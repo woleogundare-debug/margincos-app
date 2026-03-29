@@ -121,7 +121,7 @@ export default function PricingPage() {
               <div className="px-4 py-3 bg-white">
                 <p className="text-sm text-gray-600 leading-relaxed">
                   {p1.totalGain > 0
-                    ? `Portfolio pricing opportunity: ${fN(p1.totalGain)}/month across ${p1.results.filter(r => r.delta > 0).length} SKUs.`
+                    ? `Portfolio pricing opportunity: ${fN(p1.totalGain)}/month across ${p1.results.filter(r => r.delta > 0).length} ${cfg.unitPlural}.`
                     : `Portfolio pricing is stable. Price realisation: ${(p1.priceRealisation || 0).toFixed(1)}%.`
                   }
                 </p>
@@ -194,12 +194,12 @@ export default function PricingPage() {
                   r.wtpGap > 0 ? fNAbs(r.wtpGap) : '—',
                   { content: <span className={r.delta > 0 ? 'text-emerald-600 font-semibold' : 'text-red-500'}>{fN(r.delta)}</span> },
                 ])}
-                emptyMessage="No pricing data — ensure RRP, COGS, and Volume are populated."
+                emptyMessage={`No pricing data — ensure ${cfg.fields.price}, ${cfg.fields.cost}, and Volume are populated.`}
               />
               <NarrativeBox>
                 {p1.totalGain > 0
-                  ? `Portfolio pricing opportunity: ${fN(p1.totalGain)}/month. ${p1.results.filter(r => r.delta > 0).length} SKUs have positive repricing upside. ${p1.floorBreaches?.length || 0} SKUs are below their defined margin floor.`
-                  : `Portfolio pricing is stable. Price realisation: ${(p1.priceRealisation || 0).toFixed(1)}%. ${p1.results.filter(r => r.wtp > 0.03).length} SKUs have WTP headroom not yet captured.`
+                  ? `Portfolio pricing opportunity: ${fN(p1.totalGain)}/month. ${p1.results.filter(r => r.delta > 0).length} ${cfg.unitPlural} have positive repricing upside. ${p1.floorBreaches?.length || 0} ${cfg.unitPlural} are below their defined margin floor.`
+                  : `Portfolio pricing is stable. Price realisation: ${(p1.priceRealisation || 0).toFixed(1)}%. ${p1.results.filter(r => r.wtp > 0.03).length} ${cfg.unitPlural} have WTP headroom not yet captured.`
                 }
               </NarrativeBox>
             </PillarCard>

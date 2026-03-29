@@ -179,7 +179,7 @@ export default function CostPage() {
                   <span key="pt" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('pt')}>Pass-Through %{si('pt')}</span>,
                   <span key="absorbed" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('absorbed')}>Absorbed ₦/mo{si('absorbed')}</span>,
                   'FX-Linked',
-                  <span key="src">Source <span title="How the inflation rate was determined for this SKU" className="ml-0.5 text-gray-400 cursor-help">?</span></span>,
+                  <span key="src">Source <span title={`How the inflation rate was determined for this ${cfg.unit}`} className="ml-0.5 text-gray-400 cursor-help">?</span></span>,
                 ]}
                 rows={sorted.map(r => [
                   r.sku, r.category,
@@ -195,11 +195,11 @@ export default function CostPage() {
                     : <span className="text-slate-300">—</span>
                   },
                   { content: r.usedActualInflation
-                    ? <Badge color="teal"><span title="Inflation rate calculated from your Prior Period COGS — not self-reported. More reliable." className="cursor-help">Actual</span></Badge>
-                    : <Badge color="slate"><span title="Based on the self-reported COGS Inflation Rate % you entered. Add Prior Period COGS for a verified rate." className="cursor-help">Estimated</span></Badge>
+                    ? <Badge color="teal"><span title={`Inflation rate calculated from your ${cfg.fields.costPrior} — not self-reported. More reliable.`} className="cursor-help">Actual</span></Badge>
+                    : <Badge color="slate"><span title={`Based on the self-reported ${cfg.fields.costInflation} you entered. Add ${cfg.fields.costPrior} for a verified rate.`} className="cursor-help">Estimated</span></Badge>
                   },
                 ])}
-                emptyMessage="No cost data — populate COGS and COGS inflation rate fields."
+                emptyMessage={`No cost data — populate ${cfg.fields.cost} and ${cfg.fields.costInflation} fields.`}
               />
               <NarrativeBox>
                 {cfg.narrative.benchmarkNarrative(p2.portRecoveryPct || 0) + ' '}

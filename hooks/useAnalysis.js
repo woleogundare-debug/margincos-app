@@ -1,7 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import { runFullAnalysis } from '../lib/engine/analysis';
+import { getSectorConfig } from '../lib/sectorConfig';
 
 export function useAnalysis(skuRows, tradeInvestment, vertical) {
+  const cfg = getSectorConfig(vertical);
   const [results,   setResults]   = useState(null);
   const [running,   setRunning]   = useState(false);
   const [ranAt,     setRanAt]     = useState(null);
@@ -9,7 +11,7 @@ export function useAnalysis(skuRows, tradeInvestment, vertical) {
 
   const run = useCallback(() => {
     if (!skuRows || skuRows.length === 0) {
-      setError('No SKU data to analyse. Add SKUs in Portfolio Manager first.');
+      setError(`No ${cfg.unit} data to analyse. Add ${cfg.unitPlural} in Portfolio Manager first.`);
       return;
     }
     setRunning(true);
@@ -19,7 +21,7 @@ export function useAnalysis(skuRows, tradeInvestment, vertical) {
       try {
         const result = runFullAnalysis(skuRows, tradeInvestment || [], vertical);
         if (!result) {
-          setError('No active SKUs found. Mark at least one SKU as active.');
+          setError(`No active ${cfg.unitPlural} found. Mark at least one ${cfg.unit} as active.`);
         } else {
           setResults(result);
           setRanAt(new Date());

@@ -198,10 +198,10 @@ export default function ChannelPage() {
                   ? `${p3.channelResults.length} active channels. Top channel by revenue: ${CHANNEL_LABELS[p3.channelResults[0]?.channel] || p3.channelResults[0]?.channel}. `
                   : 'No channel data yet. '}
                 {weakChannels.length > 0
-                  ? `${weakChannels.length} channel${weakChannels.length > 1 ? 's' : ''} below 15% contribution margin — recommend distributor margin renegotiation or volume rebalancing.`
+                  ? `${weakChannels.length} channel${weakChannels.length > 1 ? 's' : ''} below 15% contribution margin — recommend ${cfg.fields.partner.toLowerCase()} margin renegotiation or volume rebalancing.`
                   : 'All channels above minimum contribution threshold.'}
                 {p3.hasLogisticsCost && ' Logistics costs deducted in contribution calculation.'}
-                {p3.hasRebate && ' Distributor rebates deducted from net price.'}
+                {p3.hasRebate && ` ${cfg.fields.partner} rebates deducted from net price.`}
               </NarrativeBox>
             </PillarCard>
             </div>
