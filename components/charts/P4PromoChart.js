@@ -71,7 +71,7 @@ const CustomTooltip = ({ active, payload }) => {
   );
 };
 
-export default function P4PromoChart({ results }) {
+export default function P4PromoChart({ results, cfg }) {
   if (!results?.length) return null;
 
   // Sort by absolute net impact, keep top 15
@@ -107,9 +107,9 @@ export default function P4PromoChart({ results }) {
         fontWeight: 700,
         color: '#1B2A4A',
         marginBottom: '4px',
-      }}>Promotion Net Impact by SKU</h4>
+      }}>{cfg?.charts?.p4Title || 'Promotion Net Impact by Product'}</h4>
       <p style={{ fontSize: '12px', color: '#8896A7', marginBottom: '12px' }}>
-        Top {data.length} SKUs by absolute promo impact · Teal = profitable · Red = loss-making
+        Top {data.length} {cfg?.unitPlural || 'products'} by absolute promo impact · Teal = profitable · Red = loss-making
       </p>
 
       {/* Summary pills */}
@@ -123,7 +123,7 @@ export default function P4PromoChart({ results }) {
           color: COLORS.profitable,
           fontWeight: 600,
         }}>
-          {profitableCount} Profitable SKU{profitableCount !== 1 ? 's' : ''}
+          {profitableCount} Profitable {profitableCount !== 1 ? (cfg?.unitPlural || 'products') : (cfg?.unit || 'product')}
         </div>
         {unprofitableCount > 0 && (
           <div style={{
@@ -135,7 +135,7 @@ export default function P4PromoChart({ results }) {
             color: COLORS.unprofitable,
             fontWeight: 600,
           }}>
-            {unprofitableCount} Loss-making SKU{unprofitableCount !== 1 ? 's' : ''}
+            {unprofitableCount} Loss-making {unprofitableCount !== 1 ? (cfg?.unitPlural || 'products') : (cfg?.unit || 'product')}
           </div>
         )}
       </div>

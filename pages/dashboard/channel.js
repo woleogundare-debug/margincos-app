@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, CHANNEL_LABELS } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import P3ChannelChart from '../../components/charts/P3ChannelChart';
 import { TIER_ACCESS } from '../../lib/constants';
 import ExportButton from '../../components/ExportButton';
@@ -16,6 +17,7 @@ import { exportP3ChannelEconomics } from '../../lib/exportToExcel';
 export default function ChannelPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const cfg = getSectorConfig(activePeriod?.vertical);
   const p3 = results?.p3;
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
@@ -76,7 +78,7 @@ export default function ChannelPage() {
 
         {!hasResults && (
           <EmptyState icon="🏪" title="Run analysis to see channel economics"
-            description="Requires primary channel, distributor margin, and monthly volume for each SKU."
+            description={cfg.narrative.p3EmptyState}
             action={<Button variant="navy" onClick={run} loading={running}>{running ? 'Analysing…' : 'Run Analysis'}</Button>} />
         )}
 
@@ -86,9 +88,9 @@ export default function ChannelPage() {
               <KpiTile label="Channels Active"
                 value={p3.channelResults?.length || 0}
                 pill="Routes to market" accent="amber" />
-              <KpiTile label="Distributor Exposure"
+              <KpiTile label={cfg.fields.partnerExposure}
                 value={fNAbs(p3.totalDistExposure)}
-                pill="Revenue in distributor margin" accent="amber"
+                pill={`Revenue in ${cfg.fields.partner.toLowerCase()} margin`} accent="amber"
                 delta={deltas?.p3?.totalDistExposure ? {
                   label: fNAbs(Math.abs(deltas.p3.totalDistExposure.value)),
                   direction: deltas.p3.totalDistExposure.direction,
@@ -172,7 +174,7 @@ export default function ChannelPage() {
                   <span key="rev" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('rev')}>Revenue ₦/mo{si('rev')}</span>,
                   <span key="contMargin" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('contMargin')}>Contribution ₦/mo{si('contMargin')}</span>,
                   <span key="contPct" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('contPct')}>Cont. Margin %{si('contPct')}</span>,
-                  'SKUs', 'Status',
+                  cfg.unitPlural, cfg.fields.status,
                 ]}
                 rows={sorted.map(c => [
                   CHANNEL_LABELS[c.channel] || c.channel,
@@ -189,7 +191,7 @@ export default function ChannelPage() {
                     : <Badge color="green">✓ Healthy</Badge>
                   },
                 ])}
-                emptyMessage="No channel data — set primary channel and distributor margin on each SKU."
+                emptyMessage={`No channel data — set primary channel and ${cfg.fields.partner.toLowerCase()} margin on each ${cfg.unit}.`}
               />
               <NarrativeBox>
                 {p3.channelResults?.length > 0
@@ -204,16 +206,16 @@ export default function ChannelPage() {
             </PillarCard>
             </div>
 
-            {/* Distributor view — if data present */}
+            {/* Partner view — if data present */}
             {p3.hasDistributorName && (
               <PillarCard
-                title="Distributor Breakdown"
-                subtitle="Contribution margin grouped by named distributor"
+                title={`${cfg.fields.partner} Breakdown`}
+                subtitle={`Contribution margin grouped by named ${cfg.fields.partner.toLowerCase()}`}
                 accentColor="#D97706"
                 ragStatus={null}
                 className="mt-6">
                 <AnalysisTable
-                  headers={['Distributor', 'Revenue ₦/mo', 'Contribution ₦/mo', 'SKUs']}
+                  headers={[cfg.fields.partner, 'Revenue ₦/mo', 'Contribution ₦/mo', cfg.unitPlural]}
                   rows={Object.entries(p3.distributorMap).sort((a, b) => b[1].rev - a[1].rev).map(([name, d]) => [
                     name,
                     fNAbs(d.rev),
@@ -223,7 +225,7 @@ export default function ChannelPage() {
                   emptyMessage=""
                 />
                 <NarrativeBox>
-                  Full distributor performance scoring (including credit days, rebates, and working capital costs) is available in the M4 Distributor Scorecard module under Enterprise.
+                  Full {cfg.fields.partner.toLowerCase()} performance scoring (including credit days, rebates, and working capital costs) is available in the {cfg.m4.name} module under Enterprise.
                 </NarrativeBox>
               </PillarCard>
             )}

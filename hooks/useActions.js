@@ -1,17 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 
-const PILLAR_MAP = {
-  'Pricing Intelligence':    'P1',
-  'Cost Pass-Through':       'P2',
-  'Channel Economics':       'P3',
-  'Trade Execution':         'P4',
-  'SKU Rationalisation':     'M1',
-  'Inflation Resilience':    'M2',
-  'Trade Spend ROI':         'M3',
-  'Distributor Performance': 'M4',
-};
-
 const URGENCY_MAP = {
   'Immediate':       'IMMEDIATE',
   'This week':       'THIS WEEK',
@@ -143,7 +132,7 @@ export function useActions(teamId, periodId) {
       period_id: effectivePeriodId,
       title: a.title,
       detail: a.detail,
-      pillar: PILLAR_MAP[a.pillar] || a.pillar,
+      pillar: a.pillar,
       urgency: URGENCY_MAP[a.timeline] || a.timeline || a.urgency,
       value: a.value || null,
       status: 'open',

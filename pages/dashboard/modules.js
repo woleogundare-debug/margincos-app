@@ -13,12 +13,13 @@ import M2ScenarioChart   from '../../components/charts/M2ScenarioChart';
 import M3TradeROIChart   from '../../components/charts/M3TradeROIChart';
 import M4DistributorChart from '../../components/charts/M4DistributorChart';
 import { fNAbs, fN } from '../../lib/formatters';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import clsx from 'clsx';
 
 // ── M1 ────────────────────────────────────────────────────────────────────
-function M1Module({ results, deltas }) {
+function M1Module({ results, deltas, cfg }) {
   const m1 = results?.m1;
-  if (!m1) return <div className="py-8 text-center text-sm text-slate-400">Run analysis to see SKU classification.</div>;
+  if (!m1) return <div className="py-8 text-center text-sm text-slate-400">Run analysis to see {cfg.unit} classification.</div>;
 
   return (
     <>
@@ -27,7 +28,7 @@ function M1Module({ results, deltas }) {
         <KpiTile
           label="Margin at Stake"
           value={fNAbs(m1.marginAtStake)}
-          pill="/month from dilutive SKUs"
+          pill={`/month from dilutive ${cfg.unitPlural}`}
           accent="red"
           delta={deltas?.m1?.marginAtStake && deltas.m1.marginAtStake.direction !== 'flat' && Math.abs(deltas.m1.marginAtStake.value) >= 1 ? {
             label: fNAbs(Math.abs(deltas.m1.marginAtStake.value)),
@@ -36,12 +37,12 @@ function M1Module({ results, deltas }) {
           } : null}
         />
         <KpiTile
-          label="Dilutive SKUs"
+          label={`Dilutive ${cfg.unitPlural}`}
           value={m1.dilutiveCount}
           pill="below portfolio avg margin"
           accent="red"
           delta={deltas?.m1?.dilutiveCount && deltas.m1.dilutiveCount.direction !== 'flat' && Math.abs(deltas.m1.dilutiveCount.value) >= 1 ? {
-            label: Math.abs(Math.round(deltas.m1.dilutiveCount.value)) + ' SKUs',
+            label: Math.abs(Math.round(deltas.m1.dilutiveCount.value)) + ' ' + cfg.unitPlural,
             direction: deltas.m1.dilutiveCount.direction,
             isPositive: false,
           } : null}
@@ -63,9 +64,9 @@ function M1Module({ results, deltas }) {
           <p className="text-xs font-semibold text-red-600 mt-1">Review / Reprice</p>
         </div>
       </div>
-      <M1QuadrantChart results={m1.results} portfolioAvgMarginPct={m1.portfolioAvgMarginPct} />
+      <M1QuadrantChart results={m1.results} portfolioAvgMarginPct={m1.portfolioAvgMarginPct} cfg={cfg} />
       <AnalysisTable
-        headers={['SKU', 'Category', 'Margin %', 'Rev Share %', 'vs. Avg', 'Classification', 'Action']}
+        headers={[cfg.unitId, 'Category', 'Margin %', 'Rev Share %', 'vs. Avg', cfg.fields.classification, cfg.fields.action]}
         rows={m1.results.sort((a, b) => b.skuMarginPct - a.skuMarginPct).map(r => [
           r.sku, r.category,
           r.skuMarginPct.toFixed(1) + '%',
@@ -76,14 +77,14 @@ function M1Module({ results, deltas }) {
         ])}
       />
       <NarrativeBox>
-        Portfolio average margin: {m1.portfolioAvgMarginPct.toFixed(1)}%. {m1.dilutiveCount} SKU{m1.dilutiveCount !== 1 ? 's' : ''} below average — diluting portfolio margin by {fNAbs(Math.abs(m1.dilutiveMargin))}/month. Margin at stake from sub-par SKUs: {fNAbs(m1.marginAtStake)}/month.
+        Portfolio average margin: {m1.portfolioAvgMarginPct.toFixed(1)}%. {m1.dilutiveCount} {m1.dilutiveCount !== 1 ? cfg.unitPlural : cfg.unit} below average — diluting portfolio margin by {fNAbs(Math.abs(m1.dilutiveMargin))}/month. Margin at stake from sub-par {cfg.unitPlural}: {fNAbs(m1.marginAtStake)}/month.
       </NarrativeBox>
     </>
   );
 }
 
 // ── M2 ────────────────────────────────────────────────────────────────────
-function M2Module({ results, deltas }) {
+function M2Module({ results, deltas, cfg }) {
   const m2 = results?.m2;
   if (!m2) return <div className="py-8 text-center text-sm text-slate-400">Run analysis to see inflation scenarios.</div>;
 
@@ -115,14 +116,14 @@ function M2Module({ results, deltas }) {
         ])}
       />
       <NarrativeBox>
-        At zero cost recovery (full absorption), margin impact is {fN(m2.worstCase)}/month. At 50% recovery: {fNAbs(m2.baseCase)}/month retained margin. Recommended: achieve minimum 75% recovery rate (BUA Foods benchmark) to remain above critical margin threshold.
+        At zero cost recovery (full absorption), margin impact is {fN(m2.worstCase)}/month. At 50% recovery: {fNAbs(m2.baseCase)}/month retained margin. Recommended: achieve minimum {cfg.benchmark.costRecoveryShort} recovery rate ({cfg.benchmark.costRecoveryLabel}) to remain above critical margin threshold.
       </NarrativeBox>
     </>
   );
 }
 
 // ── M3 ────────────────────────────────────────────────────────────────────
-function M3Module({ results, deltas }) {
+function M3Module({ results, deltas, cfg }) {
   const m3 = results?.m3;
   if (!m3?.hasData) return (
     <div className="py-8 text-center text-sm text-slate-400">
@@ -183,11 +184,11 @@ function M3Module({ results, deltas }) {
 }
 
 // ── M4 ────────────────────────────────────────────────────────────────────
-function M4Module({ results, deltas }) {
+function M4Module({ results, deltas, cfg }) {
   const m4 = results?.m4;
   if (!m4?.hasData) return (
     <div className="py-8 text-center text-sm text-slate-400">
-      No distributor data. Populate the Distributor Name field on SKUs to unlock this module.
+      {cfg.narrative.m4EmptyState}
     </div>
   );
   return (
@@ -195,7 +196,7 @@ function M4Module({ results, deltas }) {
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="text-center p-4 bg-slate-50 rounded-xl">
           <p className="text-2xl font-black text-navy">{m4.totalDistributors}</p>
-          <p className="text-xs font-semibold text-slate-500 mt-1">Distributors Scored</p>
+          <p className="text-xs font-semibold text-slate-500 mt-1">{cfg.fields.partner}s Scored</p>
         </div>
         <div className="text-center p-4 bg-teal-50 rounded-xl">
           <p className="text-2xl font-black text-teal-700">{m4.avgContPct.toFixed(1)}%</p>
@@ -204,10 +205,10 @@ function M4Module({ results, deltas }) {
         <KpiTile
           label="Need Renegotiation"
           value={m4.renegotiateCount}
-          pill="distributors flagged"
+          pill={`${cfg.fields.partner.toLowerCase()}s flagged`}
           accent="red"
           delta={deltas?.m4?.renegotiateCount && deltas.m4.renegotiateCount.direction !== 'flat' && Math.abs(deltas.m4.renegotiateCount.value) >= 1 ? {
-            label: Math.abs(Math.round(deltas.m4.renegotiateCount.value)) + ' distrib.',
+            label: Math.abs(Math.round(deltas.m4.renegotiateCount.value)) + ` ${cfg.fields.partner.toLowerCase()}s`,
             direction: deltas.m4.renegotiateCount.direction,
             isPositive: false,
           } : null}
@@ -228,9 +229,9 @@ function M4Module({ results, deltas }) {
           />
         </div>
       )}
-      <M4DistributorChart results={m4.results} />
+      <M4DistributorChart results={m4.results} cfg={cfg} />
       <AnalysisTable
-        headers={['Distributor', 'Revenue ₦/mo', 'True Contrib. ₦/mo', 'Contrib. %', 'Rev Share %', 'Credit Cost ₦', 'Classification']}
+        headers={[cfg.fields.partner, 'Revenue ₦/mo', 'True Contrib. ₦/mo', 'Contrib. %', 'Rev Share %', cfg.fields.creditCost, cfg.fields.classification]}
         rows={m4.results.map(r => [
           r.name,
           fNAbs(r.rev),
@@ -243,10 +244,10 @@ function M4Module({ results, deltas }) {
       />
       <NarrativeBox>
         {m4.renegotiateCount > 0
-          ? `${m4.renegotiateCount} distributor${m4.renegotiateCount > 1 ? 's' : ''} classified as Renegotiate — high volume but dilutive terms. Priority for commercial renegotiation. `
-          : 'All distributors generating positive true contribution. '}
+          ? `${m4.renegotiateCount} ${m4.renegotiateCount > 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} classified as Renegotiate — high volume but dilutive terms. Priority for commercial renegotiation. `
+          : `All ${cfg.fields.partner.toLowerCase()}s generating positive true contribution. `}
         {m4.totalCreditCost > 0 && `Working capital cost of credit extension: ${fNAbs(m4.totalCreditCost)}/month (at 28% WACC rate). `}
-        True contribution includes distributor margin, rebates, logistics costs, and credit cost.
+        True contribution includes {cfg.fields.partner.toLowerCase()} margin, rebates, logistics costs, and credit cost.
       </NarrativeBox>
     </>
   );
@@ -256,6 +257,7 @@ function M4Module({ results, deltas }) {
 export default function ModulesPage() {
   const { tier } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const cfg = getSectorConfig(activePeriod?.vertical);
 
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
@@ -278,42 +280,42 @@ export default function ModulesPage() {
 
         <div className="space-y-6">
           {/* M1 */}
-          <ModuleGate tier={tier} moduleName="M1 · SKU Portfolio Rationalisation"
-            description="Classifies every SKU into a strategic quadrant based on margin and revenue share. Identifies dilutive SKUs, delist candidates, and high-value defenders.">
-            <PillarCard title="M1 · SKU Portfolio Rationalisation"
+          <ModuleGate tier={tier} moduleName={`M1 · ${cfg.m1.name}`}
+            description={`Classifies every ${cfg.unit} into a strategic quadrant based on margin and revenue share. Identifies dilutive ${cfg.unitPlural}, delist candidates, and high-value defenders.`}>
+            <PillarCard title={`M1 · ${cfg.m1.name}`}
               subtitle="Quadrant classification: Protect · Grow · Reprice · Review"
               accentColor="#7C3AED" ragStatus={null}>
-              <M1Module results={results} deltas={deltas} />
+              <M1Module results={results} deltas={deltas} cfg={cfg} />
             </PillarCard>
           </ModuleGate>
 
           {/* M2 */}
-          <ModuleGate tier={tier} moduleName="M2 · Forward Inflation Scenario Engine"
+          <ModuleGate tier={tier} moduleName={`M2 · ${cfg.m2.name}`}
             description="Projects margin impact under five cost recovery scenarios from 0% to 100%. Identifies the minimum recovery rate required to defend the portfolio.">
-            <PillarCard title="M2 · Forward Inflation Scenario Engine"
+            <PillarCard title={`M2 · ${cfg.m2.name}`}
               subtitle="Five scenarios: 0% → 100% cost recovery rate"
               accentColor="#DC2626" ragStatus={null}>
-              <M2Module results={results} deltas={deltas} />
+              <M2Module results={results} deltas={deltas} cfg={cfg} />
             </PillarCard>
           </ModuleGate>
 
           {/* M3 */}
-          <ModuleGate tier={tier} moduleName="M3 · Trade Spend ROI Analyser"
+          <ModuleGate tier={tier} moduleName={`M3 · ${cfg.m3.name}`}
             description="Computes return on trade investment by channel. Identifies dilutive spend, accretive channels, and reallocation opportunities.">
-            <PillarCard title="M3 · Trade Spend ROI Analyser"
+            <PillarCard title={`M3 · ${cfg.m3.name}`}
               subtitle="ROI per channel · Blended portfolio ROI · Spend intensity"
               accentColor="#D97706" ragStatus={null}>
-              <M3Module results={results} deltas={deltas} />
+              <M3Module results={results} deltas={deltas} cfg={cfg} />
             </PillarCard>
           </ModuleGate>
 
           {/* M4 */}
-          <ModuleGate tier={tier} moduleName="M4 · Distributor Performance Scorecard"
-            description="Scores every named distributor on true contribution margin (net of margin, rebates, logistics, and credit cost). Classifies into Strategic, Grow, Renegotiate, Review.">
-            <PillarCard title="M4 · Distributor Performance Scorecard"
+          <ModuleGate tier={tier} moduleName={`M4 · ${cfg.m4.name}`}
+            description={`Scores every named ${cfg.fields.partner.toLowerCase()} on true contribution margin (net of margin, rebates, logistics, and credit cost). Classifies into Strategic, Grow, Renegotiate, Review.`}>
+            <PillarCard title={`M4 · ${cfg.m4.name}`}
               subtitle="True contribution · Credit cost · 2×2 quadrant scoring"
               accentColor="#0D9488" ragStatus={null}>
-              <M4Module results={results} deltas={deltas} />
+              <M4Module results={results} deltas={deltas} cfg={cfg} />
             </PillarCard>
           </ModuleGate>
         </div>

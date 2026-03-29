@@ -5,7 +5,7 @@ const COLORS = {
   negative: '#D4A843', // gold — priced above competitors (caution)
 };
 
-export default function P1RepricingChart({ results }) {
+export default function P1RepricingChart({ results, cfg }) {
   if (!results?.length) return null;
 
   // Sort by repricing gain descending, take top 15 for readability
@@ -43,9 +43,9 @@ export default function P1RepricingChart({ results }) {
         fontWeight: 700,
         color: '#1B2A4A',
         marginBottom: '4px',
-      }}>Repricing Opportunity by SKU</h4>
+      }}>{cfg?.charts?.p1Title || 'Repricing Opportunity by Product'}</h4>
       <p style={{ fontSize: '12px', color: '#8896A7', marginBottom: '20px' }}>
-        Top {data.length} SKUs by monthly repricing gain · Teal = below competitors · Gold = above competitors
+        Top {data.length} {cfg?.unitPlural || 'products'} by monthly repricing gain · Teal = below competitors · Gold = above competitors
       </p>
       <ResponsiveContainer width="100%" height={Math.max(300, data.length * 36)}>
         <BarChart data={data} layout="vertical" margin={{ top: 0, right: 20, bottom: 0, left: 10 }}>

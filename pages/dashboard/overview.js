@@ -11,6 +11,7 @@ import { useTeam } from '../../hooks/useTeam';
 import { useActions } from '../../hooks/useActions';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import clsx from 'clsx';
 
 const DownloadReportButton = dynamic(
@@ -21,6 +22,7 @@ const DownloadReportButton = dynamic(
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
   const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const cfg = getSectorConfig(activePeriod?.vertical);
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
     return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
@@ -125,6 +127,7 @@ export default function OverviewPage() {
                   tier={tier}
                   isEnterprise={isEnterprise}
                   chronologicalDelta={chronologicalDelta}
+                  vertical={activePeriod?.vertical}
                 />
               )}
               <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>
@@ -189,7 +192,7 @@ export default function OverviewPage() {
           <EmptyState
             icon="📊"
             title="No portfolio data yet"
-            description="Add SKUs in Portfolio Manager to run your first margin analysis."
+            description={cfg.narrative.emptyState}
             action={<Link href="/dashboard/portfolio"><Button variant="navy">Go to Portfolio Manager</Button></Link>}
           />
         )}
@@ -319,18 +322,18 @@ export default function OverviewPage() {
             {/* Pillar Summary Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {[
-                { label: 'Pricing Intelligence', color: '#0D9488', href: '/dashboard/pricing',
+                { label: cfg.p1.name, color: '#0D9488', href: '/dashboard/pricing',
                   stat: results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : 'No gap',
                   sub: 'repricing opportunity' },
-                { label: 'Cost Pass-Through', color: '#DC2626', href: '/dashboard/cost',
+                { label: cfg.p2.name, color: '#DC2626', href: '/dashboard/cost',
                   stat: fNAbs(results.p2?.totalAbsorbed || 0),
                   sub: 'cost absorbed /month' },
-                { label: 'Channel Economics', color: '#D97706', href: '/dashboard/channel',
+                { label: cfg.p3.name, color: '#D97706', href: '/dashboard/channel',
                   stat: results.p3?.channelResults?.length
                     ? results.p3.channelResults[0]?.channel + ' top channel'
                     : '—',
                   sub: 'by revenue' },
-                { label: 'Trade Execution', color: '#7C3AED', href: '/dashboard/trade',
+                { label: cfg.p4.name, color: '#7C3AED', href: '/dashboard/trade',
                   stat: results.p4?.results?.filter(r => !r.profitable).length > 0
                     ? results.p4.results.filter(r => !r.profitable).length + ' loss-making promos'
                     : 'All promos profitable',

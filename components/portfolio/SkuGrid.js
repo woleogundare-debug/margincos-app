@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
 import { getTaxonomy } from '../../lib/taxonomy/index';
 import { PRIMARY_CHANNELS, SEGMENTS, REGIONS } from '../../lib/constants';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import { LockClosedIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 
@@ -198,10 +199,10 @@ function validateCSVRows(rawRows) {
   return { valid, errors };
 }
 
-function downloadTemplate() {
+function downloadTemplate(cfg) {
   const a = document.createElement('a');
-  a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
-  a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
+  a.href = cfg.templateFile;
+  a.download = cfg.templateFilename;
   a.click();
 }
 
@@ -440,6 +441,13 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   useEffect(() => { onSaveRef.current = onSave; }, [onSave]);
 
   const vertical = activePeriod?.vertical || 'FMCG';
+  const cfg = getSectorConfig(vertical);
+  const tabCfgLabels = {
+    pricing: cfg.p1.short,
+    cost:    cfg.p2.short,
+    channel: cfg.p3.short,
+    trade:   cfg.p4.short,
+  };
 
   // Detect duplicate SKU IDs
   const duplicateSkuIds = useMemo(() => {
@@ -601,7 +609,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                       ? 'text-navy'
                       : 'text-slate-400 hover:text-slate-600'
                 )}>
-                {tab.label}
+                {tabCfgLabels[tab.key] || tab.label}
                 {locked && <LockClosedIcon className="w-3 h-3 text-slate-300" />}
                 {activeTab === tab.key && !locked && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-t-full" />
@@ -611,7 +619,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
           })}
         </div>
         <div className="hidden items-center gap-2 py-2">
-          <button onClick={downloadTemplate} title="Download CSV template"
+          <button onClick={() => downloadTemplate(cfg)} title="Download CSV template"
             className="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal-50 transition-colors">
             <ArrowDownTrayIcon className="h-4 w-4" />
           </button>
@@ -668,7 +676,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                       if (display === null) return null;
                       return (
                         <div key={field.key} className="flex items-center justify-between">
-                          <span className="text-xs text-gray-400">{field.label}</span>
+                          <span className="text-xs text-gray-400">{field.key === 'distributor_name' ? cfg.fields.partner : field.label}</span>
                           <span className="text-sm font-medium text-right ml-3 truncate" style={{ color: '#1B2A4A', maxWidth: '60%' }}>
                             {display}
                           </span>
@@ -741,7 +749,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                 <th key={col.key} className={clsx('px-2 py-2.5 text-left font-semibold text-navy/70 whitespace-nowrap uppercase tracking-wide', col.width)}
                   style={col.minWidth ? { minWidth: col.minWidth } : undefined}>
                   <span className="flex items-center gap-1">
-                    {col.label}
+                    {col.key === 'distributor_name' ? cfg.fields.partner : col.label}
                     {col.required && <span className="text-red-400 text-[10px]">*</span>}
                     <Tooltip text={col.tip} />
                   </span>

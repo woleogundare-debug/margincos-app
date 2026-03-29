@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { TIER_LIMITS } from '../../lib/constants';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import { ArrowUpTrayIcon, PlusIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import ExportButton from '../../components/ExportButton';
@@ -33,6 +34,7 @@ export default function PortfolioPage() {
     activeSkuCount, completeSkuCount,
   } = useAnalysisContext();
 
+  const cfg = getSectorConfig(activePeriod?.vertical);
   const [selectedRow, setSelectedRow] = useState(null);
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
   const [skuLimitError, setSkuLimitError] = useState(null);
@@ -108,7 +110,7 @@ export default function PortfolioPage() {
               Start your first analysis period
             </h2>
             <p className="text-sm text-slate-400 max-w-md leading-relaxed mb-8">
-              Each period represents a point-in-time snapshot of your portfolio. Create one to begin entering SKU data.
+              {cfg.narrative.periodHint}
             </p>
             <PeriodSelector
               periods={periods}
@@ -166,7 +168,7 @@ export default function PortfolioPage() {
                         letterSpacing: '0.01em',
                         whiteSpace: 'nowrap',
                       }}>
-                        {activeSkuCount} SKU{activeSkuCount !== 1 ? 's' : ''}
+                        {activeSkuCount} {activeSkuCount !== 1 ? cfg.unitPlural : cfg.unit}
                       </span>
                       {totalRevenue > 0 && (
                         <span style={{
@@ -190,8 +192,8 @@ export default function PortfolioPage() {
                 <div className="flex items-center gap-3 flex-shrink-0">
                   <Button variant="secondary" size="sm" onClick={() => {
                     const a = document.createElement('a');
-                    a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
-                    a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
+                    a.href = cfg.templateFile;
+                    a.download = cfg.templateFilename;
                     a.click();
                   }}>
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -207,7 +209,7 @@ export default function PortfolioPage() {
                     <ArrowUpTrayIcon className="h-4 w-4" /> Import
                   </Button>
                   <Button variant="secondary" size="sm" onClick={handleAddSku}>
-                    <PlusIcon className="h-4 w-4" /> Add SKU
+                    <PlusIcon className="h-4 w-4" /> {cfg.addButtonLabel}
                   </Button>
                   {isOverSkuLimit ? (
                     <button
@@ -247,13 +249,13 @@ export default function PortfolioPage() {
                   }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Import Data">
                     <ArrowUpTrayIcon className="h-4 w-4" />
                   </button>
-                  <button onClick={handleAddSku} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Add SKU">
+                  <button onClick={handleAddSku} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title={cfg.addButtonLabel}>
                     <PlusIcon className="h-4 w-4" />
                   </button>
                   <button onClick={() => {
                     const a = document.createElement('a');
-                    a.href = '/downloads/MarginCOS_Sample_Template_FMCG.xlsx';
-                    a.download = 'MarginCOS_Sample_Template_FMCG.xlsx';
+                    a.href = cfg.templateFile;
+                    a.download = cfg.templateFilename;
                     a.click();
                   }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Download Template">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -306,10 +308,10 @@ export default function PortfolioPage() {
               </p>
             )}
 
-            {/* Tab bar: SKU Grid / Trade Investment */}
+            {/* Tab bar: Portfolio / Trade Investment */}
             <div className="flex items-center gap-1 mb-4 border-b border-slate-200">
               {[
-                { key: 'sku', label: 'SKU Portfolio' },
+                { key: 'sku', label: cfg.portfolioTab },
                 { key: 'trade', label: 'Trade Investment' },
               ].map(tab => (
                 <button key={tab.key} onClick={() => setActiveTab(tab.key)}

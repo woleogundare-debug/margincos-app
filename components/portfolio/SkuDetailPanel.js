@@ -4,9 +4,10 @@ import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
 import { getTaxonomy } from '../../lib/taxonomy/index';
 import { PRIMARY_CHANNELS, SEGMENTS, REGIONS } from '../../lib/constants';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import clsx from 'clsx';
 
-const FIELD_GROUPS = [
+function getFieldGroups(cfg) { return [
   {
     label: 'Identity', color: 'text-navy', bg: 'bg-navy/5', fields: [
       { key: 'sku_id',        label: 'SKU ID',         type: 'text',   required: true,  tip: 'Your internal product code. Must be unique \u2014 no two rows can share the same SKU ID.' },
@@ -19,7 +20,7 @@ const FIELD_GROUPS = [
     ]
   },
   {
-    label: 'Pricing Intelligence (P1)', color: 'text-teal-700', bg: 'bg-teal-50', fields: [
+    label: cfg.detailSections.p1, color: 'text-teal-700', bg: 'bg-teal-50', fields: [
       { key: 'rrp',                       label: 'RRP (₦/unit)',              type: 'number', required: true,  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, in Naira per unit.' },
       { key: 'competitor_price',          label: 'Competitor Price (₦/unit)', type: 'number', required: false, tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, in ₦ per unit.' },
       { key: 'target_margin_floor_pct',   label: 'Margin Floor (%)',          type: 'pct',    required: false, tip: 'The minimum gross margin percentage you will accept for this SKU before flagging it for repricing or rationalisation.' },
@@ -29,7 +30,7 @@ const FIELD_GROUPS = [
     ]
   },
   {
-    label: 'Cost Pass-Through (P2)', color: 'text-red-700', bg: 'bg-red-50', fields: [
+    label: cfg.detailSections.p2, color: 'text-red-700', bg: 'bg-red-50', fields: [
       { key: 'cogs_per_unit',       label: 'COGS (₦/unit)',           type: 'number', required: true,  tip: 'Cost of Goods Sold per unit \u2014 total landed cost including raw materials, packaging, and manufacturing.' },
       { key: 'cogs_prior_period',   label: 'Prior Period COGS (₦)',   type: 'number', required: false, tip: 'COGS per unit in the previous month or period. Used to calculate actual cost movement rather than relying on self-reported inflation rate.' },
       { key: 'cogs_inflation_rate', label: 'COGS Inflation Rate (%)', type: 'pct',    required: false, tip: 'The annual rate at which this SKU\u2019s input costs are rising. Used to calculate cost absorption.' },
@@ -38,7 +39,7 @@ const FIELD_GROUPS = [
     ]
   },
   {
-    label: 'Channel Economics (P3)', color: 'text-amber-700', bg: 'bg-amber-50', fields: [
+    label: cfg.detailSections.p3, color: 'text-amber-700', bg: 'bg-amber-50', fields: [
       { key: 'primary_channel',        label: 'Primary Channel',            type: 'select', required: true,  tip: 'Primary route-to-market for this SKU. Select the channel that accounts for the majority of volume.' },
       { key: 'channel_revenue_split',  label: 'Primary Ch. Vol %',          type: 'number', required: false, tip: 'What percentage of this SKU\u2019s total volume flows through its primary channel. Each SKU is independent \u2014 rows do not need to sum to 100%.' },
       { key: 'distributor_name',       label: 'Distributor Name',           type: 'text',   required: false, tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
@@ -49,13 +50,13 @@ const FIELD_GROUPS = [
     ]
   },
   {
-    label: 'Trade Execution (P4)', color: 'text-purple-700', bg: 'bg-purple-50', fields: [
+    label: cfg.detailSections.p4, color: 'text-purple-700', bg: 'bg-purple-50', fields: [
       { key: 'monthly_volume_units', label: 'Monthly Volume (units)', type: 'number', required: true,  tip: 'Number of units sold or distributed in the period.' },
       { key: 'promo_depth_pct',      label: 'Promo Depth (%)',        type: 'pct',    required: false, tip: 'The discount percentage applied during a promotional period \u2014 e.g. 15 for a 15% promotional price cut.' },
       { key: 'promo_lift_pct',       label: 'Promo Volume Lift (%)',  type: 'pct',    required: false, tip: 'Expected volume uplift during the promotion as a percentage \u2014 e.g. 20 means you expect 20% more units sold.' },
     ]
   },
-];
+]; }
 
 function FieldInput({ field, value, onChange, vertical }) {
   const { categories } = getTaxonomy(vertical || 'FMCG');
@@ -112,7 +113,8 @@ function FieldInput({ field, value, onChange, vertical }) {
 // Completeness bar — optional fields only
 function CompletenessBar({ row, vertical }) {
   const { categories } = getTaxonomy(vertical || 'FMCG');
-  const optionalFields = FIELD_GROUPS.flatMap(g => g.fields).filter(f => !f.required);
+  const cfg = getSectorConfig(vertical);
+  const optionalFields = getFieldGroups(cfg).flatMap(g => g.fields).filter(f => !f.required);
   const filled = optionalFields.filter(f => {
     const v = row[f.key];
     return v !== null && v !== undefined && v !== '';
@@ -137,6 +139,8 @@ function CompletenessBar({ row, vertical }) {
 }
 
 export function SkuDetailPanel({ row, onClose, onSave, saving, vertical }) {
+  const cfg = getSectorConfig(vertical);
+  const fieldGroups = getFieldGroups(cfg);
   const [form, setForm] = useState({});
 
   useEffect(() => {
@@ -178,7 +182,7 @@ export function SkuDetailPanel({ row, onClose, onSave, saving, vertical }) {
 
         {/* Fields */}
         <div className="flex-1 overflow-y-auto">
-          {FIELD_GROUPS.map(group => (
+          {fieldGroups.map(group => (
             <div key={group.label} className="border-b border-slate-100 last:border-0">
               <div className={clsx('px-6 py-2.5 flex items-center gap-2', group.bg)}>
                 <h3 className={clsx('text-xs font-bold uppercase tracking-wider', group.color)}>

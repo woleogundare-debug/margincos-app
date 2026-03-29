@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import P1RepricingChart from '../../components/charts/P1RepricingChart';
 import ExportButton from '../../components/ExportButton';
 import { exportP1PricingGap } from '../../lib/exportToExcel';
@@ -16,6 +17,7 @@ import { exportP1PricingGap } from '../../lib/exportToExcel';
 export default function PricingPage() {
   const { tier } = useAuth();
   const { activePeriod, results, running, ranAt, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const cfg = getSectorConfig(activePeriod?.vertical);
   const p1 = results?.p1;
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
@@ -49,7 +51,7 @@ export default function PricingPage() {
 
         {!hasResults && (
           <EmptyState icon="🏷️" title="Run analysis to see pricing results"
-            description="Enter SKU data in Portfolio Manager and run the analysis engine."
+            description={cfg.narrative.emptyState}
             action={
               <Button variant="navy" onClick={run} loading={running}>
                 {running ? 'Analysing…' : 'Run Analysis'}
@@ -90,7 +92,7 @@ export default function PricingPage() {
             {p1.floorBreaches?.length > 0 && (
               <div className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 mb-6">
                 <p className="text-sm font-bold text-red-800 mb-1">
-                  ⚠ {p1.floorBreaches.length} SKU{p1.floorBreaches.length > 1 ? 's' : ''} below margin floor
+                  ⚠ {cfg.narrative.p1FloorBreach(p1.floorBreaches.length)}
                 </p>
                 <p className="text-xs text-red-600">
                   {p1.floorBreaches.slice(0, 3).map(s => s.sku).join(', ')}
@@ -101,7 +103,7 @@ export default function PricingPage() {
             )}
 
             {/* Repricing Chart */}
-            <P1RepricingChart results={p1.results} />
+            <P1RepricingChart results={p1.results} cfg={cfg} />
 
             {/* Mobile summary strip */}
             <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">
@@ -131,14 +133,14 @@ export default function PricingPage() {
               <button onClick={() => setTableExpanded(!tableExpanded)}
                 className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl border border-gray-100 text-sm font-semibold"
                 style={{ color: '#1B2A4A' }}>
-                <span>View SKU Detail ({p1.results?.length || 0} SKUs)</span>
+                <span>View {cfg.unit} detail ({p1.results?.length || 0} {cfg.unitPlural})</span>
                 <span className="text-gray-400">{tableExpanded ? '▲' : '▼'}</span>
               </button>
               {tableExpanded && (
                 <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
-                    headers={['SKU', 'RRP ₦', 'Margin %', 'Comp. Gap', 'Gain ₦/mo']}
+                    headers={[cfg.unitId, cfg.fields.priceUnit, 'Margin %', cfg.fields.compGap, cfg.fields.gainPerMonth]}
                     rows={sorted.map(r => [
                       r.sku,
                       fNAbs(r.price),
@@ -156,18 +158,18 @@ export default function PricingPage() {
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportP1PricingGap(sorted, activePeriod?.label)}
+                onExport={() => exportP1PricingGap(sorted, activePeriod?.label, cfg.unitId)}
               />
             </div>
             <div className="hidden md:block">
             <PillarCard
-              title="SKU Pricing Analysis"
-              subtitle="Repricing opportunity and competitor benchmarks by SKU"
+              title={`${cfg.unitName} Pricing Analysis`}
+              subtitle={`Repricing opportunity and competitor benchmarks by ${cfg.unit}`}
               accentColor="#0D9488"
               ragStatus={ragStatus}>
               <AnalysisTable
                 headers={[
-                  'SKU', 'Category', 'RRP ₦',
+                  cfg.unitId, cfg.fields.classification, cfg.fields.priceUnit,
                   <span key="marginPct" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('marginPct')}>Gross Margin %{si('marginPct')}</span>,
                   'Competitor Gap',
                   <span key="wtpGap" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('wtpGap')}>WTP Gap ₦/mo{si('wtpGap')}</span>,

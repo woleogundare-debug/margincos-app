@@ -7,7 +7,7 @@ const CLASS_COLORS = {
   '✗ Review':  '#C0392B',
 };
 
-export default function M1QuadrantChart({ results, portfolioAvgMarginPct }) {
+export default function M1QuadrantChart({ results, portfolioAvgMarginPct, cfg }) {
   if (!results?.length) return null;
 
   const data = results.map(r => ({
@@ -55,7 +55,7 @@ export default function M1QuadrantChart({ results, portfolioAvgMarginPct }) {
         marginBottom: '4px',
       }}>Portfolio Quadrant Matrix</h4>
       <p style={{ fontSize: '12px', color: '#8896A7', marginBottom: '20px' }}>
-        Revenue share vs margin % · Dashed lines = portfolio average · Each dot = 1 SKU
+        {cfg?.charts?.m1Subtitle || 'Revenue share vs margin % · Each dot = 1 product'}
       </p>
 
       <ResponsiveContainer width="100%" height={360}>

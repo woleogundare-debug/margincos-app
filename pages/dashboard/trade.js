@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import P4PromoChart from '../../components/charts/P4PromoChart';
 import { TIER_ACCESS } from '../../lib/constants';
 import ExportButton from '../../components/ExportButton';
@@ -16,6 +17,7 @@ import { exportP4TradeExecution } from '../../lib/exportToExcel';
 export default function TradePage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const cfg = getSectorConfig(activePeriod?.vertical);
   const p4 = results?.p4;
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
@@ -76,7 +78,7 @@ export default function TradePage() {
 
         {!hasResults && (
           <EmptyState icon="🎯" title="Run analysis to see trade execution results"
-            description="Requires promo depth % and promo lift % on SKUs with promotional activity."
+            description={cfg.narrative.p4EmptyState}
             action={<Button variant="navy" onClick={run} loading={running}>{running ? 'Analysing…' : 'Run Analysis'}</Button>} />
         )}
 
@@ -84,7 +86,7 @@ export default function TradePage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Promos Analysed" value={p4.results?.length || 0}
-                pill="SKUs with promo data" accent="purple" />
+                pill={`${cfg.unitPlural} with promo data`} accent="purple" />
               <KpiTile label="Net Promo Impact"
                 value={fN(p4.totalPromoImpact)}
                 pill={p4.totalPromoImpact >= 0 ? 'Net positive' : 'Net loss-making'}
@@ -101,7 +103,7 @@ export default function TradePage() {
             </div>
 
             {/* Promotion Net Impact Chart */}
-            <P4PromoChart results={p4.results} />
+            <P4PromoChart results={p4.results} cfg={cfg} />
 
             {/* Mobile summary strip */}
             <div className="md:hidden rounded-xl overflow-hidden border border-gray-100 mb-4">
@@ -130,14 +132,14 @@ export default function TradePage() {
               <button onClick={() => setTableExpanded(!tableExpanded)}
                 className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl border border-gray-100 text-sm font-semibold"
                 style={{ color: '#1B2A4A' }}>
-                <span>View Promo Detail ({p4.results?.length || 0} SKUs)</span>
+                <span>View Promo Detail ({p4.results?.length || 0} {cfg.unitPlural})</span>
                 <span className="text-gray-400">{tableExpanded ? '▲' : '▼'}</span>
               </button>
               {tableExpanded && (
                 <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
-                    headers={['SKU', 'Depth', 'Lift', 'Impact ₦/mo', 'Status']}
+                    headers={[cfg.unitId, cfg.fields.depth, cfg.fields.lift, cfg.fields.impact, cfg.fields.status]}
                     rows={sorted.map(r => [
                       r.sku,
                       (r.depth * 100).toFixed(1) + '%',
@@ -155,23 +157,23 @@ export default function TradePage() {
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportP4TradeExecution(sorted, activePeriod?.label)}
+                onExport={() => exportP4TradeExecution(sorted, activePeriod?.label, cfg.unitId)}
               />
             </div>
             <div className="hidden md:block">
             <PillarCard
-              title="Promotion Performance by SKU"
+              title={`Promotion Performance by ${cfg.unitName}`}
               subtitle="Net margin impact of current promotional activity"
               accentColor="#7C3AED"
               ragStatus={ragStatus}>
               {p4.results?.length === 0 ? (
                 <div className="py-8 text-center text-sm text-slate-400">
-                  No promotional data — populate Promo Depth % and Promo Lift % on relevant SKUs.
+                  No promotional data — populate Promo Depth % and Promo Lift % on relevant {cfg.unitPlural}.
                 </div>
               ) : (
                 <AnalysisTable
                   headers={[
-                    'SKU', 'Category',
+                    cfg.unitId, cfg.fields.classification,
                     <span key="depth" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('depth')}>Promo Depth{si('depth')}</span>,
                     <span key="lift" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('lift')}>Volume Lift{si('lift')}</span>,
                     'Break-even Lift',

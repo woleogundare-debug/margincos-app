@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { fNAbs } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
+import { getSectorConfig } from '../../lib/sectorConfig';
 import P2WaterfallChart from '../../components/charts/P2WaterfallChart';
 import { TIER_ACCESS } from '../../lib/constants';
 import ExportButton from '../../components/ExportButton';
@@ -16,6 +17,7 @@ import { exportP2CostPassThrough } from '../../lib/exportToExcel';
 export default function CostPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const cfg = getSectorConfig(activePeriod?.vertical);
   const p2 = results?.p2;
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
@@ -75,7 +77,7 @@ export default function CostPage() {
 
         {!hasResults && (
           <EmptyState icon="📉" title="Run analysis to see cost absorption results"
-            description="Requires COGS, inflation rate, and pass-through rate for each SKU."
+            description={cfg.narrative.p2EmptyState}
             action={<Button variant="navy" onClick={run} loading={running}>{running ? 'Analysing…' : 'Run Analysis'}</Button>} />
         )}
 
@@ -99,8 +101,8 @@ export default function CostPage() {
               <KpiTile label="Portfolio Recovery Rate"
                 value={(p2.portRecoveryPct || 0).toFixed(1) + '%'}
                 pill={p2.portRecoveryPct < 40
-                  ? `⚠ Critical — BUA Foods benchmark: 75%`
-                  : p2.portRecoveryPct < 70 ? '▲ Below benchmark (75%)' : '✓ Above benchmark'}
+                  ? `⚠ Critical — below benchmark (${cfg.benchmark.costRecoveryShort})`
+                  : p2.portRecoveryPct < 70 ? `▲ Below benchmark (${cfg.benchmark.costRecoveryShort})` : '✓ Above benchmark'}
                 accent={p2.portRecoveryPct < 40 ? 'red' : p2.portRecoveryPct < 70 ? 'amber' : 'teal'}
                 delta={deltas?.p2?.portRecoveryPct ? {
                   label: Math.abs(deltas.p2.portRecoveryPct.value).toFixed(1) + 'pp',
@@ -137,14 +139,14 @@ export default function CostPage() {
               <button onClick={() => setTableExpanded(!tableExpanded)}
                 className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl border border-gray-100 text-sm font-semibold"
                 style={{ color: '#1B2A4A' }}>
-                <span>View SKU Detail ({p2.results?.length || 0} SKUs)</span>
+                <span>View {cfg.unit} detail ({p2.results?.length || 0} {cfg.unitPlural})</span>
                 <span className="text-gray-400">{tableExpanded ? '▲' : '▼'}</span>
               </button>
               {tableExpanded && (
                 <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
-                    headers={['SKU', 'Shock ₦/mo', 'Pass-Through', 'Absorbed ₦/mo']}
+                    headers={[cfg.unitId, cfg.fields.shock, cfg.fields.passThrough, cfg.fields.absorbed]}
                     rows={sorted.map(r => [
                       r.sku,
                       fNAbs(r.shock),
@@ -161,18 +163,18 @@ export default function CostPage() {
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportP2CostPassThrough(sorted, activePeriod?.label)}
+                onExport={() => exportP2CostPassThrough(sorted, activePeriod?.label, cfg.unitId)}
               />
             </div>
             <div className="hidden md:block">
             <PillarCard
-              title="Cost Absorption by SKU"
-              subtitle="Inflation shock, pass-through, and absorbed exposure per SKU"
+              title={`Cost Absorption by ${cfg.unitName}`}
+              subtitle={`Inflation shock, pass-through, and absorbed exposure per ${cfg.unit}`}
               accentColor="#DC2626"
               ragStatus={ragStatus}>
               <AnalysisTable
                 headers={[
-                  'SKU', 'Category',
+                  cfg.unitId, cfg.fields.classification,
                   <span key="shock" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('shock')}>Cost Shock ₦/mo{si('shock')}</span>,
                   <span key="pt" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('pt')}>Pass-Through %{si('pt')}</span>,
                   <span key="absorbed" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('absorbed')}>Absorbed ₦/mo{si('absorbed')}</span>,
@@ -200,12 +202,12 @@ export default function CostPage() {
                 emptyMessage="No cost data — populate COGS and COGS inflation rate fields."
               />
               <NarrativeBox>
-                {`Portfolio recovery rate: ${(p2.portRecoveryPct || 0).toFixed(1)}% — BUA Foods benchmark: 75%. `}
+                {cfg.narrative.benchmarkNarrative(p2.portRecoveryPct || 0) + ' '}
                 {p2.totalAbsorbed > 0
                   ? `${fNAbs(p2.totalAbsorbed)}/month absorbed into margin and not priced through. `
                   : 'No cost absorption detected. '}
                 {p2.results.some(r => r.fxAbsorbed > 0)
-                  ? `FX-linked exposure identified on ${p2.results.filter(r => r.fxAbsorbed > 0).length} SKUs — priority for FX-indexed pricing clauses.`
+                  ? `FX-linked exposure identified on ${p2.results.filter(r => r.fxAbsorbed > 0).length} ${cfg.unitPlural} — priority for FX-indexed pricing clauses.`
                   : 'No FX exposure data captured — populate FX Exposure % to decompose absorbed inflation.'}
               </NarrativeBox>
             </PillarCard>

@@ -17,7 +17,7 @@ const fmtN = (v) => {
   return `${sign}₦${abs.toFixed(0)}`;
 };
 
-export default function M4DistributorChart({ results }) {
+export default function M4DistributorChart({ results, cfg }) {
   if (!results?.length) return null;
 
   // contPct and revShare are already 0-100 in the engine
@@ -69,7 +69,7 @@ export default function M4DistributorChart({ results }) {
         fontWeight: 700,
         color: '#1B2A4A',
         marginBottom: '4px',
-      }}>Distributor Performance Matrix</h4>
+      }}>{cfg?.charts?.m4Title || 'Partner Performance Matrix'}</h4>
       <p style={{ fontSize: '12px', color: '#8896A7', marginBottom: '20px' }}>
         Revenue share vs true contribution % · Each dot = 1 distributor
       </p>
