@@ -175,6 +175,9 @@ function validateCSVRows(rawRows) {
 
   for (let r = 1; r < rawRows.length; r++) {
     const cells = rawRows[r];
+    // Silently skip blank template rows — a row with no sku_id is empty filler, not user data
+    const skuIdIdx = keyMap['sku_id'];
+    if (skuIdIdx === undefined || !(cells[skuIdIdx] || '').toString().trim()) continue;
     const rowErrors = [];
     const row = { active: true };
     CSV_FIELDS.forEach(key => {
