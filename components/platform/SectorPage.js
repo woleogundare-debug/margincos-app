@@ -30,7 +30,7 @@ function useScrollReveal() {
 const PILLAR_COLORS = ['teal', 'red', 'gold', 'purple'];
 
 /* ── PillarSection — exact copy from pages/platform.js ── */
-function PillarSection({ num, title, color, problem, delivers, users, reverse }) {
+function PillarSection({ num, title, color, problem, delivers, users, reverse, image }) {
   const badgeColors  = { teal: 'bg-teal', red: 'bg-red-brand', gold: 'bg-gold', purple: 'bg-purple' };
   const borderColors = { teal: 'border-teal/20', red: 'border-red-brand/20', gold: 'border-gold/20', purple: 'border-purple/20' };
 
@@ -72,14 +72,25 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
         </div>
       </div>
       <div className={reverse ? 'lg:order-1' : ''} data-reveal>
-        <div className={`opacity-0 rounded-2xl border ${borderColors[color]} bg-white p-8 min-h-[200px] flex items-center justify-center`}>
-          <div className="text-center">
-            <span className={`inline-flex w-16 h-16 rounded-2xl ${badgeColors[color]} items-center justify-center text-2xl font-black text-white mb-3 mx-auto`}>
-              P{num}
-            </span>
-            <p className="text-xs text-slate-400 font-medium">{title}</p>
+        {image ? (
+          <div className={`rounded-2xl border ${borderColors[color]} bg-white p-4 min-h-[200px] flex items-center justify-center overflow-hidden`}>
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-auto"
+              loading="lazy"
+            />
           </div>
-        </div>
+        ) : (
+          <div className={`opacity-0 rounded-2xl border ${borderColors[color]} bg-white p-8 min-h-[200px] flex items-center justify-center`}>
+            <div className="text-center">
+              <span className={`inline-flex w-16 h-16 rounded-2xl ${badgeColors[color]} items-center justify-center text-2xl font-black text-white mb-3 mx-auto`}>
+                P{num}
+              </span>
+              <p className="text-xs text-slate-400 font-medium">{title}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -177,6 +188,7 @@ export default function SectorPage({
                   delivers={pillar.delivers}
                   users={pillar.roles}
                   reverse={i % 2 !== 0}
+                  image={pillar.image}
                 />
               ))}
             </div>

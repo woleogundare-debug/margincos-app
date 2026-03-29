@@ -1,0 +1,68 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P1 · Pricing Intelligence</text>
+  <rect x="382" y="12" width="62" height="20" fill="#0D9488" rx="10"/>
+  <text x="413" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Retail</text>
+  <!-- Category margin heatmap -->
+  <text x="18" y="68" font-size="9" fill="#64748B">Gross Margin % by Category — Current vs Competitor Benchmark</text>
+  <!-- Table header -->
+  <rect x="18" y="74" width="424" height="20" fill="#E8EBF0" rx="3"/>
+  <text x="26" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Category</text>
+  <text x="180" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Current</text>
+  <text x="250" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Benchmark</text>
+  <text x="340" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Gap</text>
+  <text x="390" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Status</text>
+  <!-- Row 1 -->
+  <rect x="18" y="94" width="424" height="22" fill="white"/>
+  <text x="26" y="109" font-size="9" fill="#1B2A4A">Beverages</text>
+  <text x="180" y="109" font-size="9" fill="#1B2A4A">34.2%</text>
+  <text x="250" y="109" font-size="9" fill="#64748B">38.0%</text>
+  <text x="340" y="109" font-size="9" fill="#DC2626" font-weight="600">−3.8pp</text>
+  <rect x="386" y="98" width="52" height="14" fill="#FEE2E2" rx="3"/>
+  <text x="412" y="109" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="700">REPRICE</text>
+  <!-- Row 2 -->
+  <rect x="18" y="116" width="424" height="22" fill="#F8FAFC"/>
+  <text x="26" y="131" font-size="9" fill="#1B2A4A">Packaged Food</text>
+  <text x="180" y="131" font-size="9" fill="#1B2A4A">28.7%</text>
+  <text x="250" y="131" font-size="9" fill="#64748B">27.5%</text>
+  <text x="340" y="131" font-size="9" fill="#065F46" font-weight="600">+1.2pp</text>
+  <rect x="386" y="120" width="52" height="14" fill="#DCFCE7" rx="3"/>
+  <text x="412" y="131" text-anchor="middle" font-size="8" fill="#065F46" font-weight="700">ON TRACK</text>
+  <!-- Row 3 -->
+  <rect x="18" y="138" width="424" height="22" fill="white"/>
+  <text x="26" y="153" font-size="9" fill="#1B2A4A">Personal Care</text>
+  <text x="180" y="153" font-size="9" fill="#1B2A4A">41.3%</text>
+  <text x="250" y="153" font-size="9" fill="#64748B">44.0%</text>
+  <text x="340" y="153" font-size="9" fill="#DC2626" font-weight="600">−2.7pp</text>
+  <rect x="386" y="142" width="52" height="14" fill="#FEE2E2" rx="3"/>
+  <text x="412" y="153" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="700">REPRICE</text>
+  <!-- Row 4 -->
+  <rect x="18" y="160" width="424" height="22" fill="#F8FAFC"/>
+  <text x="26" y="175" font-size="9" fill="#1B2A4A">Household Goods</text>
+  <text x="180" y="175" font-size="9" fill="#1B2A4A">22.1%</text>
+  <text x="250" y="175" font-size="9" fill="#64748B">24.0%</text>
+  <text x="340" y="175" font-size="9" fill="#DC2626" font-weight="600">−1.9pp</text>
+  <rect x="386" y="164" width="52" height="14" fill="#FEF3C7" rx="3"/>
+  <text x="412" y="175" text-anchor="middle" font-size="8" fill="#92400E" font-weight="700">MONITOR</text>
+  <!-- Row 5 -->
+  <rect x="18" y="182" width="424" height="22" fill="white"/>
+  <text x="26" y="197" font-size="9" fill="#1B2A4A">Dairy</text>
+  <text x="180" y="197" font-size="9" fill="#1B2A4A">18.4%</text>
+  <text x="250" y="197" font-size="9" fill="#64748B">21.0%</text>
+  <text x="340" y="197" font-size="9" fill="#DC2626" font-weight="600">−2.6pp</text>
+  <rect x="386" y="186" width="52" height="14" fill="#FEE2E2" rx="3"/>
+  <text x="412" y="197" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="700">REPRICE</text>
+  <!-- Divider -->
+  <line x1="18" y1="212" x2="442" y2="212" stroke="#E2E8F0" stroke-width="1"/>
+  <!-- Callout -->
+  <rect x="18" y="224" width="196" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="26" y="238" font-size="9" fill="#991B1B" font-weight="600">3 categories require repricing action</text>
+  <rect x="222" y="224" width="220" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="230" y="238" font-size="9" fill="#065F46" font-weight="600">₦28.6M/month recoverable margin</text>
+  <rect x="18" y="248" width="300" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="26" y="262" font-size="9" fill="#1D4ED8" font-weight="600">Floor margin alert: 8 SKUs below 15% threshold across categories</text>
+  <rect x="18" y="272" width="256" height="20" fill="#F3E8FF" rx="4"/>
+  <text x="26" y="286" font-size="9" fill="#6D28D9" font-weight="600">Competitor benchmarks refreshed from 6 market sources</text>
+</svg>

@@ -1,0 +1,47 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P2 · Cost Pass-Through</text>
+  <rect x="340" y="12" width="104" height="20" fill="#DC2626" rx="10"/>
+  <text x="392" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Manufacturing</text>
+  <!-- Waterfall-style cost decomposition -->
+  <text x="18" y="68" font-size="9" fill="#64748B">Raw Material Cost Shock — Monthly Impact (₦ millions)</text>
+  <!-- Base bar -->
+  <rect x="56" y="100" width="52" height="80" fill="#1B2A4A" rx="3"/>
+  <text x="82" y="94" text-anchor="middle" font-size="8" fill="#1B2A4A" font-weight="600">Base</text>
+  <text x="82" y="192" text-anchor="middle" font-size="9" fill="#64748B">₦42M</text>
+  <!-- FX bar (upward = cost) -->
+  <rect x="124" y="80" width="52" height="20" fill="#DC2626" rx="3" opacity="0.85"/>
+  <text x="150" y="75" text-anchor="middle" font-size="8" fill="#DC2626" font-weight="600">+FX</text>
+  <text x="150" y="112" text-anchor="middle" font-size="9" fill="#64748B">₦7.8M</text>
+  <!-- Energy bar -->
+  <rect x="192" y="88" width="52" height="12" fill="#DC2626" rx="3" opacity="0.65"/>
+  <text x="218" y="83" text-anchor="middle" font-size="8" fill="#DC2626" font-weight="600">+Energy</text>
+  <text x="218" y="112" text-anchor="middle" font-size="9" fill="#64748B">₦4.9M</text>
+  <!-- Logistics bar -->
+  <rect x="260" y="92" width="52" height="8" fill="#D4A843" rx="3" opacity="0.8"/>
+  <text x="286" y="87" text-anchor="middle" font-size="8" fill="#D4A843" font-weight="600">+Logistics</text>
+  <text x="286" y="112" text-anchor="middle" font-size="9" fill="#64748B">₦3.2M</text>
+  <!-- Total current cost -->
+  <rect x="340" y="60" width="52" height="120" fill="#E2E8F0" rx="3"/>
+  <rect x="340" y="60" width="52" height="120" fill="#1B2A4A" rx="3" opacity="0.15"/>
+  <text x="366" y="54" text-anchor="middle" font-size="8" fill="#1B2A4A" font-weight="700">Total</text>
+  <text x="366" y="192" text-anchor="middle" font-size="9" fill="#64748B">₦57.9M</text>
+  <!-- Bracket showing unrecovered -->
+  <line x1="392" y1="100" x2="408" y2="100" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="408" y1="100" x2="408" y2="148" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="392" y1="148" x2="408" y2="148" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="414" y="118" font-size="8" fill="#DC2626" font-weight="600">₦9.1M</text>
+  <text x="414" y="130" font-size="8" fill="#DC2626">unrecov.</text>
+  <!-- Benchmark line -->
+  <line x1="44" y1="144" x2="340" y2="144" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="28" y="148" text-anchor="middle" font-size="8" fill="#0D9488" font-weight="600">75%</text>
+  <!-- Callout -->
+  <rect x="18" y="214" width="170" height="36" fill="#FEF3C7" rx="4"/>
+  <text x="26" y="228" font-size="9" fill="#92400E" font-weight="600">Current recovery: 57%</text>
+  <text x="26" y="244" font-size="8" fill="#92400E">18pp below benchmark</text>
+  <rect x="196" y="214" width="246" height="36" fill="#FEE2E2" rx="4"/>
+  <text x="204" y="228" font-size="9" fill="#991B1B" font-weight="600">FX-linked exposure: ₦7.8M/month</text>
+  <text x="204" y="244" font-size="8" fill="#991B1B">Recommend FX pass-through clause in pricing</text>
+</svg>

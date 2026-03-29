@@ -23,6 +23,7 @@ export default function LogisticsPage() {
             'Cost floor breach alerts with rate renegotiation recommendations',
           ],
           roles: ['CFO', 'Commercial Director', 'Operations Director'],
+          image: '/images/platform/logistics-p1.svg',
         },
         {
           id: 'P2',
@@ -34,6 +35,7 @@ export default function LogisticsPage() {
             'Fuel surcharge trigger recommendations by contract',
           ],
           roles: ['CFO', 'Finance Director', 'Fleet Manager'],
+          image: '/images/platform/logistics-p2.svg',
         },
         {
           id: 'P3',
@@ -45,6 +47,7 @@ export default function LogisticsPage() {
             'Loss-making contract identification with renegotiation actions',
           ],
           roles: ['Commercial Director', 'Sales Director', 'Account Management'],
+          image: '/images/platform/logistics-p3.svg',
         },
         {
           id: 'P4',
@@ -56,6 +59,7 @@ export default function LogisticsPage() {
             'Loss-making load identification with capacity reallocation recommendations',
           ],
           roles: ['Operations Director', 'Fleet Manager', 'CFO'],
+          image: '/images/platform/logistics-p4.svg',
         },
       ]}
       modules={[

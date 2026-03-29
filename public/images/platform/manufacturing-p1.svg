@@ -1,0 +1,45 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P1 · Pricing Intelligence</text>
+  <rect x="340" y="12" width="104" height="20" fill="#0D9488" rx="10"/>
+  <text x="392" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Manufacturing</text>
+  <!-- Scatter chart: proposed uplift vs WTP headroom -->
+  <text x="18" y="70" font-size="9" fill="#64748B">Proposed Rate vs WTP Headroom — Product Portfolio</text>
+  <!-- Axes -->
+  <line x1="60" y1="220" x2="420" y2="220" stroke="#CBD5E1" stroke-width="1"/>
+  <line x1="60" y1="70" x2="60" y2="220" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="240" y="238" text-anchor="middle" font-size="8" fill="#94A3B8">WTP Headroom (₦/month)</text>
+  <text x="18" y="150" transform="rotate(-90 18 150)" font-size="8" fill="#94A3B8" text-anchor="middle">Proposed Uplift %</text>
+  <!-- Opportunity zone -->
+  <rect x="200" y="90" width="220" height="110" fill="#0D9488" rx="4" opacity="0.06"/>
+  <text x="310" y="108" text-anchor="middle" font-size="8" fill="#0D9488" font-weight="600">Repricing zone</text>
+  <!-- Data points -->
+  <circle cx="300" cy="140" r="8" fill="#0D9488" opacity="0.85"/>
+  <text x="312" y="138" font-size="8" fill="#1B2A4A" font-weight="600">SKU 04</text>
+  <circle cx="360" cy="110" r="10" fill="#0D9488"/>
+  <text x="374" y="108" font-size="8" fill="#1B2A4A" font-weight="600">SKU 07</text>
+  <circle cx="260" cy="160" r="6" fill="#0D9488" opacity="0.7"/>
+  <text x="272" y="158" font-size="8" fill="#1B2A4A">SKU 11</text>
+  <circle cx="390" cy="130" r="7" fill="#0D9488" opacity="0.9"/>
+  <text x="400" y="136" font-size="8" fill="#1B2A4A">SKU 02</text>
+  <!-- Below-opportunity points -->
+  <circle cx="130" cy="180" r="9" fill="#DC2626" opacity="0.7"/>
+  <text x="142" y="178" font-size="8" fill="#1B2A4A">SKU 09</text>
+  <circle cx="100" cy="195" r="5" fill="#EF4444" opacity="0.6"/>
+  <text x="108" y="193" font-size="8" fill="#1B2A4A">SKU 13</text>
+  <circle cx="160" cy="170" r="7" fill="#DC2626" opacity="0.8"/>
+  <text x="170" y="168" font-size="8" fill="#1B2A4A">SKU 01</text>
+  <!-- Neutral -->
+  <circle cx="200" cy="165" r="6" fill="#D4A843" opacity="0.85"/>
+  <circle cx="240" cy="155" r="5" fill="#D4A843" opacity="0.7"/>
+  <circle cx="340" cy="155" r="5" fill="#0D9488" opacity="0.6"/>
+  <!-- Callout -->
+  <rect x="18" y="246" width="196" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="26" y="260" font-size="9" fill="#065F46" font-weight="600">↑ ₦34.2M/mo recoverable</text>
+  <rect x="222" y="246" width="220" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="230" y="260" font-size="9" fill="#991B1B" font-weight="600">3 products priced below floor margin</text>
+  <rect x="18" y="270" width="180" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="26" y="284" font-size="9" fill="#1D4ED8" font-weight="600">Competitor benchmarks: 14 products</text>
+</svg>

@@ -1,0 +1,48 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P4 · Trade Execution</text>
+  <rect x="340" y="12" width="104" height="20" fill="#7C3AED" rx="10"/>
+  <text x="392" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Manufacturing</text>
+  <!-- Volume discount ladder analysis -->
+  <text x="18" y="68" font-size="9" fill="#64748B">Volume Discount vs Break-Even Lift Required</text>
+  <!-- Axes -->
+  <line x1="60" y1="210" x2="420" y2="210" stroke="#CBD5E1" stroke-width="1"/>
+  <line x1="60" y1="70" x2="60" y2="210" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="240" y="228" text-anchor="middle" font-size="8" fill="#94A3B8">Discount Depth (%)</text>
+  <text x="18" y="145" transform="rotate(-90 18 145)" font-size="8" fill="#94A3B8" text-anchor="middle">Required Lift (%)</text>
+  <!-- X axis labels -->
+  <text x="100" y="220" text-anchor="middle" font-size="8" fill="#94A3B8">5%</text>
+  <text x="160" y="220" text-anchor="middle" font-size="8" fill="#94A3B8">10%</text>
+  <text x="220" y="220" text-anchor="middle" font-size="8" fill="#94A3B8">15%</text>
+  <text x="280" y="220" text-anchor="middle" font-size="8" fill="#94A3B8">20%</text>
+  <text x="340" y="220" text-anchor="middle" font-size="8" fill="#94A3B8">25%</text>
+  <text x="400" y="220" text-anchor="middle" font-size="8" fill="#94A3B8">30%</text>
+  <!-- Break-even curve (exponential) -->
+  <polyline points="100,198 160,188 220,170 280,142 340,100 400,72" fill="none" stroke="#0D9488" stroke-width="2"/>
+  <text x="360" y="88" font-size="8" fill="#0D9488" font-weight="600">Break-even</text>
+  <!-- Actual lift line (flat, lower) -->
+  <polyline points="100,192 160,186 220,183 280,180 340,177 400,174" fill="none" stroke="#64748B" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="362" y="168" font-size="8" fill="#64748B">Actual lift</text>
+  <!-- Data points with status -->
+  <circle cx="130" cy="192" r="5" fill="#0D9488"/>
+  <circle cx="190" cy="185" r="5" fill="#D4A843"/>
+  <circle cx="250" cy="178" r="6" fill="#EF4444"/>
+  <text x="258" y="174" font-size="8" fill="#EF4444" font-weight="600">LOSS</text>
+  <circle cx="310" cy="172" r="7" fill="#EF4444" opacity="0.85"/>
+  <text x="318" y="168" font-size="8" fill="#EF4444" font-weight="600">LOSS</text>
+  <circle cx="370" cy="166" r="8" fill="#EF4444" opacity="0.7"/>
+  <text x="378" y="162" font-size="8" fill="#EF4444" font-weight="600">LOSS</text>
+  <!-- Gap annotation at 20% -->
+  <line x1="280" y1="142" x2="280" y2="180" stroke="#EF4444" stroke-width="1.5"/>
+  <rect x="284" y="152" width="54" height="16" fill="#FEE2E2" rx="2"/>
+  <text x="311" y="164" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="600">Gap: 38pp</text>
+  <!-- Callout -->
+  <rect x="18" y="246" width="220" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="26" y="260" font-size="9" fill="#991B1B" font-weight="600">3 promotions: actual lift below break-even</text>
+  <rect x="246" y="246" width="196" height="20" fill="#F3E8FF" rx="4"/>
+  <text x="254" y="260" font-size="9" fill="#6D28D9" font-weight="600">₦16.4M/mo committed on negative ROI</text>
+  <rect x="18" y="270" width="196" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="26" y="284" font-size="9" fill="#065F46" font-weight="600">Optimal depth ceiling: 10% at current elasticity</text>
+</svg>

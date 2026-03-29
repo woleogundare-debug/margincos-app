@@ -1,0 +1,60 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P4 · Load Profitability</text>
+  <rect x="360" y="12" width="84" height="20" fill="#7C3AED" rx="10"/>
+  <text x="402" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Logistics</text>
+  <!-- Load profitability scatter -->
+  <text x="18" y="68" font-size="9" fill="#64748B">Revenue vs Fully-Loaded Cost — Per Trip Breakdown</text>
+  <!-- Axes -->
+  <line x1="70" y1="210" x2="420" y2="210" stroke="#CBD5E1" stroke-width="1"/>
+  <line x1="70" y1="65" x2="70" y2="210" stroke="#CBD5E1" stroke-width="1"/>
+  <!-- Diagonal breakeven line -->
+  <line x1="70" y1="210" x2="420" y2="60" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="388" y="75" font-size="8" fill="#0D9488" font-weight="600">Break-even</text>
+  <!-- Profitable zone shading -->
+  <polygon points="70,210 420,60 420,210" fill="#DCFCE7" opacity="0.2"/>
+  <!-- Loss zone shading -->
+  <polygon points="70,210 70,65 420,60" fill="#FEE2E2" opacity="0.15"/>
+  <!-- Axis labels -->
+  <text x="245" y="228" text-anchor="middle" font-size="8" fill="#94A3B8">Revenue per trip (₦000)</text>
+  <text x="22" y="140" transform="rotate(-90 22 140)" font-size="8" fill="#94A3B8" text-anchor="middle">Cost per trip (₦000)</text>
+  <!-- Axis ticks -->
+  <text x="120" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">50</text>
+  <text x="195" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">100</text>
+  <text x="270" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">150</text>
+  <text x="345" y="222" text-anchor="middle" font-size="7" fill="#94A3B8">200</text>
+  <text x="60" y="195" text-anchor="end" font-size="7" fill="#94A3B8">50</text>
+  <text x="60" y="155" text-anchor="end" font-size="7" fill="#94A3B8">80</text>
+  <text x="60" y="115" text-anchor="end" font-size="7" fill="#94A3B8">110</text>
+  <!-- Profitable trips (below breakeven line) -->
+  <circle cx="280" cy="145" r="6" fill="#0D9488" opacity="0.8"/>
+  <circle cx="330" cy="130" r="8" fill="#0D9488" opacity="0.7"/>
+  <circle cx="380" cy="100" r="7" fill="#0D9488" opacity="0.85"/>
+  <circle cx="250" cy="160" r="5" fill="#D4A843" opacity="0.8"/>
+  <circle cx="310" cy="150" r="5" fill="#0D9488" opacity="0.6"/>
+  <circle cx="360" cy="118" r="6" fill="#0D9488" opacity="0.7"/>
+  <!-- Loss-making trips (above breakeven line) -->
+  <circle cx="130" cy="162" r="9" fill="#EF4444" opacity="0.75"/>
+  <text x="130" y="159" text-anchor="middle" font-size="7" fill="white" font-weight="700">A</text>
+  <text x="130" y="169" text-anchor="middle" font-size="6" fill="white">−₦18k</text>
+  <circle cx="175" cy="145" r="7" fill="#EF4444" opacity="0.65"/>
+  <text x="175" y="148" text-anchor="middle" font-size="7" fill="white" font-weight="700">B −₦9k</text>
+  <circle cx="220" cy="135" r="6" fill="#EF4444" opacity="0.6"/>
+  <text x="220" y="138" text-anchor="middle" font-size="7" fill="white" font-weight="700">C −₦6k</text>
+  <!-- Zone labels -->
+  <text x="110" y="80" font-size="8" fill="#991B1B" font-weight="600" opacity="0.7">Loss zone</text>
+  <text x="340" y="200" font-size="8" fill="#065F46" font-weight="600" opacity="0.7">Profit zone</text>
+  <!-- Callout -->
+  <rect x="18" y="234" width="200" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="26" y="248" font-size="9" fill="#991B1B" font-weight="600">3 trip types operating at a loss</text>
+  <rect x="226" y="234" width="216" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="234" y="248" font-size="9" fill="#991B1B" font-weight="600">Trip A: breakeven rate = ₦310/km (currently ₦258)</text>
+  <rect x="18" y="258" width="240" height="20" fill="#F3E8FF" rx="4"/>
+  <text x="26" y="272" font-size="9" fill="#6D28D9" font-weight="600">Deadhead cost: ₦3.4M on loss-making trips</text>
+  <rect x="266" y="258" width="176" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="274" y="272" font-size="9" fill="#065F46" font-weight="600">Backloading potential: ₦2.1M recoverable</text>
+  <rect x="18" y="282" width="230" height="10" fill="#EFF6FF" rx="3"/>
+  <text x="26" y="290" font-size="7" fill="#1D4ED8" font-weight="600">Recommend: refuse Trip A at current rate — min ₦310/km or reroute</text>
+</svg>

@@ -1,0 +1,43 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <!-- Header -->
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P3 · Channel Economics</text>
+  <rect x="374" y="12" width="70" height="20" fill="#D4A843" rx="10"/>
+  <text x="409" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">FMCG</text>
+  <!-- Horizontal bar chart: net contribution by channel -->
+  <!-- Modern Trade -->
+  <text x="18" y="78" font-size="10" fill="#1B2A4A" font-weight="600">Modern Trade</text>
+  <rect x="148" y="64" width="188" height="20" fill="#0D9488" rx="3"/>
+  <text x="342" y="78" font-size="10" fill="#1B2A4A" font-weight="700">38.2%</text>
+  <!-- Open Market -->
+  <text x="18" y="112" font-size="10" fill="#1B2A4A" font-weight="600">Open Market</text>
+  <rect x="148" y="98" width="156" height="20" fill="#0D9488" rx="3" opacity="0.75"/>
+  <text x="310" y="112" font-size="10" fill="#1B2A4A" font-weight="700">31.4%</text>
+  <!-- Wholesale -->
+  <text x="18" y="146" font-size="10" fill="#1B2A4A" font-weight="600">Wholesale</text>
+  <rect x="148" y="132" width="104" height="20" fill="#D4A843" rx="3" opacity="0.85"/>
+  <text x="258" y="146" font-size="10" fill="#1B2A4A" font-weight="700">20.9%</text>
+  <!-- HoReCa -->
+  <text x="18" y="180" font-size="10" fill="#1B2A4A" font-weight="600">HoReCa</text>
+  <rect x="148" y="166" width="66" height="20" fill="#D4A843" rx="3" opacity="0.6"/>
+  <text x="220" y="180" font-size="10" fill="#1B2A4A" font-weight="700">13.3%</text>
+  <!-- Direct to Consumer -->
+  <text x="18" y="214" font-size="10" fill="#1B2A4A" font-weight="600">Direct to Consumer</text>
+  <rect x="148" y="200" width="40" height="20" fill="#EF4444" rx="3" opacity="0.7"/>
+  <text x="194" y="214" font-size="10" fill="#EF4444" font-weight="700">8.1%</text>
+  <text x="260" y="214" font-size="8" fill="#EF4444">← below breakeven</text>
+  <!-- Zero line -->
+  <line x1="148" y1="58" x1="148" y2="228" stroke="#CBD5E1" stroke-width="1"/>
+  <!-- Divider -->
+  <line x1="18" y1="232" x2="442" y2="232" stroke="#E2E8F0" stroke-width="1"/>
+  <!-- Callout row -->
+  <rect x="18" y="244" width="220" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="26" y="258" font-size="9" fill="#065F46" font-weight="600">Best: Modern Trade at 38.2% net margin</text>
+  <rect x="246" y="244" width="196" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="254" y="258" font-size="9" fill="#991B1B" font-weight="600">Weak: DTC below breakeven threshold</text>
+  <!-- Credit cost badge -->
+  <rect x="18" y="268" width="200" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="26" y="282" font-size="9" fill="#1D4ED8" font-weight="600">Trade credit cost included in all channels</text>
+</svg>

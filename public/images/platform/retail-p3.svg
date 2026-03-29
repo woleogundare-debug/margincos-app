@@ -1,0 +1,44 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P3 · Channel Economics</text>
+  <rect x="382" y="12" width="62" height="20" fill="#D4A843" rx="10"/>
+  <text x="413" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Retail</text>
+  <!-- Partner performance ranking -->
+  <text x="18" y="68" font-size="9" fill="#64748B">Net Contribution after Distributor Margin &amp; Trade Credit — Top 8</text>
+  <!-- Horizontal bars by distributor -->
+  <text x="18" y="88" font-size="9" fill="#1B2A4A" font-weight="600">Dist. Alpha</text>
+  <rect x="130" y="76" width="200" height="16" fill="#0D9488" rx="2"/>
+  <text x="334" y="88" font-size="9" fill="#0D9488" font-weight="700">₦8.4M</text>
+  <text x="18" y="112" font-size="9" fill="#1B2A4A" font-weight="600">Dist. Beta</text>
+  <rect x="130" y="100" width="172" height="16" fill="#0D9488" rx="2" opacity="0.8"/>
+  <text x="306" y="112" font-size="9" fill="#0D9488" font-weight="700">₦7.2M</text>
+  <text x="18" y="136" font-size="9" fill="#1B2A4A" font-weight="600">Dist. Gamma</text>
+  <rect x="130" y="124" width="128" height="16" fill="#D4A843" rx="2" opacity="0.85"/>
+  <text x="262" y="136" font-size="9" fill="#D4A843" font-weight="700">₦5.4M</text>
+  <text x="18" y="160" font-size="9" fill="#1B2A4A" font-weight="600">Dist. Delta</text>
+  <rect x="130" y="148" width="100" height="16" fill="#D4A843" rx="2" opacity="0.65"/>
+  <text x="234" y="160" font-size="9" fill="#D4A843" font-weight="700">₦4.2M</text>
+  <text x="18" y="184" font-size="9" fill="#1B2A4A" font-weight="600">Dist. Epsilon</text>
+  <rect x="130" y="172" width="68" height="16" fill="#D4A843" rx="2" opacity="0.5"/>
+  <text x="202" y="184" font-size="9" fill="#D4A843" font-weight="700">₦2.9M</text>
+  <text x="18" y="208" font-size="9" fill="#1B2A4A" font-weight="600">Dist. Zeta</text>
+  <rect x="130" y="196" width="36" height="16" fill="#EF4444" rx="2" opacity="0.7"/>
+  <text x="170" y="208" font-size="9" fill="#EF4444" font-weight="700">₦1.5M</text>
+  <text x="210" y="208" font-size="8" fill="#EF4444">← low margin volume</text>
+  <!-- Divider -->
+  <line x1="18" y1="222" x2="442" y2="222" stroke="#E2E8F0" stroke-width="1"/>
+  <!-- Summary KPIs -->
+  <text x="18" y="240" font-size="9" fill="#64748B">Top 2 distributors</text>
+  <text x="120" y="240" font-size="10" font-weight="700" fill="#0D9488">₦15.6M</text>
+  <text x="190" y="240" font-size="9" fill="#64748B">= 43% of total contribution</text>
+  <text x="18" y="258" font-size="9" fill="#64748B">Avg credit days</text>
+  <text x="120" y="258" font-size="10" font-weight="700" fill="#DC2626">52 days</text>
+  <text x="190" y="258" font-size="9" fill="#64748B">vs 30-day benchmark</text>
+  <!-- Callout row -->
+  <rect x="18" y="270" width="196" height="20" fill="#FEF3C7" rx="4"/>
+  <text x="26" y="284" font-size="9" fill="#92400E" font-weight="600">Credit cost: ₦3.8M/month unpriced</text>
+  <rect x="222" y="270" width="220" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="230" y="284" font-size="9" fill="#065F46" font-weight="600">Renegotiate Dist. Zeta terms or exit</text>
+</svg>

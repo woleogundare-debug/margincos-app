@@ -23,6 +23,7 @@ export default function ManufacturingPage() {
             'Margin floor breach alerts with repricing recommendations across your production portfolio',
           ],
           roles: ['CFO', 'Commercial Director'],
+          image: '/images/platform/manufacturing-p1.svg',
         },
         {
           id: 'P2',
@@ -34,6 +35,7 @@ export default function ManufacturingPage() {
             'Recovery gap quantified in ₦/month per production line',
           ],
           roles: ['CFO', 'Finance Director', 'Supply Chain'],
+          image: '/images/platform/manufacturing-p2.svg',
         },
         {
           id: 'P3',
@@ -45,6 +47,7 @@ export default function ManufacturingPage() {
             'Loss-making channel identification with remediation actions',
           ],
           roles: ['Commercial Director', 'Sales Director', 'Operations'],
+          image: '/images/platform/manufacturing-p3.svg',
         },
         {
           id: 'P4',
@@ -56,6 +59,7 @@ export default function ManufacturingPage() {
             'Loss-making commercial spend flagged with margin-positive alternatives',
           ],
           roles: ['Trade Marketing', 'Sales Director', 'CFO'],
+          image: '/images/platform/manufacturing-p4.svg',
         },
       ]}
       modules={[

@@ -1,0 +1,68 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P1 · Lane Rate Intelligence</text>
+  <rect x="360" y="12" width="84" height="20" fill="#0D9488" rx="10"/>
+  <text x="402" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Logistics</text>
+  <!-- Lane rate vs cost table -->
+  <text x="18" y="68" font-size="9" fill="#64748B">Contracted Rate vs Fully-Loaded Cost — Lane Analysis</text>
+  <!-- Table header -->
+  <rect x="18" y="74" width="424" height="20" fill="#E8EBF0" rx="3"/>
+  <text x="26" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Lane</text>
+  <text x="146" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Rate (₦/km)</text>
+  <text x="228" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Cost (₦/km)</text>
+  <text x="312" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Margin</text>
+  <text x="374" y="88" font-size="9" font-weight="700" fill="#1B2A4A">Status</text>
+  <!-- Row 1 - healthy -->
+  <rect x="18" y="94" width="424" height="22" fill="white"/>
+  <text x="26" y="109" font-size="9" fill="#1B2A4A">Lagos–Kano</text>
+  <text x="146" y="109" font-size="9" fill="#1B2A4A">₦280</text>
+  <text x="228" y="109" font-size="9" fill="#1B2A4A">₦198</text>
+  <text x="312" y="109" font-size="9" fill="#065F46" font-weight="600">29.3%</text>
+  <rect x="370" y="98" width="68" height="14" fill="#DCFCE7" rx="3"/>
+  <text x="404" y="109" text-anchor="middle" font-size="8" fill="#065F46" font-weight="700">HEALTHY</text>
+  <!-- Row 2 - breach -->
+  <rect x="18" y="116" width="424" height="22" fill="#FFF8F8"/>
+  <text x="26" y="131" font-size="9" fill="#1B2A4A">Lagos–Abuja</text>
+  <text x="146" y="131" font-size="9" fill="#1B2A4A">₦310</text>
+  <text x="228" y="131" font-size="9" fill="#DC2626" font-weight="600">₦338</text>
+  <text x="312" y="131" font-size="9" fill="#991B1B" font-weight="600">−8.9%</text>
+  <rect x="370" y="120" width="68" height="14" fill="#FEE2E2" rx="3"/>
+  <text x="404" y="131" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="700">BREACH</text>
+  <!-- Row 3 - warning -->
+  <rect x="18" y="138" width="424" height="22" fill="white"/>
+  <text x="26" y="153" font-size="9" fill="#1B2A4A">PH–Lagos</text>
+  <text x="146" y="153" font-size="9" fill="#1B2A4A">₦245</text>
+  <text x="228" y="153" font-size="9" fill="#1B2A4A">₦224</text>
+  <text x="312" y="153" font-size="9" fill="#D4A843" font-weight="600">8.6%</text>
+  <rect x="370" y="142" width="68" height="14" fill="#FEF3C7" rx="3"/>
+  <text x="404" y="153" text-anchor="middle" font-size="8" fill="#92400E" font-weight="700">MONITOR</text>
+  <!-- Row 4 - breach -->
+  <rect x="18" y="160" width="424" height="22" fill="#FFF8F8"/>
+  <text x="26" y="175" font-size="9" fill="#1B2A4A">Kano–Kaduna</text>
+  <text x="146" y="175" font-size="9" fill="#1B2A4A">₦185</text>
+  <text x="228" y="175" font-size="9" fill="#DC2626" font-weight="600">₦204</text>
+  <text x="312" y="175" font-size="9" fill="#991B1B" font-weight="600">−10.3%</text>
+  <rect x="370" y="164" width="68" height="14" fill="#FEE2E2" rx="3"/>
+  <text x="404" y="175" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="700">BREACH</text>
+  <!-- Row 5 - healthy -->
+  <rect x="18" y="182" width="424" height="22" fill="white"/>
+  <text x="26" y="197" font-size="9" fill="#1B2A4A">Ibadan–Benin</text>
+  <text x="146" y="197" font-size="9" fill="#1B2A4A">₦220</text>
+  <text x="228" y="197" font-size="9" fill="#1B2A4A">₦162</text>
+  <text x="312" y="197" font-size="9" fill="#065F46" font-weight="600">26.4%</text>
+  <rect x="370" y="186" width="68" height="14" fill="#DCFCE7" rx="3"/>
+  <text x="404" y="197" text-anchor="middle" font-size="8" fill="#065F46" font-weight="700">HEALTHY</text>
+  <!-- Divider -->
+  <line x1="18" y1="212" x2="442" y2="212" stroke="#E2E8F0" stroke-width="1"/>
+  <!-- Callout -->
+  <rect x="18" y="224" width="180" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="26" y="238" font-size="9" fill="#991B1B" font-weight="600">2 lanes: loss-making on every trip</text>
+  <rect x="206" y="224" width="236" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="214" y="238" font-size="9" fill="#065F46" font-weight="600">Rate uplift required: ₦28–43 per km</text>
+  <rect x="18" y="248" width="300" height="20" fill="#FEF3C7" rx="4"/>
+  <text x="26" y="262" font-size="9" fill="#92400E" font-weight="600">Monthly loss on breach lanes: ₦4.8M — renegotiate before renewal</text>
+  <rect x="18" y="272" width="180" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="26" y="286" font-size="9" fill="#1D4ED8" font-weight="600">Market rates refreshed: 6 lane benchmarks</text>
+</svg>

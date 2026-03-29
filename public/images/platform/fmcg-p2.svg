@@ -1,0 +1,63 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <!-- Header -->
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P2 · Cost Pass-Through</text>
+  <rect x="374" y="12" width="70" height="20" fill="#DC2626" rx="10"/>
+  <text x="409" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">FMCG</text>
+  <!-- Benchmark line -->
+  <line x1="44" y1="126" x2="416" y2="126" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="420" y="130" font-size="8" fill="#0D9488" font-weight="600">75%</text>
+  <text x="420" y="140" font-size="7" fill="#0D9488">bench</text>
+  <!-- Grouped bars per product: inflation (full) vs recovered (filled) -->
+  <!-- Product 1 -->
+  <rect x="56" y="86" width="28" height="110" fill="#E2E8F0" rx="2"/>
+  <rect x="56" y="86" width="28" height="88" fill="#0D9488" rx="2"/>
+  <text x="70" y="214" text-anchor="middle" font-size="8" fill="#64748B">Prod A</text>
+  <text x="70" y="225" text-anchor="middle" font-size="8" fill="#0D9488" font-weight="700">80%</text>
+  <!-- Product 2 -->
+  <rect x="100" y="86" width="28" height="110" fill="#E2E8F0" rx="2"/>
+  <rect x="100" y="86" width="28" height="72" fill="#0D9488" rx="2" opacity="0.8"/>
+  <text x="114" y="214" text-anchor="middle" font-size="8" fill="#64748B">Prod B</text>
+  <text x="114" y="225" text-anchor="middle" font-size="8" fill="#D4A843" font-weight="700">65%</text>
+  <!-- Product 3 -->
+  <rect x="144" y="86" width="28" height="110" fill="#E2E8F0" rx="2"/>
+  <rect x="144" y="86" width="28" height="55" fill="#DC2626" rx="2" opacity="0.85"/>
+  <text x="158" y="214" text-anchor="middle" font-size="8" fill="#64748B">Prod C</text>
+  <text x="158" y="225" text-anchor="middle" font-size="8" fill="#DC2626" font-weight="700">50%</text>
+  <!-- Product 4 -->
+  <rect x="188" y="86" width="28" height="110" fill="#E2E8F0" rx="2"/>
+  <rect x="188" y="86" width="28" height="94" fill="#0D9488" rx="2" opacity="0.9"/>
+  <text x="202" y="214" text-anchor="middle" font-size="8" fill="#64748B">Prod D</text>
+  <text x="202" y="225" text-anchor="middle" font-size="8" fill="#0D9488" font-weight="700">85%</text>
+  <!-- Product 5 -->
+  <rect x="232" y="86" width="28" height="110" fill="#E2E8F0" rx="2"/>
+  <rect x="232" y="86" width="28" height="44" fill="#DC2626" rx="2" opacity="0.7"/>
+  <text x="246" y="214" text-anchor="middle" font-size="8" fill="#64748B">Prod E</text>
+  <text x="246" y="225" text-anchor="middle" font-size="8" fill="#DC2626" font-weight="700">40%</text>
+  <!-- Product 6 -->
+  <rect x="276" y="86" width="28" height="110" fill="#E2E8F0" rx="2"/>
+  <rect x="276" y="86" width="28" height="66" fill="#D4A843" rx="2" opacity="0.9"/>
+  <text x="290" y="214" text-anchor="middle" font-size="8" fill="#64748B">Prod F</text>
+  <text x="290" y="225" text-anchor="middle" font-size="8" fill="#D4A843" font-weight="700">60%</text>
+  <!-- Product 7 -->
+  <rect x="320" y="86" width="28" height="110" fill="#E2E8F0" rx="2"/>
+  <rect x="320" y="86" width="28" height="77" fill="#0D9488" rx="2" opacity="0.75"/>
+  <text x="334" y="214" text-anchor="middle" font-size="8" fill="#64748B">Prod G</text>
+  <text x="334" y="225" text-anchor="middle" font-size="8" fill="#0D9488" font-weight="700">70%</text>
+  <!-- Legend -->
+  <rect x="370" y="90" width="12" height="12" fill="#E2E8F0" rx="2"/>
+  <text x="386" y="101" font-size="9" fill="#64748B">Inflation</text>
+  <rect x="370" y="108" width="12" height="12" fill="#0D9488" rx="2"/>
+  <text x="386" y="119" font-size="9" fill="#64748B">Recovered</text>
+  <!-- Absorbed annotation -->
+  <line x1="100" y1="158" x2="100" y2="196" stroke="#DC2626" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="108" y="162" width="72" height="16" fill="#FEE2E2" rx="3"/>
+  <text x="144" y="174" text-anchor="middle" font-size="8" fill="#991B1B" font-weight="600">₦12.4M absorbed</text>
+  <!-- Callout row -->
+  <rect x="18" y="268" width="230" height="20" fill="#FEF3C7" rx="4"/>
+  <text x="26" y="282" font-size="9" fill="#92400E" font-weight="600">Portfolio recovery rate: 64% vs 75% benchmark</text>
+  <rect x="256" y="268" width="186" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="264" y="282" font-size="9" fill="#991B1B" font-weight="600">Gap: ₦18.7M/month unrecovered</text>
+</svg>

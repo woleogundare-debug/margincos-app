@@ -23,6 +23,7 @@ export default function RetailPage() {
             'Repricing recommendations ranked by NGN margin contribution',
           ],
           roles: ['CFO', 'Category Manager', 'Buying Director'],
+          image: '/images/platform/retail-p1.svg',
         },
         {
           id: 'P2',
@@ -34,6 +35,7 @@ export default function RetailPage() {
             'Shelf price adjustment recommendations with consumer price sensitivity modelling',
           ],
           roles: ['CFO', 'Finance Director', 'Buying Director'],
+          image: '/images/platform/retail-p2.svg',
         },
         {
           id: 'P3',
@@ -45,6 +47,7 @@ export default function RetailPage() {
             'Loss-making channel and format identification with remediation actions',
           ],
           roles: ['CFO', 'Commercial Director', 'Operations Director'],
+          image: '/images/platform/retail-p3.svg',
         },
         {
           id: 'P4',
@@ -56,6 +59,7 @@ export default function RetailPage() {
             'Loss-making promotion identification with margin-positive restructuring recommendations',
           ],
           roles: ['Category Manager', 'Marketing Director', 'CFO'],
+          image: '/images/platform/retail-p4.svg',
         },
       ]}
       modules={[

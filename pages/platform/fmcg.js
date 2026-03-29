@@ -23,6 +23,7 @@ export default function FMCGPage() {
             'Margin floor breach alerts with repricing recommendations across your full portfolio',
           ],
           roles: ['CFO', 'Commercial Director'],
+          image: '/images/platform/fmcg-p1.svg',
         },
         {
           id: 'P2',
@@ -34,6 +35,7 @@ export default function FMCGPage() {
             'Actual vs. self-reported inflation comparison',
           ],
           roles: ['CFO', 'Finance Director', 'Supply Chain'],
+          image: '/images/platform/fmcg-p2.svg',
         },
         {
           id: 'P3',
@@ -45,6 +47,7 @@ export default function FMCGPage() {
             'Weak channel identification with remediation actions',
           ],
           roles: ['Commercial Director', 'Sales Director', 'Trade Marketing'],
+          image: '/images/platform/fmcg-p3.svg',
         },
         {
           id: 'P4',
@@ -56,6 +59,7 @@ export default function FMCGPage() {
             'Loss-making promotion flagging with margin-positive alternatives',
           ],
           roles: ['Trade Marketing', 'Sales Director', 'CFO'],
+          image: '/images/platform/fmcg-p4.svg',
         },
       ]}
       modules={[

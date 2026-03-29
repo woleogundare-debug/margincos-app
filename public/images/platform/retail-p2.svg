@@ -1,0 +1,63 @@
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="460" height="300" fill="#F8FAFC" rx="12"/>
+  <rect width="460" height="44" fill="#1B2A4A" rx="12"/>
+  <rect y="32" width="460" height="12" fill="#1B2A4A"/>
+  <text x="18" y="28" font-size="12" font-weight="700" fill="white">P2 · Cost Pass-Through</text>
+  <rect x="382" y="12" width="62" height="20" fill="#DC2626" rx="10"/>
+  <text x="413" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Retail</text>
+  <!-- Trend chart: margin over 6 months with cost shock overlay -->
+  <text x="18" y="68" font-size="9" fill="#64748B">Gross Margin Trend vs Input Cost Index — Last 6 Months</text>
+  <!-- Axes -->
+  <line x1="60" y1="200" x2="420" y2="200" stroke="#CBD5E1" stroke-width="1"/>
+  <line x1="60" y1="70" x2="60" y2="200" stroke="#CBD5E1" stroke-width="1"/>
+  <!-- Month labels -->
+  <text x="100" y="212" text-anchor="middle" font-size="8" fill="#94A3B8">Sep</text>
+  <text x="160" y="212" text-anchor="middle" font-size="8" fill="#94A3B8">Oct</text>
+  <text x="220" y="212" text-anchor="middle" font-size="8" fill="#94A3B8">Nov</text>
+  <text x="280" y="212" text-anchor="middle" font-size="8" fill="#94A3B8">Dec</text>
+  <text x="340" y="212" text-anchor="middle" font-size="8" fill="#94A3B8">Jan</text>
+  <text x="400" y="212" text-anchor="middle" font-size="8" fill="#94A3B8">Feb</text>
+  <!-- Y axis ticks -->
+  <line x1="56" y1="160" x2="60" y2="160" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="52" y="163" text-anchor="end" font-size="8" fill="#94A3B8">28%</text>
+  <line x1="56" y1="120" x2="60" y2="120" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="52" y="123" text-anchor="end" font-size="8" fill="#94A3B8">32%</text>
+  <!-- Cost index line (rising = red) -->
+  <polyline points="100,170 160,160 220,145 280,128 340,115 400,108" fill="none" stroke="#DC2626" stroke-width="2"/>
+  <!-- Margin line (declining = teal) -->
+  <polyline points="100,148 160,150 220,155 280,160 340,165 400,170" fill="none" stroke="#0D9488" stroke-width="2"/>
+  <!-- Fill between - showing squeeze -->
+  <polygon points="100,148 160,150 220,155 280,160 340,165 400,170 400,108 340,115 280,128 220,145 160,160 100,170" fill="#FEE2E2" opacity="0.3"/>
+  <!-- Data points -->
+  <circle cx="100" cy="148" r="3" fill="#0D9488"/>
+  <circle cx="160" cy="150" r="3" fill="#0D9488"/>
+  <circle cx="220" cy="155" r="3" fill="#0D9488"/>
+  <circle cx="280" cy="160" r="3" fill="#0D9488"/>
+  <circle cx="340" cy="165" r="3" fill="#0D9488"/>
+  <circle cx="400" cy="170" r="4" fill="#0D9488" stroke="white" stroke-width="1.5"/>
+  <!-- Squeeze annotation -->
+  <line x1="400" y1="108" x2="430" y2="98" stroke="#DC2626" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="432" y="96" font-size="8" fill="#DC2626" font-weight="600">Cost</text>
+  <text x="432" y="106" font-size="8" fill="#DC2626">index</text>
+  <line x1="400" y1="170" x2="430" y2="180" stroke="#0D9488" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="432" y="178" font-size="8" fill="#0D9488" font-weight="600">Margin</text>
+  <!-- Squeeze bracket -->
+  <line x1="290" y1="128" x2="290" y2="160" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="294" y="148" font-size="8" fill="#991B1B" font-weight="600">4.1pp</text>
+  <text x="294" y="158" font-size="7" fill="#991B1B">squeeze</text>
+  <!-- Benchmark line -->
+  <line x1="60" y1="130" x2="420" y2="130" stroke="#64748B" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+  <text x="64" y="127" font-size="7" fill="#64748B">30% floor</text>
+  <!-- Callout -->
+  <rect x="18" y="228" width="220" height="20" fill="#FEE2E2" rx="4"/>
+  <text x="26" y="242" font-size="9" fill="#991B1B" font-weight="600">Margin squeezed 4.1pp over 6 months</text>
+  <rect x="246" y="228" width="196" height="20" fill="#FEF3C7" rx="4"/>
+  <text x="254" y="242" font-size="9" fill="#92400E" font-weight="600">₦22.3M absorbed — no pricing action taken</text>
+  <rect x="18" y="252" width="200" height="20" fill="#EFF6FF" rx="4"/>
+  <text x="26" y="266" font-size="9" fill="#1D4ED8" font-weight="600">FX-linked SKUs: 42 requiring cost review</text>
+  <rect x="226" y="252" width="216" height="20" fill="#DCFCE7" rx="4"/>
+  <text x="234" y="266" font-size="9" fill="#065F46" font-weight="600">Recovery potential: ₦18.7M with 3% price adjustment</text>
+  <!-- Last month callout -->
+  <rect x="18" y="276" width="178" height="16" fill="#F3E8FF" rx="4"/>
+  <text x="26" y="288" font-size="8" fill="#6D28D9" font-weight="600">Current recovery rate: 61% vs 75% target</text>
+</svg>
