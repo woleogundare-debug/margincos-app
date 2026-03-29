@@ -58,7 +58,8 @@ export default function ContactPage() {
       if (res.ok) {
         setSubmitted(true);
       } else {
-        setFormError('Something went wrong. Please try again or email us directly at info@carthenaadvisory.com');
+        const body = await res.json().catch(() => ({}));
+        setFormError(body.error || 'Something went wrong. Please try again or email us directly at info@carthenaadvisory.com');
       }
     } catch (err) {
       setFormError('Something went wrong. Please try again.');
@@ -154,6 +155,7 @@ export default function ContactPage() {
                         <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Work Email *</label>
                         <input name="email" type="email" required
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal/40 focus:border-teal transition-all" />
+                        <span style={{ fontSize: '11px', color: '#8896A7' }}>Please use your company email address</span>
                       </div>
                     </div>
 

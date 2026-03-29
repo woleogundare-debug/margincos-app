@@ -34,6 +34,22 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Required fields missing' });
   }
 
+  // Work email validation — reject free/consumer email providers
+  const freeEmailDomains = [
+    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+    'mail.com', 'protonmail.com', 'icloud.com', 'me.com', 'live.com',
+    'msn.com', 'ymail.com', 'googlemail.com', 'yahoo.co.uk', 'hotmail.co.uk',
+    'outlook.co.uk', 'yahoo.co.in', 'rediffmail.com', 'zoho.com',
+    'gmx.com', 'gmx.net', 'mail.ru', 'yandex.com', 'tutanota.com',
+    'fastmail.com', 'hushmail.com', 'inbox.com', 'att.net', 'comcast.net',
+    'verizon.net', 'sbcglobal.net', 'cox.net', 'charter.net',
+  ];
+
+  const emailDomain = email?.split('@')[1]?.toLowerCase();
+  if (!emailDomain || freeEmailDomains.includes(emailDomain)) {
+    return res.status(400).json({ error: 'Please use your work email address.' });
+  }
+
   // Save to Supabase
   const { error: dbError } = await supabase
     .from('contact_submissions')
