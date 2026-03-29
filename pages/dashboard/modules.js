@@ -156,10 +156,20 @@ function M3Module({ results, deltas, cfg }) {
             isPositive: true,
           } : null}
         />
-        <div className="text-center p-4 bg-amber-50 rounded-xl">
-          <p className="text-2xl font-black text-amber-600">{m3.bestChannel?.channel || '—'}</p>
-          <p className="text-xs font-semibold text-amber-700 mt-1">Best ROI Channel</p>
-        </div>
+        {(() => {
+          const bestIsPositive = (m3.bestChannel?.roi ?? -Infinity) > 0;
+          return bestIsPositive ? (
+            <div className="text-center p-4 bg-amber-50 rounded-xl">
+              <p className="text-2xl font-black text-amber-600">{m3.bestChannel.channel}</p>
+              <p className="text-xs font-semibold text-amber-700 mt-1">Best ROI Channel · {m3.bestChannel.roi.toFixed(2)}×</p>
+            </div>
+          ) : (
+            <div className="text-center p-4 bg-red-50 rounded-xl">
+              <p className="text-2xl font-black text-red-500">—</p>
+              <p className="text-xs font-semibold text-red-600 mt-1">All channels dilutive</p>
+            </div>
+          );
+        })()}
       </div>
       <M3TradeROIChart results={m3.results} />
       <AnalysisTable
@@ -174,7 +184,11 @@ function M3Module({ results, deltas, cfg }) {
         ])}
       />
       <NarrativeBox>
-        {m3.bestChannel && `Best performing channel: ${m3.bestChannel.channel} at ${m3.bestChannel.roi?.toFixed(2)}× ROI. `}
+        {m3.bestChannel && (m3.bestChannel.roi ?? -Infinity) > 0
+          ? `Best performing channel: ${m3.bestChannel.channel} at ${m3.bestChannel.roi?.toFixed(2)}× ROI. `
+          : m3.bestChannel
+            ? `All channels are generating a sub-zero return on trade spend — no channel is currently ROI-positive. `
+            : null}
         {m3.worstChannel && m3.worstChannel.channel !== m3.bestChannel?.channel
           && `Lowest ROI: ${m3.worstChannel.channel} — review spend reallocation opportunity. `}
         Total portfolio trade spend: {fNAbs(m3.totalSpend)}/month.
