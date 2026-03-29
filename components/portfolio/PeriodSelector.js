@@ -231,7 +231,7 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
             </label>
             <input
               type="text"
-              placeholder="e.g. Flour Mills of Nigeria"
+              placeholder="e.g. Carthena Advisory Ltd"
               value={form.company_name}
               onChange={e => setForm(f => ({ ...f, company_name: e.target.value }))}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"

@@ -296,16 +296,23 @@ function downloadTemplate(cfg) {
 }
 
 // ── Import Preview Modal ──
-function ImportPreviewModal({ result, onConfirm, onCancel, importing, unitPlural }) {
+function ImportPreviewModal({ result, onConfirm, onCancel, importing, unitPlural, previewCols }) {
   if (!result) return null;
   const { valid, errors } = result;
+  // previewCols: [{key, label, align}] — determines which columns to show in the preview table
+  const cols = previewCols || [
+    { key: 'sku_id',      label: 'SKU ID',       align: 'left'  },
+    { key: 'sku_name',    label: 'Product Name', align: 'left'  },
+    { key: 'rrp',         label: 'RRP',          align: 'right' },
+    { key: 'cogs_per_unit',label: 'COGS',        align: 'right' },
+  ];
   return (
     <>
       <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm z-30" onClick={onCancel} />
       <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-            <h2 className="text-base font-bold text-navy">CSV Import Preview</h2>
+            <h2 className="text-base font-bold text-navy">Import Preview</h2>
             <button onClick={onCancel} className="text-slate-400 hover:text-slate-600">
               <XMarkIcon className="h-5 w-5" />
             </button>
@@ -336,23 +343,24 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing, unitPlural
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-100">
-                        <th className="px-2 py-1.5 text-left">SKU ID</th>
-                        <th className="px-2 py-1.5 text-left">Product Name</th>
-                        <th className="px-2 py-1.5 text-right">RRP</th>
-                        <th className="px-2 py-1.5 text-right">COGS</th>
+                        {cols.map(c => (
+                          <th key={c.key} className={`px-2 py-1.5 text-${c.align || 'left'}`}>{c.label}</th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
                       {valid.slice(0, 10).map((r, i) => (
                         <tr key={i} className="border-b border-slate-50">
-                          <td className="px-2 py-1.5 font-medium">{r.sku_id}</td>
-                          <td className="px-2 py-1.5">{r.sku_name || '\u2014'}</td>
-                          <td className="px-2 py-1.5 text-right">{r.rrp ?? '\u2014'}</td>
-                          <td className="px-2 py-1.5 text-right">{r.cogs_per_unit ?? '\u2014'}</td>
+                          {cols.map((c, ci) => (
+                            <td key={c.key}
+                              className={`px-2 py-1.5 text-${c.align || 'left'}${ci === 0 ? ' font-medium' : ''}`}>
+                              {r[c.key] ?? '\u2014'}
+                            </td>
+                          ))}
                         </tr>
                       ))}
                       {valid.length > 10 && (
-                        <tr><td colSpan={4} className="px-2 py-1.5 text-center text-slate-400">+{valid.length - 10} more</td></tr>
+                        <tr><td colSpan={cols.length} className="px-2 py-1.5 text-center text-slate-400">+{valid.length - 10} more</td></tr>
                       )}
                     </tbody>
                   </table>
@@ -1024,6 +1032,20 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         onCancel={() => setImportResult(null)}
         importing={importing}
         unitPlural={cfg.unitPlural}
+        previewCols={isLogistics
+          ? [
+              { key: 'lane_id',              label: 'Lane ID',              align: 'left'  },
+              { key: 'lane_name',            label: 'Lane',                 align: 'left'  },
+              { key: 'contracted_rate_ngn',  label: 'Contracted Rate (₦)',  align: 'right' },
+              { key: 'fully_loaded_cost_ngn',label: 'Fully-Loaded Cost (₦)',align: 'right' },
+            ]
+          : [
+              { key: 'sku_id',       label: 'SKU ID',       align: 'left'  },
+              { key: 'sku_name',     label: 'Product Name', align: 'left'  },
+              { key: 'rrp',          label: 'RRP',          align: 'right' },
+              { key: 'cogs_per_unit',label: 'COGS',         align: 'right' },
+            ]
+        }
       />
     </div>
   );
