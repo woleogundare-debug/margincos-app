@@ -131,14 +131,17 @@ export function usePortfolio(userId, tier = 'essentials') {
   // ── Add new blank SKU / Lane ──────────────────────────────────
   const addSku = useCallback(async () => {
     // Enforce tier cap — null means unlimited
-    const limit = TIER_LIMITS[tier]?.maxSkus ?? null;
+    const isLogistics = activePeriod?.vertical === 'Logistics';
+    const limit = isLogistics
+      ? (TIER_LIMITS[tier]?.maxLanes ?? null)
+      : (TIER_LIMITS[tier]?.maxSkus ?? null);
     if (limit !== null) {
       const currentCount = skuRows.filter(
         r => r.active === 'Y' || r.active === true || r.active === 'y'
       ).length;
       if (currentCount >= limit) {
         const tierLabel = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
-        const unit = activePeriod?.vertical === 'Logistics' ? 'lanes' : 'SKUs';
+        const unit = isLogistics ? 'lanes' : 'SKUs';
         return {
           error: true,
           message: `Your ${tierLabel} plan supports up to ${limit} active ${unit}. Upgrade to add more.`,
