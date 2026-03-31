@@ -259,9 +259,13 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
 
   // ── Reset active state when division switches ────────────────
   // loadPeriods is recreated by useCallback when divisionId changes,
-  // which re-triggers the effect above. This effect resets the view state.
+  // which re-triggers the [userId, loadPeriods] effect above.
+  // CRITICAL: also clear `periods` here — otherwise the auto-select effect
+  // immediately fires selectPeriod(periods[0]) on the OLD division's stale
+  // periods list before the new filtered loadPeriods completes.
   useEffect(() => {
     setActivePeriod(null);
+    setPeriods([]);
     setSkuRows([]);
     setTradeInvestment([]);
   }, [divisionId]); // eslint-disable-line react-hooks/exhaustive-deps

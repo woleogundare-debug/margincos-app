@@ -15,7 +15,6 @@ export default function TeamPage() {
     createDivision,
     renameDivision,
     archiveDivision,
-    hasDivisions,
   } = useDivisions(team?.id);
 
   const [inviteEmail, setInviteEmail] = useState('');
