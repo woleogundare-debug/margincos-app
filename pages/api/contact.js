@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   // Honeypot check — bots fill this field, humans don't
-  const { website, _loadedAt, name, email, company, role, revenue, message } = req.body;
+  const { website, _loadedAt, turnstileToken, name, email, company, role, revenue, message } = req.body;
 
   if (website && website.length > 0) {
     // Silently return 200 so bots think submission succeeded
@@ -28,6 +28,32 @@ export default async function handler(req, res) {
       // Submitted in under 3 seconds — bot. Silent 200 same as honeypot.
       return res.status(200).json({ success: true });
     }
+  }
+
+  // Cloudflare Turnstile verification — layer 3 of the defence stack
+  if (!turnstileToken) {
+    return res.status(403).json({ error: 'Human verification required. Please complete the verification and try again.' });
+  }
+
+  try {
+    const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: turnstileToken,
+        remoteip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress,
+      }),
+    });
+
+    const turnstileResult = await turnstileResponse.json();
+
+    if (!turnstileResult.success) {
+      return res.status(403).json({ error: 'Human verification failed. Please refresh the page and try again.' });
+    }
+  } catch (err) {
+    console.error('Turnstile verification error:', err);
+    return res.status(500).json({ error: 'Verification service unavailable. Please try again shortly.' });
   }
 
   if (!name || !email || !company || !role) {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import Script from 'next/script';
 import { PublicNav } from '../components/layout/PublicNav';
 import { PublicFooter } from '../components/layout/PublicFooter';
 
@@ -36,9 +37,21 @@ export default function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
   const [formLoadedAt] = useState(Date.now());
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileScriptError, setTurnstileScriptError] = useState(false);
 
   // Pre-fill plan from query string (e.g. /contact?plan=professional)
   const plan = router.query.plan || '';
+
+  // Register the global Turnstile callback and clean it up on unmount
+  useEffect(() => {
+    window.onTurnstileVerify = (token) => {
+      setTurnstileToken(token);
+    };
+    return () => {
+      delete window.onTurnstileVerify;
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +65,7 @@ export default function ContactPage() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, _loadedAt: formLoadedAt }),
+        body: JSON.stringify({ ...data, _loadedAt: formLoadedAt, turnstileToken }),
       });
 
       if (res.ok) {
@@ -87,6 +100,13 @@ export default function ContactPage() {
         <meta name="twitter:description" content="Book a free 30-minute diagnostic session. We'll show you exactly what MarginCOS finds on a portfolio like yours." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>
+
+      {/* Turnstile script — loads after page is interactive */}
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="afterInteractive"
+        onError={() => setTurnstileScriptError(true)}
+      />
 
       <div ref={rootRef} className="min-h-screen">
         <PublicNav />
@@ -189,8 +209,26 @@ export default function ContactPage() {
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal/40 focus:border-teal transition-all resize-none" />
                     </div>
 
-                    <button type="submit" disabled={submitting}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-red-brand text-white font-semibold text-sm hover:bg-red-light transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    {/* Cloudflare Turnstile widget */}
+                    {turnstileScriptError ? (
+                      <div className="text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                        Human verification could not load. Please refresh the page to complete verification.
+                      </div>
+                    ) : (
+                      <div
+                        className="cf-turnstile"
+                        data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                        data-callback="onTurnstileVerify"
+                        data-theme="light"
+                        data-retry="auto"
+                      />
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={!turnstileToken || submitting}
+                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-red-brand text-white font-semibold text-sm hover:bg-red-light transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                       {submitting ? 'Sending...' : 'Request Diagnostic'}
                       {!submitting && (
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
