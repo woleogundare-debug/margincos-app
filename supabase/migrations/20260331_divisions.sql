@@ -102,6 +102,12 @@ WHERE ai.period_id = p.id
 -- 8. RLS policies for divisions table
 ALTER TABLE divisions ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies first so migration is idempotent (re-runnable)
+DROP POLICY IF EXISTS "divisions_select" ON divisions;
+DROP POLICY IF EXISTS "divisions_insert" ON divisions;
+DROP POLICY IF EXISTS "divisions_update" ON divisions;
+DROP POLICY IF EXISTS "divisions_delete" ON divisions;
+
 -- Team members can read their team's divisions
 CREATE POLICY "divisions_select" ON divisions
   FOR SELECT USING (
