@@ -32,6 +32,7 @@ export default function PortfolioPage() {
     saveSku, addSku, deleteSku,
     saveTradeInvestment,
     activeSkuCount, completeSkuCount,
+    divisions, activeDivision, setActiveDivision, hasDivisions,
   } = useAnalysisContext();
 
   const cfg = getSectorConfig(activePeriod?.vertical);
@@ -100,6 +101,25 @@ export default function PortfolioPage() {
         <title>Portfolio Manager | MarginCOS</title>
       </Head>
       <DashboardLayout activePeriod={activePeriod}>
+        {/* ── Division switcher — only shown for multi-division clients ── */}
+        {hasDivisions && (
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Division</span>
+            <select
+              value={activeDivision?.id || ''}
+              onChange={e => {
+                const div = divisions.find(d => d.id === e.target.value);
+                if (div) setActiveDivision(div);
+              }}
+              className="text-sm px-3 py-1.5 rounded-lg border border-slate-200 bg-white font-medium text-navy focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+              style={{ color: '#1B2A4A' }}>
+              {divisions.map(d => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* ── No period empty state ── */}
         {!activePeriod && !loading && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -119,6 +139,7 @@ export default function PortfolioPage() {
               onCreate={createPeriod}
               onDelete={deletePeriod}
               loading={loading}
+              divisions={divisions}
             />
           </div>
         )}
@@ -154,6 +175,7 @@ export default function PortfolioPage() {
                     onCreate={createPeriod}
                     onDelete={deletePeriod}
                     loading={loading}
+                    divisions={divisions}
                   />
                   {activePeriod && activeSkuCount > 0 && (
                     <>
@@ -298,6 +320,7 @@ export default function PortfolioPage() {
                 onCreate={createPeriod}
                 onDelete={deletePeriod}
                 loading={loading}
+                divisions={divisions}
               />
             </div>
 

@@ -2,13 +2,23 @@ import { createContext, useContext, useState, useCallback, useEffect, useMemo } 
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { useAuth } from '../hooks/useAuth';
+import useDivisions from '../hooks/useDivisions';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { runFullAnalysis } from '../lib/engine/analysis';
 
 const AnalysisContext = createContext(null);
 
 export function AnalysisProvider({ children }) {
-  const { user, tier } = useAuth();
+  const { user, tier, teamId } = useAuth();
+
+  // ── Division state — loads async; gracefully degrades if table not yet migrated
+  const {
+    divisions,
+    activeDivision,
+    setActiveDivision,
+    hasDivisions,
+    divisionCount,
+  } = useDivisions(teamId);
 
   // ── Comparison period state — entirely additive ──────────────────────────
   const [comparisonPeriodId, setComparisonPeriodId] = useState(null);
@@ -18,6 +28,7 @@ export function AnalysisProvider({ children }) {
   // ── Single usePortfolio instance for the entire dashboard.
   // All consumers (portfolio.js, overview.js, pillar pages) read from here,
   // so SKU saves and period changes are immediately visible across all pages.
+  // Pass activeDivision?.id so periods are filtered to the active division.
   const {
     periods,
     activePeriod,
@@ -37,7 +48,7 @@ export function AnalysisProvider({ children }) {
     saveTradeInvestment,
     activeSkuCount,
     completeSkuCount,
-  } = usePortfolio(user?.id, tier);
+  } = usePortfolio(user?.id, tier, activeDivision?.id, teamId);
 
   const {
     results,
@@ -149,6 +160,12 @@ export function AnalysisProvider({ children }) {
       saveTradeInvestment,
       activeSkuCount,
       completeSkuCount,
+      // ── Division state ──────────────────────────────────────────
+      divisions,
+      activeDivision,
+      setActiveDivision,
+      hasDivisions,
+      divisionCount,
       // ── Analysis results ────────────────────────────────────────
       results,
       running,

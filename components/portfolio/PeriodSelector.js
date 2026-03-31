@@ -18,17 +18,26 @@ function formatPeriodDate(created_at) {
   return new Date(created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDelete, loading }) {
-  const [open,          setOpen]          = useState(false);
-  const [showModal,     setShowModal]     = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(MONTHS[new Date().getMonth()]);
-  const [selectedYear,  setSelectedYear]  = useState(CURRENT_YEAR);
-  const [form,          setForm]          = useState({ vertical: 'FMCG', company_name: '' });
-  const [creating,      setCreating]      = useState(false);
-  const [error,         setError]         = useState('');
-  const [deleting,      setDeleting]      = useState(null); // period id currently being deleted
-  const [deleteError,   setDeleteError]   = useState('');
+export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDelete, loading, divisions = [] }) {
+  const [open,               setOpen]               = useState(false);
+  const [showModal,          setShowModal]          = useState(false);
+  const [selectedMonth,      setSelectedMonth]      = useState(MONTHS[new Date().getMonth()]);
+  const [selectedYear,       setSelectedYear]       = useState(CURRENT_YEAR);
+  const [form,               setForm]               = useState({ vertical: 'FMCG' });
+  const [selectedDivisionId, setSelectedDivisionId] = useState('');
+  const [creating,           setCreating]           = useState(false);
+  const [error,              setError]              = useState('');
+  const [deleting,           setDeleting]           = useState(null); // period id currently being deleted
+  const [deleteError,        setDeleteError]        = useState('');
   const dropdownRef = useRef(null);
+
+  // Auto-select default division whenever the divisions list changes
+  useEffect(() => {
+    if (divisions && divisions.length > 0) {
+      const def = divisions.find(d => d.is_default) || divisions[0];
+      setSelectedDivisionId(def.id);
+    }
+  }, [divisions]);
 
   // Auto-generated label — canonical format for sorting and display
   const periodLabel = `${selectedMonth} ${selectedYear}`;
@@ -47,13 +56,22 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
   const handleCreate = async () => {
     if (!form.vertical) { setError('Vertical is required'); return; }
     setCreating(true);
-    await onCreate({ label: periodLabel, vertical: form.vertical, company_name: form.company_name });
+    await onCreate({
+      label: periodLabel,
+      vertical: form.vertical,
+      division_id: selectedDivisionId || null,
+    });
     setCreating(false);
     setShowModal(false);
     // Reset to current month/year for next creation
     setSelectedMonth(MONTHS[new Date().getMonth()]);
     setSelectedYear(CURRENT_YEAR);
-    setForm({ vertical: 'FMCG', company_name: '' });
+    setForm({ vertical: 'FMCG' });
+    // Re-select default division for next creation
+    if (divisions && divisions.length > 0) {
+      const def = divisions.find(d => d.is_default) || divisions[0];
+      setSelectedDivisionId(def.id);
+    }
     setError('');
   };
 
@@ -225,18 +243,23 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-              Company / Division <span className="text-slate-400 font-normal">(optional)</span>
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Carthena Advisory Ltd"
-              value={form.company_name}
-              onChange={e => setForm(f => ({ ...f, company_name: e.target.value }))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-            />
-          </div>
+          {/* Division selector — hidden when team has only one division */}
+          {divisions && divisions.length > 1 && (
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                Division <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={selectedDivisionId}
+                onChange={e => setSelectedDivisionId(e.target.value)}
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                style={{ color: '#1B2A4A' }}>
+                {divisions.map(d => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
 

@@ -4,22 +4,71 @@ import Link from 'next/link';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { useTeam } from '../../hooks/useTeam';
 import { useAuth } from '../../hooks/useAuth';
+import useDivisions from '../../hooks/useDivisions';
 import { TIER_LIMITS } from '../../lib/constants';
 
 export default function TeamPage() {
   const { team, members, pendingInvitations, isAdmin, loading } = useTeam();
   const { user, tier } = useAuth();
+  const {
+    divisions,
+    createDivision,
+    renameDivision,
+    archiveDivision,
+    hasDivisions,
+  } = useDivisions(team?.id);
+
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('member');
   const [inviting, setInviting] = useState(false);
   const [inviteSent, setInviteSent] = useState(false);
   const [error, setError] = useState('');
 
+  // Division management state
+  const [showCreateDivision, setShowCreateDivision] = useState(false);
+  const [newDivisionName, setNewDivisionName] = useState('');
+  const [creatingDivision, setCreatingDivision] = useState(false);
+  const [divisionError, setDivisionError] = useState('');
+  const [renamingId, setRenamingId] = useState(null);
+  const [renameValue, setRenameValue] = useState('');
+
   const isEnterprise = tier === 'enterprise' || tier === 'admin';
   const isProfessionalOrAbove = tier === 'professional' || isEnterprise;
   const seatCap = TIER_LIMITS[tier]?.maxMembers ?? null;
   const usedSeats = members.length + (pendingInvitations?.length || 0);
   const seatsRemaining = seatCap === null ? Infinity : seatCap - usedSeats;
+
+  // Division limit enforcement
+  const maxDivisions = TIER_LIMITS[tier]?.maxDivisions ?? null;
+  const canCreateDivision = isAdmin && isProfessionalOrAbove && (maxDivisions === null || divisions.length < maxDivisions);
+
+  const handleCreateDivision = async () => {
+    if (!newDivisionName.trim()) { setDivisionError('Name is required'); return; }
+    setCreatingDivision(true);
+    setDivisionError('');
+    const { error: err } = await createDivision(newDivisionName.trim());
+    setCreatingDivision(false);
+    if (err) {
+      setDivisionError(err.message || 'Failed to create division');
+    } else {
+      setNewDivisionName('');
+      setShowCreateDivision(false);
+    }
+  };
+
+  const handleRenameDivision = async (divisionId) => {
+    if (!renameValue.trim()) return;
+    await renameDivision(divisionId, renameValue.trim());
+    setRenamingId(null);
+    setRenameValue('');
+  };
+
+  const handleArchiveDivision = async (divisionId) => {
+    const div = divisions.find(d => d.id === divisionId);
+    if (!confirm(`Archive "${div?.name}"? Its periods will remain but it won't appear in menus.`)) return;
+    const { error: err } = await archiveDivision(divisionId);
+    if (err) setDivisionError(err.message || 'Failed to archive division');
+  };
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
@@ -182,6 +231,132 @@ export default function TeamPage() {
               <p className="text-xs text-slate-400 mt-3">
                 Invitees will receive an email to create their account. They'll have immediate access to all shared portfolio data.
               </p>
+            </div>
+          )}
+
+          {/* Divisions section — visible to admins on Professional/Enterprise */}
+          {isProfessionalOrAbove && (
+            <div className="bg-white rounded-xl border border-slate-100 mt-6">
+              <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold text-navy">Divisions ({divisions.length})</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {maxDivisions === null
+                      ? 'Unlimited divisions on Enterprise'
+                      : `Up to ${maxDivisions} division${maxDivisions !== 1 ? 's' : ''} on ${tier === 'professional' ? 'Professional' : tier} plan`}
+                  </p>
+                </div>
+                {canCreateDivision && !showCreateDivision && (
+                  <button
+                    onClick={() => setShowCreateDivision(true)}
+                    className="text-sm font-semibold px-4 py-2 rounded-lg border border-teal text-teal hover:bg-teal-50 transition-colors"
+                    style={{ color: '#0D8F8F', borderColor: '#0D8F8F' }}>
+                    + New Division
+                  </button>
+                )}
+                {!canCreateDivision && isAdmin && maxDivisions !== null && divisions.length >= maxDivisions && (
+                  <Link href="/pricing" className="text-xs font-semibold text-slate-400 hover:text-navy transition-colors">
+                    Upgrade for more →
+                  </Link>
+                )}
+              </div>
+
+              {/* Create Division inline form */}
+              {showCreateDivision && (
+                <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                  <div className="flex gap-3 items-start">
+                    <input
+                      type="text"
+                      placeholder="Division name (e.g. Sales, Operations, West Africa)"
+                      value={newDivisionName}
+                      onChange={e => { setNewDivisionName(e.target.value); setDivisionError(''); }}
+                      onKeyDown={e => e.key === 'Enter' && handleCreateDivision()}
+                      className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal bg-white"
+                      autoFocus
+                    />
+                    <button
+                      onClick={handleCreateDivision}
+                      disabled={creatingDivision || !newDivisionName.trim()}
+                      className="px-4 py-2 rounded-lg text-white text-sm font-semibold disabled:opacity-50 transition-all whitespace-nowrap"
+                      style={{ backgroundColor: '#0D8F8F' }}>
+                      {creatingDivision ? 'Creating…' : 'Create'}
+                    </button>
+                    <button
+                      onClick={() => { setShowCreateDivision(false); setNewDivisionName(''); setDivisionError(''); }}
+                      className="px-3 py-2 rounded-lg text-sm text-slate-500 border border-slate-200 bg-white hover:border-slate-300 transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                  {divisionError && <p className="text-xs text-red-600 font-medium mt-2">{divisionError}</p>}
+                </div>
+              )}
+
+              {/* Division list */}
+              <div className="divide-y divide-slate-50">
+                {divisions.length === 0 && (
+                  <div className="px-6 py-8 text-center text-slate-400 text-sm">
+                    No divisions yet. Create one to segment your portfolio analysis.
+                  </div>
+                )}
+                {divisions.map(div => (
+                  <div key={div.id} className="px-6 py-4 flex items-center justify-between group">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {renamingId === div.id ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <input
+                            type="text"
+                            value={renameValue}
+                            onChange={e => setRenameValue(e.target.value)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') handleRenameDivision(div.id);
+                              if (e.key === 'Escape') { setRenamingId(null); setRenameValue(''); }
+                            }}
+                            className="flex-1 border border-slate-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                            autoFocus
+                          />
+                          <button onClick={() => handleRenameDivision(div.id)} className="text-xs text-teal font-semibold" style={{ color: '#0D8F8F' }}>Save</button>
+                          <button onClick={() => { setRenamingId(null); setRenameValue(''); }} className="text-xs text-slate-400">Cancel</button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="text-sm font-medium text-navy truncate">{div.name}</span>
+                          {div.is_default && (
+                            <span className="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide bg-teal-50 text-teal-700">
+                              Default
+                            </span>
+                          )}
+                          {div.sector && (
+                            <span className="flex-shrink-0 text-xs text-slate-400">{div.sector}</span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    {isAdmin && renamingId !== div.id && (
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-3">
+                        <button
+                          onClick={() => { setRenamingId(div.id); setRenameValue(div.name); }}
+                          className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1 rounded transition-colors">
+                          Rename
+                        </button>
+                        {!div.is_default && (
+                          <button
+                            onClick={() => handleArchiveDivision(div.id)}
+                            className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded transition-colors">
+                            Archive
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Division error (archive/rename errors) */}
+              {divisionError && !showCreateDivision && (
+                <div className="px-6 py-3 border-t border-red-100 bg-red-50">
+                  <p className="text-xs text-red-600 font-medium">{divisionError}</p>
+                </div>
+              )}
             </div>
           )}
         </div>

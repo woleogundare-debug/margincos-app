@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { TIER_LIMITS } from '../lib/constants';
 
-export function usePortfolio(userId, tier = 'essentials') {
+export function usePortfolio(userId, tier = 'essentials', divisionId = null, teamId = null) {
   const [periods,          setPeriods]          = useState([]);
   const [activePeriod,     setActivePeriod]     = useState(null);
   const [skuRows,          setSkuRows]          = useState([]);
@@ -14,15 +14,19 @@ export function usePortfolio(userId, tier = 'essentials') {
 
   const sb = getSupabaseClient();
 
-  // ── Load all periods for this user ────────────────────────────
+  // ── Load all periods for this user (filtered by division when active) ───
   const loadPeriods = useCallback(async () => {
     if (!userId) return;
-    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriods] Fetching for user:', userId);
-    const { data, error } = await sb
+    if (process.env.NODE_ENV !== 'production') console.log('[loadPeriods] Fetching for user:', userId, 'division:', divisionId);
+    let query = sb
       .from('periods')
       .select('*')
-      .eq('user_id', userId)
-      .order('id', { ascending: false }); // sku_rows has no created_at; periods may — use id for safe ordering
+      .eq('user_id', userId);
+    // Filter by division when one is active — fall back to all user periods if none
+    if (divisionId) {
+      query = query.eq('division_id', divisionId);
+    }
+    const { data, error } = await query.order('id', { ascending: false }); // use id for safe ordering
     if (error) {
       if (process.env.NODE_ENV !== 'production') console.error('[loadPeriods] Supabase error:', error.message, error.details, error.hint, error.code);
       setLoading(false); // prevent infinite spinner on DB error
@@ -30,7 +34,7 @@ export function usePortfolio(userId, tier = 'essentials') {
     }
     if (process.env.NODE_ENV !== 'production') console.log('[loadPeriods] Found', (data || []).length, 'periods');
     setPeriods(data || []);
-  }, [userId]);
+  }, [userId, divisionId]);
 
   // ── Load SKU/Lane rows + trade investment for a period ────────
   const loadPeriodData = useCallback(async (periodId, vertical) => {
@@ -58,11 +62,13 @@ export function usePortfolio(userId, tier = 'essentials') {
   }, [loadPeriodData]);
 
   // ── Create new period ─────────────────────────────────────────
-  const createPeriod = useCallback(async ({ label, vertical, company_name }) => {
-    if (process.env.NODE_ENV !== 'production') console.log('[createPeriod] Inserting:', { user_id: userId, label, vertical });
+  const createPeriod = useCallback(async ({ label, vertical, company_name, division_id }) => {
+    if (process.env.NODE_ENV !== 'production') console.log('[createPeriod] Inserting:', { user_id: userId, label, vertical, division_id: division_id || divisionId });
     const { data, error } = await sb.from('periods').insert({
       user_id: userId, label, vertical,
       company_name: company_name || null,
+      division_id: division_id || divisionId || null,
+      team_id: teamId || null,
       is_active: true,
     }).select().single();
     if (error) {
@@ -74,7 +80,7 @@ export function usePortfolio(userId, tier = 'essentials') {
     await loadPeriods();
     await selectPeriod(data);
     return data;
-  }, [userId, loadPeriods, selectPeriod]);
+  }, [userId, divisionId, teamId, loadPeriods, selectPeriod]);
 
   // ── Save single SKU/Lane row (upsert, optimistic) ────────────
   const saveSku = useCallback(async (row) => {
@@ -88,7 +94,7 @@ export function usePortfolio(userId, tier = 'essentials') {
     const tempId = row._tempId;
     // Strip _tempId — it's a client-only key, not a DB column
     const { _tempId, ...rest } = row;
-    const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
+    const payload = { ...rest, period_id: activePeriod.id, user_id: userId, division_id: divisionId || null };
     // Normalize active to 'Y'/'N' text — DB column is text, not boolean
     const a = payload.active;
     payload.active = (a === true || a === 'Y' || a === 'y' || a === 'true' || a === 'Active') ? 'Y' : (a === false || a === 'N' || a === 'n' || a === 'false' || a === 'No' || a === 'Inactive') ? 'N' : 'Y';
@@ -114,7 +120,7 @@ export function usePortfolio(userId, tier = 'essentials') {
       return idx >= 0 ? prev.map((r, i) => i === idx ? data : r) : [...prev, data];
     });
     return data;
-  }, [activePeriod, userId]);
+  }, [activePeriod, userId, divisionId]);
 
   // ── Debounced save (for inline grid edits) ────────────────────
   const debouncedSaveSku = useCallback((row, delay = 800) => {
@@ -221,7 +227,7 @@ export function usePortfolio(userId, tier = 'essentials') {
     }
     const ciTableName = activePeriod.vertical === 'Logistics' ? 'logistics_commercial_investment' : 'trade_investment';
     const { _tempId, ...rest } = row;
-    const payload = { ...rest, period_id: activePeriod.id, user_id: userId };
+    const payload = { ...rest, period_id: activePeriod.id, user_id: userId, division_id: divisionId || null };
     if (process.env.NODE_ENV !== 'production') console.log('[saveTradeInvestment] Upserting to', ciTableName, ':', { period_id: payload.period_id, user_id: payload.user_id });
     const { data, error } = await sb
       .from(ciTableName)
@@ -239,9 +245,9 @@ export function usePortfolio(userId, tier = 'essentials') {
       return idx >= 0 ? prev.map(r => r.id === data.id ? data : r) : [...prev, data];
     });
     return data;
-  }, [activePeriod, userId]);
+  }, [activePeriod, userId, divisionId]);
 
-  // ── Init: load periods on mount ───────────────────────────────
+  // ── Init: load periods on mount or when userId/divisionId changes ───────
   useEffect(() => {
     if (userId) {
       loadPeriods();
@@ -250,6 +256,15 @@ export function usePortfolio(userId, tier = 'essentials') {
       // loading will stay true until userId arrives
     }
   }, [userId, loadPeriods]);
+
+  // ── Reset active state when division switches ────────────────
+  // loadPeriods is recreated by useCallback when divisionId changes,
+  // which re-triggers the effect above. This effect resets the view state.
+  useEffect(() => {
+    setActivePeriod(null);
+    setSkuRows([]);
+    setTradeInvestment([]);
+  }, [divisionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Auto-select most recent period ───────────────────────────
   useEffect(() => {

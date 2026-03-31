@@ -62,6 +62,26 @@ export default async function handler(req, res) {
       role: 'admin',
     }]);
 
+    // 4b. Create default division named after the company
+    const { data: defaultDivision, error: divisionError } = await serviceClient
+      .from('divisions')
+      .insert({ team_id: team.id, name: companyName, is_default: true })
+      .select('id')
+      .single();
+
+    if (divisionError) {
+      console.error('Admin create-client — division creation error (non-fatal):', divisionError.message);
+      // Non-fatal: client can still use the platform; migration may not yet be run
+    }
+
+    // 4c. Link profile to the default division
+    if (defaultDivision?.id) {
+      await serviceClient
+        .from('profiles')
+        .update({ division_id: defaultDivision.id })
+        .eq('user_id', newUser.user.id);
+    }
+
     // 5. Send welcome email
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',

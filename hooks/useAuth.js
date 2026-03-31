@@ -7,6 +7,7 @@ export function useAuth() {
   const [tier,     setTier]     = useState('essentials');
   const [isAdmin,  setIsAdmin]  = useState(false);
   const [companyName, setCompanyName] = useState('');
+  const [teamId,   setTeamId]   = useState(null);
   const [loading,       setLoading]       = useState(true);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
@@ -16,13 +17,14 @@ export function useAuth() {
     try {
       const { data } = await sb
         .from('profiles')
-        .select('tier, is_admin, company_name')
+        .select('tier, is_admin, company_name, team_id')
         .eq('user_id', userId)
         .single();
       if (data) {
         setTier(data.tier || 'essentials');
         setIsAdmin(data.is_admin || false);
         setCompanyName(data.company_name || '');
+        setTeamId(data.team_id || null);
       }
     } catch (_) {
       // Network error or missing profile row — silently fall back to 'essentials'
@@ -58,6 +60,7 @@ export function useAuth() {
         setTier('essentials');
         setIsAdmin(false);
         setCompanyName('');
+        setTeamId(null);
         setProfileLoaded(true); // no session — mark as resolved so nothing spins
       }
       setLoading(false);
@@ -83,6 +86,7 @@ export function useAuth() {
     tier,
     isAdmin,
     companyName,
+    teamId,
     loading,
     profileLoaded,
     signOut,
