@@ -15,6 +15,7 @@ export default function TeamPage() {
     createDivision,
     renameDivision,
     archiveDivision,
+    deleteDivision,
   } = useDivisions(team?.id);
 
   const [inviteEmail, setInviteEmail] = useState('');
@@ -67,6 +68,13 @@ export default function TeamPage() {
     if (!confirm(`Archive "${div?.name}"? Its periods will remain but it won't appear in menus.`)) return;
     const { error: err } = await archiveDivision(divisionId);
     if (err) setDivisionError(err.message || 'Failed to archive division');
+  };
+
+  const handleDeleteDivision = async (divisionId) => {
+    const div = divisions.find(d => d.id === divisionId);
+    if (!confirm(`Delete "${div?.name}"? This permanently removes the division. Its periods and data will remain but lose their division assignment. This cannot be undone.`)) return;
+    const { error: err } = await deleteDivision(divisionId);
+    if (err) setDivisionError(err.message || 'Failed to delete division');
   };
 
   const handleInvite = async () => {
@@ -339,9 +347,9 @@ export default function TeamPage() {
                         </button>
                         {!div.is_default && (
                           <button
-                            onClick={() => handleArchiveDivision(div.id)}
+                            onClick={() => handleDeleteDivision(div.id)}
                             className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded transition-colors">
-                            Archive
+                            Delete
                           </button>
                         )}
                       </div>

@@ -24,7 +24,19 @@ export function useAuth() {
         setTier(data.tier || 'essentials');
         setIsAdmin(data.is_admin || false);
         setCompanyName(data.company_name || '');
-        setTeamId(data.team_id || null);
+
+        if (data.team_id) {
+          setTeamId(data.team_id);
+        } else {
+          // profiles.team_id may be null for admin/dev accounts not created via
+          // create-client.js — fall back to team_members as the authoritative source.
+          const { data: membership } = await sb
+            .from('team_members')
+            .select('team_id')
+            .eq('user_id', userId)
+            .single();
+          setTeamId(membership?.team_id || null);
+        }
       }
     } catch (_) {
       // Network error or missing profile row — silently fall back to 'essentials'
