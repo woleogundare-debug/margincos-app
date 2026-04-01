@@ -17,7 +17,7 @@ import { getSectorConfig } from '../../lib/sectorConfig';
 import clsx from 'clsx';
 
 // ── M1 ────────────────────────────────────────────────────────────────────
-function M1Module({ results, deltas, cfg }) {
+function M1Module({ results, deltas, cfg, isConsolidated }) {
   const m1 = results?.m1;
   if (!m1) return <div className="py-8 text-center text-sm text-slate-400">Run analysis to see {cfg.unit} classification.</div>;
 
@@ -66,9 +66,11 @@ function M1Module({ results, deltas, cfg }) {
       </div>
       <M1QuadrantChart results={m1.results} portfolioAvgMarginPct={m1.portfolioAvgMarginPct} cfg={cfg} />
       <AnalysisTable
-        headers={[cfg.unitId, 'Category', 'Margin %', 'Rev Share %', 'vs. Avg', cfg.fields.classification, cfg.fields.action]}
+        headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), 'Category', 'Margin %', 'Rev Share %', 'vs. Avg', cfg.fields.classification, cfg.fields.action]}
         rows={m1.results.sort((a, b) => b.skuMarginPct - a.skuMarginPct).map(r => [
-          r.sku, r.category,
+          r.sku,
+          ...(isConsolidated ? [r._division || '—'] : []),
+          r.category,
           r.skuMarginPct.toFixed(1) + '%',
           r.revShare.toFixed(1) + '%',
           { content: <span className={r.vsAvg >= 0 ? 'text-emerald-600' : 'text-red-500'}>{r.vsAvg >= 0 ? '+' : ''}{r.vsAvg.toFixed(1)}pp</span> },
@@ -270,7 +272,7 @@ function M4Module({ results, deltas, cfg }) {
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function ModulesPage() {
   const { tier } = useAuth();
-  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
 
   const deltas = useMemo(() => {
@@ -300,7 +302,7 @@ export default function ModulesPage() {
               <PillarCard code="M1" title={cfg.m1.name}
                 subtitle="Quadrant classification: Protect · Grow · Reprice · Review"
                 accentColor="#7C3AED" ragStatus={null}>
-                <M1Module results={results} deltas={deltas} cfg={cfg} />
+                <M1Module results={results} deltas={deltas} cfg={cfg} isConsolidated={isConsolidated} />
               </PillarCard>
             </ModuleGate>
           </section>

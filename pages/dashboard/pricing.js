@@ -16,7 +16,7 @@ import { exportP1PricingGap } from '../../lib/exportToExcel';
 
 export default function PricingPage() {
   const { tier } = useAuth();
-  const { activePeriod, activeResults: results, running, ranAt, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, ranAt, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p1 = results?.p1;
   const deltas = useMemo(() => {
@@ -140,9 +140,10 @@ export default function PricingPage() {
                 <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
-                    headers={[cfg.unitId, cfg.fields.priceUnit, 'Margin %', cfg.fields.compGap, cfg.fields.gainPerMonth]}
+                    headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.priceUnit, 'Margin %', cfg.fields.compGap, cfg.fields.gainPerMonth]}
                     rows={sorted.map(r => [
                       r.sku,
+                      ...(isConsolidated ? [r._division || '—'] : []),
                       fNAbs(r.price),
                       r.marginPct.toFixed(1) + '%',
                       r.compGap !== null ? (r.compGap > 0 ? '+' : '') + r.compGap.toFixed(1) + '%' : '—',
@@ -169,7 +170,7 @@ export default function PricingPage() {
               ragStatus={ragStatus}>
               <AnalysisTable
                 headers={[
-                  cfg.unitId, cfg.fields.classification, cfg.fields.priceUnit,
+                  cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.classification, cfg.fields.priceUnit,
                   <span key="marginPct" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('marginPct')}>Gross Margin %{si('marginPct')}</span>,
                   'Competitor Gap',
                   <span key="wtpGap" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('wtpGap')}>WTP Gap ₦/mo{si('wtpGap')}</span>,
@@ -177,6 +178,7 @@ export default function PricingPage() {
                 ]}
                 rows={sorted.map(r => [
                   r.sku,
+                  ...(isConsolidated ? [r._division || '—'] : []),
                   r.category,
                   fNAbs(r.price),
                   { content: (

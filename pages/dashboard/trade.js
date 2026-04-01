@@ -16,7 +16,7 @@ import { exportP4TradeExecution } from '../../lib/exportToExcel';
 
 export default function TradePage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
-  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p4 = results?.p4;
   const deltas = useMemo(() => {
@@ -139,9 +139,10 @@ export default function TradePage() {
                 <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
-                    headers={[cfg.unitId, cfg.fields.depth, cfg.fields.lift, cfg.fields.impact, cfg.fields.status]}
+                    headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.depth, cfg.fields.lift, cfg.fields.impact, cfg.fields.status]}
                     rows={sorted.map(r => [
                       r.sku,
+                      ...(isConsolidated ? [r._division || '—'] : []),
                       (r.depth * 100).toFixed(1) + '%',
                       (r.lift * 100).toFixed(1) + '%',
                       { content: <span className={r.netImpact >= 0 ? 'text-emerald-600 font-semibold' : 'text-red-600 font-semibold'}>{fN(r.netImpact)}</span> },
@@ -173,7 +174,7 @@ export default function TradePage() {
               ) : (
                 <AnalysisTable
                   headers={[
-                    cfg.unitId, cfg.fields.classification,
+                    cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.classification,
                     <span key="depth" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('depth')}>{cfg.fields.promoDepth.replace(' (%)', '')}{si('depth')}</span>,
                     <span key="lift" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('lift')}>Volume Lift{si('lift')}</span>,
                     'Break-even Lift',
@@ -181,7 +182,9 @@ export default function TradePage() {
                     'Status',
                   ]}
                   rows={sorted.map(r => [
-                    r.sku, r.category,
+                    r.sku,
+                    ...(isConsolidated ? [r._division || '—'] : []),
+                    r.category,
                     (r.depth * 100).toFixed(1) + '%',
                     (r.lift * 100).toFixed(1) + '%',
                     r.bevLift !== null ? (r.bevLift * 100).toFixed(1) + '%' : '—',

@@ -16,7 +16,7 @@ import { exportP2CostPassThrough } from '../../lib/exportToExcel';
 
 export default function CostPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
-  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p2 = results?.p2;
   const deltas = useMemo(() => {
@@ -146,9 +146,10 @@ export default function CostPage() {
                 <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
-                    headers={[cfg.unitId, cfg.fields.shock, cfg.fields.passThrough, cfg.fields.absorbed]}
+                    headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.shock, cfg.fields.passThrough, cfg.fields.absorbed]}
                     rows={sorted.map(r => [
                       r.sku,
+                      ...(isConsolidated ? [r._division || '—'] : []),
                       fNAbs(r.shock),
                       (r.pt * 100).toFixed(0) + '%',
                       { content: <span className="text-red-600 font-semibold">{fNAbs(r.absorbed)}</span> },
@@ -174,7 +175,7 @@ export default function CostPage() {
               ragStatus={ragStatus}>
               <AnalysisTable
                 headers={[
-                  cfg.unitId, cfg.fields.classification,
+                  cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.classification,
                   <span key="shock" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('shock')}>Cost Shock ₦/mo{si('shock')}</span>,
                   <span key="pt" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('pt')}>Pass-Through %{si('pt')}</span>,
                   <span key="absorbed" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('absorbed')}>Absorbed ₦/mo{si('absorbed')}</span>,
@@ -182,7 +183,9 @@ export default function CostPage() {
                   <span key="src">Source <span title={`How the inflation rate was determined for this ${cfg.unit}`} className="ml-0.5 text-gray-400 cursor-help">?</span></span>,
                 ]}
                 rows={sorted.map(r => [
-                  r.sku, r.category,
+                  r.sku,
+                  ...(isConsolidated ? [r._division || '—'] : []),
+                  r.category,
                   fNAbs(r.shock),
                   { content: (
                     <Badge color={r.pt >= 0.7 ? 'green' : r.pt >= 0.4 ? 'amber' : 'red'}>
