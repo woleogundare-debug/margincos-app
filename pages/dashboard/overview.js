@@ -21,8 +21,17 @@ const DownloadReportButton = dynamic(
 
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
-  const { activePeriod, skuRows, portfolioLoading, activeResults: results, running, ranAt, error, run, activeHasResults: hasResults, isConsolidated, consolidatedDivisionBreakdown, consolidatedMissing, consolidatedSector, consolidatedMonth, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, skuRows, portfolioLoading, activeResults: results, running, ranAt, error, run, activeHasResults: hasResults, isConsolidated, consolidatedDivisionBreakdown, consolidatedMissing, consolidatedSector, consolidatedMonth, chronologicalDelta, activeDivision } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
+
+  // In division mode, show "Company - Division" so the report header identifies
+  // which division it covers. Consolidated and default-division reports use the
+  // plain company name (the default division IS the company level).
+  const reportCompanyName = isConsolidated
+    ? companyName
+    : (activeDivision && !activeDivision.is_default)
+      ? `${companyName} - ${activeDivision.name}`
+      : companyName;
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
     return computeDeltas(chronologicalDelta.laterResults, chronologicalDelta.earlierResults);
@@ -122,7 +131,7 @@ export default function OverviewPage() {
               {hasResults && isProfessional && (
                 <DownloadReportButton
                   results={results}
-                  companyName={companyName}
+                  companyName={reportCompanyName}
                   periodLabel={isConsolidated ? `Consolidated — ${consolidatedMonth}` : activePeriod?.label}
                   tier={tier}
                   isEnterprise={isEnterprise}
