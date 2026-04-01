@@ -5,11 +5,14 @@
 // netlify.toml and public/_headers mirror this value for static assets.
 const CSP = [
   "default-src 'self'",
-  // Next.js requires 'unsafe-inline' for styled-jsx. 'unsafe-eval' is not needed in production.
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com",
+  // Next.js requires 'unsafe-inline' for styled-jsx.
+  // 'unsafe-eval' is required by React-PDF (@react-pdf/renderer) which compiles WebAssembly at runtime.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "connect-src 'self' https://*.supabase.co https://*.supabase.in https://challenges.cloudflare.com https://www.google-analytics.com https://region1.google-analytics.com https://margincos.com https://www.margincos.com",
+  // data: and blob: required for React-PDF: fonts are fetched as data URIs and the generated PDF
+  // is handed to the browser as a blob URL to trigger the download.
+  "connect-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://challenges.cloudflare.com https://www.google-analytics.com https://region1.google-analytics.com https://margincos.com https://www.margincos.com",
   "img-src 'self' data: blob: https:",
   "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
