@@ -123,7 +123,7 @@ export default function OverviewPage() {
                 <DownloadReportButton
                   results={results}
                   companyName={companyName}
-                  periodLabel={activePeriod?.label}
+                  periodLabel={isConsolidated ? `Consolidated — ${consolidatedMonth}` : activePeriod?.label}
                   tier={tier}
                   isEnterprise={isEnterprise}
                   chronologicalDelta={chronologicalDelta}

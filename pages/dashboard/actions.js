@@ -31,8 +31,8 @@ const fmtN = (v) => {
 export default function ActionsPage() {
   const { tier } = useAuth();
   const { team, loading: teamLoading } = useTeam();
-  // activePeriod from shared context — no separate usePortfolio instance needed
-  const { activePeriod } = useAnalysisContext();
+  // activePeriod + consolidation state from shared context
+  const { activePeriod, isConsolidated, activeResults } = useAnalysisContext();
   const {
     actions, loading: actionsLoading, stats,
     updateAction, resolveAction, dismissAction, resetFetchKey,
@@ -40,12 +40,31 @@ export default function ActionsPage() {
 
   // Combined loading: keep spinner up while team is still resolving.
   // Without this, useActions(null) fires early-return → loading=false before team loads,
-  // causing a brief empty-state flash before the real fetch kicks off.
+  // causing a brief empty-state flash before the real fetch clicks off.
   const loading = teamLoading || actionsLoading;
 
   // Clear the dedup fetch key on unmount so navigating back always triggers a fresh load.
   // Without this, lastFetchKey still holds the old key and loadActions() returns immediately.
   useEffect(() => () => resetFetchKey(), []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When consolidated, override with in-memory engine actions tagged with _division.
+  // Normalise to the DB action shape so the existing render path works unchanged.
+  const consolidatedActions = useMemo(() => {
+    if (!isConsolidated) return [];
+    const URGENCY_MAP = {
+      'Immediate': 'IMMEDIATE', 'This week': 'THIS WEEK',
+      'Within 14 days': 'WITHIN 14 DAYS', 'Within 30 days': 'WITHIN 30 DAYS',
+    };
+    return (activeResults?.actions || []).map((a, i) => ({
+      ...a,
+      id: `consolidated-${i}`,
+      status: 'open',
+      urgency: URGENCY_MAP[a.timeline] || a.timeline || '',
+    }));
+  }, [isConsolidated, activeResults]);
+
+  // Source of truth for display: consolidated (in-memory) or DB-backed
+  const displayActions = isConsolidated ? consolidatedActions : actions;
 
   const [filter, setFilter] = useState('open');
   const [pillarFilter, setPillarFilter] = useState('all');
@@ -54,14 +73,14 @@ export default function ActionsPage() {
   const [resolveNote, setResolveNote] = useState('');
 
   const filtered = useMemo(() => {
-    if (filter === 'all' && pillarFilter === 'all' && filterUrgency === 'all') return actions;
-    return actions.filter(a => {
+    if (filter === 'all' && pillarFilter === 'all' && filterUrgency === 'all') return displayActions;
+    return displayActions.filter(a => {
       if (filter !== 'all' && a.status !== filter) return false;
       if (pillarFilter !== 'all' && a.pillar !== pillarFilter) return false;
       if (filterUrgency !== 'all' && a.urgency !== filterUrgency) return false;
       return true;
     });
-  }, [actions, filter, pillarFilter, filterUrgency]);
+  }, [displayActions, filter, pillarFilter, filterUrgency]);
 
   const handleResolve = async () => {
     if (!resolveModal) return;
@@ -100,8 +119,19 @@ export default function ActionsPage() {
             </div>
           </div>
 
-          {/* Stats strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {/* Consolidated read-only banner */}
+          {isConsolidated && (
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-teal-200 bg-teal-50 mb-6 text-sm">
+              <span className="text-teal-600 font-semibold">Consolidated View</span>
+              <span className="text-teal-500">·</span>
+              <span className="text-teal-700">
+                Viewing consolidated actions across all divisions. Switch to a division view to manage individual actions.
+              </span>
+            </div>
+          )}
+
+          {/* Stats strip — hidden in consolidated mode (no DB tracking for in-memory actions) */}
+          {!isConsolidated && <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
             {[
               { label: 'Open Actions',    value: stats.open,          color: '#C0392B' },
               { label: 'In Progress',     value: stats.inProgress,    color: '#D4A843' },
@@ -122,7 +152,7 @@ export default function ActionsPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </div>}
 
           {/* Filters */}
           <div className="flex flex-wrap gap-2 mb-6">
@@ -251,6 +281,12 @@ export default function ActionsPage() {
                                 {fmtN(action.value)} /month
                               </span>
                             )}
+                            {action._division && (
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                                style={{ backgroundColor: '#EEF2FF', color: '#6366F1' }}>
+                                {action._division}
+                              </span>
+                            )}
                             {action.owner_name && (
                               <span className="text-xs" style={{ color: '#8899AA' }}>
                                 Owner: {action.owner_name}
@@ -271,8 +307,8 @@ export default function ActionsPage() {
                         </div>
                       </div>
 
-                      {/* Action buttons */}
-                      {action.status !== 'resolved' && action.status !== 'dismissed' && (
+                      {/* Action buttons — hidden in consolidated (read-only) mode */}
+                      {!isConsolidated && action.status !== 'resolved' && action.status !== 'dismissed' && (
                         <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50">
                           {action.status === 'open' && (
                             <button
