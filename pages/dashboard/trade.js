@@ -16,7 +16,7 @@ import { exportP4TradeExecution } from '../../lib/exportToExcel';
 
 export default function TradePage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
-  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p4 = results?.p4;
   const deltas = useMemo(() => {

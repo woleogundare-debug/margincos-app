@@ -131,6 +131,7 @@ const TIER_COLORS = {
 export function DashboardLayout({ children, title, activePeriod }) {
   const { user, tier, isEnterprise, signOut, loading, profileLoaded, mustChangePassword } = useAuth();
   const router = useRouter();
+  const { isConsolidated } = useAnalysisContext();
   const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // Show all items while profile is loading — prevents nav items disappearing
@@ -423,7 +424,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
           </nav>
 
           {/* Comparison period selector — analysis pages only */}
-          {showComparison && <ComparisonBar />}
+          {showComparison && !isConsolidated && <ComparisonBar />}
 
           {/* User footer — always visible, pinned bottom */}
           <div className="px-3 py-4 border-t border-white/10 flex-shrink-0">

@@ -16,7 +16,7 @@ import { exportP1PricingGap } from '../../lib/exportToExcel';
 
 export default function PricingPage() {
   const { tier } = useAuth();
-  const { activePeriod, results, running, ranAt, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, ranAt, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p1 = results?.p1;
   const deltas = useMemo(() => {

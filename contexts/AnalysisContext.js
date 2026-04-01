@@ -18,6 +18,10 @@ export function AnalysisProvider({ children }) {
     setActiveDivision,
     hasDivisions,
     divisionCount,
+    divisionsBySector,
+    consolidatableSectors,
+    canConsolidate,
+    ensureDivisionSector,
   } = useDivisions(teamId);
 
   // ── Comparison period state — entirely additive ──────────────────────────
@@ -48,7 +52,7 @@ export function AnalysisProvider({ children }) {
     saveTradeInvestment,
     activeSkuCount,
     completeSkuCount,
-  } = usePortfolio(user?.id, tier, activeDivision?.id, teamId);
+  } = usePortfolio(user?.id, tier, activeDivision?.id, teamId, ensureDivisionSector);
 
   const {
     results,
@@ -59,6 +63,147 @@ export function AnalysisProvider({ children }) {
     clear,
     hasResults,
   } = useAnalysis(skuRows, tradeInvestment, activePeriod?.vertical);
+
+  // ── Consolidation state — parallel to primary analysis; computed on demand ─
+  const [isConsolidated,              setIsConsolidated]              = useState(false);
+  const [consolidatedSector,          setConsolidatedSector]          = useState(null);
+  const [consolidatedMonth,           setConsolidatedMonth]           = useState(null);
+  const [consolidatedResults,         setConsolidatedResults]         = useState(null);
+  const [consolidatedLoading,         setConsolidatedLoading]         = useState(false);
+  const [consolidatedDivisionBreakdown, setConsolidatedDivisionBreakdown] = useState([]);
+  const [consolidatedMissing,         setConsolidatedMissing]         = useState([]);
+
+  const runConsolidation = useCallback(async (sector, monthLabel) => {
+    if (!teamId) return;
+    setConsolidatedLoading(true);
+    setConsolidatedResults(null);
+
+    try {
+      const sb = getSupabaseClient();
+
+      // 1. All non-archived divisions for this team with the given sector
+      const { data: sectorDivisions, error: divError } = await sb
+        .from('divisions')
+        .select('id, name')
+        .eq('team_id', teamId)
+        .eq('sector', sector)
+        .eq('is_archived', false);
+
+      if (divError || !sectorDivisions?.length) {
+        setConsolidatedLoading(false);
+        return;
+      }
+
+      const divisionIds  = sectorDivisions.map(d => d.id);
+      const divisionMap  = Object.fromEntries(sectorDivisions.map(d => [d.id, d.name]));
+
+      // 2. Periods matching this month label in these divisions
+      const { data: matchingPeriods, error: periodError } = await sb
+        .from('periods')
+        .select('id, label, division_id, vertical')
+        .eq('label', monthLabel)
+        .in('division_id', divisionIds);
+
+      if (periodError) {
+        setConsolidatedLoading(false);
+        return;
+      }
+
+      // Track which divisions are missing data for this month
+      const presentDivisionIds = new Set((matchingPeriods || []).map(p => p.division_id));
+      setConsolidatedMissing(sectorDivisions.filter(d => !presentDivisionIds.has(d.id)));
+
+      if (!matchingPeriods?.length) {
+        setConsolidatedLoading(false);
+        return;
+      }
+
+      const periodIds  = matchingPeriods.map(p => p.id);
+      const isLogistics = sector === 'Logistics';
+      const dataTable  = isLogistics ? 'logistics_rows'                  : 'sku_rows';
+      const ciTable    = isLogistics ? 'logistics_commercial_investment'  : 'trade_investment';
+
+      // 3. Fetch all rows from all matching periods
+      const [rowRes, ciRes] = await Promise.all([
+        sb.from(dataTable).select('*').in('period_id', periodIds),
+        sb.from(ciTable).select('*').in('period_id', periodIds),
+      ]);
+
+      if (rowRes.error) {
+        setConsolidatedLoading(false);
+        return;
+      }
+
+      // 4. Tag each row with its division name
+      const periodToDivision = Object.fromEntries(
+        matchingPeriods.map(p => [p.id, divisionMap[p.division_id]])
+      );
+
+      const taggedRows = (rowRes.data || []).map(row => ({
+        ...row,
+        _division: periodToDivision[row.period_id] || 'Unknown',
+      }));
+      const taggedCI = (ciRes.data || []).map(row => ({
+        ...row,
+        _division: periodToDivision[row.period_id] || 'Unknown',
+      }));
+
+      // 5. Run consolidated analysis on merged dataset
+      const vertical      = matchingPeriods[0]?.vertical || sector;
+      const mergedResults = runFullAnalysis(taggedRows, taggedCI, vertical);
+
+      // 6. Build per-division breakdown for KPI tiles in overview.js
+      const breakdown = sectorDivisions
+        .filter(d => presentDivisionIds.has(d.id))
+        .map(div => {
+          const divRows    = taggedRows.filter(r => r._division === div.name);
+          const divCI      = taggedCI.filter(r => r._division === div.name);
+          const divResults = divRows.length > 0 ? runFullAnalysis(divRows, divCI, vertical) : null;
+          const rev        = divResults?.totalRevenue || 0;
+          const margin     = divResults?.totalCurrentMargin || 0;
+          const activeRows = divRows.filter(r => {
+            const v = r.active;
+            return v === 'Y' || v === 'y' || v === true || v === 'true';
+          });
+          return {
+            divisionName:       div.name,
+            divisionId:         div.id,
+            rowCount:           activeRows.length,
+            totalRevenue:       rev,
+            totalMargin:        margin,
+            portfolioMarginPct: rev > 0 ? (margin / rev * 100) : 0,
+            revenueAtRisk:      divResults?.revenueAtRisk || 0,
+          };
+        });
+
+      setConsolidatedResults(mergedResults);
+      setConsolidatedDivisionBreakdown(breakdown);
+      setConsolidatedSector(sector);
+      setConsolidatedMonth(monthLabel);
+      setIsConsolidated(true);
+
+    } catch (err) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('[runConsolidation] Error:', err.message);
+      }
+    } finally {
+      setConsolidatedLoading(false);
+    }
+  }, [teamId]);
+
+  const clearConsolidation = useCallback(() => {
+    setIsConsolidated(false);
+    setConsolidatedResults(null);
+    setConsolidatedSector(null);
+    setConsolidatedMonth(null);
+    setConsolidatedDivisionBreakdown([]);
+    setConsolidatedMissing([]);
+  }, []);
+
+  // Bridge: pillar pages read `activeResults`/`activeHasResults` which resolve
+  // to consolidated results when in consolidated view, per-division otherwise.
+  const activeResults    = isConsolidated ? consolidatedResults : results;
+  const activeHasResults = isConsolidated ? Boolean(consolidatedResults) : hasResults;
 
   // ── Load a second period for comparison — does NOT touch primary state ───
   const loadComparisonPeriod = useCallback(async (periodId) => {
@@ -166,6 +311,9 @@ export function AnalysisProvider({ children }) {
       setActiveDivision,
       hasDivisions,
       divisionCount,
+      divisionsBySector,
+      consolidatableSectors,
+      canConsolidate,
       // ── Analysis results ────────────────────────────────────────
       results,
       running,
@@ -173,6 +321,19 @@ export function AnalysisProvider({ children }) {
       error: analysisError || portfolioError,
       run,
       hasResults,
+      // Bridge: resolves to consolidated results when in consolidated view
+      activeResults,
+      activeHasResults,
+      // ── Consolidation ────────────────────────────────────────────
+      isConsolidated,
+      consolidatedSector,
+      consolidatedMonth,
+      consolidatedResults,
+      consolidatedLoading,
+      consolidatedDivisionBreakdown,
+      consolidatedMissing,
+      runConsolidation,
+      clearConsolidation,
       // ── Comparison period ────────────────────────────────────────
       comparisonPeriodId,
       comparisonResults,

@@ -270,7 +270,7 @@ function M4Module({ results, deltas, cfg }) {
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function ModulesPage() {
   const { tier } = useAuth();
-  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
 
   const deltas = useMemo(() => {

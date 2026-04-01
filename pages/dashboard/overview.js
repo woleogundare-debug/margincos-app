@@ -21,7 +21,7 @@ const DownloadReportButton = dynamic(
 
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
-  const { activePeriod, skuRows, portfolioLoading, results, running, ranAt, error, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, skuRows, portfolioLoading, activeResults: results, running, ranAt, error, run, activeHasResults: hasResults, isConsolidated, consolidatedDivisionBreakdown, consolidatedMissing, consolidatedSector, consolidatedMonth, chronologicalDelta } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const deltas = useMemo(() => {
     if (!chronologicalDelta) return null;
@@ -279,6 +279,56 @@ export default function OverviewPage() {
                 } : null}
               />
             </div>
+
+            {/* Consolidated Division Breakdown — shown only in consolidated view */}
+            {isConsolidated && consolidatedDivisionBreakdown.length > 0 && (
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-6">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-bold text-navy">Division Breakdown</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">{consolidatedSector} · {consolidatedMonth}</p>
+                  </div>
+                  {consolidatedMissing?.length > 0 && (
+                    <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1">
+                      {consolidatedMissing.length} division{consolidatedMissing.length > 1 ? 's' : ''} missing data
+                    </span>
+                  )}
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-slate-100">
+                        <th className="text-left px-6 py-3">Division</th>
+                        <th className="text-right px-6 py-3">Active {cfg.unitPlural}</th>
+                        <th className="text-right px-6 py-3">Revenue</th>
+                        <th className="text-right px-6 py-3">Margin %</th>
+                        <th className="text-right px-6 py-3">Revenue at Risk</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {consolidatedDivisionBreakdown.map((div, i) => (
+                        <tr key={i} className="hover:bg-slate-50 transition-colors">
+                          <td className="px-6 py-3 font-semibold text-navy">{div.divisionName}</td>
+                          <td className="px-6 py-3 text-right text-gray-600">{div.rowCount}</td>
+                          <td className="px-6 py-3 text-right text-gray-700 font-medium">{fNAbs(div.totalRevenue)}</td>
+                          <td className="px-6 py-3 text-right">
+                            <span className={`font-semibold ${div.portfolioMarginPct >= 0 ? 'text-teal-600' : 'text-red-500'}`}>
+                              {div.portfolioMarginPct.toFixed(1)}%
+                            </span>
+                          </td>
+                          <td className="px-6 py-3 text-right text-red-500 font-medium">{fNAbs(div.revenueAtRisk)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {consolidatedMissing?.length > 0 && (
+                  <div className="px-6 py-3 border-t border-slate-100 text-xs text-gray-400">
+                    Missing data for: {consolidatedMissing.map(d => d.name).join(', ')}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Priority Actions — mobile card layout */}
             {results.actions?.length > 0 && (

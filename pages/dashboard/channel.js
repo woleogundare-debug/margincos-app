@@ -16,7 +16,7 @@ import { exportP3ChannelEconomics } from '../../lib/exportToExcel';
 
 export default function ChannelPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
-  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p3 = results?.p3;
   const deltas = useMemo(() => {

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import Head from 'next/head';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { PeriodSelector } from '../../components/portfolio/PeriodSelector';
@@ -8,6 +8,7 @@ import { TradeInvestmentForm } from '../../components/portfolio/TradeInvestmentF
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { getSupabaseClient } from '../../lib/supabase/client';
 import { TIER_LIMITS } from '../../lib/constants';
 import { getSectorConfig } from '../../lib/sectorConfig';
 import { ArrowUpTrayIcon, PlusIcon } from '@heroicons/react/24/outline';
@@ -33,6 +34,10 @@ export default function PortfolioPage() {
     saveTradeInvestment,
     activeSkuCount, completeSkuCount,
     divisions, activeDivision, setActiveDivision, hasDivisions,
+    canConsolidate, consolidatableSectors,
+    isConsolidated, consolidatedSector, consolidatedMonth,
+    consolidatedDivisionBreakdown, consolidatedMissing, consolidatedLoading,
+    runConsolidation, clearConsolidation,
   } = useAnalysisContext();
 
   const cfg = getSectorConfig(activePeriod?.vertical);
@@ -41,6 +46,33 @@ export default function PortfolioPage() {
   const [skuLimitError, setSkuLimitError] = useState(null);
   const [importProgress, setImportProgress] = useState('');
   const [visibleCount, setVisibleCount] = useState(100);
+
+  // Consolidation picker state
+  const [showConsolidationPicker, setShowConsolidationPicker] = useState(false);
+  const [selectedConsolidationMonth, setSelectedConsolidationMonth] = useState('');
+  const [availableMonths, setAvailableMonths] = useState([]);
+
+  // Fetch unique period labels available across all consolidatable divisions
+  useEffect(() => {
+    if (!canConsolidate || !consolidatableSectors[0]) return;
+    const sectorDivIds = consolidatableSectors[0].divisions.map(d => d.id);
+    const sb = getSupabaseClient();
+    sb.from('periods')
+      .select('label')
+      .in('division_id', sectorDivIds)
+      .then(({ data }) => {
+        if (data) {
+          const unique = [...new Set(data.map(p => p.label))].sort((a, b) => {
+            // Sort by parsed date, most recent first
+            return new Date(b).getTime() - new Date(a).getTime();
+          });
+          setAvailableMonths(unique);
+          if (unique.length > 0 && !selectedConsolidationMonth) {
+            setSelectedConsolidationMonth(unique[0]);
+          }
+        }
+      });
+  }, [canConsolidate, consolidatableSectors]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Tier enforcement helpers
   const skuLimit   = TIER_LIMITS[tier]?.maxSkus ?? null;
@@ -101,22 +133,112 @@ export default function PortfolioPage() {
         <title>Portfolio Manager | MarginCOS</title>
       </Head>
       <DashboardLayout activePeriod={activePeriod}>
-        {/* ── Division switcher — only shown for multi-division clients ── */}
+        {/* ── Division switcher — shown for multi-division clients ── */}
         {hasDivisions && (
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-4 flex items-center gap-2 flex-wrap">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Division</span>
             <select
-              value={activeDivision?.id || ''}
+              value={isConsolidated ? '__consolidated__' : (activeDivision?.id || '')}
               onChange={e => {
-                const div = divisions.find(d => d.id === e.target.value);
-                if (div) setActiveDivision(div);
+                if (e.target.value === '__consolidated__') {
+                  clearConsolidation();
+                  setShowConsolidationPicker(true);
+                } else {
+                  clearConsolidation();
+                  setShowConsolidationPicker(false);
+                  const div = divisions.find(d => d.id === e.target.value);
+                  if (div) setActiveDivision(div);
+                }
               }}
               className="text-sm px-3 py-1.5 rounded-lg border border-slate-200 bg-white font-medium text-navy focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
               style={{ color: '#1B2A4A' }}>
               {divisions.map(d => (
                 <option key={d.id} value={d.id}>{d.name}</option>
               ))}
+              {canConsolidate && (
+                <option value="__consolidated__">
+                  ⬡ Consolidated View
+                </option>
+              )}
             </select>
+          </div>
+        )}
+
+        {/* ── Consolidation month picker ── */}
+        {showConsolidationPicker && !isConsolidated && (
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
+            <h3 className="text-sm font-bold text-slate-800 mb-1">Consolidated View</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Select a month to merge all {consolidatableSectors[0]?.sector} divisions into a single analysis.
+            </p>
+            <div className="flex items-center gap-3 flex-wrap mb-4">
+              <select
+                value={selectedConsolidationMonth}
+                onChange={e => setSelectedConsolidationMonth(e.target.value)}
+                className="text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                style={{ color: '#1B2A4A' }}>
+                <option value="">Select month…</option>
+                {availableMonths.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              <button
+                onClick={() => {
+                  if (selectedConsolidationMonth && consolidatableSectors[0]) {
+                    runConsolidation(consolidatableSectors[0].sector, selectedConsolidationMonth);
+                    setShowConsolidationPicker(false);
+                  }
+                }}
+                disabled={!selectedConsolidationMonth || consolidatedLoading}
+                className="px-4 py-2 text-sm font-semibold text-white rounded-lg disabled:opacity-50 transition-opacity"
+                style={{ backgroundColor: '#0D8F8F' }}>
+                {consolidatedLoading ? 'Consolidating…' : 'Consolidate'}
+              </button>
+              <button
+                onClick={() => { clearConsolidation(); setShowConsolidationPicker(false); }}
+                className="text-xs text-slate-400 hover:text-slate-600">
+                Cancel
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {consolidatableSectors[0]?.divisions.map(div => (
+                <div key={div.id} className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <span className="w-2 h-2 rounded-full bg-teal-500 flex-shrink-0"></span>
+                  {div.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Consolidated active banner ── */}
+        {isConsolidated && consolidatedDivisionBreakdown.length > 0 && (
+          <div className="rounded-xl border border-teal-200 bg-teal-50 p-4 mb-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <span className="text-[10px] font-bold text-teal-600 uppercase tracking-widest">
+                  Consolidated View
+                </span>
+                <h3 className="text-base font-bold text-slate-800 mt-0.5">
+                  {consolidatedSector} — {consolidatedMonth}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  {consolidatedDivisionBreakdown.length} division{consolidatedDivisionBreakdown.length !== 1 ? 's' : ''} ·{' '}
+                  {consolidatedDivisionBreakdown.reduce((s, d) => s + d.rowCount, 0)} active{' '}
+                  {consolidatedSector === 'Logistics' ? 'lanes' : 'SKUs'}
+                  {consolidatedMissing.length > 0 && (
+                    <span className="text-amber-600 ml-2">
+                      · {consolidatedMissing.map(d => d.name).join(', ')} missing data for this month
+                    </span>
+                  )}
+                </p>
+              </div>
+              <button
+                onClick={() => { clearConsolidation(); }}
+                className="text-xs text-slate-400 hover:text-slate-600 whitespace-nowrap flex-shrink-0 mt-1">
+                Exit Consolidated View ×
+              </button>
+            </div>
           </div>
         )}
 

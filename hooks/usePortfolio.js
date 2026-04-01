@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { TIER_LIMITS } from '../lib/constants';
 
-export function usePortfolio(userId, tier = 'essentials', divisionId = null, teamId = null) {
+export function usePortfolio(userId, tier = 'essentials', divisionId = null, teamId = null, ensureDivisionSector = null) {
   const [periods,          setPeriods]          = useState([]);
   const [activePeriod,     setActivePeriod]     = useState(null);
   const [skuRows,          setSkuRows]          = useState([]);
@@ -77,10 +77,15 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       return null;
     }
     if (process.env.NODE_ENV !== 'production') console.log('[createPeriod] Created:', data.id);
+    // Ensure the division's sector is set to this period's vertical (only writes if null)
+    const effectiveDivisionId = division_id || divisionId;
+    if (ensureDivisionSector && effectiveDivisionId && vertical) {
+      await ensureDivisionSector(effectiveDivisionId, vertical);
+    }
     await loadPeriods();
     await selectPeriod(data);
     return data;
-  }, [userId, divisionId, teamId, loadPeriods, selectPeriod]);
+  }, [userId, divisionId, teamId, ensureDivisionSector, loadPeriods, selectPeriod]);
 
   // ── Save single SKU/Lane row (upsert, optimistic) ────────────
   const saveSku = useCallback(async (row) => {

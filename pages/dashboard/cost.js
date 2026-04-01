@@ -16,7 +16,7 @@ import { exportP2CostPassThrough } from '../../lib/exportToExcel';
 
 export default function CostPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
-  const { activePeriod, results, running, run, hasResults, chronologicalDelta } = useAnalysisContext();
+  const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p2 = results?.p2;
   const deltas = useMemo(() => {

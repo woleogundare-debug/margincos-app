@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 
 export default function useDivisions(teamId) {
@@ -123,6 +123,44 @@ export default function useDivisions(teamId) {
     return { error };
   }, [divisions, activeDivision, loadDivisions]);
 
+  // ── Sector grouping — for consolidation eligibility ──────────────────────
+  const divisionsBySector = useMemo(() => {
+    const groups = {};
+    divisions.forEach(div => {
+      const sector = div.sector;
+      if (sector) {
+        if (!groups[sector]) groups[sector] = [];
+        groups[sector].push(div);
+      }
+    });
+    return groups;
+  }, [divisions]);
+
+  // Sectors where 2+ divisions share the same sector → eligible for consolidation
+  const consolidatableSectors = useMemo(() => {
+    return Object.entries(divisionsBySector)
+      .filter(([, divs]) => divs.length >= 2)
+      .map(([sector, divs]) => ({ sector, divisions: divs, count: divs.length }));
+  }, [divisionsBySector]);
+
+  const canConsolidate = consolidatableSectors.length > 0;
+
+  // ── Ensure a division's sector field is set when a period is created ──────
+  // Called from AnalysisContext after createPeriod succeeds.
+  // Only writes if the division currently has no sector (null/empty).
+  const ensureDivisionSector = useCallback(async (divisionId, sector) => {
+    if (!divisionId || !sector) return;
+    const div = divisions.find(d => d.id === divisionId);
+    if (div && !div.sector) {
+      const sb = getSupabaseClient();
+      await sb
+        .from('divisions')
+        .update({ sector, updated_at: new Date().toISOString() })
+        .eq('id', divisionId);
+      await loadDivisions();
+    }
+  }, [divisions, loadDivisions]);
+
   return {
     divisions,
     activeDivision,
@@ -135,5 +173,10 @@ export default function useDivisions(teamId) {
     hasDivisions:  divisions.length > 1, // true only when multi-division
     divisionCount: divisions.length,
     reload:        loadDivisions,
+    // Consolidation
+    divisionsBySector,
+    consolidatableSectors,
+    canConsolidate,
+    ensureDivisionSector,
   };
 }
