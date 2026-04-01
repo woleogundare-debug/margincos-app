@@ -536,7 +536,7 @@ function RowActionMenu({ onDetail, onDuplicate, onDelete }) {
   );
 }
 
-export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod, isProfessional, isEnterprise }) {
+export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod, isProfessional, isEnterprise, readOnly = false }) {
   const [activeTab, setActiveTab] = useState('identity');
   const [importResult, setImportResult] = useState(null);
   const [importing, setImporting] = useState(false);
@@ -590,7 +590,10 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   const tabGroups = isLogistics && activeTab === 'identity'
     ? ['identity', 'meta']   // show operating_region on identity tab for logistics
     : currentTab.groups;
-  const visibleCols = cols.filter(c => tabGroups.includes(c.group));
+  const divisionCol = { key: '_division', label: 'Division', group: 'identity', required: false, type: 'text', width: 'w-36' };
+  const visibleCols = readOnly
+    ? [divisionCol, ...cols.filter(c => tabGroups.includes(c.group))]
+    : cols.filter(c => tabGroups.includes(c.group));
 
   // ── Flush logic ──
   const flushPendingEdits = useCallback(() => {
@@ -840,8 +843,8 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                       );
                     })}
                   </div>
-                  {/* Card footer */}
-                  {onRowClick && (
+                  {/* Card footer — hidden in read-only (consolidated) mode */}
+                  {onRowClick && !readOnly && (
                     <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-50">
                       <button onClick={() => onRowClick(row)}
                         className="text-xs font-semibold" style={{ color: '#0D8F8F' }}>
@@ -856,11 +859,13 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                 </div>
               );
             })}
-            {/* Mobile add button */}
-            <button onClick={onAdd}
-              className="w-full py-3 text-xs font-semibold rounded-xl border border-dashed border-slate-200 text-navy/40 hover:text-navy hover:border-navy/30 transition-colors flex items-center justify-center gap-1.5">
-              <PlusIcon className="h-3.5 w-3.5" /> {cfg.addButtonLabel}
-            </button>
+            {/* Mobile add button — hidden in read-only (consolidated) mode */}
+            {!readOnly && (
+              <button onClick={onAdd}
+                className="w-full py-3 text-xs font-semibold rounded-xl border border-dashed border-slate-200 text-navy/40 hover:text-navy hover:border-navy/30 transition-colors flex items-center justify-center gap-1.5">
+                <PlusIcon className="h-3.5 w-3.5" /> {cfg.addButtonLabel}
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -907,11 +912,11 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                   <span className="flex items-center gap-1">
                     {col.key === 'distributor_name' ? cfg.fields.partner : col.label}
                     {col.required && <span className="text-red-400 text-[10px]">*</span>}
-                    <Tooltip text={col.tip} />
+                    {col.tip && <Tooltip text={col.tip} />}
                   </span>
                 </th>
               ))}
-              <th className="w-10" />
+              {!readOnly && <th className="w-10" />}
             </tr>
           </thead>
           <tbody>
@@ -959,30 +964,35 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                         )}
                         style={col.minWidth ? { minWidth: col.minWidth } : undefined}
                         title={isDuplicate ? `Duplicate ${primaryKey} "${val}" — each row must have a unique ID` : undefined}>
-                        <div className={clsx(isDuplicate && 'ring-1 ring-red-400 rounded')}>
-                          <CellInput
-                            col={col} value={val} vertical={vertical}
-                            onChange={v => handleCellChange(rowKey, col.key, v)}
-                            onBlur={() => handleCellBlur()}
-                          />
+                        <div className={clsx(!readOnly && isDuplicate && 'ring-1 ring-red-400 rounded')}>
+                          {readOnly
+                            ? <span className="text-xs text-slate-600 px-1">{val ?? '—'}</span>
+                            : <CellInput
+                                col={col} value={val} vertical={vertical}
+                                onChange={v => handleCellChange(rowKey, col.key, v)}
+                                onBlur={() => handleCellBlur()}
+                              />
+                          }
                         </div>
                       </td>
                     );
                   })}
-                  <td className="px-1 py-0 w-10">
-                    <RowActionMenu
-                      onDetail={() => onRowClick(row)}
-                      onDelete={() => onDelete(rowKey)}
-                    />
-                  </td>
+                  {!readOnly && (
+                    <td className="px-1 py-0 w-10">
+                      <RowActionMenu
+                        onDetail={() => onRowClick(row)}
+                        onDelete={() => onDelete(rowKey)}
+                      />
+                    </td>
+                  )}
                 </tr>
               );
             })}
           </tbody>
         </table>
 
-        {/* Add SKU row button */}
-        {skuRows.length > 0 && (
+        {/* Add SKU row button — hidden in read-only (consolidated) mode */}
+        {skuRows.length > 0 && !readOnly && (
           <button onClick={onAdd}
             className="w-full py-3 text-xs font-semibold text-navy/40 hover:text-navy hover:bg-slate-50 transition-colors border-t border-slate-100 flex items-center justify-center gap-1.5">
             <PlusIcon className="h-3.5 w-3.5" />
@@ -991,10 +1001,11 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         )}
       </div>
 
-      {/* Footer: row count + save status */}
+      {/* Footer: row count + save status (or read-only label in consolidated mode) */}
       <div className="flex items-center justify-between px-5 py-2.5 border-t border-slate-100 bg-slate-50/40">
         <span className="text-[11px] text-slate-400">
           {skuRows.length} {skuRows.length !== 1 ? cfg.unitPlural : cfg.unit}
+          {readOnly && ' · Consolidated view'}
         </span>
         <span className={clsx('text-[11px] font-medium flex items-center gap-1.5',
           saveStatus === 'saved' && 'text-emerald-500',

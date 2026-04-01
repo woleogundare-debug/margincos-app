@@ -37,8 +37,13 @@ export default function PortfolioPage() {
     canConsolidate, consolidatableSectors,
     isConsolidated, consolidatedSector, consolidatedMonth,
     consolidatedDivisionBreakdown, consolidatedMissing, consolidatedLoading,
+    consolidatedRows,
     runConsolidation, clearConsolidation,
   } = useAnalysisContext();
+
+  // In consolidated mode the grid is read-only and sourced from merged tagged rows.
+  // In normal mode it uses the active division's skuRows.
+  const gridRows = isConsolidated ? consolidatedRows : skuRows;
 
   const cfg = getSectorConfig(activePeriod?.vertical);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -332,29 +337,33 @@ export default function PortfolioPage() {
                     </>
                   )}
                 </div>
-                {/* Right group: action buttons */}
+                {/* Right group: action buttons — hidden in consolidated mode (read-only) */}
                 <div className="flex items-center gap-3 flex-shrink-0">
-                  <Button variant="secondary" size="sm" onClick={() => {
-                    const a = document.createElement('a');
-                    a.href = cfg.templateFile;
-                    a.download = cfg.templateFilename;
-                    a.click();
-                  }}>
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg> Template
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={() => {
-                    setActiveTab('sku');
-                    document.getElementById('csv-import-trigger')?.click();
-                  }}>
-                    <ArrowUpTrayIcon className="h-4 w-4" /> Import
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={handleAddSku}>
-                    <PlusIcon className="h-4 w-4" /> {cfg.addButtonLabel}
-                  </Button>
+                  {!isConsolidated && (
+                    <>
+                      <Button variant="secondary" size="sm" onClick={() => {
+                        const a = document.createElement('a');
+                        a.href = cfg.templateFile;
+                        a.download = cfg.templateFilename;
+                        a.click();
+                      }}>
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                          <polyline points="7 10 12 15 17 10"/>
+                          <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg> Template
+                      </Button>
+                      <Button variant="secondary" size="sm" onClick={() => {
+                        setActiveTab('sku');
+                        document.getElementById('csv-import-trigger')?.click();
+                      }}>
+                        <ArrowUpTrayIcon className="h-4 w-4" /> Import
+                      </Button>
+                      <Button variant="secondary" size="sm" onClick={handleAddSku}>
+                        <PlusIcon className="h-4 w-4" /> {cfg.addButtonLabel}
+                      </Button>
+                    </>
+                  )}
                   {isOverSkuLimit ? (
                     <button
                       onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active ${cfg.unitPlural}. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
@@ -386,29 +395,32 @@ export default function PortfolioPage() {
                 <h1 className="text-lg font-bold text-navy" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Portfolio Manager
                 </h1>
-                <div className="flex items-center gap-1.5">
-                  <button onClick={() => {
-                    setActiveTab('sku');
-                    document.getElementById('csv-import-trigger')?.click();
-                  }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Import Data">
-                    <ArrowUpTrayIcon className="h-4 w-4" />
-                  </button>
-                  <button onClick={handleAddSku} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title={cfg.addButtonLabel}>
-                    <PlusIcon className="h-4 w-4" />
-                  </button>
-                  <button onClick={() => {
-                    const a = document.createElement('a');
-                    a.href = cfg.templateFile;
-                    a.download = cfg.templateFilename;
-                    a.click();
-                  }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Download Template">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </button>
-                </div>
+                {/* Mobile action icons — hidden in consolidated mode */}
+                {!isConsolidated && (
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => {
+                      setActiveTab('sku');
+                      document.getElementById('csv-import-trigger')?.click();
+                    }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Import Data">
+                      <ArrowUpTrayIcon className="h-4 w-4" />
+                    </button>
+                    <button onClick={handleAddSku} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title={cfg.addButtonLabel}>
+                      <PlusIcon className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => {
+                      const a = document.createElement('a');
+                      a.href = cfg.templateFile;
+                      a.download = cfg.templateFilename;
+                      a.click();
+                    }} className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-navy hover:border-navy transition-colors" title="Download Template">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
               {isOverSkuLimit ? (
                 <button
@@ -453,11 +465,11 @@ export default function PortfolioPage() {
               </p>
             )}
 
-            {/* Tab bar: Portfolio / Trade Investment (or Commercial Investment for Logistics) */}
+            {/* Tab bar: Portfolio / Trade Investment — Trade tab hidden in consolidated mode */}
             <div className="flex items-center gap-1 mb-4 border-b border-slate-200">
               {[
                 { key: 'sku',   label: cfg.portfolioTab },
-                { key: 'trade', label: activePeriod?.vertical === 'Logistics' ? 'Commercial Investment' : 'Trade Investment' },
+                ...(!isConsolidated ? [{ key: 'trade', label: activePeriod?.vertical === 'Logistics' ? 'Commercial Investment' : 'Trade Investment' }] : []),
               ].map(tab => (
                 <button key={tab.key} onClick={() => setActiveTab(tab.key)}
                   className={`px-4 py-2.5 text-sm font-semibold transition-all relative ${
@@ -471,7 +483,7 @@ export default function PortfolioPage() {
                   )}
                 </button>
               ))}
-              {activeTab === 'sku' && (
+              {activeTab === 'sku' && !isConsolidated && (
                 <div className="ml-auto pb-2">
                   <ExportButton
                     show={(isProfessional || isEnterprise) && skuRows.length > 0}
@@ -511,18 +523,19 @@ export default function PortfolioPage() {
             {activeTab === 'sku' && (
               <>
                 <SkuGrid
-                  skuRows={skuRows.slice(0, visibleCount)}
+                  skuRows={gridRows.slice(0, visibleCount)}
                   onSave={handleSaveSku}
                   onAdd={handleAddSku}
                   onDelete={deleteSku}
-                  onRowClick={setSelectedRow}
+                  onRowClick={isConsolidated ? null : setSelectedRow}
                   onBulkImport={handleBulkImport}
                   saving={saving}
                   activePeriod={activePeriod}
                   isProfessional={isProfessional}
                   isEnterprise={isEnterprise}
+                  readOnly={isConsolidated}
                 />
-                {skuRows.length > visibleCount && (
+                {gridRows.length > visibleCount && (
                   <div style={{ textAlign: 'center', padding: '16px 0' }}>
                     <button
                       onClick={() => setVisibleCount(v => v + 100)}

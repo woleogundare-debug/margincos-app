@@ -72,6 +72,8 @@ export function AnalysisProvider({ children }) {
   const [consolidatedLoading,         setConsolidatedLoading]         = useState(false);
   const [consolidatedDivisionBreakdown, setConsolidatedDivisionBreakdown] = useState([]);
   const [consolidatedMissing,         setConsolidatedMissing]         = useState([]);
+  // Raw tagged rows from the consolidation fetch — used by Portfolio grid
+  const [consolidatedRows,            setConsolidatedRows]            = useState([]);
 
   const runConsolidation = useCallback(async (sector, monthLabel) => {
     if (!teamId) return;
@@ -148,7 +150,10 @@ export function AnalysisProvider({ children }) {
         _division: periodToDivision[row.period_id] || 'Unknown',
       }));
 
-      // 5. Run consolidated analysis on merged dataset
+      // 5. Store raw tagged rows for Portfolio grid read-only view
+      setConsolidatedRows(taggedRows);
+
+      // 6. Run consolidated analysis on merged dataset
       const vertical      = matchingPeriods[0]?.vertical || sector;
       const mergedResults = runFullAnalysis(taggedRows, taggedCI, vertical);
 
@@ -198,6 +203,7 @@ export function AnalysisProvider({ children }) {
     setConsolidatedMonth(null);
     setConsolidatedDivisionBreakdown([]);
     setConsolidatedMissing([]);
+    setConsolidatedRows([]);
   }, []);
 
   // Bridge: pillar pages read `activeResults`/`activeHasResults` which resolve
@@ -332,6 +338,7 @@ export function AnalysisProvider({ children }) {
       consolidatedLoading,
       consolidatedDivisionBreakdown,
       consolidatedMissing,
+      consolidatedRows,
       runConsolidation,
       clearConsolidation,
       // ── Comparison period ────────────────────────────────────────
