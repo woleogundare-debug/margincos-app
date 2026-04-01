@@ -1309,7 +1309,7 @@ const M1Page = ({ results, companyName, cfg }) => {
           </Text>
           <View style={{ width: '18%', justifyContent: 'center', alignItems: 'center' }}>
             <Text style={[s.badge, { color: r.classColor, backgroundColor: r.classBg }]}>
-              {r.classification}
+              {r.classification.replace(/^[^\w]+/, '')}
             </Text>
           </View>
           <Text style={[s.tableCell, { width: '18%', textAlign: 'right' }]}>{fmt(r.skuMarginAbs, 'nairaK')}</Text>
@@ -1500,7 +1500,7 @@ const M4Page = ({ results, companyName, cfg }) => {
           <Text style={[s.tableCell, { width: '10%', textAlign: 'right' }]}>{fmt(r.revShare, 'pctRaw')}</Text>
           <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.creditCost, 'nairaK')}</Text>
           <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={[s.badge, { color: r.classColor, backgroundColor: r.classBg }]}>{r.classification}</Text>
+            <Text style={[s.badge, { color: r.classColor, backgroundColor: r.classBg }]}>{r.classification.replace(/^[^\w]+/, '')}</Text>
           </View>
         </View>
       ))}
