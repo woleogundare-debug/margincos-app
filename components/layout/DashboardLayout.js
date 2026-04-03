@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -128,9 +128,16 @@ const TIER_COLORS = {
   essentials:   'bg-slate-100 text-slate-600',
 };
 
+// Module-level: survives DashboardLayout remounts caused by Next.js page navigation.
+// Each dashboard page renders its own <DashboardLayout>, so the component remounts
+// on every route change and the nav's scrollTop resets to 0.
+// We persist the scroll position here so it can be restored on the next mount.
+let _savedNavScrollTop = 0;
+
 export function DashboardLayout({ children, title, activePeriod }) {
   const { user, tier, isEnterprise, signOut, loading, profileLoaded, mustChangePassword } = useAuth();
   const router = useRouter();
+  const navRef = useRef(null);
   const { isConsolidated } = useAnalysisContext();
   const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -174,12 +181,26 @@ export function DashboardLayout({ children, title, activePeriod }) {
     }
   }, [loading, user, router]);
 
-  // Close sidebar on any route change (covers programmatic navigation, not just link clicks)
+  // Close sidebar on any route change (covers programmatic navigation, not just link clicks).
+  // Also snapshot the nav's scrollTop here — routeChangeStart fires while the nav DOM
+  // element still exists, before this DashboardLayout unmounts and the element is lost.
   useEffect(() => {
-    const handleRouteChange = () => setSidebarOpen(false);
+    const handleRouteChange = () => {
+      setSidebarOpen(false);
+      if (navRef.current) _savedNavScrollTop = navRef.current.scrollTop;
+    };
     router.events.on('routeChangeStart', handleRouteChange);
     return () => { router.events.off('routeChangeStart', handleRouteChange); };
   }, [router.events]);
+
+  // Restore the nav's scroll position after this DashboardLayout mounts.
+  // Each page creates a fresh instance, so the nav scrollTop starts at 0 —
+  // we set it back to wherever the user had it before navigating.
+  useEffect(() => {
+    if (navRef.current && _savedNavScrollTop > 0) {
+      navRef.current.scrollTop = _savedNavScrollTop;
+    }
+  }, []); // intentionally empty — run once on mount only
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
@@ -376,7 +397,7 @@ export function DashboardLayout({ children, title, activePeriod }) {
           </div>
 
           {/* Nav — scrollable area */}
-          <nav className="flex-1 px-3 py-4 overflow-y-auto min-h-0">
+          <nav ref={navRef} className="flex-1 px-3 py-4 overflow-y-auto min-h-0">
             {NAV_SECTIONS.map((section, si) => {
               // Hide items the user's tier can't access; skip the section entirely if empty
               const visibleItems = section.items.filter(({ pillar, requiresEnterprise: reqEnt }) => {
