@@ -105,19 +105,20 @@ export function useActions(teamId, periodId) {
 
     const effectivePeriodId = currentPeriodId || periodId || null;
 
-    // Dedup guard — OR query catches both UUID-matched rows AND legacy null-period rows.
-    // Split scenario: old rows saved with period_id=null, new rows saved with the UUID.
-    // A strict .eq() misses null rows; .is(null) misses UUID rows.
-    // The OR covers both, so any existing actions for this team block a re-insert.
-    const { count } = await sb
+    // Dedup guard — only check for rows that match the exact period being written.
+    // No longer includes `period_id IS NULL` in the match: legacy orphaned rows
+    // (saved before period tracking existed) must not block inserts for a real period.
+    // Those orphans are swept by the period-delete API when a period is removed.
+    let countQuery = sb
       .from('action_items')
       .select('*', { count: 'exact', head: true })
-      .eq('team_id', teamId)
-      .or(
-        effectivePeriodId
-          ? `period_id.eq.${effectivePeriodId},period_id.is.null`
-          : `period_id.is.null`
-      );
+      .eq('team_id', teamId);
+    if (effectivePeriodId) {
+      countQuery = countQuery.eq('period_id', effectivePeriodId);
+    } else {
+      countQuery = countQuery.is('period_id', null);
+    }
+    const { count } = await countQuery;
 
     if (count > 0) {
       // Actions already persisted for this exact team + period — refresh display only.

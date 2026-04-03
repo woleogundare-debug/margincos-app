@@ -13,9 +13,10 @@ export default async function handler(req, res) {
   const userId = session.user.id;
 
   // Verify ownership: confirm this period belongs to the requesting user
+  // Also fetch team_id so we can sweep orphaned null-period action_items below.
   const { data: period, error: fetchError } = await supabase
     .from('periods')
-    .select('id, user_id')
+    .select('id, user_id, team_id')
     .eq('id', periodId)
     .eq('user_id', userId)
     .single();
@@ -43,6 +44,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: `Failed to delete trade investment rows: ${tradeError.message}` });
   }
 
+  // Delete action_items for this period (rows with a proper period_id).
   const { error: actionsError } = await supabase
     .from('action_items')
     .delete()
@@ -50,6 +52,23 @@ export default async function handler(req, res) {
 
   if (actionsError) {
     return res.status(500).json({ error: `Failed to delete action items: ${actionsError.message}` });
+  }
+
+  // Sweep legacy orphans: rows saved before period tracking existed have period_id = NULL.
+  // These are scoped to the team and are truly unattributed — safe to delete on any
+  // period removal. Without this, orphaned null-period rows persist forever, appear in
+  // consolidated-mode queries, and block the bulkAddFromAnalysis dedup guard.
+  if (period.team_id) {
+    const { error: orphanError } = await supabase
+      .from('action_items')
+      .delete()
+      .eq('team_id', period.team_id)
+      .is('period_id', null);
+
+    if (orphanError) {
+      // Non-fatal: log but don't block the response — the primary period is already deleted.
+      console.error('[deletePeriod] Failed to sweep null-period orphan actions:', orphanError.message);
+    }
   }
 
   // Delete the period itself

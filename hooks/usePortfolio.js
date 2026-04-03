@@ -255,10 +255,18 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
   // ── Init: load periods on mount or when userId/divisionId changes ───────
   useEffect(() => {
     if (userId) {
+      // Immediately clear any stale state from a previous session before fetching.
+      // Without this reset, a returning user briefly sees the old session's data
+      // (activePeriod set, loading=false, skuRows populated) while the new
+      // loadPeriods() is in flight — causing the Portfolio "data flash" on sign-in.
+      setActivePeriod(null);
+      setPeriods([]);
+      setSkuRows([]);
+      setTradeInvestment([]);
+      setLoading(true);
       loadPeriods();
     } else {
-      // No user yet (auth still resolving) — don't show "no data"
-      // loading will stay true until userId arrives
+      // No user yet (auth still resolving) — loading stays true until userId arrives
     }
   }, [userId, loadPeriods]);
 
@@ -268,11 +276,15 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
   // CRITICAL: also clear `periods` here — otherwise the auto-select effect
   // immediately fires selectPeriod(periods[0]) on the OLD division's stale
   // periods list before the new filtered loadPeriods completes.
+  // setLoading(true) here prevents the brief empty-grid flash: without it,
+  // the page renders {activePeriod && !loading && grid} with skuRows=[] for
+  // one React commit before loadPeriodData sets loading=true.
   useEffect(() => {
     setActivePeriod(null);
     setPeriods([]);
     setSkuRows([]);
     setTradeInvestment([]);
+    setLoading(true);
   }, [divisionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Auto-select most recent period ───────────────────────────
