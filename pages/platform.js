@@ -107,7 +107,7 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
 const MODULES = [
   { mod: 'M1', title: 'Portfolio Rationalisation', desc: 'Classify every item in your portfolio into a defend, reprice, or exit framework — based on margin contribution vs. strategic importance. Quantifies the margin at stake from underperforming items and names the specific candidates for action.', bg: 'bg-white border-purple/20' },
   { mod: 'M2', title: 'Forward Scenario Engine', desc: 'Model your P&L under multiple cost inflation scenarios simultaneously. See how margin erodes at different input cost levels — and what pricing actions are needed to maintain your floor. Board-ready scenario table to anchor commercial commitments.', bg: 'bg-gold-50/40 border-gold/20' },
-  { mod: 'M3', title: 'Commercial Spend ROI Analyser', desc: 'Calculate the return on every Naira of commercial investment — by category, by channel, by period. Surface which spend generates margin and which destroys it, before the next commitment is made.', bg: 'bg-white border-teal/20' },
+  { mod: 'M3', title: 'Commercial Spend ROI Analyser', desc: 'Calculate the return on every unit of commercial investment — by category, by channel, by period. Surface which spend generates margin and which destroys it, before the next commitment is made.', bg: 'bg-white border-teal/20' },
   { mod: 'M4', title: 'Partner Performance Scorecard', desc: 'Rank every partner and customer relationship by true net margin contribution — after logistics, credit, rebates, and service costs. Identify which relationships to protect, which to renegotiate, and which are structurally loss-making.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
 
@@ -117,20 +117,20 @@ export default function PlatformPage() {
   return (
     <>
       <Head>
-        <title>Platform — Margin Intelligence for Nigerian Businesses | MarginCOS</title>
-        <meta name="description" content="Explore MarginCOS's eight analytical engines: pricing intelligence, cost pass-through tracking, channel margin analysis, and commercial spend ROI — built for businesses across Nigeria and West Africa." />
+        <title>Platform — Margin Intelligence for Businesses in Inflationary Markets | MarginCOS</title>
+        <meta name="description" content="Explore MarginCOS's eight analytical engines: pricing intelligence, cost pass-through tracking, channel margin analysis, and commercial spend ROI — built for businesses navigating high-inflation markets." />
         <link rel="canonical" href="https://margincos.com/platform" />
         <meta property="og:title" content="Platform — Pricing Intelligence & Margin Analytics | MarginCOS" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/platform" />
-        <meta property="og:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for Nigerian businesses." />
+        <meta property="og:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for businesses in high-inflation markets." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
         <meta name="twitter:title" content="Platform — Pricing Intelligence & Margin Analytics | MarginCOS" />
-        <meta name="twitter:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for Nigerian businesses." />
+        <meta name="twitter:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for businesses in high-inflation markets." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>
 
@@ -144,7 +144,7 @@ export default function PlatformPage() {
               The MarginCOS Platform
             </h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              MarginCOS is a margin recovery platform built for Nigerian businesses navigating inflationary markets. Eight analytical engines work simultaneously across your portfolio — giving your CFO and Commercial Director real-time pricing intelligence, cost pass-through analysis, and commercial spend ROI from a single data upload.
+              MarginCOS is a margin recovery platform built for businesses navigating inflationary markets. Eight analytical engines work simultaneously across your portfolio — giving your CFO and Commercial Director real-time pricing intelligence, cost pass-through analysis, and commercial spend ROI from a single data upload.
             </p>
           </div>
         </section>
@@ -160,10 +160,10 @@ export default function PlatformPage() {
                 <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy mb-8">What Makes MarginCOS Different</h2>
                 <div className="space-y-6">
                   {[
-                    { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template — designed from the ground up for the realities of operating in Nigeria and similar high-inflation economies.' },
-                    { title: 'Product-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every Naira figure is calculated at the individual product or service line level.' },
+                    { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template — designed from the ground up for the realities of operating in high-inflation, high-volatility markets.' },
+                    { title: 'Product-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every figure is calculated at the individual product or service line level.' },
                     { title: 'No ERP integration required', desc: 'Works from your existing commercial data. Enter via the in-app form or bulk import a CSV. Live in hours, not months.' },
-                    { title: 'Output in ₦', desc: 'Every recommendation is quantified in Naira impact — not abstract percentages, but real recoverable revenue per action.' },
+                    { title: 'Output in Local Currency', desc: 'Every recommendation is quantified in local currency impact — not abstract percentages, but real recoverable revenue per action.' },
                   ].map((item, i) => (
                     <div key={i} data-reveal className="opacity-0 flex items-start gap-4">
                       <div className="w-8 h-8 rounded-lg bg-teal/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -194,14 +194,14 @@ export default function PlatformPage() {
             <div className="space-y-24">
               <div id="pricing-intelligence">
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
-                problem="Most businesses in Nigeria reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
-                delivers={['Product-level pricing intelligence with competitor benchmarks in ₦ and %', 'WTP headroom quantified in ₦/month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations across your full portfolio']}
+                problem="Most businesses reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
+                delivers={['Product-level pricing intelligence with competitor benchmarks in local currency and %', 'WTP headroom quantified in local currency per month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations across your full portfolio']}
                 users={['CFO', 'Commercial Director']} />
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the product level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
-                delivers={['Cost pass-through rate vs. Carthena Advisory benchmark — 70–75% among commercially disciplined Nigerian businesses', 'FX-linked cost decomposition by product for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
+                delivers={['Cost pass-through rate vs. Carthena Advisory benchmark — 70–75% among commercially disciplined businesses', 'FX-linked cost decomposition by product for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>
               <div id="channel-economics">

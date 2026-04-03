@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/index';
 import clsx from 'clsx';
+import { getFormatterSym } from '../../lib/formatters';
 
 function nairaFormat(v) {
-  if (!v) return '₦0';
+  const s = getFormatterSym();
+  if (!v) return s + '0';
   const n = parseFloat(v);
-  if (n >= 1e6) return '₦' + (n / 1e6).toFixed(1) + 'M';
-  if (n >= 1e3) return '₦' + (n / 1e3).toFixed(0) + 'K';
-  return '₦' + n.toFixed(0);
+  if (n >= 1e6) return s + (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return s + (n / 1e3).toFixed(0) + 'K';
+  return s + n.toFixed(0);
 }
 
 export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId, cfg }) {
@@ -21,7 +23,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId,
   const categories   = ci?.spendCategories || [];
   const channelField = ci?.channelField  || 'channel';
   const formTitle    = ci?.formTitle    || 'Monthly Trade Spend by Channel';
-  const formSubtitle = ci?.formSubtitle || 'Enter spend in Naira (₦) per category per channel';
+  const formSubtitle = ci?.formSubtitle || 'Enter spend per category per channel';
 
   useEffect(() => {
     const m = {};
@@ -145,7 +147,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId,
                     </td>
                   ))}
                   <td className="px-4 py-2 text-right font-bold text-teal">
-                    {rowTotal > 0 ? nairaFormat(rowTotal) : <span className="text-gray-300">₦0</span>}
+                    {rowTotal > 0 ? nairaFormat(rowTotal) : <span className="text-gray-300">—</span>}
                   </td>
                 </tr>
               );
@@ -160,7 +162,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId,
               </td>
               {categories.map(cat => (
                 <td key={cat.key} className="px-3 py-3 text-right text-xs font-bold text-navy">
-                  {catTotals[cat.key] > 0 ? nairaFormat(catTotals[cat.key]) : <span className="text-gray-400">₦0</span>}
+                  {catTotals[cat.key] > 0 ? nairaFormat(catTotals[cat.key]) : <span className="text-gray-400">—</span>}
                 </td>
               ))}
               <td className="px-4 py-3 text-right text-sm font-black" style={{ color: '#D4A843' }}>

@@ -21,8 +21,8 @@ function getFieldGroups(cfg) { return [
   },
   {
     label: cfg.detailSections.p1, color: 'text-teal-700', bg: 'bg-teal-50', fields: [
-      { key: 'rrp',                       label: 'RRP (₦/unit)',              type: 'number', required: true,  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, in Naira per unit.' },
-      { key: 'competitor_price',          label: 'Competitor Price (₦/unit)', type: 'number', required: false, tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, in ₦ per unit.' },
+      { key: 'rrp',                       label: 'RRP (/unit)',              type: 'number', required: true,  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, per unit.' },
+      { key: 'competitor_price',          label: 'Competitor Price (/unit)', type: 'number', required: false, tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, per unit.' },
       { key: 'target_margin_floor_pct',   label: 'Margin Floor (%)',          type: 'pct',    required: false, tip: 'The minimum gross margin percentage you will accept for this SKU before flagging it for repricing or rationalisation.' },
       { key: 'price_elasticity',          label: 'Price Elasticity',          type: 'number', required: false, tip: 'How sensitive demand is to a price change. \u22121.5 means a 10% price rise reduces volume by 15%. Leave blank if unknown.' },
       { key: 'proposed_price_change_pct', label: 'Proposed Price Change (%)', type: 'pct',    required: false, tip: 'The price increase or decrease you are considering. Enter as a percentage \u2014 e.g. 5 for a 5% increase.' },
@@ -43,7 +43,7 @@ function getFieldGroups(cfg) { return [
       { key: 'primary_channel',        label: 'Primary Channel',            type: 'select', required: true,  tip: 'Primary route-to-market for this SKU. Select the channel that accounts for the majority of volume.' },
       { key: 'channel_revenue_split',  label: 'Primary Ch. Vol %',          type: 'number', required: false, tip: 'What percentage of this SKU\u2019s total volume flows through its primary channel. Each SKU is independent \u2014 rows do not need to sum to 100%.' },
       { key: 'distributor_name',       label: 'Distributor Name',           type: 'text',   required: false, tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
-      { key: 'distributor_margin_pct', label: 'Distributor Margin (%)',     type: 'pct',    required: false, tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for Nigerian FMCG.' },
+      { key: 'distributor_margin_pct', label: 'Distributor Margin (%)',     type: 'pct',    required: false, tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for FMCG businesses.' },
       { key: 'trade_rebate_pct',       label: 'Trade Rebate (%)',           type: 'pct',    required: false, tip: 'Retrospective rebate paid back to the trade at period-end, separate from the upfront distributor margin.' },
       { key: 'logistics_cost_per_unit',label: 'Logistics Cost (₦/unit)',    type: 'number', required: false, tip: 'Cost to deliver one unit to the trade (₦) \u2014 includes freight, last-mile, and handling.' },
       { key: 'credit_days',            label: 'Credit Days',                type: 'number', required: false, tip: 'Standard credit terms extended to distributors for this SKU \u2014 the number of days before payment is due.' },

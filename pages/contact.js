@@ -248,7 +248,7 @@ export default function ContactPage() {
                     {[
                       { num: '1', title: 'We review your portfolio data', desc: 'Share your product-level pricing, cost, and channel data \u2014 we prepare the analysis before the session.' },
                       { num: '2', title: 'Live 90-minute diagnostic', desc: 'We walk through the MarginCOS output together \u2014 pricing gaps, cost absorption, channel economics, and trade execution \u2014 on your real numbers.' },
-                      { num: '3', title: 'You receive the full report', desc: 'A Naira-quantified margin recovery roadmap with prioritised actions and estimated impact per recommendation.' },
+                      { num: '3', title: 'You receive the full report', desc: 'A currency-quantified margin recovery roadmap with prioritised actions and estimated impact per recommendation.' },
                     ].map((step, i) => (
                       <div key={i} className="flex items-start gap-4">
                         <span className="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-xs font-black text-gold flex-shrink-0">

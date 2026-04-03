@@ -14,7 +14,7 @@ const COLUMNS = [
   { key: 'sku_id',        label: 'SKU ID',           group: 'identity', required: true,  type: 'text',   width: 'w-28',  tip: 'Your internal product code. Must be unique.' },
   { key: 'sku_name',      label: 'Product Name',     group: 'identity', required: true,  type: 'text',   width: 'w-40',  tip: 'Full product name as it appears on-pack or in your ERP.' },
   { key: 'category',      label: 'Category',         group: 'identity', required: true,  type: 'select', width: 'w-56',  tip: 'Product category from your vertical\u2019s taxonomy.' },
-  { key: 'rrp',           label: 'RRP ₦',       group: 'identity', required: true,  type: 'number', width: 'w-36',  minWidth: 130, tip: 'Recommended Retail Price in Naira per unit.' },
+  { key: 'rrp',           label: 'RRP',       group: 'identity', required: true,  type: 'number', width: 'w-36',  minWidth: 130, tip: 'Recommended Retail Price per unit.' },
   { key: 'active',        label: 'Active',           group: 'identity', required: true,  type: 'bool',   width: 'w-24',  minWidth: 90, tip: 'Include in analysis.' },
   // Identity extended
   { key: 'segment',       label: 'Segment',          group: 'ext-identity', required: false, type: 'select', width: 'w-32',  tip: 'Price positioning: Mass Market, Mid-Range, or Premium.' },
@@ -56,7 +56,7 @@ const LOGISTICS_COLUMNS = [
   { key: 'fleet_division',label: 'Fleet Division',group: 'identity', required: false, type: 'text',   width: 'w-28', tip: 'Internal fleet division.' },
   { key: 'active',        label: 'Active',        group: 'identity', required: true,  type: 'bool',   width: 'w-20', tip: 'Include in analysis.' },
   // Lane Economics P1
-  { key: 'contracted_rate_ngn',    label: 'Contracted Rate (₦)',  group: 'pricing', required: true,  type: 'number', width: 'w-36', minWidth: 140, tip: 'Agreed rate per trip in Naira.' },
+  { key: 'contracted_rate_ngn',    label: 'Contracted Rate',  group: 'pricing', required: true,  type: 'number', width: 'w-36', minWidth: 140, tip: 'Agreed rate per trip.' },
   { key: 'fully_loaded_cost_ngn',  label: 'Fully-Loaded Cost (₦)',group: 'pricing', required: true,  type: 'number', width: 'w-36', minWidth: 140, tip: 'Total cost per trip.' },
   { key: 'distance_km',            label: 'Distance (km)',        group: 'pricing', required: true,  type: 'number', width: 'w-24', tip: 'One-way distance in kilometres.' },
   { key: 'market_rate_ngn',        label: 'Market Rate (₦)',      group: 'pricing', required: false, type: 'number', width: 'w-28', tip: 'Current spot/market rate for this lane.' },

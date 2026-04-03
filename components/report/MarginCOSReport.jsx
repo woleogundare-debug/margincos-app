@@ -763,7 +763,7 @@ const getChannelNarrative = (results, cfg) => {
     lines.push(`${cfg.fields.partner} credit exposure of ${fmt(distExposure, 'nairaK')} represents capital tied up in the trade that carries an implicit financing cost. Extended credit terms represent a compounding margin drag that rarely appears in standard P&L reporting.`);
   }
 
-  lines.push(`The priority action is to renegotiate ${cfg.fields.partner.toLowerCase()} margin terms and reduce credit days on the lowest-contribution channels before increasing volume allocation. Improving channel economics by 2-3 percentage points on the weakest route typically yields more margin per naira than equivalent spend.`);
+  lines.push(`The priority action is to renegotiate ${cfg.fields.partner.toLowerCase()} margin terms and reduce credit days on the lowest-contribution channels before increasing volume allocation. Improving channel economics by 2-3 percentage points on the weakest route typically yields more margin per unit of spend than equivalent investment.`);
   return lines;
 };
 
@@ -925,17 +925,17 @@ const getM4Narrative = (results, cfg) => {
 /* ── Cover ─────────────────────────────────────────────────── */
 const getCoverSubtitle = (tier, cfg) => {
   if (tier === 'enterprise') {
-    return 'A full-spectrum margin intelligence analysis across pricing, cost recovery, channel economics, trade execution, and advanced commercial diagnostics — quantified in Naira across your active portfolio.';
+    return 'A full-spectrum margin intelligence analysis across pricing, cost recovery, channel economics, trade execution, and advanced commercial diagnostics — quantified in local currency across your active portfolio.';
   }
   if (tier === 'professional') {
-    return 'A comprehensive analysis of pricing intelligence, cost pass-through, channel economics, and trade execution across your active portfolio — every margin leak quantified in Naira.';
+    return 'A comprehensive analysis of pricing intelligence, cost pass-through, channel economics, and trade execution across your active portfolio — every margin leak quantified in local currency.';
   }
   return `A pricing intelligence analysis across your active ${cfg.unit} portfolio — quantifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance.`;
 };
 
 const getSummaryIntro = (tier, skuCount, cfg) => {
   if (tier === 'enterprise') {
-    return `This report analyses ${skuCount} active ${cfg.unitPlural} across all eight analytical engines — pricing intelligence, cost pass-through, channel economics, trade execution, and advanced commercial diagnostics. Every margin opportunity is quantified in Naira.`;
+    return `This report analyses ${skuCount} active ${cfg.unitPlural} across all eight analytical engines — pricing intelligence, cost pass-through, channel economics, trade execution, and advanced commercial diagnostics. Every margin opportunity is quantified in local currency.`;
   }
   if (tier === 'professional') {
     return `This report analyses ${skuCount} active ${cfg.unitPlural} across four pillars — pricing intelligence, cost pass-through, channel economics, and trade execution. The analysis identifies actionable margin opportunities and quantifies recovery potential.`;
