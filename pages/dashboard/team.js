@@ -214,20 +214,22 @@ export default function TeamPage() {
                   Invitation sent. They'll receive an email to set up their account.
                 </div>
               )}
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input type="email" placeholder="colleague@company.com" value={inviteEmail}
                   onChange={e => { setInviteEmail(e.target.value); setInviteSent(false); }}
-                  className="flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal" />
-                <select value={inviteRole} onChange={e => setInviteRole(e.target.value)}
-                  className="border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none bg-white">
-                  <option value="member">Member</option>
-                  <option value="admin">Admin</option>
-                </select>
-                <button onClick={handleInvite} disabled={inviting || !inviteEmail}
-                  className="px-5 py-2.5 rounded-lg text-white text-sm font-semibold disabled:opacity-50 transition-all"
-                  style={{ backgroundColor: '#C0392B' }}>
-                  {inviting ? 'Sending...' : 'Send Invite'}
-                </button>
+                  className="w-full sm:flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal" />
+                <div className="flex gap-3 w-full sm:w-auto">
+                  <select value={inviteRole} onChange={e => setInviteRole(e.target.value)}
+                    className="flex-1 sm:flex-none border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none bg-white">
+                    <option value="member">Member</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <button onClick={handleInvite} disabled={inviting || !inviteEmail}
+                    className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-white text-sm font-semibold disabled:opacity-50 transition-all"
+                    style={{ backgroundColor: '#C0392B' }}>
+                    {inviting ? 'Sending...' : 'Send Invite'}
+                  </button>
+                </div>
               </div>
               {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
               <p className="text-xs text-slate-400 mt-3">
