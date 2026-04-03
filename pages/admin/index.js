@@ -19,6 +19,7 @@ export default function AdminPanel() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [suspendingId, setSuspendingId] = useState(null);
 
   const [form, setForm] = useState({
     companyName: '',
@@ -83,6 +84,25 @@ export default function AdminPanel() {
       setError(data.error || 'Something went wrong');
     }
     setCreating(false);
+  };
+
+  const handleStatusChange = async (teamId, action) => {
+    setSuspendingId(teamId);
+    setError('');
+    const res = await fetch('/api/admin/suspend-client', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ teamId, action }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadClients();
+    } else {
+      setError('Failed to update client status: ' + (data.error || 'Unknown error'));
+      setTimeout(() => setError(''), 5000);
+    }
+    setSuspendingId(null);
   };
 
   const handleDelete = async (teamId, teamName) => {
@@ -261,7 +281,7 @@ export default function AdminPanel() {
           {/* Client list */}
           <div className="bg-white rounded-xl border border-gray-100">
             <div className="px-6 py-4 border-b border-gray-100">
-              <h2 className="font-semibold text-navy">Active Clients</h2>
+              <h2 className="font-semibold text-navy">Clients</h2>
             </div>
             {clients.length === 0 ? (
               <div className="px-6 py-12 text-center text-gray-400 text-sm">
@@ -292,6 +312,11 @@ export default function AdminPanel() {
                       >
                         {team.tier}
                       </span>
+                      {team.status === 'suspended' && (
+                        <span className="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded">
+                          Suspended
+                        </span>
+                      )}
                       <div className="text-right">
                         {team.team_members?.slice(0, 2).map(m => (
                           <p key={m.id} className="text-xs text-gray-400">
@@ -302,10 +327,31 @@ export default function AdminPanel() {
                           <p className="text-xs text-gray-300">+{team.team_members.length - 2} more</p>
                         )}
                       </div>
+                      {team.status === 'suspended' ? (
+                        <button
+                          onClick={() => handleStatusChange(team.id, 'reactivate')}
+                          disabled={suspendingId === team.id}
+                          className="text-xs text-teal-600 hover:text-teal-800 font-medium transition-colors disabled:opacity-40"
+                        >
+                          {suspendingId === team.id ? 'Updating...' : 'Reactivate'}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Suspend ${team.name}? They will lose dashboard access until reactivated. Their data is preserved.`)) {
+                              handleStatusChange(team.id, 'suspend');
+                            }
+                          }}
+                          disabled={suspendingId === team.id}
+                          className="text-xs text-amber-600 hover:text-amber-800 font-medium transition-colors disabled:opacity-40"
+                        >
+                          {suspendingId === team.id ? 'Updating...' : 'Suspend'}
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDelete(team.id, team.name)}
                         disabled={deletingId === team.id}
-                        className="text-xs text-red-400 hover:text-red-600 transition-colors disabled:opacity-40 ml-3"
+                        className="text-xs text-red-400 hover:text-red-600 transition-colors disabled:opacity-40 ml-1"
                       >
                         {deletingId === team.id ? 'Deleting...' : 'Delete'}
                       </button>

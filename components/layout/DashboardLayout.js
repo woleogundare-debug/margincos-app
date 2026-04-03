@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { useAuth } from '../../hooks/useAuth';
+import { useTeam } from '../../hooks/useTeam';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { LoadingSpinner } from '../ui/index';
 import { getSupabaseClient } from '../../lib/supabase/client';
@@ -130,6 +131,7 @@ const TIER_COLORS = {
 
 export function DashboardLayout({ children }) {
   const { user, tier, isEnterprise, signOut, loading, profileLoaded, mustChangePassword } = useAuth();
+  const { team } = useTeam();
   const router = useRouter();
   const navRef = useRef(null);
   const { isConsolidated } = useAnalysisContext();
@@ -308,6 +310,38 @@ export function DashboardLayout({ children }) {
           <p className="text-xs text-slate-400 text-center mt-5">
             Signed in as <span className="font-medium text-slate-500">{user?.email}</span>
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Suspension guard ────────────────────────────────────────────────────────
+  if (team?.status === 'suspended') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="max-w-md text-center p-8">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Subscription Inactive
+          </h1>
+          <p className="text-sm text-slate-500 mb-4">
+            Your MarginCOS subscription is currently inactive. Your data is preserved and will be available when your subscription is reactivated.
+          </p>
+          <p className="text-sm text-slate-500 mb-6">
+            Contact us to renew your subscription and resume access to your commercial intelligence.
+          </p>
+          <a
+            href="mailto:info@carthenaadvisory.com"
+            className="inline-block px-6 py-3 text-white text-sm font-semibold rounded-lg transition-colors"
+            style={{ backgroundColor: '#0D8F8F' }}
+          >
+            Contact Carthena Advisory
+          </a>
+          <p className="text-xs text-slate-400 mt-4">info@carthenaadvisory.com</p>
         </div>
       </div>
     );
