@@ -56,11 +56,13 @@ export default async function handler(req, res) {
     // Step 6 — Delete periods (unblocks the periods_team_id_fkey FK constraint)
     await serviceClient.from('periods').delete().eq('team_id', teamId);
 
-    // Step 7 — Null out profiles.team_id (unblocks profiles FK before team delete)
+    // Step 7 — Null out profiles.division_id AND team_id before divisions/team are deleted
+    // profiles.division_id references divisions, which cascades from the team delete,
+    // so it must be cleared here or Postgres will throw profiles_division_id_fkey.
     if (userIds.length > 0) {
       await serviceClient
         .from('profiles')
-        .update({ team_id: null })
+        .update({ division_id: null, team_id: null })
         .in('user_id', userIds);
     }
 
