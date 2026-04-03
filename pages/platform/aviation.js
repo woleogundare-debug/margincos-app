@@ -5,13 +5,13 @@ export default function AviationPage() {
     <SectorPage
       sectorName="Aviation"
       sectorSlug="aviation"
-      metaTitle="Margin Intelligence for Nigerian Aviation | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your aviation operations — route yield gaps, fuel cost pass-through failures, cabin mix erosion, and promotional fare ROI. In Naira. In minutes."
-      heroHeadline="Margin Intelligence for Nigerian Aviation"
-      heroSubheadline="Airlines and MRO providers managing route profitability, fuel cost pass-through, and yield optimisation. MarginCOS gives your leadership visibility on which routes and services are loss-making — and exactly how much is recoverable in Naira."
+      metaTitle="Margin Intelligence for Aviation | MarginCOS"
+      metaDescription="MarginCOS makes every margin leak visible across your aviation operations — route yield gaps, fuel cost pass-through failures, cabin mix erosion, and promotional fare ROI. In your currency. In minutes."
+      heroHeadline="Margin Intelligence for Aviation"
+      heroSubheadline="Airlines and MRO providers managing route profitability, fuel cost pass-through, and yield optimisation. MarginCOS gives your leadership visibility on which routes and services are loss-making — and exactly how much is recoverable."
       stat1={{ value: '3.9%', label: 'Global airline net profit margin in 2026' }}
       stat2={{ value: '25.8%', label: 'Of operating costs consumed by jet fuel' }}
-      stat3={{ value: '~3M', label: 'Nigerians returned to road travel since 2022' }}
+      stat3={{ value: '~3M', label: 'Passengers shifted to alternate transport since 2022' }}
       pillars={[
         {
           id: 'P1',
@@ -19,7 +19,7 @@ export default function AviationPage() {
           problem: 'Airlines set fare structures against demand models calibrated before fuel surges and FX devaluation reshaped cost structures. Individual routes have different cost-per-seat-kilometre profiles — and many are operating below their cost floor without anyone having calculated the break-even yield.',
           delivers: [
             'Route-level yield intelligence with fully-loaded cost per seat kilometre',
-            'Yield deficit quantified in ₦/month per route',
+            'Yield deficit quantified per route',
             'Cost floor breach alerts with fare adjustment recommendations',
           ],
           roles: ['CFO', 'Chief Commercial Officer', 'Revenue Management'],
@@ -31,7 +31,7 @@ export default function AviationPage() {
           problem: 'Jet fuel accounts for over a quarter of operating costs — higher in Nigeria given the FX premium on imported fuel and older fleet inefficiency. Fuel surcharges exist in theory but are rarely calibrated to the actual cost gap at the route level.',
           delivers: [
             'Fuel cost pass-through rate vs. Carthena Advisory benchmark',
-            'Per-route fuel cost allocation and recovery gap in ₦',
+            'Per-route fuel cost allocation and recovery gap',
             'Fuel surcharge calibration recommendations by route and cabin class',
           ],
           roles: ['CFO', 'Head of Revenue Management', 'Fleet Planning'],

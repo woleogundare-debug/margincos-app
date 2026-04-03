@@ -5,10 +5,10 @@ export default function ITServicesPage() {
     <SectorPage
       sectorName="IT Services"
       sectorSlug="it-services"
-      metaTitle="Margin Intelligence for Nigerian IT Services | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your IT services portfolio — service rate gaps, salary cost pass-through failures, client margin erosion, and proposal discount profitability. In Naira. In minutes."
-      heroHeadline="Margin Intelligence for Nigerian IT Services"
-      heroSubheadline="Technology service providers managing contract margin, billing rates, and delivery cost recovery. MarginCOS gives your leadership visibility on which service lines and clients are loss-making — and exactly how much is recoverable in Naira."
+      metaTitle="Margin Intelligence for IT Services | MarginCOS"
+      metaDescription="MarginCOS makes every margin leak visible across your IT services portfolio — service rate gaps, salary cost pass-through failures, client margin erosion, and proposal discount profitability. In your currency. In minutes."
+      heroHeadline="Margin Intelligence for IT Services"
+      heroSubheadline="Technology service providers managing contract margin, billing rates, and delivery cost recovery. MarginCOS gives your leadership visibility on which service lines and clients are loss-making — and exactly how much is recoverable."
       stat1={{ value: '90%+', label: 'Naira devaluation impact on USD-denominated licences' }}
       stat2={{ value: '<25%', label: 'Of IT firms have per-engagement margin visibility' }}
       stat3={{ value: '70%', label: 'Target gross margin for healthy managed services' }}
@@ -16,10 +16,10 @@ export default function ITServicesPage() {
         {
           id: 'P1',
           name: 'Service Rate Intelligence',
-          problem: 'Most Nigerian IT services firms have billing rates set before salary inflation and FX-driven licence cost increases compounded. They are delivering engagements below their cost-to-serve without knowing which service lines are worst — because nobody has calculated the fully-loaded cost per billable hour.',
+          problem: 'Most IT services firms have billing rates set before salary inflation and FX-driven licence cost increases compounded. They are delivering engagements below their cost-to-serve without knowing which service lines are worst — because nobody has calculated the fully-loaded cost per billable hour.',
           delivers: [
             'Service-line rate intelligence with fully-loaded cost-to-deliver benchmarks',
-            'Rate deficit quantified in ₦/month per service line',
+            'Rate deficit quantified per service line',
             'Cost floor breach alerts with billing rate adjustment recommendations',
           ],
           roles: ['CEO', 'CFO', 'Head of Delivery'],
@@ -56,7 +56,7 @@ export default function ITServicesPage() {
           delivers: [
             'Engagement profitability — contracted revenue, actual delivery cost, and net margin',
             'Break-even calculation for every proposal discount offered',
-            'Scope creep quantification in ₦ per engagement',
+            'Scope creep quantification per engagement',
           ],
           roles: ['Head of Sales', 'Head of Delivery', 'CFO'],
           image: '/images/platform/it-services-p4.svg',

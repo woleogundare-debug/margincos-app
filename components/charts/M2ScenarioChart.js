@@ -1,14 +1,16 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-const fmt = (v) => {
-  if (v == null) return '';
-  const abs = Math.abs(v);
-  if (abs >= 1e9) return `₦${(abs / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `₦${(abs / 1e6).toFixed(0)}M`;
-  return `₦${(abs / 1e3).toFixed(0)}K`;
-};
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 export default function M2ScenarioChart({ scenarios, totalCogsBase }) {
+  const { currSym } = useCurrency();
+
+  const fmt = (v) => {
+    if (v == null) return '';
+    const abs = Math.abs(v);
+    if (abs >= 1e9) return `${currSym}${(abs / 1e9).toFixed(1)}B`;
+    if (abs >= 1e6) return `${currSym}${(abs / 1e6).toFixed(0)}M`;
+    return `${currSym}${(abs / 1e3).toFixed(0)}K`;
+  };
   if (!scenarios?.length) return null;
 
   // recoveryRate is 0-1 decimal in the engine

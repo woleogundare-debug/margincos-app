@@ -9,7 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { useTeam } from '../../hooks/useTeam';
 import { useActions } from '../../hooks/useActions';
-import { fNAbs, fN } from '../../lib/formatters';
+import { fNAbs, fN, getFormatterSym } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
 import clsx from 'clsx';
@@ -277,7 +277,7 @@ export default function OverviewPage() {
               />
               <KpiTile
                 label="P1 Opportunity"
-                value={results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : '₦0'}
+                value={results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : (getFormatterSym() + '0')}
                 pill="Repricing upside /month"
                 accent="amber"
                 description="Monthly margin gain from optimal repricing"

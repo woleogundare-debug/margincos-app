@@ -139,7 +139,7 @@ export default function ChannelPage() {
                 <div className="mt-2 overflow-x-auto scrollbar-hide rounded-xl border border-gray-100 bg-white"
                   style={{ WebkitOverflowScrolling: 'touch' }}>
                   <AnalysisTable
-                    headers={['Channel', 'Revenue ₦/mo', 'Cont. %', 'Status']}
+                    headers={['Channel', 'Revenue /mo', 'Cont. %', 'Status']}
                     rows={sorted.map(c => [
                       CHANNEL_LABELS[c.channel] || c.channel,
                       fNAbs(c.rev),
@@ -171,8 +171,8 @@ export default function ChannelPage() {
               <AnalysisTable
                 headers={[
                   'Channel',
-                  <span key="rev" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('rev')}>Revenue ₦/mo{si('rev')}</span>,
-                  <span key="contMargin" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('contMargin')}>Contribution ₦/mo{si('contMargin')}</span>,
+                  <span key="rev" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('rev')}>Revenue /mo{si('rev')}</span>,
+                  <span key="contMargin" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('contMargin')}>Contribution /mo{si('contMargin')}</span>,
                   <span key="contPct" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('contPct')}>Cont. Margin %{si('contPct')}</span>,
                   cfg.unitPlural, cfg.fields.status,
                 ]}
@@ -215,7 +215,7 @@ export default function ChannelPage() {
                 ragStatus={null}
                 className="mt-6">
                 <AnalysisTable
-                  headers={[cfg.fields.partner, 'Revenue ₦/mo', 'Contribution ₦/mo', cfg.unitPlural]}
+                  headers={[cfg.fields.partner, 'Revenue /mo', 'Contribution /mo', cfg.unitPlural]}
                   rows={Object.entries(p3.distributorMap).sort((a, b) => b[1].rev - a[1].rev).map(([name, d]) => [
                     name,
                     fNAbs(d.rev),

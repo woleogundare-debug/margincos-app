@@ -1,4 +1,5 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 const CLASS_COLORS = {
   '★ Strategic':   '#0D8F8F',
@@ -7,17 +8,18 @@ const CLASS_COLORS = {
   '✗ Review':      '#C0392B',
 };
 
-const fmtN = (v) => {
-  if (v == null) return '';
-  const abs = Math.abs(v);
-  const sign = v < 0 ? '-' : '';
-  if (abs >= 1e9) return `${sign}₦${(abs / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `${sign}₦${(abs / 1e6).toFixed(0)}M`;
-  if (abs >= 1e3) return `${sign}₦${(abs / 1e3).toFixed(0)}K`;
-  return `${sign}₦${abs.toFixed(0)}`;
-};
-
 export default function M4DistributorChart({ results, cfg }) {
+  const { currSym } = useCurrency();
+
+  const fmtN = (v) => {
+    if (v == null) return '';
+    const abs = Math.abs(v);
+    const sign = v < 0 ? '-' : '';
+    if (abs >= 1e9) return `${sign}${currSym}${(abs / 1e9).toFixed(1)}B`;
+    if (abs >= 1e6) return `${sign}${currSym}${(abs / 1e6).toFixed(0)}M`;
+    if (abs >= 1e3) return `${sign}${currSym}${(abs / 1e3).toFixed(0)}K`;
+    return `${sign}${currSym}${abs.toFixed(0)}`;
+  };
   if (!results?.length) return null;
 
   // contPct and revShare are already 0-100 in the engine

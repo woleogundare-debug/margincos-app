@@ -176,9 +176,9 @@ export default function CostPage() {
               <AnalysisTable
                 headers={[
                   cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.classification,
-                  <span key="shock" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('shock')}>Cost Shock ₦/mo{si('shock')}</span>,
+                  <span key="shock" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('shock')}>Cost Shock /mo{si('shock')}</span>,
                   <span key="pt" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('pt')}>Pass-Through %{si('pt')}</span>,
-                  <span key="absorbed" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('absorbed')}>Absorbed ₦/mo{si('absorbed')}</span>,
+                  <span key="absorbed" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('absorbed')}>Absorbed /mo{si('absorbed')}</span>,
                   'FX-Linked',
                   <span key="src">Source <span title={`How the inflation rate was determined for this ${cfg.unit}`} className="ml-0.5 text-gray-400 cursor-help">?</span></span>,
                 ]}

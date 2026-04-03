@@ -1,14 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
-
-const fmtN = (v) => {
-  if (v == null) return '';
-  const abs = Math.abs(v);
-  const sign = v < 0 ? '-' : '';
-  if (abs >= 1e9) return `${sign}₦${(abs / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `${sign}₦${(abs / 1e6).toFixed(0)}M`;
-  if (abs >= 1e3) return `${sign}₦${(abs / 1e3).toFixed(0)}K`;
-  return `${sign}₦${abs.toFixed(0)}`;
-};
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 const fmtROI = (v) => (v == null ? '' : `${v.toFixed(1)}x`);
 
@@ -20,29 +11,40 @@ const statusColor = (status) => {
   return '#D4A843';
 };
 
-const CustomTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div style={{
-      background: '#fff',
-      border: '1px solid #E8ECF0',
-      borderRadius: '8px',
-      padding: '10px 14px',
-      fontFamily: 'DM Sans',
-      fontSize: '12px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-      minWidth: '180px',
-    }}>
-      <p style={{ fontWeight: 700, color: '#1B2A4A', marginBottom: '6px' }}>{d.name}</p>
-      <p style={{ color: '#5A6B80', marginBottom: '2px' }}>ROI: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{d.roi?.toFixed(2)}x</span></p>
-      <p style={{ color: '#5A6B80', marginBottom: '6px' }}>Total Spend: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{fmtN(d.total)}</span></p>
-      <p style={{ fontWeight: 600, color: statusColor(d.status) }}>{d.status}</p>
-    </div>
-  );
-};
-
 export default function M3TradeROIChart({ results }) {
+  const { currSym } = useCurrency();
+
+  const fmtN = (v) => {
+    if (v == null) return '';
+    const abs = Math.abs(v);
+    const sign = v < 0 ? '-' : '';
+    if (abs >= 1e9) return `${sign}${currSym}${(abs / 1e9).toFixed(1)}B`;
+    if (abs >= 1e6) return `${sign}${currSym}${(abs / 1e6).toFixed(0)}M`;
+    if (abs >= 1e3) return `${sign}${currSym}${(abs / 1e3).toFixed(0)}K`;
+    return `${sign}${currSym}${abs.toFixed(0)}`;
+  };
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
+    return (
+      <div style={{
+        background: '#fff',
+        border: '1px solid #E8ECF0',
+        borderRadius: '8px',
+        padding: '10px 14px',
+        fontFamily: 'DM Sans',
+        fontSize: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        minWidth: '180px',
+      }}>
+        <p style={{ fontWeight: 700, color: '#1B2A4A', marginBottom: '6px' }}>{d.name}</p>
+        <p style={{ color: '#5A6B80', marginBottom: '2px' }}>ROI: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{d.roi?.toFixed(2)}x</span></p>
+        <p style={{ color: '#5A6B80', marginBottom: '6px' }}>Total Spend: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{fmtN(d.total)}</span></p>
+        <p style={{ fontWeight: 600, color: statusColor(d.status) }}>{d.status}</p>
+      </div>
+    );
+  };
   if (!results?.length) return null;
 
   const data = results

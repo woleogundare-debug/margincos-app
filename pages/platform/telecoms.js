@@ -5,12 +5,12 @@ export default function TelecomsPage() {
     <SectorPage
       sectorName="Telecoms"
       sectorSlug="telecoms"
-      metaTitle="Margin Intelligence for Nigerian Telecoms | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your telecoms product portfolio — product rate gaps, energy cost pass-through failures, channel margin erosion, and promotional bundle ROI. In Naira. In minutes."
-      heroHeadline="Margin Intelligence for Nigerian Telecoms"
-      heroSubheadline="Network operators managing product-level margin, energy cost recovery, and promotional bundle profitability. MarginCOS gives your leadership visibility on which products and bundles are leaking margin — and exactly how much is recoverable in Naira."
-      stat1={{ value: '85%', label: 'Operating cost increase for Nigerian operators in 2024' }}
-      stat2={{ value: '₦57.65B/mo', label: 'Combined diesel-driven operational costs' }}
+      metaTitle="Margin Intelligence for Telecoms | MarginCOS"
+      metaDescription="MarginCOS makes every margin leak visible across your telecoms product portfolio — product rate gaps, energy cost pass-through failures, channel margin erosion, and promotional bundle ROI. In your currency. In minutes."
+      heroHeadline="Margin Intelligence for Telecoms"
+      heroSubheadline="Network operators managing product-level margin, energy cost recovery, and promotional bundle profitability. MarginCOS gives your leadership visibility on which products and bundles are leaking margin — and exactly how much is recoverable."
+      stat1={{ value: '85%', label: 'Operating cost increase driven by energy in 2024' }}
+      stat2={{ value: '35–40%', label: 'Operating cash outflows consumed by energy costs' }}
       stat3={{ value: '100', label: 'Maximum bundles allowed under NCC guidelines' }}
       pillars={[
         {
@@ -19,7 +19,7 @@ export default function TelecomsPage() {
           problem: 'The NCC\'s tariff adjustment restored headline rates but not product-level margin. Individual data bundles, voice packages, and enterprise SLA tiers each have different cost-to-serve profiles — and many remain below their cost floor even after the rate increase.',
           delivers: [
             'Product-level rate intelligence with cost-to-serve benchmarks',
-            'Rate deficit quantified in ₦/month per product and bundle',
+            'Rate deficit quantified per product and bundle',
             'Cost floor breach alerts with tariff adjustment recommendations per product',
           ],
           roles: ['CFO', 'Chief Commercial Officer', 'Head of Product'],
@@ -31,7 +31,7 @@ export default function TelecomsPage() {
           problem: 'Energy costs consume a disproportionate share of operating expenditure. Diesel price surges flow through to tower costs, data centre costs, and network operations — but product pricing rarely adjusts at the same pace. The gap between energy cost and product revenue compounds every month.',
           delivers: [
             'Energy cost pass-through rate vs. Carthena Advisory benchmark — 70–75%',
-            'Per-product energy cost allocation and recovery gap in ₦',
+            'Per-product energy cost allocation and recovery gap',
             'Cost-reflective pricing recommendations by product tier',
           ],
           roles: ['CFO', 'CTO', 'Head of Network Operations'],

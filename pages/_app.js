@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { AnalysisProvider } from '../contexts/AnalysisContext';
+import { CurrencyProvider } from '../contexts/CurrencyContext';
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }) {
@@ -24,10 +25,14 @@ export default function App({ Component, pageProps }) {
   const isDashboard = router.pathname.startsWith('/dashboard');
 
   return isDashboard ? (
-    <AnalysisProvider>
-      <Component {...pageProps} />
-    </AnalysisProvider>
+    <CurrencyProvider>
+      <AnalysisProvider>
+        <Component {...pageProps} />
+      </AnalysisProvider>
+    </CurrencyProvider>
   ) : (
-    <Component {...pageProps} />
+    <CurrencyProvider>
+      <Component {...pageProps} />
+    </CurrencyProvider>
   );
 }

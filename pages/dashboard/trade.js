@@ -178,7 +178,7 @@ export default function TradePage() {
                     <span key="depth" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('depth')}>{cfg.fields.promoDepth.replace(' (%)', '')}{si('depth')}</span>,
                     <span key="lift" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('lift')}>Volume Lift{si('lift')}</span>,
                     'Break-even Lift',
-                    <span key="netImpact" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('netImpact')}>Net Impact ₦/mo{si('netImpact')}</span>,
+                    <span key="netImpact" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('netImpact')}>Net Impact /mo{si('netImpact')}</span>,
                     'Status',
                   ]}
                   rows={sorted.map(r => [

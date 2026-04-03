@@ -1,28 +1,9 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  LabelList,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LabelList } from 'recharts';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 const COLORS = {
   rev:        '#1B2A4A', // navy   — revenue
   contMargin: '#0D8F8F', // teal   — contribution margin
-};
-
-const fmt = (v) => {
-  if (v == null) return '';
-  const abs = Math.abs(v);
-  const sign = v < 0 ? '-' : '';
-  if (abs >= 1e9) return `${sign}₦${(abs / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `${sign}₦${(abs / 1e6).toFixed(0)}M`;
-  if (abs >= 1e3) return `${sign}₦${(abs / 1e3).toFixed(0)}K`;
-  return `${sign}₦${abs.toFixed(0)}`;
 };
 
 // contPct is already 0-100 (not a decimal)
@@ -70,6 +51,17 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function P3ChannelChart({ channelResults }) {
+  const { currSym } = useCurrency();
+
+  const fmt = (v) => {
+    if (v == null) return '';
+    const abs = Math.abs(v);
+    const sign = v < 0 ? '-' : '';
+    if (abs >= 1e9) return `${sign}${currSym}${(abs / 1e9).toFixed(1)}B`;
+    if (abs >= 1e6) return `${sign}${currSym}${(abs / 1e6).toFixed(0)}M`;
+    if (abs >= 1e3) return `${sign}${currSym}${(abs / 1e3).toFixed(0)}K`;
+    return `${sign}${currSym}${abs.toFixed(0)}`;
+  };
   if (!channelResults?.length) return null;
 
   // Sort by revenue descending

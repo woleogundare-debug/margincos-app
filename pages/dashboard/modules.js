@@ -108,7 +108,7 @@ function M2Module({ results, deltas, cfg }) {
       </div>
       <M2ScenarioChart scenarios={m2.scenarios} totalCogsBase={m2.totalCogsBase} />
       <AnalysisTable
-        headers={['Recovery Rate', 'Cost Absorbed ₦/mo', 'Margin Change ₦/mo', 'Projected Margin %', 'Risk Level']}
+        headers={['Recovery Rate', 'Cost Absorbed /mo', 'Margin Change /mo', 'Projected Margin %', 'Risk Level']}
         rows={m2.scenarios.map(s => [
           (s.recoveryRate * 100).toFixed(0) + '%',
           fNAbs(s.absorbed),
@@ -175,7 +175,7 @@ function M3Module({ results, deltas, cfg }) {
       </div>
       <M3TradeROIChart results={m3.results} />
       <AnalysisTable
-        headers={['Channel', 'Total Spend ₦', 'Net Contribution ₦', 'ROI', 'Spend Intensity', 'Status']}
+        headers={['Channel', 'Total Spend', 'Net Contribution', 'ROI', 'Spend Intensity', 'Status']}
         rows={m3.results.map(r => [
           r.channel,
           fNAbs(r.total),
@@ -247,7 +247,7 @@ function M4Module({ results, deltas, cfg }) {
       )}
       <M4DistributorChart results={m4.results} cfg={cfg} />
       <AnalysisTable
-        headers={[cfg.fields.partner, 'Revenue ₦/mo', 'True Contrib. ₦/mo', 'Contrib. %', 'Rev Share %', cfg.fields.creditCost, cfg.fields.classification]}
+        headers={[cfg.fields.partner, 'Revenue /mo', 'True Contrib. /mo', 'Contrib. %', 'Rev Share %', cfg.fields.creditCost, cfg.fields.classification]}
         rows={m4.results.map(r => [
           r.name,
           fNAbs(r.rev),

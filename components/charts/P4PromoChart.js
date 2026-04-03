@@ -1,77 +1,69 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  ReferenceLine,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 const COLORS = {
   profitable:    '#0D8F8F', // teal  — positive net impact
   unprofitable:  '#D95F4B', // red   — negative net impact
 };
 
-const fmt = (v) => {
-  if (v == null) return '';
-  const abs = Math.abs(v);
-  const sign = v < 0 ? '-' : '';
-  if (abs >= 1e9) return `${sign}₦${(abs / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `${sign}₦${(abs / 1e6).toFixed(0)}M`;
-  if (abs >= 1e3) return `${sign}₦${(abs / 1e3).toFixed(0)}K`;
-  return `${sign}₦${abs.toFixed(0)}`;
-};
-
-const CustomTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div style={{
-      background: '#FFFFFF',
-      border: '1px solid #E8ECF0',
-      borderRadius: '8px',
-      padding: '10px 14px',
-      fontFamily: 'DM Sans',
-      fontSize: '12px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-      minWidth: '200px',
-    }}>
-      <p style={{ fontWeight: 700, color: '#1B2A4A', marginBottom: '6px' }}>{d.fullName}</p>
-      <p style={{ marginBottom: '3px', color: '#8896A7' }}>
-        Net Promo Impact:{' '}
-        <span style={{ fontWeight: 600, color: d.netImpact >= 0 ? COLORS.profitable : COLORS.unprofitable }}>
-          {fmt(d.netImpact)}
-        </span>
-      </p>
-      {d.depth != null && (
-        <p style={{ color: '#8896A7', fontSize: '11px', marginBottom: '2px' }}>
-          Depth: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{(d.depth * 100).toFixed(0)}%</span>
-        </p>
-      )}
-      {d.effPrice != null && (
-        <p style={{ color: '#8896A7', fontSize: '11px', marginBottom: '2px' }}>
-          Eff. Price: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>₦{d.effPrice?.toFixed(2)}</span>
-        </p>
-      )}
-      <p style={{ fontSize: '11px', marginTop: '4px' }}>
-        <span style={{
-          background: d.profitable ? 'rgba(13,143,143,0.1)' : 'rgba(217,95,75,0.1)',
-          color: d.profitable ? COLORS.profitable : COLORS.unprofitable,
-          borderRadius: '4px',
-          padding: '2px 6px',
-          fontWeight: 600,
-        }}>
-          {d.profitable ? 'Profitable' : 'Loss-making'}
-        </span>
-      </p>
-    </div>
-  );
-};
-
 export default function P4PromoChart({ results, cfg }) {
+  const { currSym } = useCurrency();
+
+  const fmt = (v) => {
+    if (v == null) return '';
+    const abs = Math.abs(v);
+    const sign = v < 0 ? '-' : '';
+    if (abs >= 1e9) return `${sign}${currSym}${(abs / 1e9).toFixed(1)}B`;
+    if (abs >= 1e6) return `${sign}${currSym}${(abs / 1e6).toFixed(0)}M`;
+    if (abs >= 1e3) return `${sign}${currSym}${(abs / 1e3).toFixed(0)}K`;
+    return `${sign}${currSym}${abs.toFixed(0)}`;
+  };
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
+    return (
+      <div style={{
+        background: '#FFFFFF',
+        border: '1px solid #E8ECF0',
+        borderRadius: '8px',
+        padding: '10px 14px',
+        fontFamily: 'DM Sans',
+        fontSize: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        minWidth: '200px',
+      }}>
+        <p style={{ fontWeight: 700, color: '#1B2A4A', marginBottom: '6px' }}>{d.fullName}</p>
+        <p style={{ marginBottom: '3px', color: '#8896A7' }}>
+          Net Promo Impact:{' '}
+          <span style={{ fontWeight: 600, color: d.netImpact >= 0 ? COLORS.profitable : COLORS.unprofitable }}>
+            {fmt(d.netImpact)}
+          </span>
+        </p>
+        {d.depth != null && (
+          <p style={{ color: '#8896A7', fontSize: '11px', marginBottom: '2px' }}>
+            Depth: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{(d.depth * 100).toFixed(0)}%</span>
+          </p>
+        )}
+        {d.effPrice != null && (
+          <p style={{ color: '#8896A7', fontSize: '11px', marginBottom: '2px' }}>
+            Eff. Price: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{currSym}{d.effPrice?.toFixed(2)}</span>
+          </p>
+        )}
+        <p style={{ fontSize: '11px', marginTop: '4px' }}>
+          <span style={{
+            background: d.profitable ? 'rgba(13,143,143,0.1)' : 'rgba(217,95,75,0.1)',
+            color: d.profitable ? COLORS.profitable : COLORS.unprofitable,
+            borderRadius: '4px',
+            padding: '2px 6px',
+            fontWeight: 600,
+          }}>
+            {d.profitable ? 'Profitable' : 'Loss-making'}
+          </span>
+        </p>
+      </div>
+    );
+  };
   if (!results?.length) return null;
 
   // Sort by absolute net impact, keep top 15

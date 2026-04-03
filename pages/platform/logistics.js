@@ -5,10 +5,10 @@ export default function LogisticsPage() {
     <SectorPage
       sectorName="Logistics & Distribution"
       sectorSlug="logistics"
-      metaTitle="Margin Intelligence for Nigerian Logistics | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your logistics operations — lane rate gaps, fuel cost pass-through failures, customer margin erosion, and load profitability. In Naira. In minutes."
-      heroHeadline="Margin Intelligence for Nigerian Logistics"
-      heroSubheadline="Fleet operators and 3PLs managing lane profitability, fuel cost recovery, and customer margin. MarginCOS gives your CFO visibility on which lanes and contracts are loss-making — and exactly how much is recoverable in Naira."
+      metaTitle="Margin Intelligence for Logistics & Distribution | MarginCOS"
+      metaDescription="MarginCOS makes every margin leak visible across your logistics operations — lane rate gaps, fuel cost pass-through failures, customer margin erosion, and load profitability. In your currency. In minutes."
+      heroHeadline="Margin Intelligence for Logistics & Distribution"
+      heroSubheadline="Fleet operators and 3PLs managing lane profitability, fuel cost recovery, and customer margin. MarginCOS gives your CFO visibility on which lanes and contracts are loss-making — and exactly how much is recoverable."
       stat1={{ value: '63%', label: 'Diesel cost increase in 2024 alone' }}
       stat2={{ value: '40%', label: 'Of trucking cash outflows consumed by fuel' }}
       stat3={{ value: '<15%', label: 'Of operators have lane-level margin visibility' }}
@@ -19,7 +19,7 @@ export default function LogisticsPage() {
           problem: 'Most logistics operators have contracted rates set 12–24 months ago, before the diesel surge. They are running deliveries at a loss on specific lanes without knowing which ones — because nobody has calculated the fully-loaded cost per kilometre against the contracted rate.',
           delivers: [
             'Lane-level rate intelligence with fully-loaded cost per kilometre',
-            'Rate deficit quantified in ₦/month per lane',
+            'Rate deficit quantified per lane',
             'Cost floor breach alerts with rate renegotiation recommendations',
           ],
           roles: ['CFO', 'Commercial Director', 'Operations Director'],
@@ -31,7 +31,7 @@ export default function LogisticsPage() {
           problem: 'Diesel costs have surged 63% but most operators absorb the increase into margin rather than triggering contractual fuel surcharge conversations. The gap between what fuel costs and what the contracted rate covers compounds every month it goes unpriced.',
           delivers: [
             'Fuel cost pass-through rate vs. Carthena Advisory benchmark — 70–75% among commercially disciplined operators',
-            'Per-lane fuel cost decomposition and recovery gap in ₦',
+            'Per-lane fuel cost decomposition and recovery gap',
             'Fuel surcharge trigger recommendations by contract',
           ],
           roles: ['CFO', 'Finance Director', 'Fleet Manager'],

@@ -173,8 +173,8 @@ export default function PricingPage() {
                   cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.classification, cfg.fields.priceUnit,
                   <span key="marginPct" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('marginPct')}>Gross Margin %{si('marginPct')}</span>,
                   'Competitor Gap',
-                  <span key="wtpGap" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('wtpGap')}>WTP Gap ₦/mo{si('wtpGap')}</span>,
-                  <span key="delta" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('delta')}>Repricing Gain ₦/mo{si('delta')}</span>,
+                  <span key="wtpGap" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('wtpGap')}>WTP Gap /mo{si('wtpGap')}</span>,
+                  <span key="delta" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('delta')}>Repricing Gain /mo{si('delta')}</span>,
                 ]}
                 rows={sorted.map(r => [
                   r.sku,

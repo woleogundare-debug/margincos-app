@@ -5,20 +5,20 @@ export default function RetailPage() {
     <SectorPage
       sectorName="Retail"
       sectorSlug="retail"
-      metaTitle="Margin Intelligence for Nigerian Retail | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your retail portfolio — category pricing gaps, supplier cost pass-through failures, channel margin erosion, and promotional discount waste. In Naira. In minutes."
-      heroHeadline="Margin Intelligence for Nigerian Retail"
+      metaTitle="Margin Intelligence for Retail | MarginCOS"
+      metaDescription="MarginCOS makes every margin leak visible across your retail portfolio — category pricing gaps, supplier cost pass-through failures, channel margin erosion, and promotional discount waste. In your currency. In minutes."
+      heroHeadline="Margin Intelligence for Retail"
       heroSubheadline="Multi-channel complexity where margin leaks silently through credit terms, supplier discount erosion, category mix, and promotional overspend. MarginCOS gives your CFO and Buying Director visibility on which categories are destroying value — and exactly how much is recoverable in Naira."
-      stat1={{ value: '2–4%', label: 'Average retail net margin in Nigeria' }}
+      stat1={{ value: '2–4%', label: 'Average retail net margin globally' }}
       stat2={{ value: '60%+', label: 'Of promotions run without a break-even calculation' }}
-      stat3={{ value: '₦42M/mo', label: 'Recoverable margin through category repricing' }}
+      stat3={{ value: '15–25%', label: 'Margin uplift achievable through category repricing' }}
       pillars={[
         {
           id: 'P1',
           name: 'Category Pricing Intelligence',
           problem: 'Retail prices are set by category managers working from last season\'s data. Competitor price gaps, supplier cost changes, and margin floor breaches accumulate across hundreds of SKUs — and nobody has quantified the aggregate recovery opportunity until the annual review.',
           delivers: [
-            'Category-level pricing intelligence with competitor benchmarks in ₦ and %',
+            'Category-level pricing intelligence with competitor benchmarks in % and value terms',
             'Margin floor breach alerts across your full product range',
             'Repricing recommendations ranked by NGN margin contribution',
           ],
@@ -65,7 +65,7 @@ export default function RetailPage() {
       modules={[
         { id: 'M1', name: 'Category Rationalisation',           desc: 'Classify every category and sub-category into a grow / maintain / exit framework based on margin contribution vs. footfall and strategic role.' },
         { id: 'M2', name: 'Forward Inflation Scenario Engine',   desc: 'Model supplier cost trajectories and stress-test your category pricing strategy. See how margin erodes at different inflation rates — and what shelf price adjustments are required.' },
-        { id: 'M3', name: 'Commercial Spend ROI Analyser',       desc: 'Calculate the return on every ₦ of supplier co-investment, promotional funding, and markdown budget. Surface which promotions generate margin and which dilute it.' },
+        { id: 'M3', name: 'Commercial Spend ROI Analyser',       desc: 'Calculate the return on every unit of supplier co-investment, promotional funding, and markdown budget. Surface which promotions generate margin and which dilute it.' },
         { id: 'M4', name: 'Supplier Performance Scorecard',      desc: 'Rank every supplier relationship by true net margin contribution after rebates, terms, returns, and shrinkage. Identify which supplier relationships to grow, renegotiate, or exit.' },
       ]}
       ctaText="See what MarginCOS finds in your retail portfolio"

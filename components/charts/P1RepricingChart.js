@@ -1,4 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 const COLORS = {
   positive: '#0D8F8F', // teal — priced below competitors (room to move)
@@ -6,6 +7,7 @@ const COLORS = {
 };
 
 export default function P1RepricingChart({ results, cfg }) {
+  const { currSym } = useCurrency();
   if (!results?.length) return null;
 
   // Sort by repricing gain descending, take top 15 for readability
@@ -23,10 +25,10 @@ export default function P1RepricingChart({ results, cfg }) {
   if (data.length === 0) return null;
 
   const fmt = (v) => {
-    if (v >= 1e9) return `₦${(v / 1e9).toFixed(1)}B`;
-    if (v >= 1e6) return `₦${(v / 1e6).toFixed(0)}M`;
-    if (v >= 1e3) return `₦${(v / 1e3).toFixed(0)}K`;
-    return `₦${v.toFixed(0)}`;
+    if (v >= 1e9) return `${currSym}${(v / 1e9).toFixed(1)}B`;
+    if (v >= 1e6) return `${currSym}${(v / 1e6).toFixed(0)}M`;
+    if (v >= 1e3) return `${currSym}${(v / 1e3).toFixed(0)}K`;
+    return `${currSym}${v.toFixed(0)}`;
   };
 
   return (

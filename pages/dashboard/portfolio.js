@@ -1,3 +1,4 @@
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import Head from 'next/head';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
@@ -16,15 +17,17 @@ import Link from 'next/link';
 import ExportButton from '../../components/ExportButton';
 import { exportPortfolio } from '../../lib/exportToExcel';
 
-function nairaCompact(v) {
-  if (!v || v === 0) return '₦0';
-  if (v >= 1e9) return '₦' + (v / 1e9).toFixed(1) + 'B';
-  if (v >= 1e6) return '₦' + (v / 1e6).toFixed(1) + 'M';
-  if (v >= 1e3) return '₦' + (v / 1e3).toFixed(0) + 'K';
-  return '₦' + v.toFixed(0);
-}
+// nairaCompact defined inside component via useCurrency
 
 export default function PortfolioPage() {
+  const { currSym } = useCurrency();
+  const nairaCompact = (v) => {
+    if (!v || v === 0) return currSym + '0';
+    if (v >= 1e9) return currSym + (v / 1e9).toFixed(1) + 'B';
+    if (v >= 1e6) return currSym + (v / 1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return currSym + (v / 1e3).toFixed(0) + 'K';
+    return currSym + v.toFixed(0);
+  };
   const { isProfessional, isEnterprise, tier } = useAuth();
   const {
     periods, activePeriod, skuRows, tradeInvestment,

@@ -17,7 +17,7 @@ export function PublicFooter() {
               </span>
             </Link>
             <p className="mt-3 text-xs text-white/70 leading-relaxed max-w-xs">
-              The Commercial Operating System for Margin Recovery. Built for Nigerian businesses navigating inflationary markets.
+              The Commercial Operating System for Margin Recovery. Built for businesses navigating inflationary markets.
             </p>
             <p className="mt-4 text-xs text-white/60">
               A product of{' '}
