@@ -45,10 +45,18 @@ const nextConfig = {
         ],
       },
       {
+        // Dashboard routes — never cache; browsers and proxies must always revalidate
+        source: '/dashboard/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, proxy-revalidate' },
+          { key: 'Pragma',        value: 'no-cache' },
+        ],
+      },
+      {
         // API routes — never cache; browsers and proxies must always revalidate
         source: '/api/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, proxy-revalidate' },
           { key: 'Pragma',        value: 'no-cache' },
         ],
       },
