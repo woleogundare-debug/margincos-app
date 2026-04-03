@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import ExportButton from '../../components/ExportButton';
 import { exportActions } from '../../lib/exportToExcel';
+import { getFormatterSym } from '../../lib/formatters';
 
 const PILLAR_COLORS = {
   P1: '#D4A843', P2: '#C0392B', P3: '#0D8F8F', P4: '#8A6BBE',
@@ -21,11 +22,12 @@ const STATUS_CONFIG = {
 };
 
 const fmtN = (v) => {
+  const s = getFormatterSym();
   if (!v) return '—';
-  if (Math.abs(v) >= 1e9) return `NGN ${(v/1e9).toFixed(1)}B`;
-  if (Math.abs(v) >= 1e6) return `NGN ${(v/1e6).toFixed(1)}M`;
-  if (Math.abs(v) >= 1e3) return `NGN ${(v/1e3).toFixed(0)}K`;
-  return `NGN ${v.toFixed(0)}`;
+  if (Math.abs(v) >= 1e9) return `${s}${(v/1e9).toFixed(1)}B`;
+  if (Math.abs(v) >= 1e6) return `${s}${(v/1e6).toFixed(1)}M`;
+  if (Math.abs(v) >= 1e3) return `${s}${(v/1e3).toFixed(0)}K`;
+  return `${s}${v.toFixed(0)}`;
 };
 
 export default function ActionsPage() {
@@ -36,7 +38,7 @@ export default function ActionsPage() {
   const {
     actions, loading: actionsLoading, stats,
     updateAction, resolveAction, dismissAction, resetFetchKey,
-  } = useActions(team?.id); // no periodId — show all actions across all periods
+  } = useActions(team?.id, isConsolidated ? undefined : activePeriod?.id);
 
   // Combined loading: keep spinner up while team is still resolving.
   // Without this, useActions(null) fires early-return → loading=false before team loads,
