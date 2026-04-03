@@ -8,7 +8,7 @@ export default function RetailPage() {
       metaTitle="Margin Intelligence for Retail | MarginCOS"
       metaDescription="MarginCOS makes every margin leak visible across your retail portfolio — category pricing gaps, supplier cost pass-through failures, channel margin erosion, and promotional discount waste. In your currency. In minutes."
       heroHeadline="Margin Intelligence for Retail"
-      heroSubheadline="Multi-channel complexity where margin leaks silently through credit terms, supplier discount erosion, category mix, and promotional overspend. MarginCOS gives your CFO and Buying Director visibility on which categories are destroying value — and exactly how much is recoverable in Naira."
+      heroSubheadline="Multi-channel complexity where margin leaks silently through credit terms, supplier discount erosion, category mix, and promotional overspend. MarginCOS gives your CFO and Buying Director visibility on which categories are destroying value — and exactly how much is recoverable."
       stat1={{ value: '2–4%', label: 'Average retail net margin globally' }}
       stat2={{ value: '60%+', label: 'Of promotions run without a break-even calculation' }}
       stat3={{ value: '15–25%', label: 'Margin uplift achievable through category repricing' }}
@@ -20,7 +20,7 @@ export default function RetailPage() {
           delivers: [
             'Category-level pricing intelligence with competitor benchmarks in % and value terms',
             'Margin floor breach alerts across your full product range',
-            'Repricing recommendations ranked by NGN margin contribution',
+            'Repricing recommendations ranked by margin contribution',
           ],
           roles: ['CFO', 'Category Manager', 'Buying Director'],
           image: '/images/platform/retail-p1.svg',

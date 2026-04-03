@@ -9,7 +9,7 @@ export default function ITServicesPage() {
       metaDescription="MarginCOS makes every margin leak visible across your IT services portfolio — service rate gaps, salary cost pass-through failures, client margin erosion, and proposal discount profitability. In your currency. In minutes."
       heroHeadline="Margin Intelligence for IT Services"
       heroSubheadline="Technology service providers managing contract margin, billing rates, and delivery cost recovery. MarginCOS gives your leadership visibility on which service lines and clients are loss-making — and exactly how much is recoverable."
-      stat1={{ value: '90%+', label: 'Naira devaluation impact on USD-denominated licences' }}
+      stat1={{ value: '90%+', label: 'Currency devaluation impact on USD-denominated licences' }}
       stat2={{ value: '<25%', label: 'Of IT firms have per-engagement margin visibility' }}
       stat3={{ value: '70%', label: 'Target gross margin for healthy managed services' }}
       pillars={[
@@ -64,7 +64,7 @@ export default function ITServicesPage() {
       ]}
       modules={[
         { id: 'M1', name: 'Service Portfolio Rationalisation', desc: 'Classify every service line into a defend / reprice / exit framework based on margin contribution vs. strategic importance and client demand.' },
-        { id: 'M2', name: 'Salary & FX Scenario Engine',       desc: 'Model salary inflation and FX trajectories — see at what USD/NGN rate each service line breaks its cost floor and what billing rate adjustment is needed.' },
+        { id: 'M2', name: 'Salary & FX Scenario Engine',       desc: 'Model salary inflation and FX trajectories — see at what FX rate each service line breaks its cost floor and what billing rate adjustment is needed.' },
         { id: 'M3', name: 'Proposal Discount ROI',              desc: 'Calculate the return on every proposal discount offered. Surface which wins generated margin and which were structurally unprofitable from day one.' },
         { id: 'M4', name: 'Client Profitability Scorecard',     desc: 'Rank every client relationship by true net margin contribution after delivery, support, and overhead costs. Identify who to grow, renegotiate, or exit.' },
       ]}
