@@ -40,30 +40,9 @@ export default function CostPage() {
     return sortDir === 'desc' ? bv - av : av - bv;
   });
 
-  // Tier gate — all hooks called above, safe to early-return here
-  if (authLoading || !profileLoaded) {
-    return (
-      <>
-        <Head><title>Cost Pass-Through | MarginCOS</title></Head>
-        <DashboardLayout title="Cost Pass-Through" activePeriod={activePeriod}>
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
-          </div>
-        </DashboardLayout>
-      </>
-    );
-  }
+  // Keep access + ragStatus computed unconditionally so the single DashboardLayout
+  // instance stays mounted throughout loading → avoids scroll-reset on content reveal.
   const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
-  if (!access.pillars.includes('cost')) {
-    return (
-      <>
-        <Head><title>Cost Pass-Through | MarginCOS</title></Head>
-        <DashboardLayout title="Cost Pass-Through" activePeriod={activePeriod}>
-          <PillarGate requiredTier="Professional" pillarName="Cost Pass-Through Analysis" />
-        </DashboardLayout>
-      </>
-    );
-  }
 
   const ragStatus = !hasResults ? 'grey'
     : p2?.avgAbsorbedPct > 60 ? 'red'
@@ -75,13 +54,21 @@ export default function CostPage() {
       <Head><title>Cost Pass-Through | MarginCOS</title></Head>
       <DashboardLayout title="Cost Pass-Through" activePeriod={activePeriod}>
 
-        {!hasResults && (
+        {(authLoading || !profileLoaded) && (
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
+          </div>
+        )}
+        {!authLoading && profileLoaded && !access.pillars.includes('cost') && (
+          <PillarGate requiredTier="Professional" pillarName="Cost Pass-Through Analysis" />
+        )}
+        {!authLoading && profileLoaded && access.pillars.includes('cost') && !hasResults && (
           <EmptyState icon="📉" title="Run analysis to see cost absorption results"
             description={cfg.narrative.p2EmptyState}
             action={<Button variant="navy" onClick={run} loading={running}>{running ? 'Analysing…' : 'Run Analysis'}</Button>} />
         )}
 
-        {hasResults && p2 && (
+        {!authLoading && profileLoaded && access.pillars.includes('cost') && hasResults && p2 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Cost Absorbed" value={fNAbs(p2.totalAbsorbed)}

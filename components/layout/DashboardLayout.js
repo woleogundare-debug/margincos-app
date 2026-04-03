@@ -196,9 +196,13 @@ export function DashboardLayout({ children, title, activePeriod }) {
   // Restore the nav's scroll position after this DashboardLayout mounts.
   // Each page creates a fresh instance, so the nav scrollTop starts at 0 —
   // we set it back to wherever the user had it before navigating.
+  // rAF defers until the browser has fully painted the nav's scrollable area;
+  // setting scrollTop in a plain useEffect fires too early (before layout).
   useEffect(() => {
-    if (navRef.current && _savedNavScrollTop > 0) {
-      navRef.current.scrollTop = _savedNavScrollTop;
+    if (_savedNavScrollTop > 0) {
+      requestAnimationFrame(() => {
+        if (navRef.current) navRef.current.scrollTop = _savedNavScrollTop;
+      });
     }
   }, []); // intentionally empty — run once on mount only
 

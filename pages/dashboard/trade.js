@@ -40,30 +40,9 @@ export default function TradePage() {
     return sortDir === 'desc' ? bv - av : av - bv;
   });
 
-  // Tier gate — all hooks called above, safe to early-return here
-  if (authLoading || !profileLoaded) {
-    return (
-      <>
-        <Head><title>Trade Execution | MarginCOS</title></Head>
-        <DashboardLayout title="Trade Execution" activePeriod={activePeriod}>
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
-          </div>
-        </DashboardLayout>
-      </>
-    );
-  }
+  // Keep access computed unconditionally so the single DashboardLayout
+  // instance stays mounted throughout loading → avoids scroll-reset on content reveal.
   const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
-  if (!access.pillars.includes('trade')) {
-    return (
-      <>
-        <Head><title>Trade Execution | MarginCOS</title></Head>
-        <DashboardLayout title="Trade Execution" activePeriod={activePeriod}>
-          <PillarGate requiredTier="Professional" pillarName="Trade Execution" />
-        </DashboardLayout>
-      </>
-    );
-  }
 
   const lossCount = p4?.results?.filter(r => !r.profitable).length || 0;
   const ragStatus = !hasResults ? 'grey'
@@ -76,13 +55,21 @@ export default function TradePage() {
       <Head><title>Trade Execution | MarginCOS</title></Head>
       <DashboardLayout title="Trade Execution" activePeriod={activePeriod}>
 
-        {!hasResults && (
+        {(authLoading || !profileLoaded) && (
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
+          </div>
+        )}
+        {!authLoading && profileLoaded && !access.pillars.includes('trade') && (
+          <PillarGate requiredTier="Professional" pillarName="Trade Execution" />
+        )}
+        {!authLoading && profileLoaded && access.pillars.includes('trade') && !hasResults && (
           <EmptyState icon="🎯" title="Run analysis to see trade execution results"
             description={cfg.narrative.p4EmptyState}
             action={<Button variant="navy" onClick={run} loading={running}>{running ? 'Analysing…' : 'Run Analysis'}</Button>} />
         )}
 
-        {hasResults && p4 && (
+        {!authLoading && profileLoaded && access.pillars.includes('trade') && hasResults && p4 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label={`${cfg.narrative.p4ItemName.charAt(0).toUpperCase() + cfg.narrative.p4ItemName.slice(1)}s Analysed`} value={p4.results?.length || 0}

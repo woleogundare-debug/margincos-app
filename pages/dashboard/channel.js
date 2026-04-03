@@ -40,30 +40,9 @@ export default function ChannelPage() {
     return sortDir === 'desc' ? bv - av : av - bv;
   });
 
-  // Tier gate — all hooks called above, safe to early-return here
-  if (authLoading || !profileLoaded) {
-    return (
-      <>
-        <Head><title>Channel Economics | MarginCOS</title></Head>
-        <DashboardLayout title="Channel Economics" activePeriod={activePeriod}>
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
-          </div>
-        </DashboardLayout>
-      </>
-    );
-  }
+  // Keep access computed unconditionally so the single DashboardLayout
+  // instance stays mounted throughout loading → avoids scroll-reset on content reveal.
   const access = TIER_ACCESS[tier] || TIER_ACCESS.essentials;
-  if (!access.pillars.includes('channel')) {
-    return (
-      <>
-        <Head><title>Channel Economics | MarginCOS</title></Head>
-        <DashboardLayout title="Channel Economics" activePeriod={activePeriod}>
-          <PillarGate requiredTier="Professional" pillarName="Channel Economics" />
-        </DashboardLayout>
-      </>
-    );
-  }
 
   const weakChannels = p3?.channelResults?.filter(c => c.contPct < 15 && c.rev > 0) || [];
 
@@ -76,13 +55,21 @@ export default function ChannelPage() {
       <Head><title>Channel Economics | MarginCOS</title></Head>
       <DashboardLayout title="Channel Economics" activePeriod={activePeriod}>
 
-        {!hasResults && (
+        {(authLoading || !profileLoaded) && (
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
+          </div>
+        )}
+        {!authLoading && profileLoaded && !access.pillars.includes('channel') && (
+          <PillarGate requiredTier="Professional" pillarName="Channel Economics" />
+        )}
+        {!authLoading && profileLoaded && access.pillars.includes('channel') && !hasResults && (
           <EmptyState icon="🏪" title="Run analysis to see channel economics"
             description={cfg.narrative.p3EmptyState}
             action={<Button variant="navy" onClick={run} loading={running}>{running ? 'Analysing…' : 'Run Analysis'}</Button>} />
         )}
 
-        {hasResults && p3 && (
+        {!authLoading && profileLoaded && access.pillars.includes('channel') && hasResults && p3 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Channels Active"

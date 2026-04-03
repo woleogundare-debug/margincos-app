@@ -271,7 +271,7 @@ function M4Module({ results, deltas, cfg }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function ModulesPage() {
-  const { tier } = useAuth();
+  const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
 
@@ -285,6 +285,12 @@ export default function ModulesPage() {
       <Head><title>Enterprise Modules | MarginCOS</title></Head>
       <DashboardLayout title="Enterprise Modules" activePeriod={activePeriod}>
 
+        {(authLoading || !profileLoaded) ? (
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
+          </div>
+        ) : (
+        <>
         {!hasResults && (
           <div className="mb-6">
             <Button variant="navy" size="md" onClick={run} loading={running}>
@@ -349,6 +355,8 @@ export default function ModulesPage() {
             </ModuleGate>
           </section>
         </div>
+        </>
+        )}
       </DashboardLayout>
     </>
   );
