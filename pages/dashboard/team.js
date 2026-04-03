@@ -119,25 +119,20 @@ export default function TeamPage() {
   };
 
   if (loading) return (
-    <DashboardLayout>
-      <div className="p-8 text-gray-400 text-sm">Loading team...</div>
-    </DashboardLayout>
+    <div className="p-8 text-gray-400 text-sm">Loading team...</div>
   );
 
   if (!team) return (
-    <DashboardLayout>
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-navy mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Team Management</h1>
-        <p className="text-gray-500 text-sm">You are not currently assigned to a team. Contact your administrator.</p>
-      </div>
-    </DashboardLayout>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold text-navy mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Team Management</h1>
+      <p className="text-gray-500 text-sm">You are not currently assigned to a team. Contact your administrator.</p>
+    </div>
   );
 
   return (
     <>
       <Head><title>Team Management | MarginCOS</title></Head>
-      <DashboardLayout title="Team Management">
-        <div className="max-w-3xl">
+      <div className="max-w-3xl">
           <h1 className="text-2xl font-bold text-navy mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
             Team Management
           </h1>
@@ -367,10 +362,11 @@ export default function TeamPage() {
             </div>
           )}
         </div>
-      </DashboardLayout>
     </>
   );
 }
+
+TeamPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 function LockIcon() {
   return (

@@ -105,8 +105,6 @@ export default function OverviewPage() {
   return (
     <>
       <Head><title>Overview | MarginCOS</title></Head>
-      <DashboardLayout title="Overview" activePeriod={activePeriod}>
-
         {/* Run Analysis banner */}
         {!noData && (
           <div className={clsx(
@@ -424,7 +422,8 @@ export default function OverviewPage() {
             ))}
           </div>
         )}
-      </DashboardLayout>
     </>
   );
 }
+
+OverviewPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

@@ -283,7 +283,6 @@ export default function ModulesPage() {
   return (
     <>
       <Head><title>Enterprise Modules | MarginCOS</title></Head>
-      <DashboardLayout title="Enterprise Modules" activePeriod={activePeriod}>
 
         {(authLoading || !profileLoaded) ? (
           <div className="flex items-center justify-center min-h-[60vh]">
@@ -357,7 +356,8 @@ export default function ModulesPage() {
         </div>
         </>
         )}
-      </DashboardLayout>
     </>
   );
 }
+
+ModulesPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

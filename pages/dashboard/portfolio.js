@@ -140,7 +140,7 @@ export default function PortfolioPage() {
       <Head>
         <title>Portfolio Manager | MarginCOS</title>
       </Head>
-      <DashboardLayout activePeriod={activePeriod}>
+      <>
         {/* ── Division switcher — shown for multi-division clients ── */}
         {hasDivisions && (
           <div className="mb-4 flex items-center gap-2 flex-wrap">
@@ -579,7 +579,9 @@ export default function PortfolioPage() {
             vertical={activePeriod?.vertical}
           />
         )}
-      </DashboardLayout>
+      </>
     </>
   );
 }
+
+PortfolioPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

@@ -53,8 +53,6 @@ export default function ChannelPage() {
   return (
     <>
       <Head><title>Channel Economics | MarginCOS</title></Head>
-      <DashboardLayout title="Channel Economics" activePeriod={activePeriod}>
-
         {(authLoading || !profileLoaded) && (
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
@@ -218,7 +216,8 @@ export default function ChannelPage() {
             )}
           </>
         )}
-      </DashboardLayout>
     </>
   );
 }
+
+ChannelPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

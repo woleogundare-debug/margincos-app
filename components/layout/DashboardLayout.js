@@ -128,13 +128,7 @@ const TIER_COLORS = {
   essentials:   'bg-slate-100 text-slate-600',
 };
 
-// Module-level: survives DashboardLayout remounts caused by Next.js page navigation.
-// Each dashboard page renders its own <DashboardLayout>, so the component remounts
-// on every route change and the nav's scrollTop resets to 0.
-// We persist the scroll position here so it can be restored on the next mount.
-let _savedNavScrollTop = 0;
-
-export function DashboardLayout({ children, title, activePeriod }) {
+export function DashboardLayout({ children }) {
   const { user, tier, isEnterprise, signOut, loading, profileLoaded, mustChangePassword } = useAuth();
   const router = useRouter();
   const navRef = useRef(null);
@@ -181,34 +175,13 @@ export function DashboardLayout({ children, title, activePeriod }) {
     }
   }, [loading, user, router]);
 
-  // Close sidebar on any route change (covers programmatic navigation, not just link clicks).
-  // Also snapshot the nav's scrollTop here — routeChangeStart fires while the nav DOM
-  // element still exists, before this DashboardLayout unmounts and the element is lost.
+  // Close sidebar on route change — DashboardLayout is now persistent (getLayout
+  // pattern in _app.js), so the sidebar DOM is never destroyed between navigations.
   useEffect(() => {
-    const handleRouteChange = () => {
-      setSidebarOpen(false);
-      if (navRef.current) _savedNavScrollTop = navRef.current.scrollTop;
-    };
+    const handleRouteChange = () => setSidebarOpen(false);
     router.events.on('routeChangeStart', handleRouteChange);
     return () => { router.events.off('routeChangeStart', handleRouteChange); };
   }, [router.events]);
-
-  // Restore the nav's scroll position once auth has resolved and the nav is
-  // actually in the DOM. A plain useEffect([]) fires on mount — but if loading
-  // is true at that point the component returns the spinner early, leaving
-  // navRef.current null when the rAF fires. Depending on [loading, user] means
-  // the effect re-runs as soon as the nav renders for the first time.
-  const _scrollRestored = useRef(false);
-  useEffect(() => {
-    if (_scrollRestored.current) return; // run at most once per mount
-    if (loading || !user) return;        // nav not rendered yet
-    _scrollRestored.current = true;
-    if (_savedNavScrollTop > 0) {
-      requestAnimationFrame(() => {
-        if (navRef.current) navRef.current.scrollTop = _savedNavScrollTop;
-      });
-    }
-  }, [loading, user]);
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {

@@ -22,17 +22,23 @@ export default function App({ Component, pageProps }) {
     return () => router.events.off('routeChangeComplete', handleRouteChange);
   }, [router]);
 
+  // getLayout pattern: each page can export a static .getLayout function that
+  // wraps its content in a persistent layout. DashboardLayout is mounted once
+  // in _app.js and never unmounts during dashboard→dashboard navigation —
+  // sidebar DOM, scroll position, and hamburger state all persist across routes.
+  const getLayout = Component.getLayout || ((page) => page);
+
   const isDashboard = router.pathname.startsWith('/dashboard');
 
   return isDashboard ? (
     <CurrencyProvider>
       <AnalysisProvider>
-        <Component {...pageProps} />
+        {getLayout(<Component {...pageProps} />)}
       </AnalysisProvider>
     </CurrencyProvider>
   ) : (
     <CurrencyProvider>
-      <Component {...pageProps} />
+      {getLayout(<Component {...pageProps} />)}
     </CurrencyProvider>
   );
 }

@@ -53,8 +53,6 @@ export default function TradePage() {
   return (
     <>
       <Head><title>Trade Execution | MarginCOS</title></Head>
-      <DashboardLayout title="Trade Execution" activePeriod={activePeriod}>
-
         {(authLoading || !profileLoaded) && (
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
@@ -195,7 +193,8 @@ export default function TradePage() {
             </div>
           </>
         )}
-      </DashboardLayout>
     </>
   );
 }
+
+TradePage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

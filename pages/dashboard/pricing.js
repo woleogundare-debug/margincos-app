@@ -47,8 +47,6 @@ export default function PricingPage() {
   return (
     <>
       <Head><title>Pricing Intelligence | MarginCOS</title></Head>
-      <DashboardLayout title="Pricing Intelligence" activePeriod={activePeriod}>
-
         {!hasResults && (
           <EmptyState icon="🏷️" title="Run analysis to see pricing results"
             description={cfg.narrative.emptyState}
@@ -208,7 +206,8 @@ export default function PricingPage() {
             </div>
           </>
         )}
-      </DashboardLayout>
     </>
   );
 }
+
+PricingPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

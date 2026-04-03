@@ -52,8 +52,6 @@ export default function CostPage() {
   return (
     <>
       <Head><title>Cost Pass-Through | MarginCOS</title></Head>
-      <DashboardLayout title="Cost Pass-Through" activePeriod={activePeriod}>
-
         {(authLoading || !profileLoaded) && (
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0D8F8F] border-t-transparent" />
@@ -204,7 +202,8 @@ export default function CostPage() {
             </div>
           </>
         )}
-      </DashboardLayout>
     </>
   );
 }
+
+CostPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

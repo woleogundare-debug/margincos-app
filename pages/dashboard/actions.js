@@ -98,7 +98,6 @@ export default function ActionsPage() {
   return (
     <>
       <Head><title>Actions | MarginCOS</title></Head>
-      <DashboardLayout title="Actions" activePeriod={activePeriod}>
         <div className="max-w-5xl mx-auto">
 
           {/* Page header */}
@@ -390,7 +389,8 @@ export default function ActionsPage() {
             </div>
           )}
         </div>
-      </DashboardLayout>
     </>
   );
 }
+
+ActionsPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
