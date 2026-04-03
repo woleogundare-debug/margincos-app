@@ -12,7 +12,7 @@ const CSP = [
   "font-src 'self' https://fonts.gstatic.com data:",
   // data: and blob: required for React-PDF: fonts are fetched as data URIs and the generated PDF
   // is handed to the browser as a blob URL to trigger the download.
-  "connect-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://challenges.cloudflare.com https://www.google-analytics.com https://region1.google-analytics.com https://margincos.com https://www.margincos.com",
+  "connect-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://challenges.cloudflare.com https://www.google-analytics.com https://region1.google-analytics.com https://margincos.com https://www.margincos.com https://ipapi.co",
   "img-src 'self' data: blob: https:",
   "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
