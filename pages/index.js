@@ -102,26 +102,26 @@ export default function HomePage({ css, sectionsHtml }) {
   return (
     <>
       <Head>
-        <title>MarginCOS — Nigeria&apos;s Margin Recovery Platform</title>
-        <meta name="description" content="MarginCOS is the Commercial Operating System for margin recovery — built for Nigerian businesses navigating inflationary markets. Pricing intelligence, cost pass-through analysis, channel economics, and trade execution analytics. In Naira. In minutes." />
+        <title>MarginCOS — Commercial Operating System for Margin Recovery</title>
+        <meta name="description" content="MarginCOS is the Commercial Operating System for margin recovery — built for businesses navigating inflationary markets. Pricing intelligence, cost pass-through analysis, channel economics, and trade execution analytics. In your currency. In minutes." />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://margincos.com/" />
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/" />
-        <meta property="og:title" content="MarginCOS — Nigeria's Margin Recovery Platform" />
-        <meta property="og:description" content="The Commercial Operating System for Margin Recovery. Built for Nigerian businesses navigating inflationary markets." />
+        <meta property="og:title" content="MarginCOS — Commercial Operating System for Margin Recovery" />
+        <meta property="og:description" content="The Commercial Operating System for Margin Recovery. Built for businesses navigating inflationary markets." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="MarginCOS" />
-        <meta property="og:locale" content="en_NG" />
+        <meta property="og:locale" content="en" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="MarginCOS — Nigeria's Margin Recovery Platform" />
-        <meta name="twitter:description" content="The Commercial Operating System for Margin Recovery. Built for Nigerian businesses." />
+        <meta name="twitter:title" content="MarginCOS — Commercial Operating System for Margin Recovery" />
+        <meta name="twitter:description" content="The Commercial Operating System for Margin Recovery. Built for businesses navigating inflationary markets." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
 
         {/* Favicon */}
@@ -154,7 +154,7 @@ export default function HomePage({ css, sectionsHtml }) {
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
               "name": "MarginCOS",
-              "description": "Commercial Operating System for Margin Recovery — built for businesses across Nigeria and West Africa.",
+              "description": "Commercial Operating System for Margin Recovery — built for businesses navigating inflationary markets.",
               "url": "https://margincos.com",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",

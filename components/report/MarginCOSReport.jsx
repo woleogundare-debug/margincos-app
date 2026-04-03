@@ -5,6 +5,7 @@ import {
 } from '@react-pdf/renderer';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
+import { getFormatterSym } from '../../lib/formatters';
 
 /* ── Fonts (TTF required — React-PDF cannot parse woff2) ──── */
 Font.register({
@@ -141,15 +142,16 @@ const fmt = (v, type) => {
   }
   if (type === 'naira') {
     const num = parseFloat(v);
-    return isNaN(num) ? '—' : `NGN ${Number(num).toLocaleString('en-NG', { maximumFractionDigits: 0 })}`;
+    return isNaN(num) ? '—' : `${getFormatterSym()}${Number(num).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
   }
   if (type === 'nairaK') {
     const num = parseFloat(v);
     if (isNaN(num)) return '—';
-    if (Math.abs(num) >= 1e9) return `NGN ${(num / 1e9).toFixed(1)}B`;
-    if (Math.abs(num) >= 1e6) return `NGN ${(num / 1e6).toFixed(1)}M`;
-    if (Math.abs(num) >= 1e3) return `NGN ${(num / 1e3).toFixed(0)}K`;
-    return `NGN ${num.toFixed(0)}`;
+    const sym = getFormatterSym();
+    if (Math.abs(num) >= 1e9) return `${sym}${(num / 1e9).toFixed(1)}B`;
+    if (Math.abs(num) >= 1e6) return `${sym}${(num / 1e6).toFixed(1)}M`;
+    if (Math.abs(num) >= 1e3) return `${sym}${(num / 1e3).toFixed(0)}K`;
+    return `${sym}${num.toFixed(0)}`;
   }
   return String(v);
 };
@@ -164,10 +166,11 @@ const fmtN = (v) => {
   if (v == null) return '—';
   const abs = Math.abs(v);
   const sign = v < 0 ? '-' : '';
-  if (abs >= 1e9) return `${sign}NGN ${(abs / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `${sign}NGN ${(abs / 1e6).toFixed(0)}M`;
-  if (abs >= 1e3) return `${sign}NGN ${(abs / 1e3).toFixed(0)}K`;
-  return `${sign}NGN ${abs.toFixed(0)}`;
+  const sym = getFormatterSym();
+  if (abs >= 1e9) return `${sign}${sym}${(abs / 1e9).toFixed(1)}B`;
+  if (abs >= 1e6) return `${sign}${sym}${(abs / 1e6).toFixed(0)}M`;
+  if (abs >= 1e3) return `${sign}${sym}${(abs / 1e3).toFixed(0)}K`;
+  return `${sign}${sym}${abs.toFixed(0)}`;
 };
 
 const TruncationNotice = ({ shown, total, unitPlural }) => (
@@ -1297,7 +1300,7 @@ const M1Page = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Rev Share</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>vs Avg</Text>
         <Text style={[s.tableHeaderCell, { width: '18%', textAlign: 'center' }]}>Class</Text>
-        <Text style={[s.tableHeaderCell, { width: '18%', textAlign: 'right' }]}>Margin NGN</Text>
+        <Text style={[s.tableHeaderCell, { width: '18%', textAlign: 'right' }]}>Margin</Text>
       </View>
       {rows.map((r, i) => (
         <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>

@@ -162,19 +162,19 @@ export default function PricingPage() {
     <>
       <Head>
         <title>Pricing Plans — MarginCOS Margin Recovery Platform</title>
-        <meta name="description" content="MarginCOS pricing: three tiers from $250/month. Essentials for single-pillar pricing intelligence, Professional for full margin analysis, Enterprise for multi-user commercial analytics with dedicated onboarding. NGN, EUR and GBP rates available." />
+        <meta name="description" content="MarginCOS pricing: three tiers from $250/month. Essentials for single-pillar pricing intelligence, Professional for full margin analysis, Enterprise for multi-user commercial analytics with dedicated onboarding. Multi-currency rates available." />
         <link rel="canonical" href="https://margincos.com/pricing" />
         <meta property="og:title" content="Pricing — MarginCOS Margin Recovery Platform" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/pricing" />
-        <meta property="og:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses across Nigeria and West Africa." />
+        <meta property="og:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for FMCG and manufacturing businesses." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
         <meta name="twitter:title" content="Pricing — MarginCOS Margin Recovery Platform" />
-        <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses across Nigeria and West Africa." />
+        <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for FMCG and manufacturing businesses." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
