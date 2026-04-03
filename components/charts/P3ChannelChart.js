@@ -9,47 +9,6 @@ const COLORS = {
 // contPct is already 0-100 (not a decimal)
 const pct = (v) => (v == null ? '' : `${Number(v).toFixed(1)}%`);
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  const rev = payload.find(p => p.dataKey === 'rev');
-  const cont = payload.find(p => p.dataKey === 'contMargin');
-  const entry = payload[0]?.payload;
-  return (
-    <div style={{
-      background: '#FFFFFF',
-      border: '1px solid #E8ECF0',
-      borderRadius: '8px',
-      padding: '10px 14px',
-      fontFamily: 'DM Sans',
-      fontSize: '12px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-      minWidth: '180px',
-    }}>
-      <p style={{ fontWeight: 700, color: '#1B2A4A', marginBottom: '8px' }}>{label}</p>
-      {rev && (
-        <p style={{ color: COLORS.rev, marginBottom: '4px' }}>
-          Revenue: <span style={{ fontWeight: 600 }}>{fmt(rev.value)}</span>
-        </p>
-      )}
-      {cont && (
-        <p style={{ color: COLORS.contMargin, marginBottom: '4px' }}>
-          Contribution: <span style={{ fontWeight: 600 }}>{fmt(cont.value)}</span>
-        </p>
-      )}
-      {entry?.contPct != null && (
-        <p style={{ color: '#8896A7', fontSize: '11px' }}>
-          Margin %: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{pct(entry.contPct)}</span>
-        </p>
-      )}
-      {entry?.skuCount != null && (
-        <p style={{ color: '#8896A7', fontSize: '11px' }}>
-          SKUs: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{entry.skuCount}</span>
-        </p>
-      )}
-    </div>
-  );
-};
-
 export default function P3ChannelChart({ channelResults }) {
   const { currSym } = useCurrency();
 
@@ -62,6 +21,48 @@ export default function P3ChannelChart({ channelResults }) {
     if (abs >= 1e3) return `${sign}${currSym}${(abs / 1e3).toFixed(0)}K`;
     return `${sign}${currSym}${abs.toFixed(0)}`;
   };
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload?.length) return null;
+    const rev = payload.find(p => p.dataKey === 'rev');
+    const cont = payload.find(p => p.dataKey === 'contMargin');
+    const entry = payload[0]?.payload;
+    return (
+      <div style={{
+        background: '#FFFFFF',
+        border: '1px solid #E8ECF0',
+        borderRadius: '8px',
+        padding: '10px 14px',
+        fontFamily: 'DM Sans',
+        fontSize: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        minWidth: '180px',
+      }}>
+        <p style={{ fontWeight: 700, color: '#1B2A4A', marginBottom: '8px' }}>{label}</p>
+        {rev && (
+          <p style={{ color: COLORS.rev, marginBottom: '4px' }}>
+            Revenue: <span style={{ fontWeight: 600 }}>{fmt(rev.value)}</span>
+          </p>
+        )}
+        {cont && (
+          <p style={{ color: COLORS.contMargin, marginBottom: '4px' }}>
+            Contribution: <span style={{ fontWeight: 600 }}>{fmt(cont.value)}</span>
+          </p>
+        )}
+        {entry?.contPct != null && (
+          <p style={{ color: '#8896A7', fontSize: '11px' }}>
+            Margin %: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{pct(entry.contPct)}</span>
+          </p>
+        )}
+        {entry?.skuCount != null && (
+          <p style={{ color: '#8896A7', fontSize: '11px' }}>
+            SKUs: <span style={{ fontWeight: 600, color: '#1B2A4A' }}>{entry.skuCount}</span>
+          </p>
+        )}
+      </div>
+    );
+  };
+
   if (!channelResults?.length) return null;
 
   // Sort by revenue descending
