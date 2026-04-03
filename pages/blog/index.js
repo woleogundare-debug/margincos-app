@@ -57,7 +57,7 @@ export default function BlogIndex({ posts }) {
             Insights
           </h1>
           <p className="mt-4 text-base md:text-lg text-white/70 max-w-2xl mx-auto">
-            Practical thinking on margin recovery, pricing intelligence, and commercial strategy for Nigerian businesses.
+            Practical thinking on margin recovery, pricing intelligence, and commercial strategy for FMCG and manufacturing businesses.
           </p>
         </div>
       </section>

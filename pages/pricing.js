@@ -188,7 +188,7 @@ export default function PricingPage() {
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1 className="fade-in-up text-3xl md:text-5xl font-black text-white leading-tight">MarginCOS Pricing</h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              Built for businesses across Nigeria and West Africa — with pricing in USD, NGN, EUR, and GBP. All plans include a 14-day pilot.
+              Built for FMCG and manufacturing businesses globally — with pricing in USD, NGN, EUR, and GBP. All plans include a 14-day pilot.
             </p>
           </div>
         </section>
