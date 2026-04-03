@@ -193,18 +193,22 @@ export function DashboardLayout({ children, title, activePeriod }) {
     return () => { router.events.off('routeChangeStart', handleRouteChange); };
   }, [router.events]);
 
-  // Restore the nav's scroll position after this DashboardLayout mounts.
-  // Each page creates a fresh instance, so the nav scrollTop starts at 0 —
-  // we set it back to wherever the user had it before navigating.
-  // rAF defers until the browser has fully painted the nav's scrollable area;
-  // setting scrollTop in a plain useEffect fires too early (before layout).
+  // Restore the nav's scroll position once auth has resolved and the nav is
+  // actually in the DOM. A plain useEffect([]) fires on mount — but if loading
+  // is true at that point the component returns the spinner early, leaving
+  // navRef.current null when the rAF fires. Depending on [loading, user] means
+  // the effect re-runs as soon as the nav renders for the first time.
+  const _scrollRestored = useRef(false);
   useEffect(() => {
+    if (_scrollRestored.current) return; // run at most once per mount
+    if (loading || !user) return;        // nav not rendered yet
+    _scrollRestored.current = true;
     if (_savedNavScrollTop > 0) {
       requestAnimationFrame(() => {
         if (navRef.current) navRef.current.scrollTop = _savedNavScrollTop;
       });
     }
-  }, []); // intentionally empty — run once on mount only
+  }, [loading, user]);
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
@@ -375,8 +379,10 @@ export function DashboardLayout({ children, title, activePeriod }) {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       )} style={{ backgroundColor: '#1B2A4A', minHeight: '100vh' }}>
 
-        {/* Inner flex wrapper — ensures footer stays pinned */}
-        <div className="flex flex-col h-full">
+        {/* Inner flex wrapper — overflow-hidden clips at aside height so the
+            nav child can establish a real scroll container via overflow-y-auto.
+            Without it the flex column grows unconstrained and scrollTop stays 0. */}
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Close button — mobile only */}
           <div className="md:hidden flex justify-end p-4 flex-shrink-0">
             <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-white">
