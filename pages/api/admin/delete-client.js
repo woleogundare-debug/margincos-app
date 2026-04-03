@@ -22,15 +22,41 @@ export default async function handler(req, res) {
   if (!teamId) return res.status(400).json({ error: 'teamId required' });
 
   try {
-    // Get all user_ids in this team before deleting
+    // Fetch user IDs and period IDs before any deletions
     const { data: members } = await serviceClient
       .from('team_members')
       .select('user_id')
       .eq('team_id', teamId);
-
     const userIds = members?.map(m => m.user_id) || [];
 
-    // Step 1 — Null out team_id on profiles FIRST (breaks FK constraint)
+    const { data: periodRows } = await serviceClient
+      .from('periods')
+      .select('id')
+      .eq('team_id', teamId);
+    const periodIds = periodRows?.map(p => p.id) || [];
+
+    // ── Cascade through period-linked data ───────────────────────────────────
+    if (periodIds.length > 0) {
+      // Step 1 — action_items (has ON DELETE CASCADE on period_id, but be explicit)
+      await serviceClient.from('action_items').delete().in('period_id', periodIds);
+
+      // Step 2 — sku_rows
+      await serviceClient.from('sku_rows').delete().in('period_id', periodIds);
+
+      // Step 3 — logistics_rows (has ON DELETE CASCADE on period_id)
+      await serviceClient.from('logistics_rows').delete().in('period_id', periodIds);
+
+      // Step 4 — trade_investment
+      await serviceClient.from('trade_investment').delete().in('period_id', periodIds);
+
+      // Step 5 — logistics_commercial_investment (has ON DELETE CASCADE on period_id)
+      await serviceClient.from('logistics_commercial_investment').delete().in('period_id', periodIds);
+    }
+
+    // Step 6 — Delete periods (unblocks the periods_team_id_fkey FK constraint)
+    await serviceClient.from('periods').delete().eq('team_id', teamId);
+
+    // Step 7 — Null out profiles.team_id (unblocks profiles FK before team delete)
     if (userIds.length > 0) {
       await serviceClient
         .from('profiles')
@@ -38,21 +64,17 @@ export default async function handler(req, res) {
         .in('user_id', userIds);
     }
 
-    // Step 2 — Delete the team (cascades to team_members, team_invitations)
+    // Step 8 — Delete team (cascades to: divisions, team_members, team_invitations)
     const { error: teamError } = await serviceClient
       .from('teams')
       .delete()
       .eq('id', teamId);
     if (teamError) throw teamError;
 
-    // Step 3 — Delete profiles
+    // Step 9 — Delete profiles and auth users
     if (userIds.length > 0) {
-      await serviceClient
-        .from('profiles')
-        .delete()
-        .in('user_id', userIds);
+      await serviceClient.from('profiles').delete().in('user_id', userIds);
 
-      // Step 4 — Delete auth users
       for (const userId of userIds) {
         await serviceClient.auth.admin.deleteUser(userId);
       }
