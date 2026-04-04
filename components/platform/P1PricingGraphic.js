@@ -1,10 +1,13 @@
 /**
  * P1 Pricing Intelligence — WTP Headroom by Product
- * Stacked bar chart: navy = current price captured, gold = recoverable gap
- * Each bar normalized to its own WTP ceiling (= 100% height)
+ * Stacked bar chart: navy = current price captured, gold = recoverable gap.
+ * Each bar normalised to its own WTP ceiling (= 100% height).
+ *
+ * Y-axis labels removed — gap % labels above each bar tell the story.
+ * A dashed ceiling line + "WTP Ceiling" label top-right replaces the axis.
  */
 export default function P1PricingGraphic() {
-  // gap = WTP headroom as % of WTP ceiling (WTP - current) / WTP
+  // gap = (WTP - current) / WTP, current = current / WTP
   const bars = [
     { label: 'Dairy',   gap: 14, current: 86 },
     { label: 'Noodles', gap: 10, current: 90 },
@@ -13,11 +16,12 @@ export default function P1PricingGraphic() {
     { label: 'Oil 1L',  gap:  9, current: 91 },
   ];
 
-  const BAR_H   = 120;  // max bar height = 100% of WTP
-  const BASELINE = 162; // y of baseline (0%)
-  const BAR_W   = 34;
-  const START_X = 18;
-  const STEP    = 52;
+  const BAR_H    = 116;  // total bar height = 100% of WTP ceiling
+  const BASELINE = 160;  // y of baseline (0%)
+  const TOP_Y    = BASELINE - BAR_H;  // y of WTP ceiling = 44
+  const BAR_W    = 34;
+  const START_X  = 22;
+  const STEP     = 52;
 
   return (
     <div
@@ -31,58 +35,57 @@ export default function P1PricingGraphic() {
         Recoverable margin per SKU vs. WTP ceiling
       </p>
 
-      <svg viewBox="0 0 290 188" className="w-full" aria-hidden="true">
-        {/* Grid lines */}
-        {[0, 50, 100].map(pct => {
-          const y = BASELINE - (pct / 100) * BAR_H;
-          return (
-            <g key={pct}>
-              <line
-                x1="14" y1={y} x2="278" y2={y}
-                stroke={pct === 0 ? '#CBD5E1' : '#F1F5F9'}
-                strokeWidth={pct === 0 ? 1 : 0.5}
-                strokeDasharray={pct === 100 ? '4 3' : undefined}
-              />
-              <text x="11" y={y + 3} fontSize="7.5" fill="#94A3B8" textAnchor="end">
-                {pct}%
-              </text>
-            </g>
-          );
-        })}
+      <svg viewBox="0 0 290 185" className="w-full" aria-hidden="true">
 
-        {/* WTP ceiling label */}
-        <text x="22" y={BASELINE - BAR_H - 6} fontSize="7.5" fill="#94A3B8">
-          WTP ceiling
+        {/* ── WTP ceiling dashed reference line ── */}
+        <line
+          x1={START_X} y1={TOP_Y}
+          x2={START_X + 4 * STEP + BAR_W + 4} y2={TOP_Y}
+          stroke="#CBD5E1" strokeWidth="0.75" strokeDasharray="4 3"
+        />
+        {/* "WTP Ceiling" label — right-aligned, clear of bars */}
+        <text
+          x={START_X + 4 * STEP + BAR_W + 8} y={TOP_Y + 4}
+          fontSize="7.5" fill="#94A3B8"
+        >
+          WTP Ceiling
         </text>
 
-        {/* Bars */}
-        {bars.map(({ label, gap, current }, i) => {
+        {/* ── Baseline ── */}
+        <line
+          x1={START_X - 4} y1={BASELINE}
+          x2={START_X + 4 * STEP + BAR_W + 4} y2={BASELINE}
+          stroke="#CBD5E1" strokeWidth="1"
+        />
+
+        {/* ── Bars ── */}
+        {bars.map(({ label, gap }, i) => {
           const x = START_X + i * STEP;
           const goldH = Math.round((gap / 100) * BAR_H);
           const navyH = BAR_H - goldH;
 
           return (
             <g key={label}>
-              {/* Gold (gap) portion — top */}
+              {/* Gold (gap) portion — top of bar */}
               <rect
-                x={x} y={BASELINE - BAR_H}
+                x={x} y={TOP_Y}
                 width={BAR_W} height={goldH}
                 rx="3" fill="#D4A843"
               />
-              {/* Navy (current price) portion — bottom */}
+              {/* Navy (captured price) portion — bottom of bar */}
               <rect
-                x={x} y={BASELINE - BAR_H + goldH}
+                x={x} y={TOP_Y + goldH}
                 width={BAR_W} height={navyH}
                 rx="2" fill="#1B2A4A"
               />
-              {/* Gap % label above bar */}
+              {/* Gap % label — centred above bar, clear of ceiling line */}
               <text
-                x={x + BAR_W / 2} y={BASELINE - BAR_H - 4}
+                x={x + BAR_W / 2} y={TOP_Y - 6}
                 fontSize="9" fill="#D4A843" textAnchor="middle" fontWeight="700"
               >
                 +{gap}%
               </text>
-              {/* Product label below baseline */}
+              {/* Product name below baseline */}
               <text
                 x={x + BAR_W / 2} y={BASELINE + 13}
                 fontSize="8" fill="#64748B" textAnchor="middle"
@@ -94,6 +97,7 @@ export default function P1PricingGraphic() {
         })}
       </svg>
 
+      {/* Legend */}
       <div className="flex items-center justify-center gap-5 mt-1">
         <div className="flex items-center gap-1.5">
           <span
