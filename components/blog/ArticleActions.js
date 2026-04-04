@@ -128,12 +128,13 @@ export default function ArticleActions({ title, slug }) {
     const el = document.getElementById('article-content');
     if (!el) return;
     setDownloading(true);
+    let titleBlock = null;
     try {
       // Dynamically load html2pdf bundle from CDN (only on click, not on page load)
       if (!window.html2pdf) {
         await new Promise((resolve, reject) => {
           const s = document.createElement('script');
-          s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          s.src = 'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js';
           s.onload  = resolve;
           s.onerror = reject;
           document.head.appendChild(s);
@@ -141,7 +142,7 @@ export default function ArticleActions({ title, slug }) {
       }
 
       // Inject a clean title block at the top of the captured element
-      const titleBlock = document.createElement('div');
+      titleBlock = document.createElement('div');
       titleBlock.id = 'pdf-title-block';
       titleBlock.innerHTML = `
         <div style="padding: 0 0 24px 0; margin-bottom: 32px; border-bottom: 2px solid #0D8F8F;">
@@ -165,15 +166,15 @@ export default function ArticleActions({ title, slug }) {
           pagebreak:  { mode: ['avoid-all', 'css'] },
         })
         .from(el)
-        .save()
-        .then(() => {
-          // Remove injected title block after PDF is generated
-          const block = document.getElementById('pdf-title-block');
-          if (block) block.remove();
-        });
+        .save();
     } catch (err) {
       console.error('[ArticleActions] PDF generation failed:', err);
+      // Fallback: browser print dialog
+      window.print();
     } finally {
+      // Always clean up injected title block, whether PDF succeeded or failed
+      const block = document.getElementById('pdf-title-block');
+      if (block) block.remove();
       setDownloading(false);
     }
   };
