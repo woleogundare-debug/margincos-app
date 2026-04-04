@@ -18,6 +18,9 @@ import ArticleActions from '../../components/blog/ArticleActions';
 import PassThroughBenchmarkChart from '../../components/blog/PassThroughBenchmarkChart';
 import PortfolioDistributionChart from '../../components/blog/PortfolioDistributionChart';
 import BoardPresentationChart from '../../components/blog/BoardPresentationChart';
+import TradeCreditCalculator from '../../components/blog/TradeCreditCalculator';
+import ChannelWaterfallChart from '../../components/blog/ChannelWaterfallChart';
+import ChannelRankingTable from '../../components/blog/ChannelRankingTable';
 
 export async function getStaticPaths() {
   const blogDir = path.join(process.cwd(), 'content/blog');
@@ -74,7 +77,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, excerpt, date, author, category, readTime, slug } = frontmatter;
   const metaDescription = excerpt || description;
 
-  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart, PassThroughBenchmarkChart, PortfolioDistributionChart, BoardPresentationChart };
+  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart, PassThroughBenchmarkChart, PortfolioDistributionChart, BoardPresentationChart, TradeCreditCalculator, ChannelWaterfallChart, ChannelRankingTable };
 
   return (
     <>

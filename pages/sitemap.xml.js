@@ -18,6 +18,7 @@ const pages = [
   { url: '/blog/rrp-floor-fmcg-nigeria',           priority: '0.7', changefreq: 'monthly' },
   { url: '/blog/logistics-lane-profitability-nigeria',      priority: '0.7', changefreq: 'monthly' },
   { url: '/blog/cost-pass-through-rate-calculation',        priority: '0.8', changefreq: 'monthly' },
+  { url: '/blog/hidden-cost-trade-credit',                   priority: '0.8', changefreq: 'monthly' },
   { url: '/privacy',                               priority: '0.3', changefreq: 'yearly'  },
   { url: '/terms',                                 priority: '0.3', changefreq: 'yearly'  },
 ];
