@@ -3,6 +3,10 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { PublicNav } from '../components/layout/PublicNav';
 import { PublicFooter } from '../components/layout/PublicFooter';
+import P1PricingGraphic from '../components/platform/P1PricingGraphic';
+import P2CostGraphic from '../components/platform/P2CostGraphic';
+import P3ChannelGraphic from '../components/platform/P3ChannelGraphic';
+import P4TradeGraphic from '../components/platform/P4TradeGraphic';
 
 function useScrollReveal() {
   const ref = useRef(null);
@@ -48,13 +52,14 @@ function DashboardVisual() {
 }
 
 /* ── Pillar deep-dive section ── */
-function PillarSection({ num, title, color, problem, context, delivers, users, reverse }) {
-  const badgeColors = { teal: 'bg-teal', red: 'bg-red-brand', gold: 'bg-gold', purple: 'bg-purple' };
+function PillarSection({ num, title, color, problem, context, delivers, users, reverse, graphic }) {
+  const badgeColors  = { teal: 'bg-teal', red: 'bg-red-brand', gold: 'bg-gold', purple: 'bg-purple' };
   const borderColors = { teal: 'border-teal/20', red: 'border-red-brand/20', gold: 'border-gold/20', purple: 'border-purple/20' };
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center`}>
-      <div className={reverse ? 'lg:order-2' : ''}>
+    <div className={`grid grid-cols-1 ${graphic ? 'lg:grid-cols-5' : 'lg:grid-cols-2'} gap-12 items-start`}>
+      {/* ── Text column (3/5 when graphic present) ── */}
+      <div className={`${graphic ? 'lg:col-span-3' : ''} ${reverse ? 'lg:order-2' : ''}`}>
         <div data-reveal className="opacity-0">
           <div className="flex items-center gap-3 mb-4">
             <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white ${badgeColors[color]}`}>
@@ -90,14 +95,22 @@ function PillarSection({ num, title, color, problem, context, delivers, users, r
           </div>
         </div>
       </div>
-      <div className={reverse ? 'lg:order-1' : ''} data-reveal>
-        <div className={`opacity-0 rounded-2xl border ${borderColors[color]} bg-white p-8 min-h-[200px] flex items-center justify-center`}>
-          <div className="text-center">
-            <span className={`inline-flex w-16 h-16 rounded-2xl ${badgeColors[color]} items-center justify-center text-2xl font-black text-white mb-3 mx-auto`}>
-              P{num}
-            </span>
-            <p className="text-xs text-slate-400 font-medium">{title}</p>
-          </div>
+
+      {/* ── Visual column (2/5 when graphic present) ── */}
+      <div className={`${graphic ? 'lg:col-span-2' : ''} ${reverse ? 'lg:order-1' : ''}`}>
+        <div data-reveal className="opacity-0 mt-8 lg:mt-0">
+          {graphic ? (
+            graphic
+          ) : (
+            <div className={`rounded-2xl border ${borderColors[color]} bg-white p-8 min-h-[200px] flex items-center justify-center`}>
+              <div className="text-center">
+                <span className={`inline-flex w-16 h-16 rounded-2xl ${badgeColors[color]} items-center justify-center text-2xl font-black text-white mb-3 mx-auto`}>
+                  P{num}
+                </span>
+                <p className="text-xs text-slate-400 font-medium">{title}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -205,7 +218,8 @@ export default function PlatformPage() {
                   'Recommended increase quantum and timing based on inflation exposure and competitive headroom',
                   'Repricing priority list ranked by total monthly margin recovery opportunity',
                 ]}
-                users={['CFO', 'Commercial Director']} />
+                users={['CFO', 'Commercial Director']}
+                graphic={<P1PricingGraphic />} />
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
@@ -219,7 +233,8 @@ export default function PlatformPage() {
                   'Actual vs. self-reported inflation comparison to surface gaps between finance and supply chain data',
                   'Monthly margin recovery opportunity in local currency — the quantified cost of inaction per month',
                 ]}
-                users={['CFO', 'Finance Director', 'Supply Chain']} />
+                users={['CFO', 'Finance Director', 'Supply Chain']}
+                graphic={<P2CostGraphic />} />
               </div>
               <div id="channel-economics">
                 <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
@@ -233,7 +248,8 @@ export default function PlatformPage() {
                   'Minimum viable volume thresholds per channel — the point at which a route to market stops covering its cost',
                   'Weak channel identification with specific remediation actions: renegotiate, restructure, or exit',
                 ]}
-                users={['Commercial Director', 'Sales Director', 'Trade Marketing']} />
+                users={['Commercial Director', 'Sales Director', 'Trade Marketing']}
+                graphic={<P3ChannelGraphic />} />
               </div>
               <div id="trade-execution">
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
@@ -247,7 +263,8 @@ export default function PlatformPage() {
                   'Pre-commitment profitability check: break-even delivery requirement vs. realistic historical uplift estimate',
                   'Commercial spend allocation model — ranked by expected margin return to guide next-period investment',
                 ]}
-                users={['Trade Marketing', 'Sales Director', 'CFO']} />
+                users={['Trade Marketing', 'Sales Director', 'CFO']}
+                graphic={<P4TradeGraphic />} />
               </div>
             </div>
           </div>
