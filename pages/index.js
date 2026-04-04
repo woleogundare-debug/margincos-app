@@ -103,7 +103,7 @@ export default function HomePage({ css, sectionsHtml }) {
     <>
       <Head>
         <title>MarginCOS — Commercial Operating System for Margin Recovery</title>
-        <meta name="description" content="MarginCOS is the Commercial Operating System for margin recovery — built for businesses navigating inflationary markets. Pricing intelligence, cost pass-through analysis, channel economics, and trade execution analytics. In your currency. In minutes." />
+        <meta name="description" content="MarginCOS — the Commercial Operating System for FMCG margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution." />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://margincos.com/" />
 

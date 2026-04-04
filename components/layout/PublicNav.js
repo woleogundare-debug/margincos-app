@@ -7,22 +7,22 @@ import { getSupabaseClient } from '../../lib/supabase/client';
 
 /* ── Platform dropdown items ── */
 const PLATFORM_SECTORS = [
-  { href: '/platform',             label: 'Overview',               soon: false, dividerBefore: false },
-  { href: '/platform/fmcg',        label: 'FMCG',                   soon: false, dividerBefore: true  },
-  { href: '/platform/manufacturing',label: 'Manufacturing',          soon: false, dividerBefore: false },
-  { href: '/platform/retail',      label: 'Retail',                 soon: false, dividerBefore: false },
-  { href: '/platform/logistics',   label: 'Logistics',              soon: false, dividerBefore: false },
-  { href: '/platform/it-services', label: 'IT Services',            soon: true,  dividerBefore: true  },
-  { href: '/platform/telecoms',    label: 'Telecoms',               soon: true,  dividerBefore: false },
-  { href: '/platform/aviation',    label: 'Aviation',               soon: true,  dividerBefore: false },
+  { href: '/platform',             label: 'Overview',      title: 'MarginCOS Platform Overview',               soon: false, dividerBefore: false },
+  { href: '/platform/fmcg',        label: 'FMCG',          title: 'MarginCOS for FMCG Margin Recovery',         soon: false, dividerBefore: true  },
+  { href: '/platform/manufacturing',label: 'Manufacturing', title: 'MarginCOS for Manufacturing Margin Recovery',soon: false, dividerBefore: false },
+  { href: '/platform/retail',      label: 'Retail',        title: 'MarginCOS for Retail Margin Recovery',       soon: false, dividerBefore: false },
+  { href: '/platform/logistics',   label: 'Logistics',     title: 'MarginCOS for Logistics Margin Recovery',    soon: false, dividerBefore: false },
+  { href: '/platform/it-services', label: 'IT Services',   title: 'MarginCOS for IT Services (coming soon)',    soon: true,  dividerBefore: true  },
+  { href: '/platform/telecoms',    label: 'Telecoms',      title: 'MarginCOS for Telecoms (coming soon)',       soon: true,  dividerBefore: false },
+  { href: '/platform/aviation',    label: 'Aviation',      title: 'MarginCOS for Aviation (coming soon)',       soon: true,  dividerBefore: false },
 ];
 
 /* ── Links that map 1:1 to a nav item (Platform handled separately) ── */
 const NAV_LINKS = [
-  { href: '/',        label: 'Home' },
-  { href: '/blog',    label: 'Insights' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/',        label: 'Home',     title: 'MarginCOS Home' },
+  { href: '/blog',    label: 'Insights', title: 'MarginCOS Insights and Articles' },
+  { href: '/pricing', label: 'Pricing',  title: 'MarginCOS Pricing Plans' },
+  { href: '/contact', label: 'Contact',  title: 'Contact MarginCOS' },
 ];
 
 export function PublicNav() {
@@ -80,7 +80,7 @@ export function PublicNav() {
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
 
         {/* Logo */}
-        <Link href="/" className="flex flex-col group">
+        <Link href="/" title="MarginCOS – Commercial Operating System for Margin Recovery" className="flex flex-col group">
           <span className="text-2xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
             <span className={clsx('transition-colors', scrolled ? 'text-navy' : 'text-white')}>Margin</span>
             <span style={{ color: '#C0392B' }}>COS</span>
@@ -94,7 +94,7 @@ export function PublicNav() {
         <div className="hidden md:flex items-center gap-8">
 
           {/* Home */}
-          <Link href="/"
+          <Link href="/" title="MarginCOS Home"
             className={clsx(
               'text-sm font-medium transition-colors',
               router.pathname === '/'
@@ -134,6 +134,7 @@ export function PublicNav() {
                     )}
                     <Link
                       href={item.href}
+                      title={item.title}
                       className={clsx(
                         'flex items-center justify-between px-4 py-2 text-[13px] font-medium transition-colors',
                         router.pathname === item.href
@@ -157,7 +158,7 @@ export function PublicNav() {
           {NAV_LINKS.filter(l => l.href !== '/').map(link => {
             const active = router.pathname === link.href;
             return (
-              <Link key={link.href} href={link.href}
+              <Link key={link.href} href={link.href} title={link.title}
                 className={clsx(
                   'text-sm font-medium transition-colors',
                   active
@@ -170,7 +171,7 @@ export function PublicNav() {
           })}
 
           {/* Client Login */}
-          <a href="/login" onClick={handleLoginClick}
+          <a href="/login" title="MarginCOS Client Login" onClick={handleLoginClick}
             className={clsx(
               'text-sm font-semibold px-4 py-2 rounded-lg border transition-all cursor-pointer',
               scrolled
@@ -181,7 +182,7 @@ export function PublicNav() {
           </a>
 
           {/* Request Demo */}
-          <Link href="/contact"
+          <Link href="/contact" title="Request a MarginCOS Demo"
             className="text-sm font-semibold px-5 py-2 rounded-lg bg-red-brand text-white hover:bg-red-light transition-all">
             Request Demo
           </Link>
@@ -205,7 +206,7 @@ export function PublicNav() {
           <div className="px-6 py-4 space-y-1">
 
             {/* Home */}
-            <Link href="/" className="block text-sm font-medium text-slate-700 hover:text-teal py-2">
+            <Link href="/" title="MarginCOS Home" className="block text-sm font-medium text-slate-700 hover:text-teal py-2">
               Home
             </Link>
 
@@ -230,6 +231,7 @@ export function PublicNav() {
                       )}
                       <Link
                         href={item.href}
+                        title={item.title}
                         className={clsx(
                           'flex items-center justify-between py-1.5 text-sm transition-colors',
                           router.pathname === item.href
@@ -251,7 +253,7 @@ export function PublicNav() {
 
             {/* Remaining links */}
             {NAV_LINKS.filter(l => l.href !== '/').map(link => (
-              <Link key={link.href} href={link.href}
+              <Link key={link.href} href={link.href} title={link.title}
                 className="block text-sm font-medium text-slate-700 hover:text-teal py-2">
                 {link.label}
               </Link>
@@ -259,11 +261,11 @@ export function PublicNav() {
 
             {/* CTAs */}
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-              <a href="/login" onClick={handleLoginClick}
+              <a href="/login" title="MarginCOS Client Login" onClick={handleLoginClick}
                 className="text-sm font-semibold text-center px-4 py-2.5 rounded-lg border border-slate-200 text-navy hover:border-teal cursor-pointer">
                 Client Login
               </a>
-              <Link href="/contact"
+              <Link href="/contact" title="Request a MarginCOS Demo"
                 className="text-sm font-semibold text-center px-4 py-2.5 rounded-lg bg-red-brand text-white hover:bg-red-light">
                 Request Demo
               </Link>
