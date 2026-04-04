@@ -48,7 +48,7 @@ function DashboardVisual() {
 }
 
 /* ── Pillar deep-dive section ── */
-function PillarSection({ num, title, color, problem, delivers, users, reverse }) {
+function PillarSection({ num, title, color, problem, context, delivers, users, reverse }) {
   const badgeColors = { teal: 'bg-teal', red: 'bg-red-brand', gold: 'bg-gold', purple: 'bg-purple' };
   const borderColors = { teal: 'border-teal/20', red: 'border-red-brand/20', gold: 'border-gold/20', purple: 'border-purple/20' };
 
@@ -65,6 +65,7 @@ function PillarSection({ num, title, color, problem, delivers, users, reverse })
           <div className="mb-6">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">The Problem</h4>
             <p className="text-sm text-slate-600 leading-relaxed">{problem}</p>
+            {context && <p className="text-sm text-slate-500 leading-relaxed mt-3">{context}</p>}
           </div>
           <div className="mb-6">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">What MarginCOS Delivers</h4>
@@ -194,26 +195,58 @@ export default function PlatformPage() {
             <div className="space-y-24">
               <div id="pricing-intelligence">
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
-                problem="Most businesses reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume."
-                delivers={['Product-level pricing intelligence with competitor benchmarks in local currency and %', 'WTP headroom quantified in local currency per month of recoverable revenue', 'Margin floor breach alerts with repricing recommendations across your full portfolio']}
+                problem="Most businesses reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume without recovering the margin that was lost."
+                context="In high-inflation markets, the cost of pricing inaction compounds monthly. A product priced 8% below its willingness-to-pay ceiling isn't just leaving margin on the table — it's setting the baseline from which every future increase is measured. Most commercial teams know they're behind on pricing. They don't know by how much, on which products, or against which competitors. MarginCOS answers all three."
+                delivers={[
+                  'Product-level pricing benchmarks against competitors — in local currency and as a percentage gap',
+                  'Willingness-to-pay headroom quantified per product in local currency per month of recoverable margin',
+                  'Margin floor breach alerts across your full portfolio with specific repricing recommendations',
+                  'Price elasticity estimates by product category — volume risk modelled at 5%, 10%, and 15% price moves',
+                  'Recommended increase quantum and timing based on inflation exposure and competitive headroom',
+                  'Repricing priority list ranked by total monthly margin recovery opportunity',
+                ]}
                 users={['CFO', 'Commercial Director']} />
               </div>
               <div id="cost-pass-through">
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the product level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
-                delivers={['Cost pass-through rate vs. Carthena Advisory benchmark — 70–75% among commercially disciplined businesses', 'FX-linked cost decomposition by product for inflation cost recovery planning', 'Actual vs. self-reported inflation comparison']}
+                context="Carthena Advisory's benchmarking across FMCG and manufacturing portfolios shows that commercially disciplined businesses sustain a cost pass-through rate of 70–75%. The median we observe in diagnostic work sits between 40–55%. That gap represents the margin being silently absorbed every month — not as a line item on the P&L, but as slow-moving gross margin compression that appears only in the quarterly review, long after the recovery window has closed. MarginCOS calculates this rate at the individual product level, classifies every SKU by recovery status, and quantifies exactly what closing the gap is worth in your local currency."
+                delivers={[
+                  'Cost pass-through rate per product vs. the Carthena Advisory benchmark of 70–75%',
+                  'RAG classification of every product — Managed (70%+), Watch (40–70%), At Risk (below 40%)',
+                  'Revenue-at-risk figure: total portfolio revenue running below the 40% recovery threshold',
+                  'FX-linked cost decomposition by product — raw materials, packaging, logistics, and energy separated',
+                  'Actual vs. self-reported inflation comparison to surface gaps between finance and supply chain data',
+                  'Monthly margin recovery opportunity in local currency — the quantified cost of inaction per month',
+                ]}
                 users={['CFO', 'Finance Director', 'Supply Chain']} />
               </div>
               <div id="channel-economics">
                 <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
-                problem="Gross margin looks healthy until logistics, distributor margin, trade credit costs, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable."
-                delivers={['Net route-to-market margin by channel including trade credit cost', 'Partner performance ranking by true contribution', 'Weak channel identification with remediation actions']}
+                problem="Gross margin looks healthy until logistics, distributor margin, trade credit costs, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable on the surface."
+                context="The channel economics gap is a calculation most businesses have never done in full. Gross margin is measured at the portfolio level. Net contribution by channel — after freight, distributor take, trade credit financing costs, and promotional rebates — is rarely calculated at all. In markets where distributor margins run 18–25% and trade credit terms extend to 60–90 days, the difference between gross and net channel margin can exceed 30 percentage points on the same product. MarginCOS builds this waterfall for every channel and every partner, making the true economics visible for the first time."
+                delivers={[
+                  'Full margin waterfall per channel — from list price to net landed margin, every deduction itemised',
+                  'Net route-to-market margin by channel after logistics, distributor take, credit, and rebates',
+                  'Trade credit cost of capital calculated per channel and per partner based on actual payment terms',
+                  'Partner performance ranking by true net margin contribution — not revenue, not gross margin',
+                  'Minimum viable volume thresholds per channel — the point at which a route to market stops covering its cost',
+                  'Weak channel identification with specific remediation actions: renegotiate, restructure, or exit',
+                ]}
                 users={['Commercial Director', 'Sales Director', 'Trade Marketing']} />
               </div>
               <div id="trade-execution">
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
                 problem="Commercial investment is the largest untracked cost line in most P&Ls. Without spend ROI visibility, promotional depth routinely exceeds margin — with no mechanism to catch it before the spend is committed."
-                delivers={['Promotion profitability per product — revenue, cost, and net impact', 'Break-even lift calculation for commercial spend ROI on every promotion', 'Loss-making promotion flagging with margin-positive alternatives']}
+                context="Promotions are approved because they drive volume. But volume at what margin? Most commercial teams don't have the answer until the post-campaign review — which is too late. A promotion that requires 35% volume uplift to break even, but historically delivers 12%, is a margin destruction event approved in a budget meeting with no financial model attached. MarginCOS calculates the break-even uplift for every commercial action before the spend is committed, tracks actual delivery against it, and surfaces the historical ROI data needed to make the next investment decision with confidence."
+                delivers={[
+                  'Promotion profitability per product — revenue uplift, promotional cost, and net margin impact side by side',
+                  'Break-even volume uplift calculation for every promotion before spend is committed',
+                  'Loss-making promotion flagging with margin-positive alternative mechanics suggested',
+                  'Historical promotion ROI by product, channel, and mechanic — what has and hasn\'t worked, quantified',
+                  'Pre-commitment profitability check: break-even delivery requirement vs. realistic historical uplift estimate',
+                  'Commercial spend allocation model — ranked by expected margin return to guide next-period investment',
+                ]}
                 users={['Trade Marketing', 'Sales Director', 'CFO']} />
               </div>
             </div>
