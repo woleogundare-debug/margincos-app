@@ -15,6 +15,9 @@ import DieselCostChart from '../../components/blog/DieselCostChart';
 import LaneCostFloorChart from '../../components/blog/LaneCostFloorChart';
 import FleetGapChart from '../../components/blog/FleetGapChart';
 import ArticleActions from '../../components/blog/ArticleActions';
+import PassThroughBenchmarkChart from '../../components/blog/PassThroughBenchmarkChart';
+import PortfolioDistributionChart from '../../components/blog/PortfolioDistributionChart';
+import BoardPresentationChart from '../../components/blog/BoardPresentationChart';
 
 export async function getStaticPaths() {
   const blogDir = path.join(process.cwd(), 'content/blog');
@@ -71,7 +74,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, excerpt, date, author, category, readTime, slug } = frontmatter;
   const metaDescription = excerpt || description;
 
-  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart };
+  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart, PassThroughBenchmarkChart, PortfolioDistributionChart, BoardPresentationChart };
 
   return (
     <>
