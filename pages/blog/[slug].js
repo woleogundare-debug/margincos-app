@@ -102,7 +102,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
           "headline": title,
           "description": metaDescription,
           "datePublished": date,
-          "author": { "@type": "Organization", "name": "Carthena Advisory", "url": "https://carthenaadvisory.com" },
+          "author": { "@type": "Person", "name": author || "Wole Ogundare", "url": "https://carthenaadvisory.com" },
           "publisher": { "@type": "Organization", "name": "MarginCOS", "url": "https://margincos.com" },
           "mainEntityOfPage": `https://margincos.com/blog/${slug}`,
           "image": `https://margincos.com/blog/${slug}-og.png`,
