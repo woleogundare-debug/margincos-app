@@ -125,6 +125,14 @@ export default function PrivacyPage() {
       <Head>
         <title>Privacy Policy | MarginCOS</title>
         <meta name="description" content="How MarginCOS collects, uses, stores, and protects your data. NDPR and GDPR-aligned privacy practices." />
+        <link rel="canonical" href="https://margincos.com/privacy" />
+        <meta property="og:title" content="Privacy Policy | MarginCOS" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://margincos.com/privacy" />
+        <meta property="og:description" content="How MarginCOS collects, uses, stores, and protects your data. NDPR and GDPR-aligned privacy practices." />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Privacy Policy | MarginCOS" />
+        <meta name="twitter:description" content="How MarginCOS collects, uses, stores, and protects your data. NDPR and GDPR-aligned privacy practices." />
       </Head>
       <div className="min-h-screen">
         <PublicNav />

@@ -5,8 +5,8 @@ export default function ManufacturingPage() {
     <SectorPage
       sectorName="Manufacturing"
       sectorSlug="manufacturing"
-      metaTitle="Margin Intelligence for Manufacturing | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your manufacturing portfolio — product pricing gaps, input cost pass-through failures, distribution channel margin erosion, and commercial spend waste. In your currency. In minutes."
+      metaTitle="Manufacturing Margin Recovery Software | MarginCOS"
+      metaDescription="Precision margin analysis for manufacturers. Track cost recovery rates, identify dilutive products, and quantify repricing opportunities across your production portfolio."
       heroHeadline="Margin Intelligence for Manufacturing"
       heroSubheadline="Complex cost structures with multiple input lines, FX exposure, and multi-channel distribution. MarginCOS gives your CFO precision on which production lines are absorbing inflation that should be priced through — and exactly how much is recoverable."
       stat1={{ value: '40–60%', label: 'Input cost inflation absorbed since 2022' }}

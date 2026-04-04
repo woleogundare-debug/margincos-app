@@ -5,8 +5,8 @@ export default function TelecomsPage() {
     <SectorPage
       sectorName="Telecoms"
       sectorSlug="telecoms"
-      metaTitle="Margin Intelligence for Telecoms | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your telecoms product portfolio — product rate gaps, energy cost pass-through failures, channel margin erosion, and promotional bundle ROI. In your currency. In minutes."
+      metaTitle="Telecoms Margin Recovery Software | MarginCOS"
+      metaDescription="Commercial intelligence for telecoms operators. Margin analysis across service lines, dealer economics, and subscriber profitability. Coming soon."
       heroHeadline="Margin Intelligence for Telecoms"
       heroSubheadline="Network operators managing product-level margin, energy cost recovery, and promotional bundle profitability. MarginCOS gives your leadership visibility on which products and bundles are leaking margin — and exactly how much is recoverable."
       stat1={{ value: '85%', label: 'Operating cost increase driven by energy in 2024' }}

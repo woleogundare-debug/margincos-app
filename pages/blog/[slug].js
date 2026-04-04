@@ -90,6 +90,17 @@ export default function BlogPost({ frontmatter, mdxSource }) {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content={`https://margincos.com/blog/${slug}-og.png`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": title,
+          "description": metaDescription,
+          "datePublished": date,
+          "author": { "@type": "Organization", "name": "Carthena Advisory", "url": "https://carthenaadvisory.com" },
+          "publisher": { "@type": "Organization", "name": "MarginCOS", "url": "https://margincos.com" },
+          "mainEntityOfPage": `https://margincos.com/blog/${slug}`,
+          "image": `https://margincos.com/blog/${slug}-og.png`,
+        }) }} />
         <style>{`
           @media print {
             .no-print { display: none !important; }

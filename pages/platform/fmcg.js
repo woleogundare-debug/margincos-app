@@ -5,8 +5,8 @@ export default function FMCGPage() {
     <SectorPage
       sectorName="FMCG"
       sectorSlug="fmcg"
-      metaTitle="Margin Intelligence for FMCG | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your FMCG portfolio — pricing gaps, cost pass-through failures, channel margin erosion, and trade investment waste. In your currency. In minutes."
+      metaTitle="FMCG Margin Recovery Software | MarginCOS"
+      metaDescription="Identify and recover margin leakage across your FMCG portfolio. Pricing intelligence, cost pass-through tracking, channel economics, and trade promotion ROI — in one platform."
       heroHeadline="Margin Intelligence for FMCG"
       heroSubheadline="Multi-product portfolios facing dual pressure from input cost inflation and price-sensitive consumers. MarginCOS gives your CFO and Commercial Director real-time visibility on which products are leaking margin — and exactly how much is recoverable."
       stat1={{ value: '40–60%', label: 'Input cost inflation absorbed since 2022' }}

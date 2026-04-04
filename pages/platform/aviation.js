@@ -5,8 +5,8 @@ export default function AviationPage() {
     <SectorPage
       sectorName="Aviation"
       sectorSlug="aviation"
-      metaTitle="Margin Intelligence for Aviation | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your aviation operations — route yield gaps, fuel cost pass-through failures, cabin mix erosion, and promotional fare ROI. In your currency. In minutes."
+      metaTitle="Aviation Margin Recovery Software | MarginCOS"
+      metaDescription="Route profitability and cost recovery intelligence for aviation operators. Fuel economics, load factor analysis, and ancillary revenue tracking. Coming soon."
       heroHeadline="Margin Intelligence for Aviation"
       heroSubheadline="Airlines and MRO providers managing route profitability, fuel cost pass-through, and yield optimisation. MarginCOS gives your leadership visibility on which routes and services are loss-making — and exactly how much is recoverable."
       stat1={{ value: '3.9%', label: 'Global airline net profit margin in 2026' }}

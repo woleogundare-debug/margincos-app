@@ -5,8 +5,8 @@ export default function ITServicesPage() {
     <SectorPage
       sectorName="IT Services"
       sectorSlug="it-services"
-      metaTitle="Margin Intelligence for IT Services | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your IT services portfolio — service rate gaps, salary cost pass-through failures, client margin erosion, and proposal discount profitability. In your currency. In minutes."
+      metaTitle="IT Services Margin Recovery Software | MarginCOS"
+      metaDescription="Margin recovery for IT service providers. Project profitability, resource utilisation, and client portfolio analysis. Coming soon."
       heroHeadline="Margin Intelligence for IT Services"
       heroSubheadline="Technology service providers managing contract margin, billing rates, and delivery cost recovery. MarginCOS gives your leadership visibility on which service lines and clients are loss-making — and exactly how much is recoverable."
       stat1={{ value: '90%+', label: 'Currency devaluation impact on USD-denominated licences' }}

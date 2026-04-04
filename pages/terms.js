@@ -141,6 +141,14 @@ export default function TermsPage() {
       <Head>
         <title>Terms of Service | MarginCOS</title>
         <meta name="description" content="Terms of Service for MarginCOS — subscription, data ownership, liability, and governing law." />
+        <link rel="canonical" href="https://margincos.com/terms" />
+        <meta property="og:title" content="Terms of Service | MarginCOS" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://margincos.com/terms" />
+        <meta property="og:description" content="Terms of Service for MarginCOS — subscription, data ownership, liability, and governing law." />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Terms of Service | MarginCOS" />
+        <meta name="twitter:description" content="Terms of Service for MarginCOS — subscription, data ownership, liability, and governing law." />
       </Head>
       <div className="min-h-screen">
         <PublicNav />

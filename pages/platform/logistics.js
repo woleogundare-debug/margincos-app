@@ -5,8 +5,8 @@ export default function LogisticsPage() {
     <SectorPage
       sectorName="Logistics & Distribution"
       sectorSlug="logistics"
-      metaTitle="Margin Intelligence for Logistics & Distribution | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your logistics operations — lane rate gaps, fuel cost pass-through failures, customer margin erosion, and load profitability. In your currency. In minutes."
+      metaTitle="Logistics Margin Recovery Software | MarginCOS"
+      metaDescription="Lane-level profitability analysis for logistics operators. Fuel cost recovery, route economics, and customer rate intelligence across your fleet network."
       heroHeadline="Margin Intelligence for Logistics & Distribution"
       heroSubheadline="Fleet operators and 3PLs managing lane profitability, fuel cost recovery, and customer margin. MarginCOS gives your CFO visibility on which lanes and contracts are loss-making — and exactly how much is recoverable."
       stat1={{ value: '63%', label: 'Diesel cost increase in 2024 alone' }}

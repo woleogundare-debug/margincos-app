@@ -104,6 +104,17 @@ const MODULE_BG = [
   'bg-gold-50/40 border-gold/20',
 ];
 
+/* ── Related sector links — hardcoded per sector for internal linking ── */
+const RELATED_SECTORS = {
+  fmcg:          [{ href: '/platform/manufacturing', label: 'Manufacturing' }, { href: '/platform/retail',        label: 'Retail' },         { href: '/platform/logistics',    label: 'Logistics' }],
+  manufacturing: [{ href: '/platform/fmcg',          label: 'FMCG' },         { href: '/platform/retail',        label: 'Retail' },         { href: '/platform/logistics',    label: 'Logistics' }],
+  retail:        [{ href: '/platform/fmcg',          label: 'FMCG' },         { href: '/platform/manufacturing', label: 'Manufacturing' },   { href: '/platform/logistics',    label: 'Logistics' }],
+  logistics:     [{ href: '/platform/fmcg',          label: 'FMCG' },         { href: '/platform/manufacturing', label: 'Manufacturing' },   { href: '/platform/aviation',     label: 'Aviation' }],
+  telecoms:      [{ href: '/platform/fmcg',          label: 'FMCG' },         { href: '/platform/it-services',   label: 'IT Services' },    { href: '/platform/retail',       label: 'Retail' }],
+  'it-services': [{ href: '/platform/telecoms',      label: 'Telecoms' },     { href: '/platform/manufacturing', label: 'Manufacturing' },   { href: '/platform/logistics',    label: 'Logistics' }],
+  aviation:      [{ href: '/platform/logistics',     label: 'Logistics' },    { href: '/platform/manufacturing', label: 'Manufacturing' },   { href: '/platform/fmcg',         label: 'FMCG' }],
+};
+
 /* ── SectorPage — shared template for all seven sector pages ── */
 export default function SectorPage({
   sectorName,
@@ -281,6 +292,23 @@ export default function SectorPage({
                 </Link>{' '}
                 to discuss your specific requirements.
               </p>
+            </div>
+          </section>
+        )}
+
+        {/* ── Related Sectors ── */}
+        {RELATED_SECTORS[sectorSlug]?.length > 0 && (
+          <section className="bg-slate-50 py-14 border-t border-slate-100">
+            <div className="max-w-4xl mx-auto px-6 text-center">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Also on MarginCOS</p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {RELATED_SECTORS[sectorSlug].map(s => (
+                  <Link key={s.href} href={s.href}
+                    className="px-5 py-2.5 rounded-lg border border-slate-200 text-sm font-semibold text-navy hover:border-teal hover:text-teal transition-all bg-white">
+                    {s.label} Margin Intelligence →
+                  </Link>
+                ))}
+              </div>
             </div>
           </section>
         )}

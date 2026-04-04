@@ -5,8 +5,8 @@ export default function RetailPage() {
     <SectorPage
       sectorName="Retail"
       sectorSlug="retail"
-      metaTitle="Margin Intelligence for Retail | MarginCOS"
-      metaDescription="MarginCOS makes every margin leak visible across your retail portfolio — category pricing gaps, supplier cost pass-through failures, channel margin erosion, and promotional discount waste. In your currency. In minutes."
+      metaTitle="Retail Margin Recovery Software | MarginCOS"
+      metaDescription="Uncover hidden margin leakage across channels, distributors, and trade terms. Product-level margin visibility for retail operators navigating inflationary markets."
       heroHeadline="Margin Intelligence for Retail"
       heroSubheadline="Multi-channel complexity where margin leaks silently through credit terms, supplier discount erosion, category mix, and promotional overspend. MarginCOS gives your CFO and Buying Director visibility on which categories are destroying value — and exactly how much is recoverable."
       stat1={{ value: '2–4%', label: 'Average retail net margin globally' }}

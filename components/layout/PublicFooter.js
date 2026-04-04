@@ -35,14 +35,20 @@ export function PublicFooter() {
               {[
                 { label: 'Pricing Intelligence', href: '/platform#pricing-intelligence' },
                 { label: 'Cost Pass-Through',    href: '/platform#cost-pass-through' },
-                { label: 'Channel Economics',     href: '/platform#channel-economics' },
-                { label: 'Trade Execution',       href: '/platform#trade-execution' },
+                { label: 'Channel Economics',    href: '/platform#channel-economics' },
+                { label: 'Trade Execution',      href: '/platform#trade-execution' },
               ].map((l, i) => (
                 <Link key={i} href={l.href}
                   className="block text-xs text-white/50 hover:text-white transition-colors">
                   {l.label}
                 </Link>
               ))}
+              <div className="pt-1 border-t border-white/10 mt-1 space-y-2">
+                <Link href="/platform/fmcg"          className="block text-xs text-white/50 hover:text-white transition-colors">FMCG</Link>
+                <Link href="/platform/manufacturing"  className="block text-xs text-white/50 hover:text-white transition-colors">Manufacturing</Link>
+                <Link href="/platform/retail"         className="block text-xs text-white/50 hover:text-white transition-colors">Retail</Link>
+                <Link href="/platform/logistics"      className="block text-xs text-white/50 hover:text-white transition-colors">Logistics</Link>
+              </div>
             </nav>
           </div>
 

@@ -167,18 +167,31 @@ export default function PricingPage() {
         <meta property="og:title" content="Pricing — MarginCOS Margin Recovery Platform" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/pricing" />
-        <meta property="og:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for FMCG and manufacturing businesses." />
+        <meta property="og:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses navigating inflationary markets. Multi-currency rates available." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
         <meta name="twitter:title" content="Pricing — MarginCOS Margin Recovery Platform" />
-        <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for FMCG and manufacturing businesses." />
+        <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses navigating inflationary markets. Multi-currency rates available." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "MarginCOS",
+          "description": "Commercial Operating System for Margin Recovery. Identifies and recovers margin leakage across pricing, cost pass-through, channel economics, and trade execution.",
+          "brand": { "@type": "Organization", "name": "Carthena Advisory" },
+          "url": "https://margincos.com",
+          "offers": [
+            { "@type": "Offer", "name": "Essentials",    "price": "250",  "priceCurrency": "USD", "priceValidUntil": "2027-04-04", "availability": "https://schema.org/InStock", "url": "https://margincos.com/pricing" },
+            { "@type": "Offer", "name": "Professional",  "price": "850",  "priceCurrency": "USD", "priceValidUntil": "2027-04-04", "availability": "https://schema.org/InStock", "url": "https://margincos.com/pricing" },
+            { "@type": "Offer", "name": "Enterprise",    "price": "2400", "priceCurrency": "USD", "priceValidUntil": "2027-04-04", "availability": "https://schema.org/InStock", "url": "https://margincos.com/pricing" },
+          ],
+        }) }} />
       </Head>
 
       <div ref={rootRef} className="min-h-screen">
