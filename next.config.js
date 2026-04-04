@@ -7,7 +7,7 @@ const CSP = [
   "default-src 'self'",
   // Next.js requires 'unsafe-inline' for styled-jsx.
   // 'unsafe-eval' is required by React-PDF (@react-pdf/renderer) which compiles WebAssembly at runtime.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   // data: and blob: required for React-PDF: fonts are fetched as data URIs and the generated PDF

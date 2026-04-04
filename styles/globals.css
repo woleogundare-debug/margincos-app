@@ -309,3 +309,18 @@ html, body  { overflow-x: hidden; }
   .callout-stat-val { font-size: 20px !important; }
   .callout-stats { gap: 14px !important; }
 }
+
+/* ── Print styles (window.print() fallback + Ctrl+P) ──────────── */
+@media print {
+  nav, footer, .fixed, [class*="PublicNav"], [class*="PublicFooter"],
+  [class*="ArticleActions"], [class*="article-actions"] {
+    display: none !important;
+  }
+  main, article, .prose {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  body {
+    background: white !important;
+  }
+}
