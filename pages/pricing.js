@@ -181,16 +181,21 @@ export default function PricingPage() {
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "Product",
+          "@type": "SoftwareApplication",
           "name": "MarginCOS",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
           "description": "Commercial Operating System for Margin Recovery. Identifies and recovers margin leakage across pricing, cost pass-through, channel economics, and trade execution.",
-          "brand": { "@type": "Organization", "name": "Carthena Advisory" },
           "url": "https://margincos.com",
-          "offers": [
-            { "@type": "Offer", "name": "Essentials",    "price": "250",  "priceCurrency": "USD", "priceValidUntil": "2027-04-04", "availability": "https://schema.org/InStock", "url": "https://margincos.com/pricing" },
-            { "@type": "Offer", "name": "Professional",  "price": "850",  "priceCurrency": "USD", "priceValidUntil": "2027-04-04", "availability": "https://schema.org/InStock", "url": "https://margincos.com/pricing" },
-            { "@type": "Offer", "name": "Enterprise",    "price": "2400", "priceCurrency": "USD", "priceValidUntil": "2027-04-04", "availability": "https://schema.org/InStock", "url": "https://margincos.com/pricing" },
-          ],
+          "author": { "@type": "Organization", "name": "Carthena Advisory", "url": "https://carthenaadvisory.com" },
+          "offers": {
+            "@type": "AggregateOffer",
+            "lowPrice": "250",
+            "highPrice": "2400",
+            "priceCurrency": "USD",
+            "offerCount": "3",
+            "url": "https://margincos.com/pricing",
+          },
         }) }} />
       </Head>
 
