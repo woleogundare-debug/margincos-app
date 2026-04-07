@@ -133,18 +133,7 @@ export default function HomePage({ css, sectionsHtml }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-NNS2Q29Z2M" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-NNS2Q29Z2M');
-            `
-          }}
-        />
+        {/* GA4 loaded globally via _document.js with consent mode */}
 
         {/* JSON-LD */}
         <script

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { AnalysisProvider } from '../contexts/AnalysisContext';
 import { CurrencyProvider } from '../contexts/CurrencyContext';
+import CookieConsent from '../components/CookieConsent';
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }) {
@@ -39,6 +40,7 @@ export default function App({ Component, pageProps }) {
   ) : (
     <CurrencyProvider>
       {getLayout(<Component {...pageProps} />)}
+      <CookieConsent />
     </CurrencyProvider>
   );
 }

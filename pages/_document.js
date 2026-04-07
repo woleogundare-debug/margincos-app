@@ -20,6 +20,9 @@ export default function Document() {
             <script dangerouslySetInnerHTML={{ __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
+              gtag('consent', 'default', {
+                analytics_storage: 'denied'
+              });
               gtag('js', new Date());
               gtag('config', '${GA4_ID}');
             `}} />
