@@ -72,8 +72,8 @@ export default function HomePage({ css, sectionsHtml }) {
     // CTA click tracking
     document.querySelectorAll('a[href^="mailto:"], .btn-plan, .btn-hero-primary, .btn-hero-secondary').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'cta_click', {
+        if (typeof window.gtag !== 'undefined') {
+          window.gtag('event', 'cta_click', {
             'event_category': 'engagement',
             'event_label': btn.textContent.trim().substring(0, 50)
           });

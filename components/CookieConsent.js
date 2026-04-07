@@ -1,6 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+const GA4_ID = 'G-NNS2Q29Z2M';
+
+function enableGA() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('ga4-script')) return; // already loaded
+
+  // Load gtag.js
+  const script = document.createElement('script');
+  script.id = 'ga4-script';
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
+  document.head.appendChild(script);
+
+  // Configure
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', GA4_ID);
+}
+
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const router = useRouter();
@@ -8,21 +29,13 @@ export default function CookieConsent() {
 
   useEffect(() => {
     const consent = localStorage.getItem('margincos_cookie_consent');
-    if (!consent && !isDashboard) {
-      setVisible(true);
-    } else if (consent === 'accepted') {
+    if (consent === 'accepted') {
       enableGA();
+    } else if (!consent && !isDashboard) {
+      setVisible(true);
     }
-    // If declined, GA stays denied - no analytics cookies set
+    // If declined, nothing loads. No banner. No cookies.
   }, [isDashboard]);
-
-  function enableGA() {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('consent', 'update', {
-        analytics_storage: 'granted',
-      });
-    }
-  }
 
   function handleAccept() {
     localStorage.setItem('margincos_cookie_consent', 'accepted');
