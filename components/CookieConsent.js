@@ -45,6 +45,9 @@ export default function CookieConsent() {
 
   function handleDecline() {
     localStorage.setItem('margincos_cookie_consent', 'declined');
+    // Delete any GA cookies that may have been set
+    document.cookie = '_ga=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.margincos.com';
+    document.cookie = '_ga_NNS2Q29Z2M=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.margincos.com';
     setVisible(false);
   }
 
