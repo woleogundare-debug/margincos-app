@@ -1753,14 +1753,7 @@ body {
 }
 </style>
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NNS2Q29Z2M"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-NNS2Q29Z2M');
-</script>
+<!-- GA4 loaded dynamically by CookieConsent.js after user accepts -->
 
 <script type="application/ld+json">
 {
@@ -2535,8 +2528,8 @@ setTimeout(startCycle, 3000);
 // CTA click tracking
 document.querySelectorAll('a[href^="mailto:"], .btn-plan, .btn-hero-primary, .btn-hero-secondary').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'cta_click', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'cta_click', {
         'event_category': 'engagement',
         'event_label': btn.textContent.trim().substring(0, 50)
       });
