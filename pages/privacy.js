@@ -93,8 +93,8 @@ const sections = [
     after: 'To exercise any of these rights, contact us at the address below. We will respond within 30 days.',
   },
   {
-    title: '8. Cookies',
-    body: 'MarginCOS uses strictly necessary cookies for authentication and session management. We do not use advertising cookies, tracking cookies, or third-party marketing cookies. No cookie consent banner is required as we only use essential cookies necessary for the functioning of the Platform.',
+    title: '8. Cookies and Analytics',
+    body: 'MarginCOS uses cookies to operate the platform and understand how visitors use our site.\n\nEssential cookies: We use session cookies for authentication and login functionality. These are required for the platform to function and cannot be disabled.\n\nAnalytics cookies: We use Google Analytics (GA4) to understand how visitors interact with our public pages. Analytics cookies are only set after you provide explicit consent via the cookie banner displayed on your first visit. If you decline, no analytics cookies are set and no browsing data is collected.\n\nYou can change your cookie preference at any time by clearing your browser\'s local storage for margincos.com, which will cause the consent banner to reappear on your next visit.\n\nWe do not use marketing cookies, advertising trackers, or retargeting pixels. We do not sell or share browsing data with third parties.',
   },
   {
     title: '9. International Data Transfers',
