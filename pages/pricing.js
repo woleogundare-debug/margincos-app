@@ -273,7 +273,7 @@ export default function PricingPage() {
             {/* 3 — Monthly/Annual toggle + currency switcher */}
             <div className="flex flex-col items-center gap-4 mb-10">
               {/* Row 1 — Monthly/Annual toggle */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <span className={`text-sm font-medium ${!annual ? 'text-navy' : 'text-gray-400'}`}>Monthly</span>
                 <button onClick={() => setAnnual(!annual)}
                   className="relative w-12 h-6 rounded-full transition-colors flex-shrink-0"
