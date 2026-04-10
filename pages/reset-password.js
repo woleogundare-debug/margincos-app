@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import { getSupabaseClient } from '../lib/supabase/client';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -10,6 +11,8 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
 
   const handleReset = async () => {
@@ -57,20 +60,46 @@ export default function ResetPassword() {
             ) : (
               <>
                 <div className="space-y-3 mb-4">
-                  <input
-                    type="password"
-                    placeholder="New password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Confirm password"
-                    value={confirm}
-                    onChange={e => setConfirm(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="New password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      className="w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(v => !v)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600 transition-colors"
+                      tabIndex={-1}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword
+                        ? <EyeSlashIcon className="w-4 h-4" />
+                        : <EyeIcon className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showConfirm ? 'text' : 'password'}
+                      placeholder="Confirm password"
+                      value={confirm}
+                      onChange={e => setConfirm(e.target.value)}
+                      className="w-full px-3 py-2.5 pr-10 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirm(v => !v)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600 transition-colors"
+                      tabIndex={-1}
+                      aria-label={showConfirm ? 'Hide password' : 'Show password'}
+                    >
+                      {showConfirm
+                        ? <EyeSlashIcon className="w-4 h-4" />
+                        : <EyeIcon className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 {error && (
                   <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-medium px-3 py-2.5 rounded-lg mb-3">
