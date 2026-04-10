@@ -1540,8 +1540,8 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
     const diff = currSkuCount - prevSkuCount;
     const abs  = Math.abs(diff);
     const dir  = diff > 0 ? 'expanded' : 'contracted';
-    const unitPlural = cfg ? cfg.unitPlural : 'SKUs';
-    const unitWord = cfg ? cfg.unit : 'SKU';
+    const unitPlural = cfg ? cfg.unitPlural : 'records';
+    const unitWord = cfg ? cfg.unit : 'record';
     parts.push(
       `Note: the active portfolio ${dir} from ${prevSkuCount} to ${currSkuCount} ${unitPlural} between ${earlierLabel} and ${laterLabel} — the ${diff > 0 ? 'addition' : 'removal'} of ${abs} ${abs !== 1 ? unitPlural : unitWord} means some revenue and margin movement below reflects structural portfolio change, not purely like-for-like commercial performance.`
     );
@@ -1608,7 +1608,7 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
   if (deteriorated.length > improved.length) {
     // Identify the specific priority action based on the worst metric
     const sorted = [...deteriorated].sort((a, b) => Math.abs(b.d.value) - Math.abs(a.d.value));
-    const unitPlural = cfg ? cfg.unitPlural : 'SKUs';
+    const unitPlural = cfg ? cfg.unitPlural : 'records';
     const partnerLabel = cfg ? cfg.fields.partner : 'Distributor';
     const actionMap = {
       'Cost absorbed':    'Accelerating cost pass-through recovery is the highest-priority action to prevent the absorption gap compounding into next period.',

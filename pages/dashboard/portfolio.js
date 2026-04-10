@@ -233,7 +233,7 @@ export default function PortfolioPage() {
                 <p className="text-xs text-slate-500 mt-1">
                   {consolidatedDivisionBreakdown.length} division{consolidatedDivisionBreakdown.length !== 1 ? 's' : ''} ·{' '}
                   {consolidatedDivisionBreakdown.reduce((s, d) => s + d.rowCount, 0)} active{' '}
-                  {consolidatedSector === 'Logistics' ? 'lanes' : 'SKUs'}
+                  {(getSectorConfig(consolidatedSector).unitPlural || 'records').toLowerCase()}
                   {consolidatedMissing.length > 0 && (
                     <span className="text-amber-600 ml-2">
                       · {consolidatedMissing.map(d => d.name).join(', ')} missing data for this month

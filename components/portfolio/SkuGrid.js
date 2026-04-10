@@ -371,7 +371,7 @@ function ImportPreviewModal({ result, onConfirm, onCancel, importing, unitPlural
           <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3">
             <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
             <Button variant="primary" size="md" onClick={onConfirm} loading={importing} disabled={valid.length === 0}>
-              Import {valid.length} {unitPlural || 'SKUs'}
+              Import {valid.length} {unitPlural || 'records'}
             </Button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { TIER_LIMITS } from '../lib/constants';
+import { getSectorConfig } from '../lib/sectorConfig';
 
 export function usePortfolio(userId, tier = 'essentials', divisionId = null, teamId = null, ensureDivisionSector = null) {
   const [periods,          setPeriods]          = useState([]);
@@ -152,7 +153,8 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       ).length;
       if (currentCount >= limit) {
         const tierLabel = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
-        const unit = isLogistics ? 'lanes' : 'SKUs';
+        const cfg = getSectorConfig(activePeriod?.vertical);
+        const unit = (cfg.unitPlural || 'records').toLowerCase();
         return {
           error: true,
           message: `Your ${tierLabel} plan supports up to ${limit} active ${unit}. Upgrade to add more.`,
