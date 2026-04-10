@@ -42,7 +42,11 @@ export default function ResetPassword() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-baseline gap-0.5">
+            <Link
+              href="/"
+              title="Return to MarginCOS home"
+              className="inline-flex items-baseline gap-0.5 cursor-pointer transition-opacity duration-200 hover:opacity-80"
+            >
               <span className="text-3xl font-black text-navy">Margin</span>
               <span className="text-3xl font-black" style={{ color: '#C0392B' }}>COS</span>
             </Link>
