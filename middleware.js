@@ -26,8 +26,9 @@ export async function middleware(req) {
     }
   );
 
-  // Refresh the session cookie if it is close to expiry.
-  // Must be called on every request — do not remove.
+  // Refresh the Supabase session cookie on authenticated route requests.
+  // Scoped via the matcher below to /dashboard, /admin, /settings only -
+  // public pages skip this to preserve edge-cache TTFB.
   await supabase.auth.getUser();
 
   return res;
@@ -35,7 +36,11 @@ export async function middleware(req) {
 
 export const config = {
   matcher: [
-    // Run on all routes except Next.js internals and static assets
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?)$).*)',
+    // Only run the Supabase auth refresh on authenticated route trees.
+    // Public pages (/, /login, /contact, /pricing, /platform/*, /blog/*, /join, /reset-password)
+    // skip middleware entirely and serve directly from the Netlify edge cache.
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/settings/:path*',
   ],
 };
