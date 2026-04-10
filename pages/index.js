@@ -93,7 +93,7 @@ export default function HomePage({ css, sectionsHtml }) {
     <>
       <Head>
         <title>MarginCOS — Commercial Operating System for Margin Recovery</title>
-        <meta name="description" content="MarginCOS — the Commercial Operating System for FMCG margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution." />
+        <meta name="description" content="The Commercial Operating System for margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution. In your currency." />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://margincos.com/" />
 
@@ -101,7 +101,7 @@ export default function HomePage({ css, sectionsHtml }) {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/" />
         <meta property="og:title" content="MarginCOS — Commercial Operating System for Margin Recovery" />
-        <meta property="og:description" content="The Commercial Operating System for Margin Recovery. Built for businesses navigating inflationary markets." />
+        <meta property="og:description" content="The Commercial Operating System for margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution. In your currency." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -111,19 +111,22 @@ export default function HomePage({ css, sectionsHtml }) {
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="MarginCOS — Commercial Operating System for Margin Recovery" />
-        <meta name="twitter:description" content="The Commercial Operating System for Margin Recovery. Built for businesses navigating inflationary markets." />
+        <meta name="twitter:description" content="The Commercial Operating System for margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution. In your currency." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
 
         {/* Favicon */}
         <link rel="icon" type="image/x-icon" href="https://margincos.com/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="https://margincos.com/apple-touch-icon.png" />
 
-        {/* Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+        {/* Fonts are self-hosted via /public/fonts/ and preloaded in
+            pages/_document.js. The old Google Fonts CDN stylesheet was
+            removed because it caused render-blocking double-loading - the
+            browser was fetching Playfair 700 and DM Sans 400/500/700 twice,
+            once from gstatic (blocking) and once self-hosted. Removing the
+            CDN link cut ~283 Kb of blocking font weight from first paint. */}
 
-        {/* GA4 loaded globally via _document.js with consent mode */}
+        {/* GA4 is loaded dynamically by components/CookieConsent.js after
+            the user accepts the consent banner. */}
 
         {/* JSON-LD */}
         <script
@@ -133,7 +136,7 @@ export default function HomePage({ css, sectionsHtml }) {
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
               "name": "MarginCOS",
-              "description": "Commercial Operating System for Margin Recovery — built for businesses navigating inflationary markets.",
+              "description": "The Commercial Operating System for margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution. In your currency.",
               "url": "https://margincos.com",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
