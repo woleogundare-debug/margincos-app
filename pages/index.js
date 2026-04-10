@@ -47,9 +47,20 @@ export default function HomePage({ css, sectionsHtml }) {
     }, { threshold: 0.2 });
     document.querySelectorAll('.breakdown-grid').forEach(el => barObserver.observe(el));
 
-    // Active pillar auto-cycle for demo feel
+    // Active pillar auto-cycle for demo feel.
+    // IMPORTANT: the cycle only starts once the pillars section enters the
+    // viewport, so mobile users (who scroll past a taller hero) always see
+    // P1 first. Without this gate the interval could advance the tab to P2
+    // before the user ever reached the section.
     let cycleInterval;
+    let cycleStarted = false;
     const startCycle = () => {
+      if (cycleStarted) return;
+      cycleStarted = true;
+      // Reset to p1 when the section becomes visible, in case anything else
+      // touched the active class.
+      const firstTab = document.querySelector('[data-panel="p1"]');
+      if (firstTab && !firstTab.classList.contains('active')) firstTab.click();
       let current = 0;
       const order = ['p1', 'p2', 'p3', 'p4'];
       cycleInterval = setInterval(() => {
@@ -63,11 +74,30 @@ export default function HomePage({ css, sectionsHtml }) {
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         clearInterval(cycleInterval);
+        cycleStarted = true; // prevent re-arming
       });
     });
 
-    // Start cycle after 3s
-    const cycleTimer = setTimeout(startCycle, 3000);
+    // Start the cycle only once the pillars section is in the viewport.
+    // Fallback: if the section can't be found, start after 4s so the cycle
+    // still runs for users on edge-case layouts.
+    let cycleTimer;
+    const platformSection = document.getElementById('platform');
+    let cycleObserver;
+    if (platformSection && 'IntersectionObserver' in window) {
+      cycleObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Give the user a moment to register P1 before advancing.
+            cycleTimer = setTimeout(startCycle, 2500);
+            cycleObserver.disconnect();
+          }
+        });
+      }, { threshold: 0.25 });
+      cycleObserver.observe(platformSection);
+    } else {
+      cycleTimer = setTimeout(startCycle, 4000);
+    }
 
     // CTA click tracking
     document.querySelectorAll('a[href^="mailto:"], .btn-plan, .btn-hero-primary, .btn-hero-secondary').forEach(btn => {
@@ -96,6 +126,7 @@ export default function HomePage({ css, sectionsHtml }) {
       clearInterval(cycleInterval);
       clearTimeout(cycleTimer);
       clearTimeout(viewportRevealTimer);
+      if (cycleObserver) cycleObserver.disconnect();
     };
   }, []);
 
