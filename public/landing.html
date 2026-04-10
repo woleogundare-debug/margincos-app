@@ -548,10 +548,18 @@ body {
   padding: 20px 20px;
   border-radius: var(--r-md);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   border: 1px solid transparent;
 }
-.pillar-tab:hover { background: var(--light); }
+/* Scoped to devices with a real pointer so the hover state doesn't stick
+   on mobile after a tap. */
+@media (hover: hover) {
+  .pillar-tab:hover {
+    background-color: rgba(13,143,143,0.08);
+    transform: translateY(-1px);
+    border-color: rgba(13,143,143,0.12);
+  }
+}
 .pillar-tab.active {
   background: rgba(13,143,143,0.06);
   border-color: rgba(13,143,143,0.12);
@@ -2440,7 +2448,10 @@ body {
 
 <!-- ── JS ──────────────────────────────────────────────────────────────────────── -->
 <script>
-// Pillar tabs
+// Pillar tabs - manual click only, no auto-cycle.
+// Emits a GA4 engagement event per click so we can see which pillars
+// users actually interact with. Uses window.gtag (not bare gtag) so it
+// degrades to a no-op when the user has declined analytics cookies.
 const tabs = document.querySelectorAll('.pillar-tab');
 const panels = document.querySelectorAll('.pillar-panel');
 
@@ -2451,6 +2462,14 @@ tabs.forEach(tab => {
     panels.forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('panel-' + target).classList.add('active');
+
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'pillar_click', {
+        event_category: 'engagement',
+        event_label: target,
+        page_location: window.location.pathname
+      });
+    }
   });
 });
 
@@ -2502,28 +2521,6 @@ window.addEventListener('scroll', () => {
     nav.style.background = 'rgba(17,29,51,0.92)';
   }
 }, { passive: true });
-
-// Active pillar auto-cycle for demo feel
-let cycleInterval;
-const startCycle = () => {
-  let current = 0;
-  const order = ['p1','p2','p3','p4'];
-  cycleInterval = setInterval(() => {
-    current = (current + 1) % order.length;
-    const tab = document.querySelector(`[data-panel="${order[current]}"]`);
-    if (tab) tab.click();
-  }, 4000);
-};
-
-// Stop cycle on user interaction
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    clearInterval(cycleInterval);
-  });
-});
-
-// Start cycle after 3s
-setTimeout(startCycle, 3000);
 
 // CTA click tracking
 document.querySelectorAll('a[href^="mailto:"], .btn-plan, .btn-hero-primary, .btn-hero-secondary').forEach(btn => {

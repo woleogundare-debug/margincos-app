@@ -9,7 +9,11 @@ export default function HomePage({ css, sectionsHtml }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Pillar tabs
+    // Pillar tabs - manual click only, no auto-cycle.
+    // The cycle was removed (see git history) because it created race
+    // conditions on mobile where users would arrive at the pillars section
+    // to find P2 or P3 already active. Manual clicks emit a GA4 event so we
+    // can see which pillars users actually engage with.
     const tabs = document.querySelectorAll('.pillar-tab');
     const panels = document.querySelectorAll('.pillar-panel');
 
@@ -21,6 +25,16 @@ export default function HomePage({ css, sectionsHtml }) {
         tab.classList.add('active');
         const panel = document.getElementById('panel-' + target);
         if (panel) panel.classList.add('active');
+
+        // GA4 engagement tracking. Degrades to a no-op if the user has
+        // declined cookies (window.gtag never gets defined in that case).
+        if (typeof window.gtag !== 'undefined') {
+          window.gtag('event', 'pillar_click', {
+            event_category: 'engagement',
+            event_label: target,
+            page_location: window.location.pathname,
+          });
+        }
       });
     });
 
@@ -47,58 +61,6 @@ export default function HomePage({ css, sectionsHtml }) {
     }, { threshold: 0.2 });
     document.querySelectorAll('.breakdown-grid').forEach(el => barObserver.observe(el));
 
-    // Active pillar auto-cycle for demo feel.
-    // IMPORTANT: the cycle only starts once the pillars section enters the
-    // viewport, so mobile users (who scroll past a taller hero) always see
-    // P1 first. Without this gate the interval could advance the tab to P2
-    // before the user ever reached the section.
-    let cycleInterval;
-    let cycleStarted = false;
-    const startCycle = () => {
-      if (cycleStarted) return;
-      cycleStarted = true;
-      // Reset to p1 when the section becomes visible, in case anything else
-      // touched the active class.
-      const firstTab = document.querySelector('[data-panel="p1"]');
-      if (firstTab && !firstTab.classList.contains('active')) firstTab.click();
-      let current = 0;
-      const order = ['p1', 'p2', 'p3', 'p4'];
-      cycleInterval = setInterval(() => {
-        current = (current + 1) % order.length;
-        const tab = document.querySelector(`[data-panel="${order[current]}"]`);
-        if (tab) tab.click();
-      }, 4000);
-    };
-
-    // Stop cycle on user interaction
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        clearInterval(cycleInterval);
-        cycleStarted = true; // prevent re-arming
-      });
-    });
-
-    // Start the cycle only once the pillars section is in the viewport.
-    // Fallback: if the section can't be found, start after 4s so the cycle
-    // still runs for users on edge-case layouts.
-    let cycleTimer;
-    const platformSection = document.getElementById('platform');
-    let cycleObserver;
-    if (platformSection && 'IntersectionObserver' in window) {
-      cycleObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Give the user a moment to register P1 before advancing.
-            cycleTimer = setTimeout(startCycle, 2500);
-            cycleObserver.disconnect();
-          }
-        });
-      }, { threshold: 0.25 });
-      cycleObserver.observe(platformSection);
-    } else {
-      cycleTimer = setTimeout(startCycle, 4000);
-    }
-
     // CTA click tracking
     document.querySelectorAll('a[href^="mailto:"], .btn-plan, .btn-hero-primary, .btn-hero-secondary').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -123,10 +85,7 @@ export default function HomePage({ css, sectionsHtml }) {
     }, 100);
 
     return () => {
-      clearInterval(cycleInterval);
-      clearTimeout(cycleTimer);
       clearTimeout(viewportRevealTimer);
-      if (cycleObserver) cycleObserver.disconnect();
     };
   }, []);
 
