@@ -52,21 +52,28 @@ export default function JoinPage() {
 
     if (signUpError) { setError(signUpError.message); setSubmitting(false); return; }
 
-    await supabase.from('team_members').insert([{
+    const { error: memberError } = await supabase.from('team_members').insert([{
       team_id: invitation.team_id,
       user_id: authData.user.id,
       role: invitation.role,
       invited_by: invitation.invited_by,
     }]);
+    if (memberError) { setError(memberError.message); setSubmitting(false); return; }
 
-    await supabase.from('profiles').upsert({
-      id: authData.user.id,
+    // Upsert profiles on user_id (the canonical column).
+    // profiles.id was a legacy dual-key path that caused orphan rows.
+    // Section B migration (20260410) rebuilt RLS to require user_id = auth.uid()::text.
+    const { error: profileError } = await supabase.from('profiles').upsert({
+      user_id: authData.user.id,
+      email: authData.user.email || email,
       team_id: invitation.team_id,
       full_name: name,
-    });
+    }, { onConflict: 'user_id' });
+    if (profileError) { setError(profileError.message); setSubmitting(false); return; }
 
+    // Update both accepted_at AND status so the invitation is fully consistent.
     await supabase.from('team_invitations')
-      .update({ accepted_at: new Date().toISOString() })
+      .update({ accepted_at: new Date().toISOString(), status: 'accepted' })
       .eq('token', token);
 
     setStep('success');

@@ -95,21 +95,9 @@ export default function useDivisions(teamId) {
 
     const sb = getSupabaseClient();
 
-    // NULL out division_id on all related tables — no ON DELETE CASCADE on FKs,
-    // so Postgres would reject the delete if any row still references this division.
-    const tables = [
-      'periods',
-      'profiles',
-      'sku_rows',
-      'logistics_rows',
-      'action_items',
-      'trade_investment',
-      'logistics_commercial_investment',
-    ];
-    for (const table of tables) {
-      await sb.from(table).update({ division_id: null }).eq('division_id', divisionId);
-    }
-
+    // Section B migration (20260410) changed all division_id FKs to
+    // ON DELETE SET NULL. Postgres handles cascade now - no client-side
+    // NULL-sweep needed. Delete and referenced rows auto-null their division_id.
     const { error } = await sb.from('divisions').delete().eq('id', divisionId);
 
     if (!error) {

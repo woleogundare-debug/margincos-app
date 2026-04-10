@@ -8,7 +8,16 @@ import useDivisions from '../../hooks/useDivisions';
 import { TIER_LIMITS } from '../../lib/constants';
 
 export default function TeamPage() {
-  const { team, members, pendingInvitations, isAdmin, loading } = useTeam();
+  const {
+    team,
+    members,
+    pendingInvitations,
+    isAdmin,
+    loading,
+    removeMember,
+    changeMemberRole,
+    assignMemberDivision,
+  } = useTeam();
   const { user, tier } = useAuth();
   const {
     divisions,
@@ -31,6 +40,10 @@ export default function TeamPage() {
   const [divisionError, setDivisionError] = useState('');
   const [renamingId, setRenamingId] = useState(null);
   const [renameValue, setRenameValue] = useState('');
+
+  // Member management state (role change, division assignment, removal)
+  const [memberError, setMemberError] = useState('');
+  const [busyMemberId, setBusyMemberId] = useState(null);
 
   const isEnterprise = tier === 'enterprise' || tier === 'admin';
   const isProfessionalOrAbove = tier === 'professional' || isEnterprise;
@@ -75,6 +88,45 @@ export default function TeamPage() {
     if (!confirm(`Delete "${div?.name}"? This permanently removes the division. Its periods and data will remain but lose their division assignment. This cannot be undone.`)) return;
     const { error: err } = await deleteDivision(divisionId);
     if (err) setDivisionError(err.message || 'Failed to delete division');
+  };
+
+  const handleRoleChange = async (memberId, currentRole, newRole) => {
+    if (currentRole === newRole) return;
+    setMemberError('');
+    setBusyMemberId(memberId);
+    try {
+      await changeMemberRole(memberId, newRole);
+    } catch (err) {
+      setMemberError(err.message || 'Failed to change role');
+    } finally {
+      setBusyMemberId(null);
+    }
+  };
+
+  const handleAssignDivision = async (memberId, userId, divisionId) => {
+    setMemberError('');
+    setBusyMemberId(memberId);
+    try {
+      await assignMemberDivision(userId, divisionId);
+    } catch (err) {
+      setMemberError(err.message || 'Failed to assign division');
+    } finally {
+      setBusyMemberId(null);
+    }
+  };
+
+  const handleRemoveMember = async (memberId, memberName) => {
+    if (!confirm(`Remove ${memberName || 'this member'} from the team? They will lose access immediately.`)) return;
+    setMemberError('');
+    setBusyMemberId(memberId);
+    try {
+      await removeMember(memberId);
+    } catch (err) {
+      // The enforce_last_admin trigger surfaces a friendly message here.
+      setMemberError(err.message || 'Failed to remove member');
+    } finally {
+      setBusyMemberId(null);
+    }
   };
 
   const handleInvite = async () => {
@@ -185,24 +237,79 @@ export default function TeamPage() {
                   No team members yet. {isProfessionalOrAbove ? 'Invite your colleagues below.' : 'Upgrade to Professional or Enterprise to invite team members.'}
                 </div>
               )}
-              {members.map(m => (
-                <div key={m.id} className="px-6 py-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-navy">{m.profile?.full_name || m.profile?.email || 'Team Member'}</p>
-                    <p className="text-xs text-slate-400">{m.profile?.email}</p>
+              {members.map(m => {
+                const isSelf = m.user_id === user?.id;
+                const canEdit = isAdmin && !isSelf;
+                const busy = busyMemberId === m.id;
+                return (
+                  <div key={m.id} className="px-6 py-4 flex items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-navy truncate">
+                        {m.profile?.full_name || m.profile?.email || 'Team Member'}
+                        {isSelf && <span className="text-xs text-slate-400 ml-1">(you)</span>}
+                      </p>
+                      <p className="text-xs text-slate-400 truncate">{m.profile?.email}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* Division assignment — admin only, hidden if <2 divisions */}
+                      {canEdit && divisions.length >= 2 && (
+                        <select
+                          value={m.profile?.division_id || ''}
+                          disabled={busy}
+                          onChange={e => handleAssignDivision(m.id, m.user_id, e.target.value || null)}
+                          className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white disabled:opacity-50"
+                          title="Assign to division"
+                        >
+                          <option value="">— No division —</option>
+                          {divisions.map(d => (
+                            <option key={d.id} value={d.id}>{d.name}</option>
+                          ))}
+                        </select>
+                      )}
+
+                      {/* Role control */}
+                      {canEdit ? (
+                        <select
+                          value={m.role}
+                          disabled={busy}
+                          onChange={e => handleRoleChange(m.id, m.role, e.target.value)}
+                          className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white font-semibold disabled:opacity-50"
+                          title="Change role"
+                        >
+                          <option value="member">Member</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      ) : (
+                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wide ${
+                          m.role === 'admin'
+                            ? 'bg-navy text-white'
+                            : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          {m.role}
+                        </span>
+                      )}
+
+                      {/* Remove button */}
+                      {canEdit && (
+                        <button
+                          onClick={() => handleRemoveMember(m.id, m.profile?.full_name || m.profile?.email)}
+                          disabled={busy}
+                          className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                          title="Remove from team"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wide ${
-                      m.role === 'admin'
-                        ? 'bg-navy text-white'
-                        : 'bg-slate-100 text-slate-600'
-                    }`}>
-                      {m.role}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+            {memberError && (
+              <div className="px-6 py-3 border-t border-red-100 bg-red-50">
+                <p className="text-xs text-red-600 font-medium">{memberError}</p>
+              </div>
+            )}
           </div>
 
           {/* Invite form — Professional + Enterprise */}

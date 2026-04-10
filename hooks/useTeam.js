@@ -43,7 +43,7 @@ export function useTeam() {
       const userIds = memberRows.map(m => m.user_id);
       const { data: profileRows } = await supabase
         .from('profiles')
-        .select('user_id, full_name, email')
+        .select('user_id, full_name, email, division_id')
         .in('user_id', userIds);
 
       const enriched = memberRows.map(m => ({
@@ -92,11 +92,57 @@ export function useTeam() {
       .from('team_members')
       .delete()
       .eq('id', memberId);
-    if (error) throw error;
+    if (error) {
+      // The enforce_last_admin trigger (migration 20260410) raises a
+      // check_violation with a human-readable message. Propagate it
+      // to the UI instead of the raw Postgres error.
+      const msg = error.message || 'Failed to remove member';
+      throw new Error(msg);
+    }
+    await loadTeam();
+  };
+
+  const changeMemberRole = async (memberId, newRole) => {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase
+      .from('team_members')
+      .update({ role: newRole })
+      .eq('id', memberId);
+    if (error) {
+      const msg = error.message || 'Failed to change role';
+      throw new Error(msg);
+    }
+    await loadTeam();
+  };
+
+  // Single-division model: each member has exactly one profiles.division_id.
+  // Writing null clears the assignment (member falls back to the team's default view).
+  const assignMemberDivision = async (userId, divisionId) => {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase
+      .from('profiles')
+      .update({ division_id: divisionId || null, updated_at: new Date().toISOString() })
+      .eq('user_id', userId);
+    if (error) {
+      const msg = error.message || 'Failed to assign division';
+      throw new Error(msg);
+    }
     await loadTeam();
   };
 
   const isAdmin = myRole === 'admin';
 
-  return { team, members, pendingInvitations, myRole, isAdmin, loading, inviteMember, removeMember, loadTeam };
+  return {
+    team,
+    members,
+    pendingInvitations,
+    myRole,
+    isAdmin,
+    loading,
+    inviteMember,
+    removeMember,
+    changeMemberRole,
+    assignMemberDivision,
+    loadTeam,
+  };
 }
