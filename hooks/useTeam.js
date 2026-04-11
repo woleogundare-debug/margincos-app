@@ -59,9 +59,10 @@ export function useTeam() {
     try {
       const { data: pendingRows, error: inviteError } = await supabase
         .from('team_invitations')
-        .select('id, email, role, created_at')
+        .select('id, email, role, created_at, expires_at')
         .eq('team_id', membership.team_id)
-        .eq('status', 'pending');
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
       if (!inviteError) setPendingInvitations(pendingRows || []);
       else setPendingInvitations([]);
     } catch (err) {
@@ -130,6 +131,22 @@ export function useTeam() {
     await loadTeam();
   };
 
+  // Cancel a pending invitation (hard delete). Admins only in practice,
+  // but RLS is the real gate. Refreshes the team on success so
+  // pendingInvitations stays accurate for the seat indicator.
+  const cancelInvitation = async (invitationId) => {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase
+      .from('team_invitations')
+      .delete()
+      .eq('id', invitationId);
+    if (error) {
+      return { error: error.message || 'Failed to cancel invitation' };
+    }
+    await loadTeam();
+    return { success: true };
+  };
+
   const isAdmin = myRole === 'admin';
 
   return {
@@ -143,6 +160,7 @@ export function useTeam() {
     removeMember,
     changeMemberRole,
     assignMemberDivision,
+    cancelInvitation,
     loadTeam,
   };
 }
