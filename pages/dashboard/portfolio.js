@@ -42,7 +42,14 @@ export default function PortfolioPage() {
     consolidatedDivisionBreakdown, consolidatedMissing, consolidatedLoading,
     consolidatedRows,
     runConsolidation, clearConsolidation,
+    // Identity resolution flags — gate first-paint states to prevent flicker
+    profileLoaded, teamLoading, divisionsLoading,
   } = useAnalysisContext();
+
+  // Identity has fully resolved across useAuth, useTeam, and useDivisions.
+  // Only then is it safe to render lockout / empty-state UI that depends on
+  // (isAdmin, activeDivision, activePeriod). Default hook state is a lie.
+  const identityResolved = profileLoaded && !teamLoading && !divisionsLoading;
 
   // In consolidated mode the grid is read-only and sourced from merged tagged rows.
   // In normal mode it uses the active division's skuRows.
@@ -172,8 +179,13 @@ export default function PortfolioPage() {
           </div>
         )}
 
-        {/* ── Lockout state — non-admin with NULL division_id ── */}
-        {!isAdmin && !activeDivision && !loading && (
+        {/* ── Lockout state — non-admin with NULL division_id ──
+            Gated on identityResolved to prevent a first-paint flash: useAuth /
+            useTeam / useDivisions resolve on different timelines, and on a
+            clean-baseline tenant usePortfolio.loading flips to false faster
+            than the identity hooks, momentarily satisfying this condition
+            even for admin users. */}
+        {!isAdmin && !activeDivision && !loading && identityResolved && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-6">
               <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -270,8 +282,11 @@ export default function PortfolioPage() {
           </div>
         )}
 
-        {/* ── No period empty state — suppressed when lockout is active ── */}
-        {!activePeriod && !loading && (isAdmin || activeDivision) && (
+        {/* ── No period empty state — suppressed when lockout is active ──
+            Also gated on identityResolved: without this, a non-admin with
+            no division and no period would briefly see "Start your first
+            analysis period" before the lockout state takes over. */}
+        {!activePeriod && !loading && (isAdmin || activeDivision) && identityResolved && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-16 h-16 rounded-2xl bg-navy flex items-center justify-center mb-6">
               <span className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', serif" }}>M</span>

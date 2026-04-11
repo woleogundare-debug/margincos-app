@@ -10,10 +10,10 @@ import { runFullAnalysis } from '../lib/engine/analysis';
 const AnalysisContext = createContext(null);
 
 export function AnalysisProvider({ children }) {
-  const { user, tier, teamId, divisionId } = useAuth();
+  const { user, tier, teamId, divisionId, profileLoaded } = useAuth();
   // isAdmin derives from team_members.role (matches RLS is_team_admin() helper).
   // See Path C refactor: useAuth no longer carries an isAdmin field at all.
-  const { isAdmin } = useTeam();
+  const { isAdmin, loading: teamLoading } = useTeam();
 
   // ── Division state — loads async; gracefully degrades if table not yet migrated
   // Non-admins are pinned to their profile.division_id; admins can switch freely.
@@ -28,6 +28,7 @@ export function AnalysisProvider({ children }) {
     consolidatableSectors,
     canConsolidate,
     ensureDivisionSector,
+    loading: divisionsLoading,
   } = useDivisions(teamId, { userDivisionId: divisionId, isAdmin });
 
   // ── Comparison period state — entirely additive ──────────────────────────
@@ -325,6 +326,15 @@ export function AnalysisProvider({ children }) {
       divisionCount,
       canSwitchDivision,
       isAdmin,
+      // ── Identity resolution flags — for gating first-paint states ─────────
+      // profileLoaded: useAuth has completed fetchProfile (tier, teamId, divisionId)
+      // teamLoading:   useTeam.loadTeam (team_members + teams + profiles join) in flight
+      // divisionsLoading: useDivisions.loadDivisions in flight
+      // Gate any lockout / empty-state UI on (profileLoaded && !teamLoading && !divisionsLoading)
+      // to avoid rendering against default hook state before async resolvers finish.
+      profileLoaded,
+      teamLoading,
+      divisionsLoading,
       divisionsBySector,
       consolidatableSectors,
       canConsolidate,

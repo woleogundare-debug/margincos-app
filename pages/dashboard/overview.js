@@ -21,7 +21,7 @@ const DownloadReportButton = dynamic(
 
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
-  const { activePeriod, skuRows, portfolioLoading, activeResults: results, running, ranAt, error, run, activeHasResults: hasResults, isConsolidated, consolidatedDivisionBreakdown, consolidatedMissing, consolidatedSector, consolidatedMonth, chronologicalDelta, activeDivision, isAdmin } = useAnalysisContext();
+  const { activePeriod, skuRows, portfolioLoading, activeResults: results, running, ranAt, error, run, activeHasResults: hasResults, isConsolidated, consolidatedDivisionBreakdown, consolidatedMissing, consolidatedSector, consolidatedMonth, chronologicalDelta, activeDivision, isAdmin, profileLoaded, teamLoading, divisionsLoading } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
 
   // In division mode, show "Company - Division" so the report header identifies
@@ -104,7 +104,17 @@ export default function OverviewPage() {
 
   // Lockout: non-admin user with no assigned division. Render only the lockout
   // empty state - suppress banner, action strip, error, noData, and results.
-  const isLockedOut = !isAdmin && !activeDivision && !portfolioLoading;
+  // Gated on identity resolution flags to prevent a first-paint flash:
+  // useAuth / useTeam / useDivisions resolve on different timelines, so the
+  // (!isAdmin && !activeDivision) pair is briefly true for everyone before
+  // their profile / team membership / division assignment loads.
+  const isLockedOut =
+    !isAdmin &&
+    !activeDivision &&
+    !portfolioLoading &&
+    profileLoaded &&
+    !teamLoading &&
+    !divisionsLoading;
 
   if (isLockedOut) {
     return (

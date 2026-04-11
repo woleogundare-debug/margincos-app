@@ -472,9 +472,18 @@ export function DashboardLayout({ children }) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-white/70 truncate">{user?.email}</p>
-                <span className={clsx('text-[10px] font-semibold capitalize px-1.5 py-0.5 rounded', TIER_COLORS[tier] || TIER_COLORS.essentials)}>
-                  {tier}
-                </span>
+                {profileLoaded ? (
+                  <span className={clsx('text-[10px] font-semibold capitalize px-1.5 py-0.5 rounded', TIER_COLORS[tier] || TIER_COLORS.essentials)}>
+                    {tier}
+                  </span>
+                ) : (
+                  /* Shimmer placeholder — prevents the default 'essentials' tier from
+                     flashing before useAuth.fetchProfile resolves the real tier. */
+                  <span
+                    className="inline-block h-[14px] w-12 rounded bg-white/10 animate-pulse"
+                    aria-hidden="true"
+                  />
+                )}
               </div>
             </div>
             <button onClick={signOut}
