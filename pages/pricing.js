@@ -98,7 +98,7 @@ function PricingCard({ tier, annual, formatPrice }) {
         )}
         <p className="mt-3 text-xs text-slate-500 leading-relaxed">{tier.tagline}</p>
         <p className="mt-2 text-xs text-slate-400">
-          {prices.impl > 0 ? `+ $${prices.impl.toLocaleString()} implementation` : '4-week onboarding included'}
+          {prices.impl > 0 ? `+ ${formatPrice(prices.impl)} implementation` : '4-week onboarding included'}
         </p>
       </div>
       <Link href={tier.ctaHref}
