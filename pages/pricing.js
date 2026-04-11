@@ -91,7 +91,11 @@ function PricingCard({ tier, annual, formatPrice }) {
           <span className="text-4xl font-black text-navy price-value">{formatPrice(price)}</span>
           <span className="text-sm text-slate-400 font-medium">/mo</span>
         </div>
-        {!annual && <p className="mt-1 text-xs font-semibold" style={{ color: '#0D8F8F' }}>Save {Math.round(ANNUAL_DISCOUNT * 100)}% with annual billing</p>}
+        {annual ? (
+          <p className="mt-1 text-xs text-slate-500">{formatPrice(price * 12)} billed annually</p>
+        ) : (
+          <p className="mt-1 text-xs font-semibold" style={{ color: '#0D8F8F' }}>Save {Math.round(ANNUAL_DISCOUNT * 100)}% with annual billing</p>
+        )}
         <p className="mt-3 text-xs text-slate-500 leading-relaxed">{tier.tagline}</p>
         <p className="mt-2 text-xs text-slate-400">
           {prices.impl > 0 ? `+ $${prices.impl.toLocaleString()} implementation` : '4-week onboarding included'}
