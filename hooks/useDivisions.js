@@ -1,10 +1,21 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getSupabaseClient } from '../lib/supabase/client';
 
-export default function useDivisions(teamId) {
-  const [divisions,     setDivisions]     = useState([]);
+/**
+ * Division state hook.
+ *
+ * Admins auto-select the team's default division and can switch freely.
+ * Non-admins are locked to `userDivisionId` (their profiles.division_id).
+ * If a non-admin has no assigned division, `activeDivision` stays null
+ * and the UI surfaces a lockout empty state.
+ *
+ * The exported `setActiveDivision` is guarded: for non-admins it is a no-op
+ * with a dev-mode console warning. Callers see no API change.
+ */
+export default function useDivisions(teamId, { userDivisionId = null, isAdmin = false } = {}) {
+  const [divisions,      setDivisions]      = useState([]);
   const [activeDivision, setActiveDivision] = useState(null);
-  const [loading,       setLoading]       = useState(true);
+  const [loading,        setLoading]        = useState(true);
 
   const loadDivisions = useCallback(async () => {
     if (!teamId) {
@@ -24,11 +35,26 @@ export default function useDivisions(teamId) {
 
     if (!error && data) {
       setDivisions(data);
-      // Auto-select default division if none selected yet
+      // Auto-select on load. Admins fall back to the team default;
+      // non-admins are pinned to their profile.division_id assignment.
       setActiveDivision(prev => {
-        if (prev) return prev; // keep existing selection
-        const def = data.find(d => d.is_default) || data[0] || null;
-        return def;
+        // Honour existing admin selection — but re-pin non-admins if
+        // a stale selection from a previous session differs from their
+        // current userDivisionId assignment.
+        if (prev) {
+          if (isAdmin) return prev;
+          if (userDivisionId && prev.id === userDivisionId) return prev;
+          // fall through to re-select below
+        }
+        if (isAdmin) {
+          return data.find(d => d.is_default) || data[0] || null;
+        }
+        // Non-admin: force to assigned division; null otherwise (lockout).
+        if (userDivisionId) {
+          const assigned = data.find(d => d.id === userDivisionId);
+          if (assigned) return assigned;
+        }
+        return null;
       });
     } else if (error) {
       // Divisions table may not exist yet (pre-migration) — graceful degradation
@@ -37,9 +63,22 @@ export default function useDivisions(teamId) {
       }
     }
     setLoading(false);
-  }, [teamId]);
+  }, [teamId, userDivisionId, isAdmin]);
 
   useEffect(() => { loadDivisions(); }, [loadDivisions]);
+
+  // Guarded setter: non-admins cannot switch active division from the UI.
+  // The RLS layer also blocks cross-division reads/writes, but the UI guard
+  // gives non-admins a clean experience (no switcher, no empty screens).
+  const guardedSetActiveDivision = useCallback((div) => {
+    if (!isAdmin) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[useDivisions] setActiveDivision blocked: non-admin user attempted switch');
+      }
+      return;
+    }
+    setActiveDivision(div);
+  }, [isAdmin]);
 
   const createDivision = useCallback(async (name, sector = null) => {
     if (!teamId) return { error: 'No team' };
@@ -79,14 +118,23 @@ export default function useDivisions(teamId) {
 
     if (!error) {
       await loadDivisions();
-      // If the archived division was active, switch to default
+      // If the archived division was active, fall back appropriately.
+      // Admins get the team default; non-admins re-select their assigned
+      // division (if still present) or null out to lockout state.
       if (activeDivision?.id === divisionId) {
-        const def = divisions.find(d => d.is_default && d.id !== divisionId);
-        setActiveDivision(def || null);
+        if (isAdmin) {
+          const def = divisions.find(d => d.is_default && d.id !== divisionId);
+          setActiveDivision(def || null);
+        } else if (userDivisionId && userDivisionId !== divisionId) {
+          const assigned = divisions.find(d => d.id === userDivisionId);
+          setActiveDivision(assigned || null);
+        } else {
+          setActiveDivision(null);
+        }
       }
     }
     return { error };
-  }, [divisions, activeDivision, loadDivisions]);
+  }, [divisions, activeDivision, loadDivisions, isAdmin, userDivisionId]);
 
   const deleteDivision = useCallback(async (divisionId) => {
     // Don't allow deleting the default division
@@ -101,15 +149,23 @@ export default function useDivisions(teamId) {
     const { error } = await sb.from('divisions').delete().eq('id', divisionId);
 
     if (!error) {
-      // If the deleted division was active, switch to default
+      // If the deleted division was active, fall back appropriately.
+      // Same semantics as archiveDivision.
       if (activeDivision?.id === divisionId) {
-        const def = divisions.find(d => d.is_default && d.id !== divisionId);
-        setActiveDivision(def || null);
+        if (isAdmin) {
+          const def = divisions.find(d => d.is_default && d.id !== divisionId);
+          setActiveDivision(def || null);
+        } else if (userDivisionId && userDivisionId !== divisionId) {
+          const assigned = divisions.find(d => d.id === userDivisionId);
+          setActiveDivision(assigned || null);
+        } else {
+          setActiveDivision(null);
+        }
       }
       await loadDivisions();
     }
     return { error };
-  }, [divisions, activeDivision, loadDivisions]);
+  }, [divisions, activeDivision, loadDivisions, isAdmin, userDivisionId]);
 
   // ── Sector grouping — for consolidation eligibility ──────────────────────
   const divisionsBySector = useMemo(() => {
@@ -131,7 +187,9 @@ export default function useDivisions(teamId) {
       .map(([sector, divs]) => ({ sector, divisions: divs, count: divs.length }));
   }, [divisionsBySector]);
 
-  const canConsolidate = consolidatableSectors.length > 0;
+  // Consolidation is admin-only. Non-admins can only see their own division,
+  // so consolidated views across sibling divisions are outside their scope.
+  const canConsolidate = isAdmin && consolidatableSectors.length > 0;
 
   // ── Ensure a division's sector field is set when a period is created ──────
   // Called from AnalysisContext after createPeriod succeeds.
@@ -152,7 +210,7 @@ export default function useDivisions(teamId) {
   return {
     divisions,
     activeDivision,
-    setActiveDivision,
+    setActiveDivision: guardedSetActiveDivision,
     createDivision,
     renameDivision,
     archiveDivision,
@@ -160,6 +218,9 @@ export default function useDivisions(teamId) {
     loading,
     hasDivisions:  divisions.length > 1, // true only when multi-division
     divisionCount: divisions.length,
+    // canSwitchDivision: UI gate for the division switcher. Admin-only,
+    // and only meaningful when there's more than one division to switch to.
+    canSwitchDivision: isAdmin && divisions.length > 1,
     reload:        loadDivisions,
     // Consolidation
     divisionsBySector,

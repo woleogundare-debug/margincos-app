@@ -21,7 +21,7 @@ const DownloadReportButton = dynamic(
 
 export default function OverviewPage() {
   const { user, companyName, tier, isProfessional, isEnterprise } = useAuth();
-  const { activePeriod, skuRows, portfolioLoading, activeResults: results, running, ranAt, error, run, activeHasResults: hasResults, isConsolidated, consolidatedDivisionBreakdown, consolidatedMissing, consolidatedSector, consolidatedMonth, chronologicalDelta, activeDivision } = useAnalysisContext();
+  const { activePeriod, skuRows, portfolioLoading, activeResults: results, running, ranAt, error, run, activeHasResults: hasResults, isConsolidated, consolidatedDivisionBreakdown, consolidatedMissing, consolidatedSector, consolidatedMonth, chronologicalDelta, activeDivision, isAdmin } = useAnalysisContext();
   const cfg = getSectorConfig(activePeriod?.vertical);
 
   // In division mode, show "Company - Division" so the report header identifies
@@ -101,6 +101,24 @@ export default function OverviewPage() {
   }, [portfolioLoading, skuRows.length, hasResults, running, run]);
 
   const noData = !portfolioLoading && skuRows.length === 0;
+
+  // Lockout: non-admin user with no assigned division. Render only the lockout
+  // empty state - suppress banner, action strip, error, noData, and results.
+  const isLockedOut = !isAdmin && !activeDivision && !portfolioLoading;
+
+  if (isLockedOut) {
+    return (
+      <>
+        <Head><title>Overview | MarginCOS</title></Head>
+        <EmptyState
+          icon="🔒"
+          title="You have not been assigned to a division"
+          description="Ask your team admin to assign you to a division so you can start working. If you are the admin, visit the Team page and select your division."
+          action={<Link href="/dashboard/team"><Button variant="navy">Go to Team Page</Button></Link>}
+        />
+      </>
+    );
+  }
 
   return (
     <>

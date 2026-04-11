@@ -5,9 +5,9 @@ export function useAuth() {
   const [session,  setSession]  = useState(null);
   const [user,     setUser]     = useState(null);
   const [tier,     setTier]     = useState('essentials');
-  const [isAdmin,  setIsAdmin]  = useState(false);
   const [companyName, setCompanyName] = useState('');
-  const [teamId,   setTeamId]   = useState(null);
+  const [teamId,     setTeamId]     = useState(null);
+  const [divisionId, setDivisionId] = useState(null);
   const [loading,       setLoading]       = useState(true);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
@@ -17,13 +17,13 @@ export function useAuth() {
     try {
       const { data } = await sb
         .from('profiles')
-        .select('tier, is_admin, company_name, team_id')
+        .select('tier, company_name, team_id, division_id')
         .eq('user_id', userId)
         .single();
       if (data) {
         setTier(data.tier || 'essentials');
-        setIsAdmin(data.is_admin || false);
         setCompanyName(data.company_name || '');
+        setDivisionId(data.division_id || null);
 
         if (data.team_id) {
           setTeamId(data.team_id);
@@ -70,9 +70,9 @@ export function useAuth() {
         fetchProfile(session.user.id); // fire-and-forget
       } else {
         setTier('essentials');
-        setIsAdmin(false);
         setCompanyName('');
         setTeamId(null);
+        setDivisionId(null);
         setProfileLoaded(true); // no session — mark as resolved so nothing spins
       }
       setLoading(false);
@@ -96,9 +96,9 @@ export function useAuth() {
     session,
     user,
     tier,
-    isAdmin,
     companyName,
     teamId,
+    divisionId,
     loading,
     profileLoaded,
     signOut,

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, useMemo } 
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { useAuth } from '../hooks/useAuth';
+import { useTeam } from '../hooks/useTeam';
 import useDivisions from '../hooks/useDivisions';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { runFullAnalysis } from '../lib/engine/analysis';
@@ -9,20 +10,25 @@ import { runFullAnalysis } from '../lib/engine/analysis';
 const AnalysisContext = createContext(null);
 
 export function AnalysisProvider({ children }) {
-  const { user, tier, teamId } = useAuth();
+  const { user, tier, teamId, divisionId } = useAuth();
+  // isAdmin derives from team_members.role (matches RLS is_team_admin() helper).
+  // See Path C refactor: useAuth no longer carries an isAdmin field at all.
+  const { isAdmin } = useTeam();
 
   // ── Division state — loads async; gracefully degrades if table not yet migrated
+  // Non-admins are pinned to their profile.division_id; admins can switch freely.
   const {
     divisions,
     activeDivision,
     setActiveDivision,
     hasDivisions,
     divisionCount,
+    canSwitchDivision,
     divisionsBySector,
     consolidatableSectors,
     canConsolidate,
     ensureDivisionSector,
-  } = useDivisions(teamId);
+  } = useDivisions(teamId, { userDivisionId: divisionId, isAdmin });
 
   // ── Comparison period state — entirely additive ──────────────────────────
   const [comparisonPeriodId, setComparisonPeriodId] = useState(null);
@@ -317,6 +323,8 @@ export function AnalysisProvider({ children }) {
       setActiveDivision,
       hasDivisions,
       divisionCount,
+      canSwitchDivision,
+      isAdmin,
       divisionsBySector,
       consolidatableSectors,
       canConsolidate,

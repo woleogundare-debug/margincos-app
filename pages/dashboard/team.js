@@ -34,7 +34,7 @@ export default function TeamPage() {
     renameDivision,
     archiveDivision,
     deleteDivision,
-  } = useDivisions(team?.id);
+  } = useDivisions(team?.id, { isAdmin });
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('member');
@@ -335,6 +335,9 @@ export default function TeamPage() {
                     {members.map(m => {
                       const isSelf = m.user_id === user?.id;
                       const canEdit = isAdmin && !isSelf;
+                      // Gap 2: admins can self-assign their own division (RLS allows it).
+                      // Keep `canEdit` for Role / Remove to prevent self-demotion / self-removal.
+                      const canEditDivision = isAdmin;
                       const busy = busyMemberId === m.id;
                       const displayName = m.profile?.full_name || m.profile?.email || 'Team Member';
                       const initials = getInitials(m.profile?.full_name, m.profile?.email);
@@ -390,13 +393,13 @@ export default function TeamPage() {
                           {/* Division (only when 2+ divisions exist) */}
                           {divisions.length >= 2 && (
                             <td className="px-3 py-4 hidden md:table-cell">
-                              {canEdit ? (
+                              {canEditDivision ? (
                                 <select
                                   value={memberDivisionId}
                                   disabled={busy}
                                   onChange={e => handleAssignDivision(m.id, m.user_id, e.target.value || null)}
                                   className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white disabled:opacity-50"
-                                  title="Assign to division"
+                                  title={isSelf ? "Assign yourself to a division" : "Assign to division"}
                                 >
                                   <option value="">— No division —</option>
                                   {divisions.map(d => (
