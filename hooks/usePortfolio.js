@@ -96,6 +96,19 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       return null;
     }
     const tableName = activePeriod.vertical === 'Logistics' ? 'logistics_rows' : 'sku_rows';
+    const pkField   = activePeriod.vertical === 'Logistics' ? 'lane_id' : 'sku_id';
+    // Guard: reject empty / whitespace-only primary key. Without this,
+    // newly-created blank rows (addSku seeds sku_id='') would collide on
+    // the new (period_id, sku_id) UNIQUE constraint and silently patch
+    // the first blank row instead of erroring. We want the error surfaced.
+    const pkValue = String(row[pkField] ?? '').trim();
+    if (!pkValue) {
+      const pkLabel = pkField === 'lane_id' ? 'Lane ID' : 'SKU ID';
+      const err = `${pkLabel} cannot be empty`;
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted —', err);
+      setError(err);
+      return null;
+    }
     setSaving(true);
     const tempId = row._tempId;
     // Strip _tempId — it's a client-only key, not a DB column
@@ -106,11 +119,14 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     payload.active = (a === true || a === 'Y' || a === 'y' || a === 'true' || a === 'Active') ? 'Y' : (a === false || a === 'N' || a === 'n' || a === 'false' || a === 'No' || a === 'Inactive') ? 'N' : 'Y';
     // For new rows (no id yet), remove id so Supabase auto-generates it
     if (!payload.id) delete payload.id;
-    const pkField = activePeriod.vertical === 'Logistics' ? 'lane_id' : 'sku_id';
     if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting to', tableName, ':', { id: payload.id || '(new)', [pkField]: payload[pkField], period_id: payload.period_id, user_id: payload.user_id });
+    // onConflict target mirrors the DB UNIQUE constraint:
+    //   sku_rows        → unique_sku_per_period   UNIQUE (period_id, sku_id)
+    //   logistics_rows  → unique_lane_per_period  UNIQUE (period_id, lane_id)
+    // This makes re-uploads patch existing rows instead of duplicating them.
     const { data, error } = await sb
       .from(tableName)
-      .upsert(payload, { onConflict: 'id' })
+      .upsert(payload, { onConflict: `period_id,${pkField}` })
       .select()
       .single();
     setSaving(false);

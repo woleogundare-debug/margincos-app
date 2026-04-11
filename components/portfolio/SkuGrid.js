@@ -113,15 +113,15 @@ const CARD_FIELDS = {
   identity: [
     { key: 'sku_name',      label: 'Product Name' },
     { key: 'category',      label: 'Category' },
-    { key: 'rrp',           label: 'RRP ₦', fmt: 'currency' },
+    { key: 'rrp',           label: 'RRP', fmt: 'currency' },
     { key: 'segment',       label: 'Segment' },
     { key: 'business_unit', label: 'Business Unit' },
     { key: 'region',        label: 'Region' },
   ],
   pricing: [
     { key: 'sku_name',                 label: 'Product' },
-    { key: 'rrp',                      label: 'RRP ₦', fmt: 'currency' },
-    { key: 'competitor_price',         label: 'Comp. Price ₦', fmt: 'currency' },
+    { key: 'rrp',                      label: 'RRP', fmt: 'currency' },
+    { key: 'competitor_price',         label: 'Comp. Price', fmt: 'currency' },
     { key: 'target_margin_floor_pct',  label: 'Margin Floor %', fmt: 'pct' },
     { key: 'price_elasticity',         label: 'Elasticity' },
     { key: 'proposed_price_change_pct',label: 'Proposed Chg %', fmt: 'pct' },
@@ -129,8 +129,8 @@ const CARD_FIELDS = {
   ],
   cost: [
     { key: 'sku_name',           label: 'Product' },
-    { key: 'cogs_per_unit',      label: 'COGS ₦', fmt: 'currency' },
-    { key: 'cogs_prior_period',  label: 'Prior COGS ₦', fmt: 'currency' },
+    { key: 'cogs_per_unit',      label: 'COGS', fmt: 'currency' },
+    { key: 'cogs_prior_period',  label: 'Prior COGS', fmt: 'currency' },
     { key: 'cogs_inflation_rate',label: 'COGS Inflation %', fmt: 'pct' },
     { key: 'pass_through_rate',  label: 'Pass-Through %', fmt: 'pct' },
     { key: 'fx_exposure_pct',    label: 'FX Exposure %', fmt: 'pct' },
@@ -142,7 +142,7 @@ const CARD_FIELDS = {
     { key: 'distributor_name',      label: 'Distributor' },
     { key: 'distributor_margin_pct',label: 'Dist. Margin %', fmt: 'pct' },
     { key: 'trade_rebate_pct',      label: 'Rebate %', fmt: 'pct' },
-    { key: 'logistics_cost_per_unit',label: 'Logistics ₦', fmt: 'currency' },
+    { key: 'logistics_cost_per_unit',label: 'Logistics', fmt: 'currency' },
     { key: 'credit_days',           label: 'Credit Days' },
   ],
   trade: [
@@ -163,15 +163,15 @@ const LOGISTICS_CARD_FIELDS = {
   ],
   pricing: [
     { key: 'lane_name',              label: 'Lane' },
-    { key: 'contracted_rate_ngn',    label: 'Contracted Rate (₦)', fmt: 'currency' },
-    { key: 'fully_loaded_cost_ngn',  label: 'Fully-Loaded Cost (₦)', fmt: 'currency' },
+    { key: 'contracted_rate_ngn',    label: 'Contracted Rate', fmt: 'currency' },
+    { key: 'fully_loaded_cost_ngn',  label: 'Fully-Loaded Cost', fmt: 'currency' },
     { key: 'distance_km',            label: 'Distance (km)', fmt: 'number' },
-    { key: 'market_rate_ngn',        label: 'Market Rate (₦)', fmt: 'currency' },
+    { key: 'market_rate_ngn',        label: 'Market Rate', fmt: 'currency' },
     { key: 'proposed_rate_change_pct',label: 'Proposed Rate Chg %', fmt: 'pct' },
   ],
   cost: [
     { key: 'lane_name',           label: 'Lane' },
-    { key: 'fuel_cost_per_km',    label: 'Fuel Cost/km (₦)', fmt: 'currency' },
+    { key: 'fuel_cost_per_km',    label: 'Fuel Cost/km', fmt: 'currency' },
     { key: 'cost_inflation_pct',  label: 'Cost Inflation %', fmt: 'pct' },
     { key: 'pass_through_rate',   label: 'Rate Recovery %', fmt: 'pct' },
     { key: 'fx_exposure_pct',     label: 'FX Exposure %', fmt: 'pct' },
@@ -542,6 +542,10 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef(null);
   const pendingEdits = useRef({});
+  // hasPending mirrors the pendingEdits ref into React state so the footer
+  // save indicator actually re-renders when the ref drains. The ref is
+  // still load-bearing for the flush logic - this is purely a UI mirror.
+  const [hasPending, setHasPending] = useState(false);
   const flushTimer = useRef(null);
   const savingKeys = useRef(new Set());
   const skuRowsRef = useRef(skuRows);
@@ -620,6 +624,10 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   const handleCellChange = useCallback((rowId, colKey, value) => {
     if (!pendingEdits.current[rowId]) pendingEdits.current[rowId] = {};
     pendingEdits.current[rowId][colKey] = value;
+    // Mirror the ref into state so the footer save indicator re-renders
+    // immediately when an edit lands. Setting to true when already true is
+    // a no-op in React (bailout), so this is cheap on repeated edits.
+    setHasPending(true);
     scheduleFlush(2000);
   }, [scheduleFlush]);
 
@@ -636,6 +644,14 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       const stale = Object.keys(edits).every(col => edits[col] === dbRow[col]);
       if (stale) delete pending[key];
     });
+    // After stale-cleanup, mirror the ref state back into hasPending. This
+    // is the moment we actually know an edit has been persisted to the DB
+    // (the parent updated skuRows, and the pending entry matched the DB row).
+    // Placing the flip here - not in flushPendingEdits - avoids the async-
+    // parallel save structure flipping the indicator to "saved" prematurely.
+    if (Object.keys(pending).length === 0) {
+      setHasPending(false);
+    }
   }, [skuRows]);
 
   useEffect(() => {
@@ -745,8 +761,9 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
     finally { setImporting(false); setImportResult(null); }
   }, [importResult, onBulkImport]);
 
-  // Determine save status
-  const hasPending = Object.keys(pendingEdits.current).length > 0;
+  // Determine save status. hasPending is now a useState value mirrored
+  // from pendingEdits.current by handleCellChange (set true) and the
+  // stale-cleanup useEffect above (set false).
   const saveStatus = saving ? 'saving' : hasPending ? 'unsaved' : 'saved';
 
   return (
