@@ -546,6 +546,12 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   // save indicator actually re-renders when the ref drains. The ref is
   // still load-bearing for the flush logic - this is purely a UI mirror.
   const [hasPending, setHasPending] = useState(false);
+  // failedRows tracks which row keys hit a save error in the last flush.
+  // Populated by flushPendingEdits .catch(), cleared on retry success and
+  // by the stale-cleanup useEffect when the pending entry is removed.
+  // The parent (portfolio.js handleSaveSku) surfaces the error text in
+  // the banner - this state is purely the row-level visual marker.
+  const [failedRows, setFailedRows] = useState(new Set());
   const flushTimer = useRef(null);
   const savingKeys = useRef(new Set());
   const skuRowsRef = useRef(skuRows);
@@ -612,9 +618,47 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       if (!row) return;
       savingKeys.current.add(key);
       const merged = { ...row, ...edits };
-      onSaveRef.current(merged).then(() => { savingKeys.current.delete(key); }).catch(() => { savingKeys.current.delete(key); });
+      onSaveRef.current(merged)
+        .then(() => {
+          savingKeys.current.delete(key);
+          // Clear failed-state immediately on success. The stale-cleanup
+          // useEffect will also clear this when the entry drains from
+          // pendingEdits - doing it here gives instant feedback on retry.
+          setFailedRows(prev => {
+            if (!prev.has(key)) return prev;
+            const next = new Set(prev);
+            next.delete(key);
+            return next;
+          });
+        })
+        .catch(() => {
+          savingKeys.current.delete(key);
+          // Mark the row as failed so the retry icon renders. The error
+          // text is already surfaced in the portfolio.js banner via the
+          // re-throw in handleSaveSku. The pending entry is preserved
+          // automatically (stale-cleanup only deletes on DB match, which
+          // a failed save cannot produce) so the user's edit survives.
+          setFailedRows(prev => {
+            if (prev.has(key)) return prev;
+            const next = new Set(prev);
+            next.add(key);
+            return next;
+          });
+        });
     });
   }, []);
+
+  // Retry a single failed row by re-flushing. The savingKeys guard inside
+  // flushPendingEdits prevents a double-fire if a flush is already in
+  // flight. Cancelling any pending scheduled flush first avoids a second
+  // attempt firing from the debounce timer after the manual retry lands.
+  const retryRow = useCallback(() => {
+    if (flushTimer.current) {
+      clearTimeout(flushTimer.current);
+      flushTimer.current = null;
+    }
+    flushPendingEdits();
+  }, [flushPendingEdits]);
 
   const scheduleFlush = useCallback((delay = 2000) => {
     if (flushTimer.current) clearTimeout(flushTimer.current);
@@ -637,12 +681,16 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
 
   useEffect(() => {
     const pending = pendingEdits.current;
+    const cleared = [];
     Object.keys(pending).forEach(key => {
       const dbRow = skuRows.find(r => r.id === key || r._tempId === key);
       if (!dbRow) return;
       const edits = pending[key];
       const stale = Object.keys(edits).every(col => edits[col] === dbRow[col]);
-      if (stale) delete pending[key];
+      if (stale) {
+        delete pending[key];
+        cleared.push(key);
+      }
     });
     // After stale-cleanup, mirror the ref state back into hasPending. This
     // is the moment we actually know an edit has been persisted to the DB
@@ -651,6 +699,23 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
     // parallel save structure flipping the indicator to "saved" prematurely.
     if (Object.keys(pending).length === 0) {
       setHasPending(false);
+    }
+    // Also clear failed-state for any keys whose edits just persisted. This
+    // covers the retry path: the user clicks retry, the save succeeds, the
+    // parent re-renders skuRows with the patched row, this effect runs, the
+    // pending entry drains, and we clear the failed-row marker in the same
+    // React commit so the retry icon disappears without a flash.
+    if (cleared.length > 0) {
+      setFailedRows(prev => {
+        let next = prev;
+        cleared.forEach(key => {
+          if (next.has(key)) {
+            if (next === prev) next = new Set(prev);
+            next.delete(key);
+          }
+        });
+        return next;
+      });
     }
   }, [skuRows]);
 
@@ -826,8 +891,13 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
               const rowKey = row.id || row._tempId;
               const fields = cardFields[activeTab] || cardFields.identity;
               const isActive = row.active === true || row.active === 'Y' || row.active === 'y' || row.active === 'Active';
+              const failed = failedRows.has(rowKey);
               return (
-                <div key={rowKey} className="bg-white rounded-xl border border-gray-100 overflow-hidden sku-card-enter"
+                <div key={rowKey}
+                  className={clsx(
+                    'bg-white rounded-xl overflow-hidden sku-card-enter',
+                    failed ? 'border-2 border-red-300' : 'border border-gray-100'
+                  )}
                   style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
                   {/* Card header */}
                   <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50"
@@ -867,10 +937,25 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                         className="text-xs font-semibold" style={{ color: '#0D8F8F' }}>
                         Edit details →
                       </button>
-                      <button onClick={() => onDelete(rowKey)}
-                        className="text-xs font-semibold text-red-400 hover:text-red-600">
-                        Delete
-                      </button>
+                      <div className="flex items-center gap-3">
+                        {failed && (
+                          <button
+                            type="button"
+                            onClick={retryRow}
+                            className="text-xs font-semibold text-red-500 hover:text-red-700 flex items-center gap-1"
+                            aria-label="Retry save"
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                            Retry
+                          </button>
+                        )}
+                        <button onClick={() => onDelete(rowKey)}
+                          className="text-xs font-semibold text-red-400 hover:text-red-600">
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -933,7 +1018,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                   </span>
                 </th>
               ))}
-              {!readOnly && <th className="w-10" />}
+              {!readOnly && <th className="w-14" />}
             </tr>
           </thead>
           <tbody>
@@ -957,12 +1042,13 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
             )}
             {skuRows.map((row, ri) => {
               const rowKey = row.id || row._tempId;
+              const failed = failedRows.has(rowKey);
               return (
                 <tr key={rowKey}
                   className={clsx(
                     'border-b border-gray-100 group transition-colors h-12',
                     ri % 2 === 0 ? 'bg-white' : 'bg-gray-50',
-                    'hover:bg-teal-50'
+                    failed ? 'bg-red-50/60 hover:bg-red-50' : 'hover:bg-teal-50'
                   )}>
                   <td className="px-2 py-0 w-8 text-center">
                     <CompletenessDot row={row} />
@@ -995,11 +1081,26 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                     );
                   })}
                   {!readOnly && (
-                    <td className="px-1 py-0 w-10">
-                      <RowActionMenu
-                        onDetail={() => onRowClick(row)}
-                        onDelete={() => onDelete(rowKey)}
-                      />
+                    <td className="px-1 py-0 w-14">
+                      <div className="flex items-center justify-end gap-1">
+                        {failed && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); retryRow(); }}
+                            title="Save failed. Click to retry."
+                            aria-label="Retry save"
+                            className="text-red-500 hover:text-red-700 transition-colors p-0.5"
+                          >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                          </button>
+                        )}
+                        <RowActionMenu
+                          onDetail={() => onRowClick(row)}
+                          onDelete={() => onDelete(rowKey)}
+                        />
+                      </div>
                     </td>
                   )}
                 </tr>

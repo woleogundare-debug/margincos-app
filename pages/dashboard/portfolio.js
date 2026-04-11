@@ -32,6 +32,10 @@ export default function PortfolioPage() {
   const {
     periods, activePeriod, skuRows, tradeInvestment,
     loading, saving,
+    // portfolioError: non-thrown errors from loadPeriods, createPeriod,
+    // deleteSku, etc. The inline banner falls back to this when saveError
+    // is null so future error sources surface automatically.
+    error: portfolioError,
     createPeriod, selectPeriod, deletePeriod,
     saveSku, addSku, deleteSku,
     saveTradeInvestment,
@@ -59,6 +63,11 @@ export default function PortfolioPage() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
   const [skuLimitError, setSkuLimitError] = useState(null);
+  // Save-path error channel — feeds the red banner under the grid.
+  // Populated by handleSaveSku's catch (inline-edit failures), by
+  // handleBulkImport's Promise.allSettled summary (bulk-import failures),
+  // and falls back to portfolioError for non-thrown hook errors.
+  const [saveError, setSaveError] = useState(null);
   const [importProgress, setImportProgress] = useState('');
   const [visibleCount, setVisibleCount] = useState(100);
 
@@ -114,9 +123,21 @@ export default function PortfolioPage() {
   }, [addSku]);
 
   const handleSaveSku = async (row) => {
-    await saveSku(row);
-    if (selectedRow && (selectedRow.id === row.id || selectedRow._tempId === row._tempId)) {
-      setSelectedRow(row);
+    try {
+      await saveSku(row);
+      // Success - clear any stale save error from a previous failed attempt
+      // on this same row (covers the retry path from SkuGrid's failedRows).
+      setSaveError(null);
+      if (selectedRow && (selectedRow.id === row.id || selectedRow._tempId === row._tempId)) {
+        setSelectedRow(row);
+      }
+    } catch (err) {
+      // Surface the error text in the banner. Re-throw so SkuGrid's
+      // flushPendingEdits .catch() can mark the row in failedRows and
+      // render the retry affordance. Without the re-throw, SkuGrid would
+      // see a resolved promise and treat the save as successful.
+      setSaveError(err.message || 'Could not save changes. Please try again.');
+      throw err;
     }
   };
 
@@ -131,16 +152,58 @@ export default function PortfolioPage() {
 
     setImportProgress(`Importing ${rows.length} ${rows.length !== 1 ? cfg.unitPlural : cfg.unit}…`);
     const batchSize = 5;
+    // Collect failures instead of halting the import on the first error.
+    // Promise.allSettled lets the unique rows succeed while the duplicates
+    // or empty-pkField rows surface in the summary below.
+    const failures = [];
+    let successCount = 0;
+
     for (let i = 0; i < rows.length; i += batchSize) {
       const batch = rows.slice(i, i + batchSize);
-      await Promise.all(batch.map(row => saveSku({
-        ...row,
-        _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      })));
+      const results = await Promise.allSettled(
+        batch.map(row => saveSku({
+          ...row,
+          _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        }))
+      );
+      results.forEach((res, idx) => {
+        if (res.status === 'fulfilled') {
+          successCount += 1;
+        } else {
+          const row = batch[idx];
+          failures.push({
+            pkValue: row.sku_id || row.lane_id || '(empty)',
+            code: res.reason?.code || 'SAVE_FAILED',
+            message: res.reason?.message || 'Unknown error',
+          });
+        }
+      });
       setImportProgress(`Importing ${rows.length} ${rows.length !== 1 ? cfg.unitPlural : cfg.unit}… (${Math.min(i + batchSize, rows.length)}/${rows.length})`);
     }
+
     setImportProgress('');
-  }, [tier, activeSkuCount, saveSku, cfg]);
+
+    if (failures.length > 0) {
+      // Group failures by code for a readable summary. Duplicates and empties
+      // are the common cases — others bucket together as "errors".
+      const dupIds = failures.filter(f => f.code === 'DUPLICATE_SKU').map(f => f.pkValue);
+      const empties = failures.filter(f => f.code === 'EMPTY_SKU_ID').length;
+      const others = failures.filter(f => f.code !== 'DUPLICATE_SKU' && f.code !== 'EMPTY_SKU_ID');
+      const parts = [];
+      if (dupIds.length > 0) {
+        parts.push(`${dupIds.length} duplicate ${dupIds.length === 1 ? 'ID' : 'IDs'} (${dupIds.map(id => `'${id}'`).join(', ')})`);
+      }
+      if (empties > 0) {
+        parts.push(`${empties} empty ${empties === 1 ? 'ID' : 'IDs'}`);
+      }
+      if (others.length > 0) {
+        parts.push(`${others.length} other ${others.length === 1 ? 'error' : 'errors'}`);
+      }
+      setSaveError(`Imported ${successCount} of ${rows.length} rows. ${failures.length} row${failures.length === 1 ? '' : 's'} failed: ${parts.join('; ')}.`);
+    } else {
+      setSaveError(null);
+    }
+  }, [tier, activeSkuCount, saveSku, cfg, tierLabel]);
 
   return (
     <>
@@ -548,6 +611,32 @@ export default function PortfolioPage() {
                 <button
                   onClick={() => setSkuLimitError(null)}
                   className="shrink-0 text-amber-500 hover:text-amber-700 transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {/* Save error banner — inline-edit failures, bulk-import summaries,
+                and non-thrown hook errors (portfolioError fallback) */}
+            {(saveError || portfolioError) && (
+              <div
+                className="flex items-start justify-between gap-3 px-4 py-3 mb-4 rounded-xl border border-red-200 bg-red-50 text-sm"
+                role="alert"
+                aria-live="polite"
+              >
+                <div className="flex items-start gap-2 text-red-800">
+                  <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                  </svg>
+                  <span>{saveError || portfolioError}</span>
+                </div>
+                <button
+                  onClick={() => setSaveError(null)}
+                  className="shrink-0 text-red-500 hover:text-red-700 transition-colors"
                   aria-label="Dismiss"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

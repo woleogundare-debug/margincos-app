@@ -104,10 +104,14 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     const pkValue = String(row[pkField] ?? '').trim();
     if (!pkValue) {
       const pkLabel = pkField === 'lane_id' ? 'Lane ID' : 'SKU ID';
-      const err = `${pkLabel} cannot be empty`;
-      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted —', err);
-      setError(err);
-      return null;
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted —', `${pkLabel} cannot be empty`);
+      // Throw a structured error so callers (flushPendingEdits, handleSaveSku,
+      // handleBulkImport) can map the .code to user-facing feedback instead
+      // of silently returning null. Plain Error with attached .code — no new
+      // type to export, idiomatic JavaScript, catches work the same way.
+      const err = new Error(`${pkLabel} cannot be empty`);
+      err.code = 'EMPTY_SKU_ID';
+      throw err;
     }
     setSaving(true);
     const tempId = row._tempId;
@@ -131,9 +135,21 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       .single();
     setSaving(false);
     if (error) {
-      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Supabase error:', error.message, error.details, error.hint);
-      setError(error.message);
-      return null;
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Supabase error:', error.message, error.details, error.hint, error.code);
+      // Map Postgres error codes to structured errors with user-facing text.
+      // 23505 = unique_violation — fires when the (period_id, sku_id) or
+      // (period_id, lane_id) UNIQUE constraint catches a duplicate. Mapping
+      // on the code (not the message string) is robust against any future
+      // message changes from Postgres or the constraint being renamed.
+      if (error.code === '23505') {
+        const pkLabel = pkField === 'lane_id' ? 'Lane ID' : 'SKU ID';
+        const dupErr = new Error(`A row with this ${pkLabel} already exists in this period.`);
+        dupErr.code = 'DUPLICATE_SKU';
+        throw dupErr;
+      }
+      const saveErr = new Error(error.message || 'Could not save changes. Please try again.');
+      saveErr.code = 'SAVE_FAILED';
+      throw saveErr;
     }
     if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Saved successfully:', data.id);
     setSkuRows(prev => {
