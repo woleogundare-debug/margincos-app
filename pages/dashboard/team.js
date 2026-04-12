@@ -347,7 +347,7 @@ export default function TeamPage() {
 
                       return (
                         <tr key={m.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors group">
-                          {/* Member: avatar + name + email */}
+                          {/* Member: avatar + name + email (+ mobile-only stacked details) */}
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3 min-w-0">
                               <div
@@ -363,6 +363,43 @@ export default function TeamPage() {
                                 </p>
                                 <p className="text-xs text-slate-400 truncate">{m.profile?.email}</p>
                               </div>
+                            </div>
+
+                            {/* Mobile-only: role, division, joined - stacked below name/email */}
+                            <div className="md:hidden mt-3 ml-12 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
+                              {/* Role badge (read-only on mobile for all users) */}
+                              <span className={`px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wide text-[10px] ${
+                                m.role === 'admin'
+                                  ? 'bg-navy text-white'
+                                  : 'bg-slate-100 text-slate-600'
+                              }`}>
+                                {m.role}
+                              </span>
+
+                              {/* Division picker (admin) or read-only text (non-admin) */}
+                              {divisions.length >= 2 && (
+                                canEditDivision ? (
+                                  <select
+                                    value={memberDivisionId}
+                                    disabled={busy}
+                                    onChange={e => handleAssignDivision(m.id, m.user_id, e.target.value || null)}
+                                    className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white disabled:opacity-50"
+                                    title={isSelf ? "Assign yourself to a division" : "Assign to division"}
+                                  >
+                                    <option value="">— No division —</option>
+                                    {divisions.map(d => (
+                                      <option key={d.id} value={d.id}>{d.name}</option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <span className="text-slate-500">
+                                    {divisions.find(d => d.id === memberDivisionId)?.name || '—'}
+                                  </span>
+                                )
+                              )}
+
+                              {/* Joined date */}
+                              <span className="text-slate-400">{joinedLabel}</span>
                             </div>
                           </td>
 
@@ -420,7 +457,7 @@ export default function TeamPage() {
                           </td>
 
                           {/* Actions */}
-                          <td className="px-6 py-4 text-right">
+                          <td className="px-6 py-4 text-right align-top md:align-middle">
                             {canEdit && (
                               <button
                                 onClick={() => handleRemoveMember(m.id, m.profile?.full_name || m.profile?.email)}
