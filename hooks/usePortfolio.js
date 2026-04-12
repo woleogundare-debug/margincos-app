@@ -88,8 +88,13 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     return data;
   }, [userId, divisionId, teamId, ensureDivisionSector, loadPeriods, selectPeriod]);
 
-  // ── Save single SKU/Lane row (upsert, optimistic) ────────────
-  const saveSku = useCallback(async (row) => {
+  // ── Save single SKU/Lane row (insert or upsert, optimistic) ──
+  // merge=false (default): uses .insert() so the UNIQUE constraint fires
+  //   23505 on duplicate (period_id, sku_id). This is the inline-edit path.
+  // merge=true: uses .upsert() with onConflict so bulk-import rows patch
+  //   existing rows instead of duplicating them (item 2 semantics).
+  // Existing rows (payload.id present) always use .update().
+  const saveSku = useCallback(async (row, { merge = false } = {}) => {
     // Guard: don't attempt save without required context
     if (!activePeriod?.id || !userId) {
       if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted — missing context:', { period_id: activePeriod?.id, user_id: userId });
@@ -104,10 +109,10 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     const pkValue = String(row[pkField] ?? '').trim();
     if (!pkValue) {
       const pkLabel = pkField === 'lane_id' ? 'Lane ID' : 'SKU ID';
-      const err = `${pkLabel} cannot be empty`;
-      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted —', err);
-      setError(err);
-      return null;
+      const err = new Error(`${pkLabel} cannot be empty`);
+      err.code = 'EMPTY_PK';
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted —', err.message);
+      throw err;
     }
     setSaving(true);
     const tempId = row._tempId;
@@ -119,21 +124,40 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     payload.active = (a === true || a === 'Y' || a === 'y' || a === 'true' || a === 'Active') ? 'Y' : (a === false || a === 'N' || a === 'n' || a === 'false' || a === 'No' || a === 'Inactive') ? 'N' : 'Y';
     // For new rows (no id yet), remove id so Supabase auto-generates it
     if (!payload.id) delete payload.id;
-    if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting to', tableName, ':', { id: payload.id || '(new)', [pkField]: payload[pkField], period_id: payload.period_id, user_id: payload.user_id });
-    // onConflict target mirrors the DB UNIQUE constraint:
-    //   sku_rows        → unique_sku_per_period   UNIQUE (period_id, sku_id)
-    //   logistics_rows  → unique_lane_per_period  UNIQUE (period_id, lane_id)
-    // This makes re-uploads patch existing rows instead of duplicating them.
-    const { data, error } = await sb
-      .from(tableName)
-      .upsert(payload, { onConflict: `period_id,${pkField}` })
-      .select()
-      .single();
+
+    let data, error;
+    if (payload.id) {
+      // Existing row — always update by primary key
+      if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Updating', tableName, ':', { id: payload.id, [pkField]: payload[pkField] });
+      ({ data, error } = await sb
+        .from(tableName)
+        .update(payload)
+        .eq('id', payload.id)
+        .select()
+        .single());
+    } else if (merge) {
+      // Bulk-import path — upsert so duplicate (period_id, sku_id) patches
+      if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting (merge) to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
+      ({ data, error } = await sb
+        .from(tableName)
+        .upsert(payload, { onConflict: `period_id,${pkField}` })
+        .select()
+        .single());
+    } else {
+      // Inline-edit new row — plain insert lets 23505 fire on duplicate
+      if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Inserting to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
+      ({ data, error } = await sb
+        .from(tableName)
+        .insert(payload)
+        .select()
+        .single());
+    }
     setSaving(false);
     if (error) {
-      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Supabase error:', error.message, error.details, error.hint);
-      setError(error.message);
-      return null;
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Supabase error:', error.message, error.details, error.hint, error.code);
+      const err = new Error(error.message);
+      err.code = error.code || 'SUPABASE_ERROR';
+      throw err;
     }
     if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Saved successfully:', data.id);
     setSkuRows(prev => {

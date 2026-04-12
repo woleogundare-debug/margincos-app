@@ -31,7 +31,7 @@ export default function PortfolioPage() {
   const { isProfessional, isEnterprise, tier } = useAuth();
   const {
     periods, activePeriod, skuRows, tradeInvestment,
-    loading, saving,
+    loading, saving, error: portfolioError,
     createPeriod, selectPeriod, deletePeriod,
     saveSku, addSku, deleteSku,
     saveTradeInvestment,
@@ -60,6 +60,7 @@ export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState('sku'); // 'sku' or 'trade'
   const [skuLimitError, setSkuLimitError] = useState(null);
   const [importProgress, setImportProgress] = useState('');
+  const [saveError, setSaveError] = useState(null);
   const [visibleCount, setVisibleCount] = useState(100);
 
   // Consolidation picker state
@@ -114,9 +115,20 @@ export default function PortfolioPage() {
   }, [addSku]);
 
   const handleSaveSku = async (row) => {
-    await saveSku(row);
-    if (selectedRow && (selectedRow.id === row.id || selectedRow._tempId === row._tempId)) {
-      setSelectedRow(row);
+    try {
+      await saveSku(row);
+      if (selectedRow && (selectedRow.id === row.id || selectedRow._tempId === row._tempId)) {
+        setSelectedRow(row);
+      }
+    } catch (err) {
+      // Surface save errors in the red banner. SkuGrid's .catch() in
+      // flushPendingEdits handles the per-row failedRows tracking; this
+      // catch surfaces the message for the page-level banner.
+      const msg = err.code === '23505'
+        ? `Duplicate ${cfg.unit} ID - a row with that ID already exists in this period.`
+        : (err.message || 'Save failed');
+      setSaveError(msg);
+      throw err; // re-throw so SkuGrid's .catch() can mark the row failed
     }
   };
 
@@ -130,16 +142,24 @@ export default function PortfolioPage() {
     }
 
     setImportProgress(`Importing ${rows.length} ${rows.length !== 1 ? cfg.unitPlural : cfg.unit}…`);
+    setSaveError(null);
     const batchSize = 5;
+    const failures = [];
     for (let i = 0; i < rows.length; i += batchSize) {
       const batch = rows.slice(i, i + batchSize);
-      await Promise.all(batch.map(row => saveSku({
+      const results = await Promise.allSettled(batch.map(row => saveSku({
         ...row,
         _tempId: `csv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      })));
+      }, { merge: true })));
+      results.forEach((r, idx) => {
+        if (r.status === 'rejected') failures.push({ row: batch[idx], error: r.reason });
+      });
       setImportProgress(`Importing ${rows.length} ${rows.length !== 1 ? cfg.unitPlural : cfg.unit}… (${Math.min(i + batchSize, rows.length)}/${rows.length})`);
     }
     setImportProgress('');
+    if (failures.length > 0) {
+      setSaveError(`${failures.length} of ${rows.length} rows failed to import. Check for duplicates or missing required fields.`);
+    }
   }, [tier, activeSkuCount, saveSku, cfg]);
 
   return (
@@ -557,6 +577,27 @@ export default function PortfolioPage() {
               </div>
             )}
 
+            {/* Save error banner (red) */}
+            {saveError && (
+              <div className="flex items-start justify-between gap-3 px-4 py-3 mb-4 rounded-xl border border-red-200 bg-red-50 text-sm">
+                <div className="flex items-start gap-2 text-red-800">
+                  <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <span>{saveError}</span>
+                </div>
+                <button
+                  onClick={() => setSaveError(null)}
+                  className="shrink-0 text-red-400 hover:text-red-600 transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
             {/* SKU Grid tab */}
             {activeTab === 'sku' && (
               <>
@@ -608,10 +649,12 @@ export default function PortfolioPage() {
         {selectedRow && (
           <SkuDetailPanel
             row={selectedRow}
-            onClose={() => setSelectedRow(null)}
+            onClose={() => { setSelectedRow(null); setSaveError(null); }}
             onSave={handleSaveSku}
             saving={saving}
             vertical={activePeriod?.vertical}
+            saveError={saveError}
+            onDismissError={() => setSaveError(null)}
           />
         )}
       </>
