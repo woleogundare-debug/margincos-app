@@ -536,7 +536,7 @@ function RowActionMenu({ onDetail, onDuplicate, onDelete }) {
   );
 }
 
-export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod, isProfessional, isEnterprise, readOnly = false }) {
+export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkImport, saving, activePeriod, isProfessional, isEnterprise, readOnly = false, onClearSaveError }) {
   const [activeTab, setActiveTab] = useState('identity');
   const [importResult, setImportResult] = useState(null);
   const [importing, setImporting] = useState(false);
@@ -705,6 +705,15 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       setHasPending(false);
     }
   }, [skuRows]);
+
+  // Auto-clear the page-level save error banner when all failed rows are
+  // resolved (successful retry or row deletion). The parent passes
+  // onClearSaveError={() => setSaveError(null)}.
+  useEffect(() => {
+    if (Object.keys(failedRows).length === 0 && onClearSaveError) {
+      onClearSaveError();
+    }
+  }, [failedRows, onClearSaveError]);
 
   useEffect(() => {
     return () => {

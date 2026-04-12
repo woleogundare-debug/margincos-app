@@ -126,31 +126,41 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     if (!payload.id) delete payload.id;
 
     let data, error;
-    if (payload.id) {
-      // Existing row — always update by primary key
-      if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Updating', tableName, ':', { id: payload.id, [pkField]: payload[pkField] });
-      ({ data, error } = await sb
-        .from(tableName)
-        .update(payload)
-        .eq('id', payload.id)
-        .select()
-        .single());
-    } else if (merge) {
-      // Bulk-import path — upsert so duplicate (period_id, sku_id) patches
-      if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting (merge) to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
-      ({ data, error } = await sb
-        .from(tableName)
-        .upsert(payload, { onConflict: `period_id,${pkField}` })
-        .select()
-        .single());
-    } else {
-      // Inline-edit new row — plain insert lets 23505 fire on duplicate
-      if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Inserting to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
-      ({ data, error } = await sb
-        .from(tableName)
-        .insert(payload)
-        .select()
-        .single());
+    try {
+      if (payload.id) {
+        // Existing row — always update by primary key
+        if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Updating', tableName, ':', { id: payload.id, [pkField]: payload[pkField] });
+        ({ data, error } = await sb
+          .from(tableName)
+          .update(payload)
+          .eq('id', payload.id)
+          .select()
+          .single());
+      } else if (merge) {
+        // Bulk-import path — upsert so duplicate (period_id, sku_id) patches
+        if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting (merge) to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
+        ({ data, error } = await sb
+          .from(tableName)
+          .upsert(payload, { onConflict: `period_id,${pkField}` })
+          .select()
+          .single());
+      } else {
+        // Inline-edit new row — plain insert lets 23505 fire on duplicate
+        if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Inserting to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
+        ({ data, error } = await sb
+          .from(tableName)
+          .insert(payload)
+          .select()
+          .single());
+      }
+    } catch (networkErr) {
+      // Network-level failure (offline, DNS, timeout) — the await itself
+      // rejected rather than returning a Supabase error response.
+      setSaving(false);
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Network error:', networkErr.message);
+      const err = new Error('Could not save changes. Check your connection and try again.');
+      err.code = 'NETWORK_ERROR';
+      throw err;
     }
     setSaving(false);
     if (error) {

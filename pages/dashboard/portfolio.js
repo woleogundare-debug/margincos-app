@@ -613,6 +613,7 @@ export default function PortfolioPage() {
                   isProfessional={isProfessional}
                   isEnterprise={isEnterprise}
                   readOnly={isConsolidated}
+                  onClearSaveError={() => setSaveError(null)}
                 />
                 {gridRows.length > visibleCount && (
                   <div style={{ textAlign: 'center', padding: '16px 0' }}>
