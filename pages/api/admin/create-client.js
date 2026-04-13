@@ -1,4 +1,5 @@
 import { requireAuth, createSupabaseServiceClient } from '../../../lib/supabase/server';
+import { ALLOWED_SECTORS } from '../../../lib/sectorConfig';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -21,17 +22,20 @@ export default async function handler(req, res) {
     .single();
   if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
 
-  const { companyName, tier, adminName, adminEmail, tempPassword } = req.body;
+  const { companyName, tier, sector, adminName, adminEmail, tempPassword } = req.body;
 
-  if (!companyName || !tier || !adminEmail || !tempPassword) {
+  if (!companyName || !tier || !sector || !adminEmail || !tempPassword) {
     return res.status(400).json({ error: 'Missing required fields' });
+  }
+  if (!ALLOWED_SECTORS.includes(sector)) {
+    return res.status(400).json({ error: `Invalid sector. Must be one of: ${ALLOWED_SECTORS.join(', ')}` });
   }
 
   try {
     // 1. Create team
     const { data: team, error: teamError } = await serviceClient
       .from('teams')
-      .insert([{ name: companyName, tier, created_by: auth.user.id }])
+      .insert([{ name: companyName, tier, sector, created_by: auth.user.id }])
       .select()
       .single();
     if (teamError) throw teamError;
@@ -65,7 +69,7 @@ export default async function handler(req, res) {
     // 4b. Create default division named after the company
     const { data: defaultDivision, error: divisionError } = await serviceClient
       .from('divisions')
-      .insert({ team_id: team.id, name: companyName, is_default: true })
+      .insert({ team_id: team.id, name: companyName, is_default: true, sector })
       .select('id')
       .single();
 

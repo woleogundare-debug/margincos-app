@@ -84,9 +84,20 @@ export default function useDivisions(teamId, { userDivisionId = null, isAdmin = 
     if (!teamId) return { error: 'No team' };
     const sb = getSupabaseClient();
 
+    // Inherit sector from the parent team if not explicitly provided.
+    let effectiveSector = sector;
+    if (!effectiveSector) {
+      const { data: team } = await sb
+        .from('teams')
+        .select('sector')
+        .eq('id', teamId)
+        .single();
+      effectiveSector = team?.sector || null;
+    }
+
     const { data, error } = await sb
       .from('divisions')
-      .insert({ team_id: teamId, name, sector })
+      .insert({ team_id: teamId, name, sector: effectiveSector })
       .select()
       .single();
 

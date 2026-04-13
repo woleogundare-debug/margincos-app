@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { getSupabaseClient } from '../../lib/supabase/client';
+import { ALLOWED_SECTORS } from '../../lib/sectorConfig';
 
 const TIERS = ['essentials', 'professional', 'enterprise'];
 
@@ -24,6 +25,7 @@ export default function AdminPanel() {
   const [form, setForm] = useState({
     companyName: '',
     tier: 'professional',
+    sector: '',
     adminName: '',
     adminEmail: '',
     tempPassword: generatePassword(),
@@ -60,7 +62,7 @@ export default function AdminPanel() {
   };
 
   const handleCreate = async () => {
-    if (!form.companyName || !form.adminEmail || !form.adminName) {
+    if (!form.companyName || !form.sector || !form.adminEmail || !form.adminName) {
       setError('All fields are required'); return;
     }
     setCreating(true);
@@ -77,7 +79,7 @@ export default function AdminPanel() {
     const data = await res.json();
     if (data.success) {
       setSuccess(`${form.companyName} created. Welcome email sent to ${form.adminEmail}.`);
-      setForm({ companyName: '', tier: 'professional', adminName: '', adminEmail: '', tempPassword: generatePassword() });
+      setForm({ companyName: '', tier: 'professional', sector: '', adminName: '', adminEmail: '', tempPassword: generatePassword() });
       setShowForm(false);
       loadClients();
     } else {
@@ -216,6 +218,21 @@ export default function AdminPanel() {
                   >
                     {TIERS.map(t => (
                       <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                    Sector *
+                  </label>
+                  <select
+                    value={form.sector}
+                    onChange={e => setForm({ ...form, sector: e.target.value })}
+                    className="w-full border rounded-lg px-4 py-2.5 text-sm outline-none bg-white"
+                  >
+                    <option value="">Select sector...</option>
+                    {ALLOWED_SECTORS.map(s => (
+                      <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
                 </div>
