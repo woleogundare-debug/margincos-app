@@ -66,11 +66,11 @@ export default async function handler(req, res) {
         .in('user_id', userIds);
     }
 
-    // Step 8 — Delete team (cascades to: divisions, team_members, team_invitations)
+    // Step 8 — Delete team via RPC (sets transaction-local flag to bypass the
+    // enforce_last_admin trigger, then FK CASCADE handles team_members,
+    // divisions, and team_invitations).
     const { error: teamError } = await serviceClient
-      .from('teams')
-      .delete()
-      .eq('id', teamId);
+      .rpc('admin_cascade_delete_team', { p_team_id: teamId });
     if (teamError) throw teamError;
 
     // Step 9 — Delete profiles and auth users

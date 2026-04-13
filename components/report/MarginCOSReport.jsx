@@ -13,12 +13,17 @@ Font.register({
   src: '/fonts/playfair-display-700.ttf',
   fontWeight: 700,
 });
+// PDF body font: Noto Sans (registered as 'DMSans' to avoid touching 30+
+// fontFamily references). Noto Sans includes U+20A6 (₦) and full Latin
+// Extended coverage; the original DM Sans TTF lacked currency symbols.
+// Web app CSS continues to use the real DM Sans woff2 files — this swap
+// only affects react-pdf rendering.
 Font.register({
   family: 'DMSans',
   fonts: [
-    { src: '/fonts/dm-sans-400.ttf', fontWeight: 400 },
-    { src: '/fonts/dm-sans-500.ttf', fontWeight: 500 },
-    { src: '/fonts/dm-sans-700.ttf', fontWeight: 700 },
+    { src: '/fonts/noto-sans-400.ttf', fontWeight: 400 },
+    { src: '/fonts/noto-sans-500.ttf', fontWeight: 500 },
+    { src: '/fonts/noto-sans-700.ttf', fontWeight: 700 },
   ],
 });
 
