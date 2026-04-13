@@ -18,26 +18,17 @@ function formatPeriodDate(created_at) {
   return new Date(created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDelete, loading, divisions = [] }) {
+export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDelete, loading, divisions = [], activeDivision = null }) {
   const [open,               setOpen]               = useState(false);
   const [showModal,          setShowModal]          = useState(false);
   const [selectedMonth,      setSelectedMonth]      = useState(MONTHS[new Date().getMonth()]);
   const [selectedYear,       setSelectedYear]       = useState(CURRENT_YEAR);
   const [form,               setForm]               = useState({ vertical: 'FMCG' });
-  const [selectedDivisionId, setSelectedDivisionId] = useState('');
   const [creating,           setCreating]           = useState(false);
   const [error,              setError]              = useState('');
   const [deleting,           setDeleting]           = useState(null); // period id currently being deleted
   const [deleteError,        setDeleteError]        = useState('');
   const dropdownRef = useRef(null);
-
-  // Auto-select default division whenever the divisions list changes
-  useEffect(() => {
-    if (divisions && divisions.length > 0) {
-      const def = divisions.find(d => d.is_default) || divisions[0];
-      setSelectedDivisionId(def.id);
-    }
-  }, [divisions]);
 
   // Auto-generated label — canonical format for sorting and display
   const periodLabel = `${selectedMonth} ${selectedYear}`;
@@ -55,11 +46,12 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
 
   const handleCreate = async () => {
     if (!form.vertical) { setError('Vertical is required'); return; }
+    if (!activeDivision?.id) { setError('No division selected'); return; }
     setCreating(true);
     await onCreate({
       label: periodLabel,
       vertical: form.vertical,
-      division_id: selectedDivisionId || null,
+      division_id: activeDivision.id,
     });
     setCreating(false);
     setShowModal(false);
@@ -67,11 +59,6 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
     setSelectedMonth(MONTHS[new Date().getMonth()]);
     setSelectedYear(CURRENT_YEAR);
     setForm({ vertical: 'FMCG' });
-    // Re-select default division for next creation
-    if (divisions && divisions.length > 0) {
-      const def = divisions.find(d => d.is_default) || divisions[0];
-      setSelectedDivisionId(def.id);
-    }
     setError('');
   };
 
@@ -243,21 +230,17 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
             />
           </div>
 
-          {/* Division selector — hidden when team has only one division */}
-          {divisions && divisions.length > 1 && (
+          {/* Division — read-only display sourced from parent's activeDivision */}
+          {activeDivision && (
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                Division <span className="text-red-500">*</span>
+                Division
               </label>
-              <select
-                value={selectedDivisionId}
-                onChange={e => setSelectedDivisionId(e.target.value)}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+              <div
+                className="w-full px-3 py-2.5 border border-slate-100 rounded-lg text-sm font-medium bg-slate-50"
                 style={{ color: '#1B2A4A' }}>
-                {divisions.map(d => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
-                ))}
-              </select>
+                {activeDivision.name}
+              </div>
             </div>
           )}
 

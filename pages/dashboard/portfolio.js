@@ -325,6 +325,7 @@ export default function PortfolioPage() {
               onDelete={deletePeriod}
               loading={loading}
               divisions={divisions}
+              activeDivision={activeDivision}
             />
           </div>
         )}
@@ -361,6 +362,7 @@ export default function PortfolioPage() {
                     onDelete={deletePeriod}
                     loading={loading}
                     divisions={divisions}
+                    activeDivision={activeDivision}
                   />
                   {activePeriod && activeSkuCount > 0 && (
                     <>
@@ -513,6 +515,7 @@ export default function PortfolioPage() {
                 onDelete={deletePeriod}
                 loading={loading}
                 divisions={divisions}
+                activeDivision={activeDivision}
               />
             </div>
 
