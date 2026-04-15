@@ -97,9 +97,21 @@ export default async function handler(req, res) {
       `,
     });
   } catch (emailErr) {
-    console.error('Team invite email error:', emailErr);
-    return res.status(500).json({ error: 'Failed to send invitation email' });
+    // Email send failed, but the invitation row exists in DB and the token is valid.
+    // Return 200 with emailSent flag + inviteLink so the UI can surface the
+    // partial-success state and the inviter can share the link manually.
+    console.error('Team invite email error:', {
+      teamId,
+      email,
+      error: emailErr?.message || emailErr,
+    });
+    return res.status(200).json({
+      success: true,
+      emailSent: false,
+      inviteLink: inviteUrl,
+      message: 'Invitation created but email delivery failed. Share the link manually.',
+    });
   }
 
-  return res.status(200).json({ success: true });
+  return res.status(200).json({ success: true, emailSent: true });
 }
