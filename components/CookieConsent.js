@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-const GA4_ID = 'G-NNS2Q29Z2M';
+const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID;
 
 function enableGA() {
   if (typeof document === 'undefined') return;
+  if (!GA4_ID) return; // graceful on empty env var (staging / dev)
   if (document.getElementById('ga4-script')) return; // already loaded
 
   // Load gtag.js
