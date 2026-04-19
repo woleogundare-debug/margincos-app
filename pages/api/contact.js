@@ -6,8 +6,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -87,7 +85,9 @@ export default async function handler(req, res) {
   }
 
   // Notification to Wole
+  let resend;
   try {
+    resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',
       to: 'info@carthenaadvisory.com',
