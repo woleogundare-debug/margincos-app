@@ -6,7 +6,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -68,6 +67,7 @@ export default async function handler(req, res) {
   const inviteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/join?token=${invite.token}`;
 
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',
       to: email,

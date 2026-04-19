@@ -2,8 +2,6 @@ import { requireAuth, createSupabaseServiceClient } from '../../../lib/supabase/
 import { ALLOWED_SECTORS } from '../../../lib/sectorConfig';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -100,6 +98,7 @@ export default async function handler(req, res) {
 
   // 5. Send welcome email (outside DB try/catch)
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',
       to: adminEmail,
