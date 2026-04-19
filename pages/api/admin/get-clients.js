@@ -16,7 +16,18 @@ export default async function handler(req, res) {
     .select('is_superadmin')
     .eq('user_id', auth.user.id)
     .single();
-  if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
+  if (!profile?.is_superadmin) {
+    return res.status(403).json({
+      error: 'Forbidden',
+      _diag: {
+        userId: auth?.user?.id,
+        userEmail: auth?.user?.email,
+        profileFound: !!profile,
+        profileUserId: profile?.user_id,
+        isSuperadmin: profile?.is_superadmin,
+      }
+    });
+  }
 
   // Separate queries to avoid nested join breaking after RLS changes
   const { data: teams } = await serviceClient

@@ -21,7 +21,18 @@ export default async function handler(req, res) {
     .single();
   console.log('DIAG: profile query result:', JSON.stringify({ profile, userId: auth?.user?.id }));
   console.log('DIAG: superadmin check:', JSON.stringify({ is_superadmin: profile?.is_superadmin, profileNull: profile === null }));
-  if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
+  if (!profile?.is_superadmin) {
+    return res.status(403).json({
+      error: 'Forbidden',
+      _diag: {
+        userId: auth?.user?.id,
+        userEmail: auth?.user?.email,
+        profileFound: !!profile,
+        profileUserId: profile?.user_id,
+        isSuperadmin: profile?.is_superadmin,
+      }
+    });
+  }
 
   const { companyName, tier, sector, adminName, adminEmail, tempPassword } = req.body;
 
