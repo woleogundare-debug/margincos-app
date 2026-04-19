@@ -7,6 +7,7 @@ export default async function handler(req, res) {
 
   // Verify caller identity via cookie-based session
   const auth = await requireAuth(req, res);
+  console.log('DIAG: auth user:', JSON.stringify({ id: auth?.user?.id, email: auth?.user?.email }));
   if (auth.redirect) return res.status(401).json({ error: 'Unauthorized' });
 
   // All admin operations use the service role client
@@ -18,6 +19,8 @@ export default async function handler(req, res) {
     .select('is_superadmin')
     .eq('user_id', auth.user.id)
     .single();
+  console.log('DIAG: profile query result:', JSON.stringify({ profile, userId: auth?.user?.id }));
+  console.log('DIAG: superadmin check:', JSON.stringify({ is_superadmin: profile?.is_superadmin, profileNull: profile === null }));
   if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
 
   const { companyName, tier, sector, adminName, adminEmail, tempPassword } = req.body;
