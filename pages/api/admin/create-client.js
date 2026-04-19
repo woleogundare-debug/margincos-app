@@ -14,13 +14,11 @@ export default async function handler(req, res) {
   const serviceClient = createSupabaseServiceClient();
 
   // Verify superadmin status from DB — not from client-supplied values
-  const { data: profile } = await serviceClient
+  const { data: profile, error: profileError } = await serviceClient
     .from('profiles')
     .select('is_superadmin')
     .eq('user_id', auth.user.id)
     .single();
-  console.log('DIAG: profile query result:', JSON.stringify({ profile, userId: auth?.user?.id }));
-  console.log('DIAG: superadmin check:', JSON.stringify({ is_superadmin: profile?.is_superadmin, profileNull: profile === null }));
   if (!profile?.is_superadmin) {
     return res.status(403).json({
       error: 'Forbidden',
@@ -30,6 +28,7 @@ export default async function handler(req, res) {
         profileFound: !!profile,
         profileUserId: profile?.user_id,
         isSuperadmin: profile?.is_superadmin,
+        profileError: profileError ? { message: profileError.message, code: profileError.code, details: profileError.details, hint: profileError.hint } : null,
       }
     });
   }

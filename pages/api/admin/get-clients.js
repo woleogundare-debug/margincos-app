@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   const serviceClient = createSupabaseServiceClient();
 
   // Verify superadmin status from DB
-  const { data: profile } = await serviceClient
+  const { data: profile, error: profileError } = await serviceClient
     .from('profiles')
     .select('is_superadmin')
     .eq('user_id', auth.user.id)
@@ -28,6 +28,7 @@ export default async function handler(req, res) {
         profileFound: !!profile,
         profileUserId: profile?.user_id,
         isSuperadmin: profile?.is_superadmin,
+        profileError: profileError ? { message: profileError.message, code: profileError.code, details: profileError.details, hint: profileError.hint } : null,
         srkPresent,
         srkLength,
         supabaseUrl,
