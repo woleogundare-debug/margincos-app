@@ -18,6 +18,7 @@ export default function AdminPanel() {
   const [creating, setCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [success, setSuccess] = useState('');
+  const [warning, setWarning] = useState('');
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
   const [suspendingId, setSuspendingId] = useState(null);
@@ -78,7 +79,13 @@ export default function AdminPanel() {
 
     const data = await res.json();
     if (data.success) {
-      setSuccess(`${form.companyName} created. Welcome email sent to ${form.adminEmail}.`);
+      if (data.emailSent === false) {
+        setSuccess(`${form.companyName} created successfully. Account is active.`);
+        setWarning(`Welcome email failed to send. Share login credentials with ${form.adminEmail} manually. Check Resend dashboard for details.`);
+      } else {
+        setSuccess(`${form.companyName} created. Welcome email sent to ${form.adminEmail}.`);
+        setWarning('');
+      }
       setForm({ companyName: '', tier: 'professional', sector: '', adminName: '', adminEmail: '', tempPassword: generatePassword() });
       setShowForm(false);
       loadClients();
@@ -170,7 +177,7 @@ export default function AdminPanel() {
               <p className="text-gray-500 text-sm mt-1">{clients.length} active client{clients.length !== 1 ? 's' : ''}</p>
             </div>
             <button
-              onClick={() => { setShowForm(!showForm); setError(''); setSuccess(''); }}
+              onClick={() => { setShowForm(!showForm); setError(''); setSuccess(''); setWarning(''); }}
               className="px-5 py-2.5 rounded-lg text-white text-sm font-semibold"
               style={{ backgroundColor: '#C0392B' }}
             >
@@ -182,6 +189,11 @@ export default function AdminPanel() {
           {success && (
             <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 text-sm text-teal-800">
               {success}
+            </div>
+          )}
+          {warning && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
+              {warning}
             </div>
           )}
           {error && !showForm && (
