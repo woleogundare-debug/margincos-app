@@ -31,23 +31,27 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: `Invalid sector. Must be one of: ${ALLOWED_SECTORS.join(', ')}` });
   }
 
+  let team, newUser;
+
   try {
     // 1. Create team
-    const { data: team, error: teamError } = await serviceClient
+    const { data: teamData, error: teamError } = await serviceClient
       .from('teams')
       .insert([{ name: companyName, tier, sector, created_by: auth.user.id }])
       .select()
       .single();
     if (teamError) throw teamError;
+    team = teamData;
 
     // 2. Create user in Supabase Auth
-    const { data: newUser, error: userError } = await serviceClient.auth.admin.createUser({
+    const { data: userData, error: userError } = await serviceClient.auth.admin.createUser({
       email: adminEmail,
       password: tempPassword,
       email_confirm: true,
       user_metadata: { full_name: adminName, must_change_password: true },
     });
     if (userError) throw userError;
+    newUser = userData;
 
     // 3. Create profile
     await serviceClient.from('profiles').upsert({
@@ -86,7 +90,16 @@ export default async function handler(req, res) {
         .eq('user_id', newUser.user.id);
     }
 
-    // 5. Send welcome email
+    // DB cascade complete - team, user, profile, membership, division all created.
+    // Welcome email is isolated below so a Resend failure cannot roll back the above.
+
+  } catch (err) {
+    console.error('Admin create-client error:', err);
+    return res.status(500).json({ error: err.message });
+  }
+
+  // 5. Send welcome email (outside DB try/catch)
+  try {
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',
       to: adminEmail,
@@ -131,10 +144,19 @@ export default async function handler(req, res) {
       success: true,
       teamId: team.id,
       userId: newUser.user.id,
+      emailSent: true,
     });
-
-  } catch (err) {
-    console.error('Admin create-client error:', err);
-    return res.status(500).json({ error: err.message });
+  } catch (emailErr) {
+    console.error('Admin create-client welcome email error:', {
+      adminEmail,
+      error: emailErr?.message || emailErr,
+    });
+    return res.status(200).json({
+      success: true,
+      teamId: team.id,
+      userId: newUser.user.id,
+      emailSent: false,
+      manualActionRequired: `Welcome email failed to send. Log in to Resend to check status, or send credentials manually to ${adminEmail}.`,
+    });
   }
 }
