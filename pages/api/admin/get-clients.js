@@ -11,30 +11,12 @@ export default async function handler(req, res) {
   const serviceClient = createSupabaseServiceClient();
 
   // Verify superadmin status from DB
-  const { data: profile, error: profileError } = await serviceClient
+  const { data: profile } = await serviceClient
     .from('profiles')
     .select('is_superadmin')
     .eq('user_id', auth.user.id)
     .single();
-  if (!profile?.is_superadmin) {
-    const srkPresent = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const srkLength = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').length;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    return res.status(403).json({
-      error: 'Forbidden',
-      _diag: {
-        userId: auth?.user?.id,
-        userEmail: auth?.user?.email,
-        profileFound: !!profile,
-        profileUserId: profile?.user_id,
-        isSuperadmin: profile?.is_superadmin,
-        profileError: profileError ? { message: profileError.message, code: profileError.code, details: profileError.details, hint: profileError.hint } : null,
-        srkPresent,
-        srkLength,
-        supabaseUrl,
-      }
-    });
-  }
+  if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
 
   // Separate queries to avoid nested join breaking after RLS changes
   const { data: teams } = await serviceClient

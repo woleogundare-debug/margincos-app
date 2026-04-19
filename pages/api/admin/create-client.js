@@ -7,31 +7,18 @@ export default async function handler(req, res) {
 
   // Verify caller identity via cookie-based session
   const auth = await requireAuth(req, res);
-  console.log('DIAG: auth user:', JSON.stringify({ id: auth?.user?.id, email: auth?.user?.email }));
   if (auth.redirect) return res.status(401).json({ error: 'Unauthorized' });
 
   // All admin operations use the service role client
   const serviceClient = createSupabaseServiceClient();
 
   // Verify superadmin status from DB — not from client-supplied values
-  const { data: profile, error: profileError } = await serviceClient
+  const { data: profile } = await serviceClient
     .from('profiles')
     .select('is_superadmin')
     .eq('user_id', auth.user.id)
     .single();
-  if (!profile?.is_superadmin) {
-    return res.status(403).json({
-      error: 'Forbidden',
-      _diag: {
-        userId: auth?.user?.id,
-        userEmail: auth?.user?.email,
-        profileFound: !!profile,
-        profileUserId: profile?.user_id,
-        isSuperadmin: profile?.is_superadmin,
-        profileError: profileError ? { message: profileError.message, code: profileError.code, details: profileError.details, hint: profileError.hint } : null,
-      }
-    });
-  }
+  if (!profile?.is_superadmin) return res.status(403).json({ error: 'Forbidden' });
 
   const { companyName, tier, sector, adminName, adminEmail, tempPassword } = req.body;
 
