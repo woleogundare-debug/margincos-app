@@ -17,6 +17,9 @@ export default async function handler(req, res) {
     .eq('user_id', auth.user.id)
     .single();
   if (!profile?.is_superadmin) {
+    const srkPresent = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const srkLength = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').length;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     return res.status(403).json({
       error: 'Forbidden',
       _diag: {
@@ -25,6 +28,9 @@ export default async function handler(req, res) {
         profileFound: !!profile,
         profileUserId: profile?.user_id,
         isSuperadmin: profile?.is_superadmin,
+        srkPresent,
+        srkLength,
+        supabaseUrl,
       }
     });
   }
