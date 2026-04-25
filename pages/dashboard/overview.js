@@ -12,6 +12,7 @@ import { useActions } from '../../hooks/useActions';
 import { fNAbs, fN, getFormatterSym } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
+import { TIER_ACCESS } from '../../lib/constants';
 import clsx from 'clsx';
 
 const DownloadReportButton = dynamic(
@@ -365,44 +366,50 @@ export default function OverviewPage() {
               </div>
             )}
 
-            {/* Priority Actions — mobile card layout */}
-            {results.actions?.length > 0 && (
-              <>
-                <div className="md:hidden space-y-2 mb-6">
-                  <p className="text-xs font-bold text-navy uppercase tracking-wider mb-2">
-                    Priority Actions · {results.actions.length} identified
-                  </p>
-                  {results.actions.map((action, i) => (
-                    <div key={i} className="bg-white rounded-xl border-l-4 border-gray-100 px-4 py-3 flex items-start gap-3"
-                      style={{ borderLeftColor: action.color }}>
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5"
-                        style={{ background: action.color + '20', color: action.color }}>
-                        {i + 1}
+            {/* Priority Actions — filtered by tier entitlement */}
+            {(() => {
+              const allowedPillars = TIER_ACCESS[tier]?.allowedPillars || ['P1'];
+              const gatedActions = (results.actions || []).filter(a => allowedPillars.includes(a.pillar));
+              if (!gatedActions.length) return null;
+              return (
+                <>
+                  {/* Mobile card layout */}
+                  <div className="md:hidden space-y-2 mb-6">
+                    <p className="text-xs font-bold text-navy uppercase tracking-wider mb-2">
+                      Priority Actions · {gatedActions.length} identified
+                    </p>
+                    {gatedActions.map((action, i) => (
+                      <div key={i} className="bg-white rounded-xl border-l-4 border-gray-100 px-4 py-3 flex items-start gap-3"
+                        style={{ borderLeftColor: action.color }}>
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5"
+                          style={{ background: action.color + '20', color: action.color }}>
+                          {i + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold" style={{ color: '#1B2A4A' }}>{action.title}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{action.detail}</p>
+                          <p className="text-[10px] font-semibold mt-1 uppercase tracking-wide" style={{ color: action.color }}>
+                            {action.pillar} · {action.timeline}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold" style={{ color: '#1B2A4A' }}>{action.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{action.detail}</p>
-                        <p className="text-[10px] font-semibold mt-1 uppercase tracking-wide" style={{ color: action.color }}>
-                          {action.pillar} · {action.timeline}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {/* Desktop: Priority Actions (unchanged) */}
-                <div className="hidden md:block bg-white rounded-2xl border border-slate-100 shadow-sm mb-6">
-                  <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                    <h2 className="text-sm font-bold text-navy">Priority Actions</h2>
-                    <span className="text-xs text-slate-400">{results.actions.length} identified</span>
-                  </div>
-                  <div>
-                    {results.actions.map((action, i) => (
-                      <ActionItem key={i} action={action} index={i} />
                     ))}
                   </div>
-                </div>
-              </>
-            )}
+                  {/* Desktop: Priority Actions */}
+                  <div className="hidden md:block bg-white rounded-2xl border border-slate-100 shadow-sm mb-6">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                      <h2 className="text-sm font-bold text-navy">Priority Actions</h2>
+                      <span className="text-xs text-slate-400">{gatedActions.length} identified</span>
+                    </div>
+                    <div>
+                      {gatedActions.map((action, i) => (
+                        <ActionItem key={i} action={action} index={i} />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
 
             {/* Pillar Summary Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
