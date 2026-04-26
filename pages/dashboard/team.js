@@ -694,34 +694,25 @@ export default function TeamPage() {
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 20 }}>
               {divisions.map(div => (
                 <div
                   key={div.id}
                   style={{
                     background: '#fff', border: `1px solid ${c.rule}`, borderRadius: 12,
-                    padding: 18, position: 'relative',
+                    padding: 18,
                   }}
                 >
-                  {div.is_default && (
-                    <span style={{
-                      position: 'absolute', top: 14, right: 14, fontSize: 9, fontWeight: 800,
-                      letterSpacing: '0.14em', padding: '3px 7px', background: c.teal50,
-                      color: c.teal, borderRadius: 3, textTransform: 'uppercase',
-                    }}>
-                      Default
-                    </span>
-                  )}
-
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                     <div style={{
                       width: 36, height: 36, fontSize: 12, fontWeight: 700,
                       background: c.navy50, color: c.navy, borderRadius: 8,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0,
                     }}>
                       {div.name.slice(0, 2).toUpperCase()}
                     </div>
-                    <div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       {renamingId === div.id ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <input
@@ -740,8 +731,19 @@ export default function TeamPage() {
                         </div>
                       ) : (
                         <>
-                          <div style={{ fontFamily: font.playfair, fontSize: 16, fontWeight: 700, color: c.navy, letterSpacing: '-0.01em' }}>
-                            {div.name}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                            <span style={{ fontFamily: font.playfair, fontSize: 16, fontWeight: 700, color: c.navy, letterSpacing: '-0.01em' }}>
+                              {div.name}
+                            </span>
+                            {div.is_default && (
+                              <span style={{
+                                fontSize: 9, fontWeight: 800,
+                                letterSpacing: '0.14em', padding: '3px 7px', background: c.teal50,
+                                color: c.teal, borderRadius: 3, textTransform: 'uppercase',
+                              }}>
+                                Default
+                              </span>
+                            )}
                           </div>
                           {div.sector && (
                             <div style={{
