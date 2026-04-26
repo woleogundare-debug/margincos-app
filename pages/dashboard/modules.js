@@ -299,7 +299,7 @@ export default function ModulesPage() {
               <div>
                 <div className="doc-meta">Enterprise · Module library</div>
                 <h1 className="doc-title">Enterprise Modules</h1>
-                <div className="doc-period">{results?.m1?.results ? results.m1.results.length : 0} modules</div>
+                <div className="doc-period">4 modules · {results?.m1?.results?.length || 0} {cfg.unitPlural} analysed</div>
               </div>
               <div className="doc-actions">
               </div>

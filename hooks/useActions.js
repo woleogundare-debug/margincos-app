@@ -8,7 +8,7 @@ const URGENCY_MAP = {
   'Within 30 days':  'WITHIN 30 DAYS',
 };
 
-export function useActions(teamId, periodId) {
+export function useActions(teamId, periodId, divisionId) {
   const [actions, setActions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +20,7 @@ export function useActions(teamId, periodId) {
     if (!teamId) { setLoading(false); return; }
 
     // Skip if we already loaded this exact teamId:periodId combination
-    const fetchKey = `${teamId}:${periodId ?? 'all'}`;
+    const fetchKey = `${teamId}:${periodId ?? 'all'}:${divisionId ?? 'all'}`;
     if (lastFetchKey.current === fetchKey) return;
     lastFetchKey.current = fetchKey;
 
@@ -35,6 +35,7 @@ export function useActions(teamId, periodId) {
         .order('created_at', { ascending: false });
 
       if (periodId) query = query.eq('period_id', periodId);
+      if (divisionId) query = query.eq('division_id', divisionId);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -55,7 +56,7 @@ export function useActions(teamId, periodId) {
     } finally {
       setLoading(false);
     }
-  }, [teamId, periodId]);
+  }, [teamId, periodId, divisionId]);
 
   useEffect(() => { loadActions(); }, [loadActions]);
 
@@ -64,7 +65,7 @@ export function useActions(teamId, periodId) {
     if (!sb) return null;
     const { data, error } = await sb
       .from('action_items')
-      .insert([{ ...actionData, team_id: teamId, period_id: periodId }])
+      .insert([{ ...actionData, team_id: teamId, period_id: periodId, division_id: divisionId }])
       .select()
       .single();
     if (error) throw error;
@@ -118,6 +119,9 @@ export function useActions(teamId, periodId) {
     } else {
       countQuery = countQuery.is('period_id', null);
     }
+    if (divisionId) {
+      countQuery = countQuery.eq('division_id', divisionId);
+    }
     const { count } = await countQuery;
 
     if (count > 0) {
@@ -131,6 +135,7 @@ export function useActions(teamId, periodId) {
     const rows = engineActions.map(a => ({
       team_id: teamId,
       period_id: effectivePeriodId,
+      division_id: divisionId,
       title: a.title,
       detail: a.detail,
       pillar: a.pillar,
@@ -146,7 +151,7 @@ export function useActions(teamId, periodId) {
     lastFetchKey.current = null;
     setActions(prev => [...(data || []), ...prev]);
     return data;
-  }, [teamId, periodId, loadActions]);
+  }, [teamId, periodId, divisionId, loadActions]);
 
   // Force a re-fetch regardless of the dedup guard.
   // Used by the Actions page visibilitychange listener to pick up actions

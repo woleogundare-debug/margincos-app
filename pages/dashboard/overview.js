@@ -42,7 +42,7 @@ export default function OverviewPage() {
   const lastSavedAt = useRef(null); // tracks ranAt timestamp of last saved actions
 
   const { team } = useTeam();
-  const { stats: actionStats, bulkAddFromAnalysis, loadActions } = useActions(team?.id, activePeriod?.id);
+  const { stats: actionStats, bulkAddFromAnalysis, loadActions } = useActions(team?.id, activePeriod?.id, activeDivision?.id);
 
   // Auto-save actions to DB when analysis completes.
   // [ranAt] is the sole dependency — this effect fires exactly once per analysis

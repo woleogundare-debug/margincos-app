@@ -35,11 +35,11 @@ export default function ActionsPage() {
   const { tier } = useAuth();
   const { team, loading: teamLoading } = useTeam();
   // activePeriod + consolidation state from shared context
-  const { activePeriod, isConsolidated, activeResults } = useAnalysisContext();
+  const { activePeriod, isConsolidated, activeResults, activeDivision } = useAnalysisContext();
   const {
     actions, loading: actionsLoading, stats,
     updateAction, resolveAction, dismissAction, resetFetchKey,
-  } = useActions(team?.id, isConsolidated ? undefined : activePeriod?.id);
+  } = useActions(team?.id, isConsolidated ? undefined : activePeriod?.id, isConsolidated ? undefined : activeDivision?.id);
 
   // Combined loading: keep spinner up while team is still resolving.
   // Without this, useActions(null) fires early-return → loading=false before team loads,
