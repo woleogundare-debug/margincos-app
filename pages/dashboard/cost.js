@@ -68,6 +68,41 @@ export default function CostPage() {
 
         {!authLoading && profileLoaded && access.pillars.includes('cost') && hasResults && p2 && (
           <>
+            <div className="doc-head">
+              <div>
+                <div className="doc-meta"><span className="page-pillar-code">P2</span>Cost pillar</div>
+                <h1 className="doc-title">Cost Pass-Through</h1>
+                <div className="doc-period">{activePeriod?.label}</div>
+              </div>
+              <div className="doc-actions">
+                <button className="btn-ed">Export drivers</button>
+                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Run scenario</button>
+              </div>
+            </div>
+
+            {p2 && (
+              <div className="insight">
+                <div className="insight-label">At Risk</div>
+                <div className="insight-body">
+                  <div className="insight-text">
+                    {p2.avgAbsorbedPct > 60
+                      ? <><em>{fNAbs(p2.totalAbsorbed)}/month</em> cost exposure embedded in margin</>
+                      : p2.avgAbsorbedPct > 30
+                      ? <><em>{p2.results?.filter(r => r.floorBreach)?.length || 0} items</em> approaching cost floor</>
+                      : <>Cost absorption managed at <em>{(p2.avgAbsorbedPct || 0).toFixed(1)}%</em></>
+                    }
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 1</div>
+                <div className="exhibit-title">Cost absorption analysis</div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Cost Absorbed" value={fNAbs(p2.totalAbsorbed)}
                 pill="Not priced in — margin erosion" accent="red"
@@ -145,6 +180,14 @@ export default function CostPage() {
               )}
             </div>
 
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 2</div>
+                <div className="exhibit-title">{cfg.unitName} cost detail</div>
+                <div className="exhibit-sub">Year-on-year price change &amp; monthly margin impact</div>
+              </div>
+            </div>
+
             {/* Desktop table */}
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
@@ -199,6 +242,23 @@ export default function CostPage() {
                   : 'No FX exposure data captured — populate FX Exposure % to decompose absorbed inflation.'}
               </NarrativeBox>
             </PillarCard>
+            </div>
+
+            <div className="source-line">
+              <span><strong>Source:</strong> vendor invoice ledger, FX-adjusted to NGN</span>
+              <span><strong>Severity:</strong> normalised YoY price change, capped at 33%</span>
+            </div>
+
+            <div className="commentary">
+              <div className="commentary-label">Analyst commentary</div>
+              <div className="commentary-text">
+                Recovery rate at {(p2.portRecoveryPct || 0).toFixed(1)}% indicates {p2.portRecoveryPct < 40 ? 'significant cost absorption requiring immediate pricing intervention' : p2.portRecoveryPct < 70 ? 'opportunity to improve cost pass-through mechanism' : 'strong cost management discipline'}. {p2.totalAbsorbed > 0 ? `${fNAbs(p2.totalAbsorbed)}/month exposure represents key margin pressure point requiring repricing strategy.` : 'Cost shocks well-managed through current pricing.'} {p2.results.some(r => r.fxAbsorbed > 0) ? `FX-indexed pricing clauses recommended to mitigate foreign exchange volatility.` : ''}
+              </div>
+            </div>
+
+            <div className="doc-footer">
+              <span>MarginCOS · P2 Cost Pass-Through</span>
+              <span>Rev {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }).replace(/\//g, '·').replace(/\b(\d)\b/g, '0$1')}</span>
             </div>
           </>
         )}

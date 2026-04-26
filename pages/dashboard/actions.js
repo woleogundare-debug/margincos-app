@@ -99,28 +99,36 @@ export default function ActionsPage() {
   const PILLAR_ORDER = ['all', 'P1', 'P2', 'P3', 'P4', 'M1', 'M2', 'M3', 'M4'];
   const visiblePillars = PILLAR_ORDER.filter(p => p === 'all' || allowedPillars.includes(p));
 
+  // Compute summary stats for editorial cards
+  const totalRecoverable = useMemo(() => {
+    const positiveActions = displayActions.filter(a => a.value > 0);
+    return positiveActions.reduce((s, a) => s + (a.value || 0), 0);
+  }, [displayActions]);
+  const immediateCount = displayActions.filter(a => a.urgency === 'IMMEDIATE').length;
+  const uniquePillars = [...new Set(displayActions.map(a => a.pillar).filter(Boolean))];
+
   return (
     <>
       <Head><title>Actions | MarginCOS</title></Head>
         <div className="max-w-5xl mx-auto">
 
-          {/* Page header */}
-          <div className="mb-8">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold mb-1"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif", color: '#1B2A4A' }}>
-                  Action Tracker
-                </h1>
-                <p className="text-sm" style={{ color: '#8899AA' }}>
-                  Priority actions from your margin analysis — tracked from identification to resolution.
-                </p>
+          {/* ── Doc head ── */}
+          <div className="doc-head">
+            <div>
+              <div className="doc-meta">Action queue</div>
+              <h1 className="doc-title">Actions</h1>
+              <div className="doc-period">
+                {displayActions.length} prioritised actions across {uniquePillars.length} pillars
+                {activePeriod?.label ? ` · ${activePeriod.label}` : ''}
               </div>
+            </div>
+            <div className="doc-actions">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
                 onExport={() => exportActions(filtered)}
                 label="Export Actions"
               />
+              <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Assign owners</button>
             </div>
           </div>
 
@@ -135,47 +143,52 @@ export default function ActionsPage() {
             </div>
           )}
 
-          {/* Stats strip — hidden in consolidated mode (no DB tracking for in-memory actions) */}
-          {!isConsolidated && <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-            {[
-              { label: 'Open Actions',    value: stats.open,          color: '#C0392B' },
-              { label: 'In Progress',     value: stats.inProgress,    color: '#D4A843' },
-              { label: 'Resolved',        value: stats.resolved,      color: '#0D8F8F' },
-              { label: 'Value Recovered', value: fmtN(stats.resolvedValue), color: '#0D8F8F' },
-            ].map((s, i) => (
-              <div key={i} className="rounded-xl px-4 py-3 transition-all duration-150"
-                style={{
-                  background: 'linear-gradient(135deg, #FFFFFF 0%, #F5F7FA 100%)',
-                  border: '1px solid #E8ECF0',
-                  boxShadow: '0 1px 4px rgba(27, 42, 74, 0.04)',
-                }}>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] mb-1"
-                  style={{ color: '#8896A7' }}>{s.label}</p>
-                <p className="text-xl font-bold"
-                  style={{ color: s.color, fontFamily: "'Playfair Display', Georgia, serif" }}>
-                  {s.value}
-                </p>
+          {/* ── Summary cards ── */}
+          {!isConsolidated && (
+            <div className="summary-row">
+              <div className="summary-card">
+                <div className="lbl">Total recoverable</div>
+                <div className="v gold">{fmtN(totalRecoverable)}</div>
+                <div className="sub">Per month if all positive actions executed</div>
               </div>
-            ))}
-          </div>}
+              <div className="summary-card">
+                <div className="lbl">Immediate (this fortnight)</div>
+                <div className="v" style={{ color: 'var(--red-brand, #C0392B)' }}>{immediateCount}</div>
+                <div className="sub">High urgency · margin protection</div>
+              </div>
+              <div className="summary-card">
+                <div className="lbl">Pillar coverage</div>
+                <div className="v">{uniquePillars.length} / 4</div>
+                <div className="sub">Pillars represented in queue</div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Exhibit 1 — Action queue ── */}
+          <div className="exhibit-head">
+            <div>
+              <div className="exhibit-num">Exhibit 1</div>
+              <div className="exhibit-title">Action queue</div>
+              <div className="exhibit-sub">Sorted by recoverable margin impact · NGN/month</div>
+            </div>
+            <div className="exhibit-meta">
+              <span className="count">{filtered.length} of {displayActions.length} shown</span>
+            </div>
+          </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
             {/* Status filter */}
-            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+            <div style={{ display: 'flex', gap: 4, background: 'var(--paper-2, #F0F2F5)', borderRadius: 8, padding: 4 }}>
               {['all', 'open', 'in_progress', 'resolved', 'dismissed'].map(s => (
                 <button key={s}
-                  onClick={() => {
-                    setFilter(s);
-                    // Switching status = intent to see ALL items of that status.
-                    // Reset pillar filter so users don't get trapped seeing 1 item
-                    // because a pillar sub-filter was still active from a previous click.
-                    setPillarFilter('all');
-                  }}
-                  className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all"
+                  onClick={() => { setFilter(s); setPillarFilter('all'); }}
                   style={{
-                    backgroundColor: filter === s ? '#1B2A4A' : 'transparent',
-                    color: filter === s ? '#FFFFFF' : '#8899AA',
+                    padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                    fontFamily: "'DM Sans', sans-serif", border: 'none', cursor: 'pointer',
+                    letterSpacing: '0.04em',
+                    backgroundColor: filter === s ? 'var(--navy, #1B2A4A)' : 'transparent',
+                    color: filter === s ? '#fff' : 'var(--text-light, #8899AA)',
                   }}>
                   {s === 'all' ? 'All Status' : STATUS_CONFIG[s]?.label}
                 </button>
@@ -183,16 +196,18 @@ export default function ActionsPage() {
             </div>
 
             {/* Pillar filter — tabs gated by tier */}
-            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+            <div style={{ display: 'flex', gap: 4, background: 'var(--paper-2, #F0F2F5)', borderRadius: 8, padding: 4 }}>
               {visiblePillars.map(p => (
                 <button key={p}
                   onClick={() => setPillarFilter(p)}
-                  className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all"
                   style={{
-                    backgroundColor: pillarFilter === p ? (PILLAR_COLORS[p] || '#1B2A4A') : 'transparent',
-                    color: pillarFilter === p ? '#FFFFFF' : '#8899AA',
+                    padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                    fontFamily: "'JetBrains Mono', monospace", border: 'none', cursor: 'pointer',
+                    letterSpacing: '0.06em',
+                    backgroundColor: pillarFilter === p ? (PILLAR_COLORS[p] || 'var(--navy, #1B2A4A)') : 'transparent',
+                    color: pillarFilter === p ? '#fff' : 'var(--text-light, #8899AA)',
                   }}>
-                  {p === 'all' ? 'All Pillars' : p}
+                  {p === 'all' ? 'All' : p}
                 </button>
               ))}
             </div>
@@ -202,12 +217,11 @@ export default function ActionsPage() {
               value={filterUrgency}
               onChange={e => setFilterUrgency(e.target.value)}
               style={{
-                fontSize: '13px', fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: filterUrgency === 'all' ? '#8899AA' : '#1B2A4A',
+                fontSize: 12, fontFamily: "'DM Sans', sans-serif",
+                color: filterUrgency === 'all' ? 'var(--text-light, #8899AA)' : 'var(--navy, #1B2A4A)',
                 fontWeight: 600, padding: '6px 12px',
-                border: '1px solid #D1D9E0', borderRadius: '8px',
-                background: '#FFFFFF', cursor: 'pointer',
-                outline: 'none',
+                border: '1px solid var(--rule-strong, #D1D9E0)', borderRadius: 8,
+                background: '#fff', cursor: 'pointer', outline: 'none',
               }}>
               <option value="all">All urgency levels</option>
               <option value="IMMEDIATE">Immediate</option>
@@ -219,173 +233,154 @@ export default function ActionsPage() {
 
           {/* Action list */}
           {loading ? (
-            <div className="text-center py-16 text-gray-400 text-sm">Loading actions...</div>
+            <div className="panel" style={{ textAlign: 'center', padding: '48px 20px', color: 'var(--text-light, #8899AA)', fontSize: 13 }}>
+              Loading actions...
+            </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-              <p className="text-gray-400 text-sm mb-1">No actions found.</p>
-              <p className="text-gray-300 text-xs">
+            <div className="panel" style={{ textAlign: 'center', padding: '48px 20px' }}>
+              <p style={{ color: 'var(--text-light, #8899AA)', fontSize: 13, marginBottom: 4 }}>No actions found.</p>
+              <p style={{ color: 'var(--rule-strong, #C4CAD4)', fontSize: 12 }}>
                 Actions are created automatically when you run an analysis.
               </p>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {filtered.map(action => (
-                <div key={action.id}
-                  className="bg-white rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md"
-                  style={{ border: '1px solid #E8ECF0', boxShadow: '0 2px 8px rgba(27, 42, 74, 0.04)' }}>
-
-                  {/* Left accent bar */}
-                  <div className="flex">
-                    <div className="w-[3px] flex-shrink-0"
-                      style={{ backgroundColor: PILLAR_COLORS[action.pillar] || '#1B2A4A' }} />
-                    <div className="flex-1 p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          {/* Pillar + urgency badges */}
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md tracking-wide"
-                              style={{
-                                backgroundColor: `${PILLAR_COLORS[action.pillar] || '#1B2A4A'}12`,
-                                color: PILLAR_COLORS[action.pillar] || '#1B2A4A',
-                                border: `1px solid ${PILLAR_COLORS[action.pillar] || '#1B2A4A'}25`,
-                              }}>
-                              {action.pillar}
-                            </span>
-                            {action.urgency && (
-                              <span className="text-xs font-semibold uppercase tracking-wide"
-                                style={{ color: '#C0392B' }}>
-                                {action.urgency}
-                              </span>
-                            )}
-                            <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold"
-                              style={{
-                                backgroundColor: STATUS_CONFIG[action.status]?.bg,
-                                color: STATUS_CONFIG[action.status]?.color,
-                              }}>
-                              {STATUS_CONFIG[action.status]?.label}
-                            </span>
-                          </div>
-
-                          {/* Title */}
-                          <p className="text-sm font-semibold mb-1"
-                            style={{ color: '#1B2A4A' }}>
-                            {action.title}
-                          </p>
-                          {action.detail && (
-                            <p className="text-xs leading-relaxed mb-2"
-                              style={{ color: '#8899AA' }}>
-                              {action.detail}
-                            </p>
-                          )}
-
-                          {/* Meta row */}
-                          <div className="flex items-center gap-4 flex-wrap">
-                            {action.value > 0 && (
-                              <span className="text-xs font-bold"
-                                style={{ color: '#0D8F8F' }}>
-                                {fmtN(action.value)} /month
-                              </span>
-                            )}
-                            {action._division && (
-                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                                style={{ backgroundColor: '#EEF2FF', color: '#6366F1' }}>
-                                {action._division}
-                              </span>
-                            )}
-                            {action.owner_name && (
-                              <span className="text-xs" style={{ color: '#8899AA' }}>
-                                Owner: {action.owner_name}
-                              </span>
-                            )}
-                            {action.due_date && (
-                              <span className="text-xs" style={{ color: '#8899AA' }}>
-                                Due: {new Date(action.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                              </span>
-                            )}
-                            {action.resolution_note && (
-                              <span className="text-xs italic"
-                                style={{ color: '#0D8F8F' }}>
-                                &ldquo;{action.resolution_note}&rdquo;
-                              </span>
-                            )}
-                          </div>
-                        </div>
+          ) : (() => {
+            const sortedFiltered = [...filtered].sort((a, b) => Math.abs(b.value || 0) - Math.abs(a.value || 0));
+            return (
+            <div className="panel panel-tabular action-table">
+              <div className="table-head">
+                <div></div>
+                <div>#</div>
+                <div>Recommendation</div>
+                <div style={{ textAlign: 'right' }}>Recoverable</div>
+                <div></div>
+              </div>
+              {sortedFiltered.map((action, idx) => {
+                const urgClass = action.urgency === 'IMMEDIATE' ? 'u-immediate'
+                  : action.urgency === 'THIS WEEK' ? 'u-week' : 'u-30';
+                const urgTagClass = action.urgency === 'IMMEDIATE' ? 'urg-imm'
+                  : action.urgency === 'THIS WEEK' ? 'urg-wk' : 'urg-30';
+                return (
+                  <div key={action.id} className="action">
+                    <div className={`urgency-bar ${urgClass}`}></div>
+                    <div className="a-rank">{String(idx + 1).padStart(2, '0')}</div>
+                    <div className="a-body">
+                      <h4 className="a-title">{action.title}</h4>
+                      {action.detail && <p className="a-detail">{action.detail}</p>}
+                      <div className="a-tags">
+                        <span className="a-tag"><span className="pill">{action.pillar}</span></span>
+                        <span className={`a-tag ${urgTagClass}`}>● {action.urgency}</span>
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 3,
+                          backgroundColor: STATUS_CONFIG[action.status]?.bg,
+                          color: STATUS_CONFIG[action.status]?.color,
+                          fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em',
+                        }}>
+                          {STATUS_CONFIG[action.status]?.label}
+                        </span>
+                        {action._division && (
+                          <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 3, backgroundColor: '#EEF2FF', color: '#6366F1' }}>
+                            {action._division}
+                          </span>
+                        )}
                       </div>
-
+                      {/* Meta: owner, due, resolution */}
+                      {(action.owner_name || action.due_date || action.resolution_note) && (
+                        <div style={{ display: 'flex', gap: 12, marginTop: 6, fontSize: 11, color: 'var(--text-light, #8899AA)' }}>
+                          {action.owner_name && <span>Owner: {action.owner_name}</span>}
+                          {action.due_date && <span>Due: {new Date(action.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>}
+                          {action.resolution_note && <span style={{ color: 'var(--teal, #0D8F8F)', fontStyle: 'italic' }}>&ldquo;{action.resolution_note}&rdquo;</span>}
+                        </div>
+                      )}
                       {/* Action buttons — hidden in consolidated (read-only) mode */}
                       {!isConsolidated && action.status !== 'resolved' && action.status !== 'dismissed' && (
-                        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50">
+                        <div style={{ display: 'flex', gap: 8, marginTop: 10, paddingTop: 10, borderTop: '1px dotted var(--rule, #E2E6EC)' }}>
                           {action.status === 'open' && (
-                            <button
-                              onClick={() => updateAction(action.id, { status: 'in_progress' })}
-                              className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors"
-                              style={{ borderColor: '#D4A843', color: '#D4A843' }}>
+                            <button onClick={() => updateAction(action.id, { status: 'in_progress' })}
+                              className="btn-ed" style={{ fontSize: 11, padding: '4px 12px', borderColor: 'var(--gold, #D4A843)', color: 'var(--gold, #D4A843)' }}>
                               Mark In Progress
                             </button>
                           )}
-                          <button
-                            onClick={() => { setResolveModal(action); setResolveNote(''); }}
-                            className="rounded-lg transition-colors"
-                            style={{
-                              backgroundColor: '#E6F5F5', color: '#0D8F8F',
-                              border: '1px solid rgba(13, 143, 143, 0.25)',
-                              fontWeight: 600, fontSize: '12px',
-                              padding: '6px 14px',
-                            }}>
+                          <button onClick={() => { setResolveModal(action); setResolveNote(''); }}
+                            className="btn-ed" style={{ fontSize: 11, padding: '4px 12px', background: 'var(--teal-50, #E6F5F5)', borderColor: 'rgba(13,143,143,0.25)', color: 'var(--teal, #0D8F8F)', fontWeight: 700 }}>
                             Mark Resolved
                           </button>
-                          <button
-                            onClick={() => dismissAction(action.id)}
-                            className="rounded-lg transition-colors ml-auto"
-                            style={{
-                              backgroundColor: 'transparent', color: '#8896A7',
-                              border: '1px solid #E8ECF0',
-                              fontWeight: 500, fontSize: '12px',
-                              padding: '6px 14px',
-                            }}>
+                          <button onClick={() => dismissAction(action.id)}
+                            className="btn-ed" style={{ fontSize: 11, padding: '4px 12px', marginLeft: 'auto', color: 'var(--text-light, #8896A7)' }}>
                             Dismiss
                           </button>
                         </div>
                       )}
                     </div>
+                    <div className="a-recov">
+                      {action.value > 0 ? (
+                        <>
+                          <div className="v">+{fmtN(action.value)}</div>
+                          <div className="per">/month</div>
+                        </>
+                      ) : action.value < 0 ? (
+                        <>
+                          <div className="v v-neg">{fmtN(action.value)}</div>
+                          <div className="per">/month</div>
+                        </>
+                      ) : (
+                        <div className="v" style={{ color: 'var(--text-light)' }}>—</div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+              <div className="source-line">
+                <span><strong>Methodology:</strong> Net margin impact, holding volume constant</span>
+                <span><strong>Source:</strong> P1 elasticity · P2 cost-floor · P3 trade-spend · P4 promo P&amp;L</span>
+              </div>
             </div>
-          )}
+            );
+          })()}
+
+          {/* Commentary */}
+          <div className="commentary">
+            <div className="commentary-label">Queue status</div>
+            <div className="commentary-text">
+              {displayActions.length === 0
+                ? 'No actions have been generated yet. Run an analysis to populate the action queue with prioritised margin recovery opportunities.'
+                : <>
+                    <strong>{displayActions.filter(a => a.status === 'open').length} open</strong> actions remain in queue.
+                    {immediateCount > 0 && <> <strong style={{ color: 'var(--red-brand, #C0392B)' }}>{immediateCount} flagged immediate</strong> - address within this fortnight to protect margin.</>}
+                    {stats.resolved > 0 && <> {stats.resolved} resolved to date with {fmtN(stats.resolvedValue)} recovered.</>}
+                  </>
+              }
+            </div>
+          </div>
+
+          <div className="doc-footer">
+            <span>MarginCOS · Action queue</span>
+            <span>Rev 04·26·a</span>
+          </div>
 
           {/* Resolve modal */}
           {resolveModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-              style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-              <div className="bg-white rounded-2xl p-6 max-w-md w-full"
-                style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-                <h3 className="text-base font-bold mb-1"
-                  style={{ color: '#1B2A4A', fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              <div style={{ background: '#fff', borderRadius: 16, padding: 24, maxWidth: 440, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, color: 'var(--navy, #1B2A4A)', fontFamily: "'Playfair Display', Georgia, serif" }}>
                   Mark as Resolved
                 </h3>
-                <p className="text-sm mb-4" style={{ color: '#8899AA' }}>
+                <p style={{ fontSize: 13, marginBottom: 16, color: 'var(--text-light, #8899AA)' }}>
                   {resolveModal.title}
                 </p>
                 <textarea
                   value={resolveNote}
                   onChange={e => setResolveNote(e.target.value)}
-                  placeholder="Add a resolution note (optional) — e.g. 'Repriced Milo 400g +8%, effective April 2026'"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm resize-none mb-4 outline-none"
-                  style={{ color: '#1B2A4A' }}
+                  placeholder="Add a resolution note (optional) - e.g. 'Repriced Milo 400g +8%, effective April 2026'"
+                  style={{ width: '100%', border: '1px solid var(--rule, #E2E6EC)', borderRadius: 12, padding: '12px 14px', fontSize: 13, resize: 'none', marginBottom: 16, outline: 'none', color: 'var(--navy, #1B2A4A)', fontFamily: "'DM Sans', sans-serif" }}
                   rows={3}
                 />
-                <div className="flex gap-2 justify-end">
-                  <button
-                    onClick={() => setResolveModal(null)}
-                    className="px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200"
-                    style={{ color: '#8899AA' }}>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <button onClick={() => setResolveModal(null)}
+                    className="btn-ed" style={{ padding: '8px 16px', fontSize: 13 }}>
                     Cancel
                   </button>
-                  <button
-                    onClick={handleResolve}
-                    className="px-4 py-2 text-sm font-semibold rounded-lg text-white"
-                    style={{ backgroundColor: '#0D8F8F' }}>
+                  <button onClick={handleResolve}
+                    className="btn-ed" style={{ padding: '8px 16px', fontSize: 13, fontWeight: 700, backgroundColor: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>
                     Confirm Resolved
                   </button>
                 </div>

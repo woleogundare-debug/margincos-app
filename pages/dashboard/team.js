@@ -15,6 +15,30 @@ import useDivisions from '../../hooks/useDivisions';
 import { TIER_LIMITS } from '../../lib/constants';
 import { getInitials } from '../../lib/initials';
 
+/* ── Design tokens (inline, matching margincos.css handoff) ── */
+const font = {
+  playfair: "'Playfair Display', Georgia, serif",
+  dm: "'DM Sans', system-ui, sans-serif",
+  mono: "'JetBrains Mono', ui-monospace, monospace",
+};
+const c = {
+  navy: '#1B2A4A', navyLight: '#2A3F66', navy50: '#E8EBF0',
+  teal: '#0D8F8F', tealLight: '#11B3B3', teal50: '#E6F5F5',
+  red: '#C0392B', red50: '#FBEAE8',
+  gold: '#D4A843', gold50: '#FBF5E8',
+  green: '#27AE60',
+  text: '#1B2A4A', textLight: '#5A6B80', gray: '#8896A7', gray100: '#E8ECF0',
+  rule: '#E2E6EC', ruleStrong: '#C9D0DA',
+  paper: '#FBFBFC', paper2: '#F4F6F9',
+};
+
+/* ── Role definitions for permission cards ── */
+const ROLE_DEFS = [
+  { code: 'Admin',  perms: 'Full access · billing · invite · delete portfolios' },
+  { code: 'Member', perms: 'Edit SKUs · run analyses · publish actions' },
+  { code: 'Viewer', perms: 'Read-only · download reports · comment' },
+];
+
 export default function TeamPage() {
   const {
     team,
@@ -63,6 +87,21 @@ export default function TeamPage() {
   // Division limit enforcement
   const maxDivisions = TIER_LIMITS[tier]?.maxDivisions ?? null;
   const canCreateDivision = isAdmin && isProfessionalOrAbove && (maxDivisions === null || divisions.length < maxDivisions);
+
+  // Tier label
+  const tierLabel = isEnterprise ? 'Enterprise' : tier === 'professional' ? 'Professional' : 'Essentials';
+
+  // Last activity (most recent member by joined_at)
+  const lastActivity = members.length > 0
+    ? [...members].sort((a, b) => new Date(b.joined_at || 0) - new Date(a.joined_at || 0))[0]
+    : null;
+  const lastActivityLabel = lastActivity?.joined_at
+    ? new Date(lastActivity.joined_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    : '—';
+
+  // Admin count for role cards
+  const adminCount = members.filter(m => m.role === 'admin').length;
+  const memberCount = members.filter(m => m.role === 'member').length;
 
   const handleCreateDivision = async () => {
     if (!newDivisionName.trim()) { setDivisionError('Name is required'); return; }
@@ -131,7 +170,6 @@ export default function TeamPage() {
     try {
       await removeMember(memberId);
     } catch (err) {
-      // The enforce_last_admin trigger surfaces a friendly message here.
       setMemberError(err.message || 'Failed to remove member');
     } finally {
       setBusyMemberId(null);
@@ -185,7 +223,7 @@ export default function TeamPage() {
 
   if (!team) return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-navy mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Team Management</h1>
+      <h1 className="text-2xl font-bold text-navy mb-2" style={{ fontFamily: font.playfair }}>Team Management</h1>
       <p className="text-gray-500 text-sm">You are not currently assigned to a team. Contact your administrator.</p>
     </div>
   );
@@ -194,519 +232,669 @@ export default function TeamPage() {
     <>
       <Head><title>Team Management | MarginCOS</title></Head>
       <div className="max-w-5xl mx-auto">
-          {/* Page header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-navy" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Team Management
-            </h1>
-            <div className="mt-2 flex items-center gap-2 text-sm">
-              <span className="text-slate-600">{team?.name || 'Your team'}</span>
-              <span className="text-slate-300">·</span>
-              <span
-                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide"
-                style={{ backgroundColor: 'rgba(13, 143, 143, 0.1)', color: '#0D8F8F' }}
-              >
-                {tier === 'enterprise' ? 'Enterprise' : tier === 'professional' ? 'Professional' : 'Essentials'}
-              </span>
+
+        {/* ── Doc Head (editorial) ── */}
+        <div className="doc-head">
+          <div>
+            <div className="doc-meta">Account · Team management</div>
+            <h1 className="doc-title">Team</h1>
+            <div className="doc-period">
+              {team?.name || 'Your team'} · {tierLabel} tier · {members.length} member{members.length !== 1 ? 's' : ''} · {divisions.length} division{divisions.length !== 1 ? 's' : ''}
             </div>
           </div>
+          <div className="doc-actions">
+            <button
+              className="btn-ed"
+              onClick={() => document.getElementById('team-audit-section')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Audit log
+            </button>
+            {isAdmin && isProfessionalOrAbove && (
+              <button
+                className="btn-ed"
+                onClick={() => document.getElementById('team-invite-section')?.scrollIntoView({ behavior: 'smooth' })}
+                style={{ background: c.teal, color: '#fff', borderColor: c.teal }}
+              >
+                + Invite member
+              </button>
+            )}
+          </div>
+        </div>
 
-          {/* Seat usage indicator */}
-          {isProfessionalOrAbove && seatCap !== null && (
-            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-6 flex items-center justify-between">
+        {/* ── Summary Row (3 cards) ── */}
+        <div className="summary-row">
+          <div className="summary-card">
+            <div className="lbl">Active seats</div>
+            <div className="v">{members.length}<span style={{ fontSize: 14, color: 'var(--text-light)', fontWeight: 400, marginLeft: 6 }}>/ {seatCap === null ? 'unlimited' : seatCap}</span></div>
+            <div className="sub">{tierLabel} tier{seatCap === null ? ' · no seat cap' : ''}</div>
+          </div>
+          <div className="summary-card">
+            <div className="lbl">Pending invites</div>
+            <div className={`v ${(pendingInvitations?.length || 0) > 0 ? 'gold' : ''}`}>{pendingInvitations?.length || 0}</div>
+            <div className="sub">{pendingInvitations?.length > 0 ? pendingInvitations.map(inv => inv.email).join(', ') : 'No pending invitations'}</div>
+          </div>
+          <div className="summary-card">
+            <div className="lbl">Last member joined</div>
+            <div className="v" style={{ fontSize: 18 }}>{lastActivityLabel}</div>
+            <div className="sub">{lastActivity?.profile?.full_name || lastActivity?.profile?.email || '—'}</div>
+          </div>
+        </div>
+
+        {/* ── Essentials tier lock ── */}
+        {!isProfessionalOrAbove && (
+          <div className="mb-6 mt-4" style={{ background: '#F5F3FF', border: '1px solid #EDE9FE', borderRadius: 12, padding: 24 }}>
+            <div className="flex items-start gap-3">
+              <LockIcon />
               <div>
-                <p className="text-sm font-semibold text-navy">Seats used</p>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  {usedSeats} of {seatCap} ({members.length} active{(pendingInvitations?.length || 0) > 0 ? ` + ${pendingInvitations.length} pending` : ''})
-                </p>
+                <h3 className="font-semibold mb-1" style={{ color: c.navy, fontFamily: font.dm }}>Multi-user access requires Professional or Enterprise</h3>
+                <p className="text-sm" style={{ color: c.textLight }}>Upgrade to invite your CFO, Commercial Director, and Sales team to collaborate on the same portfolio data.</p>
+                <Link href="/pricing" className="inline-block mt-3 text-sm font-semibold" style={{ color: c.red }}>
+                  View plans &rarr;
+                </Link>
               </div>
-              <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all" style={{
-                  width: `${Math.min(100, (usedSeats / seatCap) * 100)}%`,
-                  backgroundColor: usedSeats >= seatCap ? '#C0392B' : '#0D8F8F',
-                }} />
-              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ━━━ Exhibit 1 — Team Members ━━━ */}
+        <div className="exhibit-head">
+          <div>
+            <div className="exhibit-num">Exhibit 1</div>
+            <div className="exhibit-title">Team members</div>
+            <div className="exhibit-sub">People with access to your portfolio data and analysis tools</div>
+          </div>
+          <div className="exhibit-meta">
+            <span className="count">{members.length} member{members.length !== 1 ? 's' : ''} · {pendingInvitations?.length || 0} pending</span>
+          </div>
+        </div>
+
+        {/* Members table */}
+        <div className="panel" style={{ overflow: 'hidden' }}>
+          {loading && (
+            <div className="px-6 py-8 text-center text-sm" style={{ color: c.gray }}>Loading…</div>
+          )}
+
+          {!loading && members.length === 0 && (
+            <div className="px-6 py-8 text-center text-sm" style={{ color: c.gray }}>
+              No team members yet. {isProfessionalOrAbove ? 'Invite your colleagues below.' : 'Upgrade to Professional or Enterprise to invite team members.'}
             </div>
           )}
 
-          {!isProfessionalOrAbove && (
-            <div className="bg-purple-50 border border-purple-100 rounded-xl p-6 mb-8">
-              <div className="flex items-start gap-3">
-                <LockIcon />
-                <div>
-                  <h3 className="font-semibold text-navy mb-1">Multi-user access requires Professional or Enterprise</h3>
-                  <p className="text-sm text-slate-600">Upgrade to invite your CFO, Commercial Director, and Sales team to collaborate on the same portfolio data.</p>
-                  <Link href="/pricing" className="inline-block mt-3 text-sm font-semibold" style={{ color: '#C0392B' }}>
-                    View plans &rarr;
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
+          {!loading && members.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="dtable">
+                <thead>
+                  <tr>
+                    <th style={thStyle}>Member</th>
+                    <th style={thStyle}>Email</th>
+                    {divisions.length >= 2 && <th style={thStyle} className="hidden md:table-cell">Division</th>}
+                    <th style={thStyle}>Role</th>
+                    <th style={thStyle}>Status</th>
+                    <th style={thStyle} className="hidden lg:table-cell">Joined</th>
+                    <th style={{ ...thStyle, width: 40 }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {members.map((m, idx) => {
+                    const isSelf = m.user_id === user?.id;
+                    const canEdit = isAdmin && !isSelf;
+                    const canEditDivision = isAdmin;
+                    const busy = busyMemberId === m.id;
+                    const displayName = m.profile?.full_name || m.profile?.email || 'Team Member';
+                    const initials = getInitials(m.profile?.full_name, m.profile?.email);
+                    const joinedAt = m.joined_at ? new Date(m.joined_at) : null;
+                    const joinedLabel = joinedAt ? joinedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                    const memberDivisionId = m.profile?.division_id || '';
+                    const isEvenRow = idx % 2 === 1;
 
-          {/* Pending Invitations (only when any exist) */}
-          {pendingInvitations && pendingInvitations.length > 0 && (
-            <div className="bg-white rounded-xl border border-slate-100 mb-6">
-              <div className="px-6 py-4 border-b border-slate-100">
-                <div className="flex items-center gap-2 mb-1">
-                  <ClockIcon className="w-5 h-5 text-slate-400" />
-                  <h2 className="font-semibold text-navy">Pending Invitations ({pendingInvitations.length})</h2>
-                </div>
-                <p className="text-xs text-slate-500">Invitations that have been sent but not yet accepted.</p>
-              </div>
-              <div className="divide-y divide-slate-100">
-                {pendingInvitations.map(inv => {
-                  const sentAt = inv.created_at ? new Date(inv.created_at) : null;
-                  const sentLabel = sentAt ? sentAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                  const expiresAt = inv.expires_at ? new Date(inv.expires_at) : null;
-                  const isExpired = expiresAt && expiresAt < new Date();
-                  return (
-                    <div key={inv.id} className="px-6 py-4 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-                          <ClockIcon className="w-4 h-4 text-slate-400" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-slate-700 truncate">{inv.email}</p>
-                          <p className="text-xs text-slate-400">
-                            {sentLabel && <>Invited {sentLabel} as {inv.role}</>}
-                            {!sentLabel && <>Invited as {inv.role}</>}
-                            {isExpired && <span className="ml-2 text-red-500 font-medium">· Expired</span>}
-                          </p>
-                        </div>
-                      </div>
-                      {isAdmin && (
-                        <button
-                          onClick={async () => {
-                            if (!confirm(`Cancel invitation to ${inv.email}?`)) return;
-                            const result = await cancelInvitation(inv.id);
-                            if (result?.error) {
-                              setMemberError(result.error);
-                            }
-                          }}
-                          className="text-xs text-slate-400 hover:text-red-600 px-3 py-1 rounded transition-colors flex-shrink-0"
-                          title="Cancel invitation"
-                        >
-                          Cancel
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Members table */}
-          <div className="bg-white rounded-xl border border-slate-100 mb-6">
-            <div className="px-6 py-4 border-b border-slate-100">
-              <div className="flex items-center gap-2 mb-1">
-                <UsersIcon className="w-5 h-5 text-slate-400" />
-                <h2 className="font-semibold text-navy">Team Members ({members.length})</h2>
-              </div>
-              <p className="text-xs text-slate-500">People with access to your portfolio data and analysis tools.</p>
-            </div>
-
-            {loading && (
-              <div className="px-6 py-8 text-center text-slate-400 text-sm">Loading…</div>
-            )}
-
-            {!loading && members.length === 0 && (
-              <div className="px-6 py-8 text-center text-slate-400 text-sm">
-                No team members yet. {isProfessionalOrAbove ? 'Invite your colleagues below.' : 'Upgrade to Professional or Enterprise to invite team members.'}
-              </div>
-            )}
-
-            {!loading && members.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-100">
-                      <th className="text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-6 py-3">Member</th>
-                      <th className="text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 py-3 hidden md:table-cell">Role</th>
-                      {divisions.length >= 2 && (
-                        <th className="text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 py-3 hidden md:table-cell">Division</th>
-                      )}
-                      <th className="text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 py-3 hidden lg:table-cell">Joined</th>
-                      <th className="px-6 py-3"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {members.map(m => {
-                      const isSelf = m.user_id === user?.id;
-                      const canEdit = isAdmin && !isSelf;
-                      // Gap 2: admins can self-assign their own division (RLS allows it).
-                      // Keep `canEdit` for Role / Remove to prevent self-demotion / self-removal.
-                      const canEditDivision = isAdmin;
-                      const busy = busyMemberId === m.id;
-                      const displayName = m.profile?.full_name || m.profile?.email || 'Team Member';
-                      const initials = getInitials(m.profile?.full_name, m.profile?.email);
-                      const joinedAt = m.joined_at ? new Date(m.joined_at) : null;
-                      const joinedLabel = joinedAt ? joinedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
-                      const memberDivisionId = m.profile?.division_id || '';
-
-                      return (
-                        <tr key={m.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors group">
-                          {/* Member: avatar + name + email (+ mobile-only stacked details) */}
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div
-                                className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                                style={{ backgroundColor: '#0D8F8F' }}
-                              >
-                                {initials}
-                              </div>
-                              <div className="min-w-0">
-                                <p className="text-sm font-medium text-navy truncate">
-                                  {displayName}
-                                  {isSelf && <span className="text-xs text-slate-400 font-normal ml-1">(you)</span>}
-                                </p>
-                                <p className="text-xs text-slate-400 truncate">{m.profile?.email}</p>
+                    return (
+                      <tr key={m.id} style={{ borderBottom: `1px solid ${c.rule}` }}
+                        onMouseEnter={e => { for (const td of e.currentTarget.children) td.style.background = c.teal50; }}
+                        onMouseLeave={e => { const bg = isEvenRow ? c.paper : '#fff'; for (const td of e.currentTarget.children) td.style.background = bg; }}>
+                        {/* Member */}
+                        <td style={{ ...tdStyle, background: isEvenRow ? c.paper : '#fff' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <div style={{
+                              width: 28, height: 28, borderRadius: '50%', fontSize: 10, fontWeight: 700,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                              background: c.teal, color: '#fff',
+                            }}>
+                              {initials}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: c.navy }}>
+                                {displayName}
+                                {isSelf && <span style={{ fontSize: 10, color: c.textLight, fontWeight: 500, marginLeft: 4 }}>(you)</span>}
                               </div>
                             </div>
+                          </div>
+                        </td>
 
-                            {/* Mobile-only: role, division, joined - stacked below name/email */}
-                            <div className="md:hidden mt-3 ml-12 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
-                              {/* Role badge (read-only on mobile for all users) */}
-                              <span className={`px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wide text-[10px] ${
-                                m.role === 'admin'
-                                  ? 'bg-navy text-white'
-                                  : 'bg-slate-100 text-slate-600'
-                              }`}>
-                                {m.role}
-                              </span>
+                        {/* Email */}
+                        <td style={{ ...tdStyle, color: c.textLight, fontSize: 12, background: isEvenRow ? c.paper : '#fff' }}>
+                          {m.profile?.email}
+                        </td>
 
-                              {/* Division picker (admin) or read-only text (non-admin) */}
-                              {divisions.length >= 2 && (
-                                canEditDivision ? (
-                                  <select
-                                    value={memberDivisionId}
-                                    disabled={busy}
-                                    onChange={e => handleAssignDivision(m.id, m.user_id, e.target.value || null)}
-                                    className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white disabled:opacity-50"
-                                    title={isSelf ? "Assign yourself to a division" : "Assign to division"}
-                                  >
-                                    <option value="">— No division —</option>
-                                    {divisions.map(d => (
-                                      <option key={d.id} value={d.id}>{d.name}</option>
-                                    ))}
-                                  </select>
-                                ) : (
-                                  <span className="text-slate-500">
-                                    {divisions.find(d => d.id === memberDivisionId)?.name || '—'}
-                                  </span>
-                                )
-                              )}
-
-                              {/* Joined date */}
-                              <span className="text-slate-400">{joinedLabel}</span>
-                            </div>
-                          </td>
-
-                          {/* Role */}
-                          <td className="px-3 py-4 hidden md:table-cell">
-                            {canEdit ? (
+                        {/* Division */}
+                        {divisions.length >= 2 && (
+                          <td className="hidden md:table-cell" style={{ ...tdStyle, color: c.textLight, background: isEvenRow ? c.paper : '#fff' }}>
+                            {canEditDivision ? (
                               <select
-                                value={m.role}
+                                value={memberDivisionId}
                                 disabled={busy}
-                                onChange={e => handleRoleChange(m.id, m.role, e.target.value)}
-                                className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white font-semibold disabled:opacity-50"
-                                title="Change role"
+                                onChange={e => handleAssignDivision(m.id, m.user_id, e.target.value || null)}
+                                style={{ fontSize: 11, border: `1px solid ${c.rule}`, borderRadius: 6, padding: '2px 6px', background: '#fff' }}
+                                title={isSelf ? 'Assign yourself to a division' : 'Assign to division'}
                               >
-                                <option value="member">Member</option>
-                                <option value="admin">Admin</option>
+                                <option value="">—</option>
+                                {divisions.map(d => (
+                                  <option key={d.id} value={d.id}>{d.name}</option>
+                                ))}
                               </select>
                             ) : (
-                              <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wide ${
-                                m.role === 'admin'
-                                  ? 'bg-navy text-white'
-                                  : 'bg-slate-100 text-slate-600'
-                              }`}>
-                                {m.role}
-                              </span>
+                              <span>{divisions.find(d => d.id === memberDivisionId)?.name || '—'}</span>
                             )}
                           </td>
+                        )}
 
-                          {/* Division (only when 2+ divisions exist) */}
-                          {divisions.length >= 2 && (
-                            <td className="px-3 py-4 hidden md:table-cell">
-                              {canEditDivision ? (
-                                <select
-                                  value={memberDivisionId}
-                                  disabled={busy}
-                                  onChange={e => handleAssignDivision(m.id, m.user_id, e.target.value || null)}
-                                  className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white disabled:opacity-50"
-                                  title={isSelf ? "Assign yourself to a division" : "Assign to division"}
-                                >
-                                  <option value="">— No division —</option>
-                                  {divisions.map(d => (
-                                    <option key={d.id} value={d.id}>{d.name}</option>
-                                  ))}
-                                </select>
-                              ) : (
-                                <span className="text-xs text-slate-500">
-                                  {divisions.find(d => d.id === memberDivisionId)?.name || '—'}
-                                </span>
-                              )}
-                            </td>
+                        {/* Role pill */}
+                        <td style={{ ...tdStyle, background: isEvenRow ? c.paper : '#fff' }}>
+                          {canEdit ? (
+                            <select
+                              value={m.role}
+                              disabled={busy}
+                              onChange={e => handleRoleChange(m.id, m.role, e.target.value)}
+                              style={{
+                                fontFamily: font.mono, fontSize: 11, fontWeight: 700,
+                                padding: '2px 8px', border: `1px solid ${c.rule}`, borderRadius: 3,
+                                background: '#fff', color: c.navy, letterSpacing: '0.06em',
+                              }}
+                              title="Change role"
+                            >
+                              <option value="member">Member</option>
+                              <option value="admin">Admin</option>
+                            </select>
+                          ) : (
+                            <span style={{
+                              fontFamily: font.mono, fontSize: 11, fontWeight: 700,
+                              padding: '2px 8px', letterSpacing: '0.06em', borderRadius: 3,
+                              background: m.role === 'admin' ? c.navy : c.paper2,
+                              color: m.role === 'admin' ? '#fff' : c.textLight,
+                            }}>
+                              {m.role === 'admin' ? 'Admin' : 'Member'}
+                            </span>
                           )}
+                        </td>
 
-                          {/* Joined */}
-                          <td className="px-3 py-4 hidden lg:table-cell">
-                            <span className="text-xs text-slate-500">{joinedLabel}</span>
-                          </td>
+                        {/* Status pill */}
+                        <td style={{ ...tdStyle, background: isEvenRow ? c.paper : '#fff' }}>
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 6,
+                            fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 100,
+                            letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: font.dm,
+                            background: c.teal50, color: c.green,
+                          }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: c.green }} />
+                            Active
+                          </span>
+                        </td>
 
-                          {/* Actions */}
-                          <td className="px-6 py-4 text-right align-top md:align-middle">
-                            {canEdit && (
-                              <button
-                                onClick={() => handleRemoveMember(m.id, m.profile?.full_name || m.profile?.email)}
-                                disabled={busy}
-                                className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded transition-colors disabled:opacity-50 opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                                title="Remove from team"
-                              >
-                                Remove
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        {/* Joined */}
+                        <td className="hidden lg:table-cell" style={{ ...tdStyle, color: c.textLight, background: isEvenRow ? c.paper : '#fff' }}>
+                          {joinedLabel}
+                        </td>
 
-            {memberError && (
-              <div className="px-6 py-3 border-t border-red-100 bg-red-50">
-                <p className="text-xs text-red-600 font-medium">{memberError}</p>
-              </div>
-            )}
+                        {/* Actions */}
+                        <td style={{ ...tdStyle, textAlign: 'right', width: 40, background: isEvenRow ? c.paper : '#fff' }}>
+                          {canEdit && (
+                            <button
+                              onClick={() => handleRemoveMember(m.id, m.profile?.full_name || m.profile?.email)}
+                              disabled={busy}
+                              style={{
+                                fontFamily: font.dm, fontSize: 12, fontWeight: 600,
+                                padding: '4px 8px', border: `1px solid ${c.ruleStrong}`,
+                                borderRadius: 8, background: '#fff', color: c.navy,
+                                cursor: 'pointer', lineHeight: 1,
+                              }}
+                              title="More options"
+                            >
+                              ⋯
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  {/* Pending invitations as rows */}
+                  {pendingInvitations && pendingInvitations.map((inv, idx) => {
+                    const isEvenRow = (members.length + idx) % 2 === 1;
+                    const sentAt = inv.created_at ? new Date(inv.created_at) : null;
+                    const sentLabel = sentAt ? sentAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                    const expiresAt = inv.expires_at ? new Date(inv.expires_at) : null;
+                    const isExpired = expiresAt && expiresAt < new Date();
+
+                    return (
+                      <tr key={inv.id} style={{ borderBottom: `1px solid ${c.rule}` }}
+                        onMouseEnter={e => { for (const td of e.currentTarget.children) td.style.background = c.teal50; }}
+                        onMouseLeave={e => { const bg = isEvenRow ? c.paper : '#fff'; for (const td of e.currentTarget.children) td.style.background = bg; }}>
+                        <td style={{ ...tdStyle, background: isEvenRow ? c.paper : '#fff' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <div style={{
+                              width: 28, height: 28, borderRadius: '50%', fontSize: 10, fontWeight: 700,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                              background: c.gray100, color: c.textLight,
+                            }}>
+                              {inv.email.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: c.textLight }}>
+                              {inv.email.split('@')[0]}
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ ...tdStyle, color: c.textLight, fontSize: 12, background: isEvenRow ? c.paper : '#fff' }}>{inv.email}</td>
+                        {divisions.length >= 2 && <td className="hidden md:table-cell" style={{ ...tdStyle, color: c.textLight, background: isEvenRow ? c.paper : '#fff' }}>—</td>}
+                        <td style={{ ...tdStyle, background: isEvenRow ? c.paper : '#fff' }}>
+                          <span style={{
+                            fontFamily: font.mono, fontSize: 11, fontWeight: 700,
+                            padding: '2px 8px', letterSpacing: '0.06em', borderRadius: 3,
+                            background: c.paper2, color: c.textLight,
+                          }}>
+                            {inv.role === 'admin' ? 'Admin' : 'Member'}
+                          </span>
+                        </td>
+                        <td style={{ ...tdStyle, background: isEvenRow ? c.paper : '#fff' }}>
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 6,
+                            fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 100,
+                            letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: font.dm,
+                            background: isExpired ? c.red50 : c.gold50, color: isExpired ? c.red : '#8C6A0A',
+                          }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: isExpired ? c.red : c.gold }} />
+                            {isExpired ? 'Expired' : 'Pending'}
+                          </span>
+                        </td>
+                        <td className="hidden lg:table-cell" style={{ ...tdStyle, color: c.textLight, background: isEvenRow ? c.paper : '#fff' }}>{sentLabel}</td>
+                        <td style={{ ...tdStyle, textAlign: 'right', width: 40, background: isEvenRow ? c.paper : '#fff' }}>
+                          {isAdmin && (
+                            <button
+                              onClick={async () => {
+                                if (!confirm(`Cancel invitation to ${inv.email}?`)) return;
+                                const result = await cancelInvitation(inv.id);
+                                if (result?.error) setMemberError(result.error);
+                              }}
+                              style={{
+                                fontFamily: font.dm, fontSize: 11, fontWeight: 600,
+                                padding: '3px 8px', border: 'none', borderRadius: 4,
+                                background: 'transparent', color: c.textLight, cursor: 'pointer',
+                              }}
+                              title="Cancel invitation"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Source line */}
+          <div className="source-line">
+            <span><strong>Tier:</strong> {tierLabel}{seatCap === null ? ' · unlimited seats, unlimited divisions, full audit trail' : ` · ${seatCap} seats, ${maxDivisions} division${maxDivisions !== 1 ? 's' : ''}`}</span>
+            <span><strong>Team:</strong> {team?.name}</span>
           </div>
 
-          {/* Invite form — Professional + Enterprise */}
-          {isAdmin && isProfessionalOrAbove && (
-            <div className="bg-white rounded-xl border border-slate-100 p-6 mb-6">
-              <div className="flex items-center gap-2 mb-1">
-                <UserPlusIcon className="w-5 h-5 text-slate-400" />
-                <h2 className="font-semibold text-navy">Invite a team member</h2>
-              </div>
-              <p className="text-xs text-slate-500 mb-4">Send an email invitation. Recipients create their own account and get immediate access to shared portfolio data.</p>
+          {memberError && (
+            <div style={{ padding: '10px 18px', borderTop: `1px solid ${c.red50}`, background: c.red50 }}>
+              <p style={{ fontSize: 12, color: c.red, fontWeight: 600, margin: 0 }}>{memberError}</p>
+            </div>
+          )}
+        </div>
 
+        {/* ━━━ Exhibit 2 — Invite a team member ━━━ */}
+        {isAdmin && isProfessionalOrAbove && (
+          <>
+            <div id="team-invite-section" className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 2</div>
+                <div className="exhibit-title">Invite a team member</div>
+                <div className="exhibit-sub">Recipients create their own account and receive immediate access to shared portfolio data</div>
+              </div>
+            </div>
+
+            <div className="panel" style={{ padding: 18 }}>
               {inviteSent && (
-                <div
-                  className="rounded-lg p-3 mb-4 text-sm border"
-                  style={{ backgroundColor: 'rgba(13, 143, 143, 0.05)', borderColor: 'rgba(13, 143, 143, 0.2)', color: '#0D8F8F' }}
-                >
+                <div style={{ padding: 12, marginBottom: 14, borderRadius: 8, fontSize: 13, border: `1px solid ${c.teal50}`, background: c.teal50, color: c.teal }}>
                   Invitation sent. They'll receive an email to set up their account.
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div style={{ display: 'flex', gap: 10 }}>
                 <input
                   type="email"
                   placeholder="colleague@company.com"
                   value={inviteEmail}
                   onChange={e => { setInviteEmail(e.target.value); setInviteSent(false); }}
-                  className="w-full sm:flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
+                  style={{
+                    flex: 1, padding: '10px 14px', border: `1px solid ${c.ruleStrong}`, borderRadius: 8,
+                    fontFamily: font.dm, fontSize: 13, color: c.navy, outline: 'none',
+                  }}
                 />
-                <div className="flex gap-3 w-full sm:w-auto">
+                <select
+                  value={inviteRole}
+                  onChange={e => setInviteRole(e.target.value)}
+                  style={{
+                    padding: '10px 14px', border: `1px solid ${c.ruleStrong}`, borderRadius: 8,
+                    fontFamily: font.dm, fontSize: 13, color: c.navy, background: '#fff', minWidth: 130,
+                  }}
+                >
+                  <option value="member">Member · Editor</option>
+                  <option value="admin">Admin</option>
+                </select>
+                {divisions.length > 0 && (
                   <select
-                    value={inviteRole}
-                    onChange={e => setInviteRole(e.target.value)}
-                    className="flex-1 sm:flex-none border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none bg-white"
+                    style={{
+                      padding: '10px 14px', border: `1px solid ${c.ruleStrong}`, borderRadius: 8,
+                      fontFamily: font.dm, fontSize: 13, color: c.navy, background: '#fff', minWidth: 180,
+                    }}
                   >
-                    <option value="member">Member</option>
-                    <option value="admin">Admin</option>
+                    {divisions.map(d => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                    {canCreateDivision && <option value="">+ New division</option>}
                   </select>
-                  <button
-                    onClick={handleInvite}
-                    className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-white text-sm font-semibold transition-all hover:opacity-90"
-                    style={{ backgroundColor: '#C0392B' }}
-                  >
-                    {inviting ? 'Sending…' : 'Send Invite'}
-                  </button>
-                </div>
+                )}
+                <button
+                  onClick={handleInvite}
+                  disabled={inviting || !inviteEmail}
+                  style={{
+                    fontFamily: font.dm, fontSize: 12.5, fontWeight: 600,
+                    padding: '10px 18px', borderRadius: 8,
+                    border: 'none', background: c.red, color: '#fff',
+                    cursor: inviting ? 'wait' : 'pointer', opacity: (!inviteEmail || inviting) ? 0.5 : 1,
+                  }}
+                >
+                  {inviting ? 'Sending…' : 'Send Invite'}
+                </button>
               </div>
-              {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
-            </div>
-          )}
+              {error && <p style={{ fontSize: 12, color: c.red, fontWeight: 600, marginTop: 10 }}>{error}</p>}
 
-          {/* Divisions section — card grid, visible to admins on Professional/Enterprise */}
-          {isProfessionalOrAbove && (
-            <div className="bg-white rounded-xl border border-slate-100 p-6">
-              <div className="flex items-start justify-between mb-1">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <RectangleGroupIcon className="w-5 h-5 text-slate-400" />
-                    <h2 className="font-semibold text-navy">Divisions ({divisions.length})</h2>
-                  </div>
-                  <p className="text-xs text-slate-500">Group your portfolio data by business unit, region, or product line. Members can be assigned to a single division to scope their access.</p>
-                </div>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-slate-100 text-slate-600 flex-shrink-0">
-                  {maxDivisions === null ? 'Unlimited' : `${divisions.length} of ${maxDivisions}`}
-                </span>
-              </div>
-
-              {divisionError && !showCreateDivision && (
-                <div className="mt-4 p-3 border border-red-100 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-600 font-medium">{divisionError}</p>
-                </div>
-              )}
-
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {divisions.map(div => (
-                  <div
-                    key={div.id}
-                    className={`group relative rounded-xl p-4 transition-all ${
-                      div.is_default ? 'border-2 bg-white' : 'border bg-white hover:border-slate-300'
-                    }`}
-                    style={div.is_default ? { borderColor: 'rgba(13, 143, 143, 0.3)' } : { borderColor: '#e2e8f0' }}
-                  >
-                    {div.is_default && (
-                      <span
-                        className="absolute top-3 right-3 text-[9px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide"
-                        style={{ backgroundColor: 'rgba(13, 143, 143, 0.1)', color: '#0D8F8F' }}
-                      >
-                        Default
-                      </span>
-                    )}
-
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                        style={{ backgroundColor: '#1B2A4A' }}
-                      >
-                        {div.name.slice(0, 2).toUpperCase()}
+              {/* Role permission cards */}
+              <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+                {ROLE_DEFS.map(r => {
+                  const count = r.code === 'Admin' ? adminCount : r.code === 'Member' ? memberCount : (members.length - adminCount - memberCount);
+                  return (
+                    <div key={r.code} style={{ padding: '12px 14px', background: c.paper, border: `1px solid ${c.rule}`, borderRadius: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <strong style={{ fontFamily: font.mono, fontSize: 11, color: c.navy, letterSpacing: '0.06em' }}>
+                          {r.code.toUpperCase()}
+                        </strong>
+                        <span style={{ fontFamily: font.mono, fontSize: 10, color: c.textLight }}>
+                          {count} active
+                        </span>
                       </div>
-                      <div className="min-w-0 flex-1 pr-12">
-                        {renamingId === div.id ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={renameValue}
-                              onChange={e => setRenameValue(e.target.value)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter') handleRenameDivision(div.id);
-                                if (e.key === 'Escape') { setRenamingId(null); setRenameValue(''); }
-                              }}
-                              className="flex-1 border border-slate-200 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                              autoFocus
-                            />
-                            <button
-                              onClick={() => handleRenameDivision(div.id)}
-                              className="text-xs font-semibold"
-                              style={{ color: '#0D8F8F' }}
-                            >
-                              Save
-                            </button>
-                            <button
-                              onClick={() => { setRenamingId(null); setRenameValue(''); }}
-                              className="text-xs text-slate-400"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <p className="text-sm font-semibold text-navy truncate">{div.name}</p>
-                            {div.sector && (
-                              <span
-                                className="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wide"
-                                style={{ backgroundColor: 'rgba(13, 143, 143, 0.1)', color: '#0D8F8F' }}
-                              >
-                                {div.sector}
-                              </span>
-                            )}
-                          </>
-                        )}
+                      <div style={{ fontSize: 11.5, color: c.textLight, lineHeight: 1.5, fontFamily: font.dm }}>
+                        {r.perms}
                       </div>
                     </div>
-
-                    {isAdmin && renamingId !== div.id && (
-                      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => { setRenamingId(div.id); setRenameValue(div.name); }}
-                          className="text-xs text-slate-500 hover:text-slate-700 transition-colors"
-                        >
-                          Rename
-                        </button>
-                        {!div.is_default && (
-                          <button
-                            onClick={() => handleDeleteDivision(div.id)}
-                            className="text-xs text-red-400 hover:text-red-600 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {/* New Division placeholder card */}
-                {canCreateDivision && (
-                  <>
-                    {showCreateDivision ? (
-                      <div
-                        className="rounded-xl border-2 border-dashed p-4"
-                        style={{ borderColor: 'rgba(13, 143, 143, 0.4)' }}
-                      >
-                        <p className="text-xs font-semibold text-navy mb-3">Create new division</p>
-                        <input
-                          type="text"
-                          placeholder="e.g. Sales, Operations, West Africa"
-                          value={newDivisionName}
-                          onChange={e => { setNewDivisionName(e.target.value); setDivisionError(''); }}
-                          onKeyDown={e => e.key === 'Enter' && handleCreateDivision()}
-                          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal bg-white mb-3"
-                          autoFocus
-                        />
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={handleCreateDivision}
-                            disabled={creatingDivision || !newDivisionName.trim()}
-                            className="flex-1 px-3 py-1.5 rounded-lg text-white text-xs font-semibold disabled:opacity-50 transition-all"
-                            style={{ backgroundColor: '#0D8F8F' }}
-                          >
-                            {creatingDivision ? 'Creating…' : 'Create'}
-                          </button>
-                          <button
-                            onClick={() => { setShowCreateDivision(false); setNewDivisionName(''); setDivisionError(''); }}
-                            className="px-3 py-1.5 rounded-lg text-xs text-slate-500 border border-slate-200 hover:border-slate-300 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                        {divisionError && <p className="text-xs text-red-600 font-medium mt-2">{divisionError}</p>}
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setShowCreateDivision(true)}
-                        className="rounded-xl border-2 border-dashed border-slate-200 p-4 flex items-center justify-center gap-2 text-slate-400 hover:border-slate-300 hover:text-slate-600 transition-all min-h-[100px]"
-                      >
-                        <PlusIcon className="w-5 h-5" />
-                        <span className="text-sm font-medium">New Division</span>
-                      </button>
-                    )}
-                  </>
-                )}
-
-                {!canCreateDivision && isAdmin && maxDivisions !== null && divisions.length >= maxDivisions && (
-                  <Link
-                    href="/pricing"
-                    className="rounded-xl border-2 border-dashed border-slate-200 p-4 flex items-center justify-center text-xs font-semibold text-slate-400 hover:text-navy transition-colors min-h-[100px]"
-                  >
-                    Upgrade for more divisions →
-                  </Link>
-                )}
+                  );
+                })}
               </div>
             </div>
-          )}
+          </>
+        )}
+
+        {/* ━━━ Exhibit 3 — Divisions ━━━ */}
+        {isProfessionalOrAbove && (
+          <>
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 3</div>
+                <div className="exhibit-title">Divisions</div>
+                <div className="exhibit-sub">Group portfolio data by business unit, region, or product line. Members can be scoped to a single division</div>
+              </div>
+              <div className="exhibit-meta">
+                <span className="count">{divisions.length} of {maxDivisions === null ? 'unlimited' : maxDivisions}</span>
+              </div>
+            </div>
+
+            {divisionError && !showCreateDivision && (
+              <div style={{ marginBottom: 10, padding: 12, border: `1px solid ${c.red50}`, background: c.red50, borderRadius: 8 }}>
+                <p style={{ fontSize: 12, color: c.red, fontWeight: 600, margin: 0 }}>{divisionError}</p>
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
+              {divisions.map(div => (
+                <div
+                  key={div.id}
+                  style={{
+                    background: '#fff', border: `1px solid ${c.rule}`, borderRadius: 12,
+                    padding: 18, position: 'relative',
+                  }}
+                >
+                  {div.is_default && (
+                    <span style={{
+                      position: 'absolute', top: 14, right: 14, fontSize: 9, fontWeight: 800,
+                      letterSpacing: '0.14em', padding: '3px 7px', background: c.teal50,
+                      color: c.teal, borderRadius: 3, textTransform: 'uppercase',
+                    }}>
+                      Default
+                    </span>
+                  )}
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                    <div style={{
+                      width: 36, height: 36, fontSize: 12, fontWeight: 700,
+                      background: c.navy50, color: c.navy, borderRadius: 8,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {div.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      {renamingId === div.id ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <input
+                            type="text"
+                            value={renameValue}
+                            onChange={e => setRenameValue(e.target.value)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') handleRenameDivision(div.id);
+                              if (e.key === 'Escape') { setRenamingId(null); setRenameValue(''); }
+                            }}
+                            style={{ flex: 1, border: `1px solid ${c.rule}`, borderRadius: 6, padding: '4px 8px', fontSize: 13, outline: 'none' }}
+                            autoFocus
+                          />
+                          <button onClick={() => handleRenameDivision(div.id)} style={{ fontSize: 12, fontWeight: 700, color: c.teal, border: 'none', background: 'none', cursor: 'pointer' }}>Save</button>
+                          <button onClick={() => { setRenamingId(null); setRenameValue(''); }} style={{ fontSize: 12, color: c.textLight, border: 'none', background: 'none', cursor: 'pointer' }}>Cancel</button>
+                        </div>
+                      ) : (
+                        <>
+                          <div style={{ fontFamily: font.playfair, fontSize: 16, fontWeight: 700, color: c.navy, letterSpacing: '-0.01em' }}>
+                            {div.name}
+                          </div>
+                          {div.sector && (
+                            <div style={{
+                              display: 'inline-block', marginTop: 4, fontSize: 9, fontWeight: 800,
+                              padding: '2px 7px', background: c.gold50, color: '#8C6A0A',
+                              borderRadius: 2, letterSpacing: '0.1em', textTransform: 'uppercase',
+                            }}>
+                              {div.sector}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: 'flex', gap: 16, paddingTop: 10,
+                    borderTop: `1px dotted ${c.rule}`, fontSize: 11,
+                    color: c.textLight, fontFamily: font.dm,
+                  }}>
+                    <span>
+                      <strong style={{ color: c.navy, fontWeight: 700 }}>
+                        {members.filter(m => m.profile?.division_id === div.id).length}
+                      </strong> members
+                    </span>
+                    {isAdmin && renamingId !== div.id && (
+                      <>
+                        <span style={{ color: c.ruleStrong }}>·</span>
+                        <button onClick={() => { setRenamingId(div.id); setRenameValue(div.name); }} style={{ fontSize: 11, color: c.textLight, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}>Rename</button>
+                        {!div.is_default && (
+                          <>
+                            <span style={{ color: c.ruleStrong }}>·</span>
+                            <button onClick={() => handleDeleteDivision(div.id)} style={{ fontSize: 11, color: c.red, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}>Delete</button>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* New Division card */}
+              {canCreateDivision && (
+                <>
+                  {showCreateDivision ? (
+                    <div style={{ padding: 18, border: `1.5px dashed ${c.ruleStrong}`, borderRadius: 12, background: 'transparent' }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: c.navy, marginBottom: 10, marginTop: 0 }}>Create new division</p>
+                      <input
+                        type="text"
+                        placeholder="e.g. Sales, Operations, West Africa"
+                        value={newDivisionName}
+                        onChange={e => { setNewDivisionName(e.target.value); setDivisionError(''); }}
+                        onKeyDown={e => e.key === 'Enter' && handleCreateDivision()}
+                        style={{
+                          width: '100%', border: `1px solid ${c.rule}`, borderRadius: 8,
+                          padding: '8px 12px', fontSize: 13, outline: 'none', marginBottom: 10,
+                        }}
+                        autoFocus
+                      />
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={handleCreateDivision}
+                          disabled={creatingDivision || !newDivisionName.trim()}
+                          style={{
+                            flex: 1, padding: '6px 12px', borderRadius: 8, fontSize: 12,
+                            fontWeight: 600, border: 'none', background: c.teal, color: '#fff',
+                            cursor: 'pointer', opacity: (creatingDivision || !newDivisionName.trim()) ? 0.5 : 1,
+                          }}
+                        >
+                          {creatingDivision ? 'Creating…' : 'Create'}
+                        </button>
+                        <button
+                          onClick={() => { setShowCreateDivision(false); setNewDivisionName(''); setDivisionError(''); }}
+                          style={{
+                            padding: '6px 12px', borderRadius: 8, fontSize: 12,
+                            border: `1px solid ${c.rule}`, background: '#fff', color: c.textLight, cursor: 'pointer',
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      {divisionError && <p style={{ fontSize: 12, color: c.red, fontWeight: 600, marginTop: 8 }}>{divisionError}</p>}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowCreateDivision(true)}
+                      style={{
+                        padding: 18, border: `1.5px dashed ${c.ruleStrong}`, borderRadius: 12,
+                        background: 'transparent', color: c.textLight, fontFamily: font.dm,
+                        fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 110,
+                      }}
+                    >
+                      + New Division
+                    </button>
+                  )}
+                </>
+              )}
+
+              {!canCreateDivision && isAdmin && maxDivisions !== null && divisions.length >= maxDivisions && (
+                <Link
+                  href="/pricing"
+                  style={{
+                    padding: 18, border: `1.5px dashed ${c.ruleStrong}`, borderRadius: 12,
+                    background: 'transparent', color: c.textLight, fontFamily: font.dm,
+                    fontSize: 12, fontWeight: 600, textDecoration: 'none',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 110,
+                  }}
+                >
+                  Upgrade for more divisions →
+                </Link>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ━━━ Exhibit 4 — Recent Activity ━━━ */}
+        <div id="team-audit-section" className="exhibit-head">
+          <div>
+            <div className="exhibit-num">Exhibit 4</div>
+            <div className="exhibit-title">Recent activity</div>
+            <div className="exhibit-sub">Audit trail - last actions across the workspace</div>
+          </div>
+          <div className="exhibit-meta">
+            <span className="count">Coming soon</span>
+          </div>
         </div>
+
+        <div className="panel" style={{ textAlign: 'center', padding: '32px 20px' }}>
+          <p style={{ fontSize: 13, color: 'var(--text-light, #8899AA)', margin: 0 }}>
+            Activity logging will be available in a future release. Team actions, analysis runs, and data changes will appear here.
+          </p>
+        </div>
+
+        {/* ── Commentary callout ── */}
+        <div className="commentary">
+          <div className="commentary-label">Workspace status</div>
+          <div className="commentary-text">
+            Workspace is in good standing. <strong>{tierLabel} tier active</strong>.
+            {pendingInvitations?.length > 0 && (
+              <> {pendingInvitations.length} pending invite{pendingInvitations.length !== 1 ? 's' : ''} awaiting acceptance.</>
+            )}
+            {seatCap !== null && usedSeats >= seatCap && (
+              <> <em style={{ fontStyle: 'normal', color: 'var(--red-brand, #C0392B)', fontWeight: 700 }}>Seat limit reached</em> - upgrade to add more members.</>
+            )}
+          </div>
+        </div>
+
+        {/* ── Doc Footer ── */}
+        <div className="doc-footer">
+          <span>MarginCOS · Team management</span>
+          <span>Rev 04·26·a · {team?.name} · {tierLabel}</span>
+        </div>
+
+      </div>
     </>
   );
 }
+
+/* ── Table cell style helpers ── */
+const thStyle = {
+  background: '#FBFBFC',
+  borderBottom: '1px solid #E2E6EC',
+  padding: '10px 14px',
+  textAlign: 'left',
+  fontSize: 9.5, fontWeight: 800,
+  color: '#5A6B80',
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase',
+  fontFamily: "'DM Sans', system-ui, sans-serif",
+};
+const tdStyle = {
+  padding: '11px 14px',
+  borderBottom: '1px solid #E2E6EC',
+  color: '#1B2A4A',
+  verticalAlign: 'middle',
+  fontFamily: "'DM Sans', system-ui, sans-serif",
+  fontSize: 12.5,
+};
 
 TeamPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 

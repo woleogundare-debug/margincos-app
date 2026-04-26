@@ -59,6 +59,39 @@ export default function PricingPage() {
 
         {hasResults && p1 && (
           <>
+            <div className="doc-head">
+              <div>
+                <div className="doc-meta"><span className="page-pillar-code">P1</span>Pricing pillar</div>
+                <h1 className="doc-title">Pricing</h1>
+                <div className="doc-period">{activePeriod?.label}</div>
+              </div>
+              <div className="doc-actions">
+                <button className="btn-ed">Re-run elasticity</button>
+                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Apply proposals</button>
+              </div>
+            </div>
+
+            {p1 && (
+              <div className="insight">
+                <div className="insight-label">Opportunity</div>
+                <div className="insight-body">
+                  <div className="insight-text">
+                    {p1.totalGain > 0
+                      ? <><em>{fN(p1.totalGain)}/month</em> repricing opportunity available across portfolio</>
+                      : <>WTP headroom of <em>{fNAbs(p1.totalWTPGap)}</em> not yet captured</>
+                    }
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 1</div>
+                <div className="exhibit-title">Pricing health</div>
+              </div>
+            </div>
+
             {/* KPIs */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="P1 Repricing Opportunity" value={fN(p1.totalGain)} accent="teal"
@@ -153,6 +186,14 @@ export default function PricingPage() {
               )}
             </div>
 
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 2</div>
+                <div className="exhibit-title">{cfg.unitName} pricing detail</div>
+                <div className="exhibit-sub">{cfg.unitPlural} with WTP headroom above current RRP, ranked by monthly upside</div>
+              </div>
+            </div>
+
             {/* Desktop: SKU Results (unchanged) */}
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
@@ -203,6 +244,26 @@ export default function PricingPage() {
                 }
               </NarrativeBox>
             </PillarCard>
+            </div>
+
+            <div className="source-line">
+              <span><strong>Source:</strong> elasticity model · 18-mo regression, retailer scanner data, NGN deflator-adjusted</span>
+              <span><strong>Confidence:</strong> regression R² × distribution of price-test results</span>
+            </div>
+
+            <div className="commentary">
+              <div className="commentary-label">Analyst commentary</div>
+              <div className="commentary-text">
+                {p1.totalGain > 0
+                  ? `Current pricing strategy leaves ${fN(p1.totalGain)}/month on the table. Recommend repricing review for ${p1.results.filter(r => r.delta > 0).length} ${cfg.unitPlural} with positive upside. ${p1.floorBreaches?.length > 0 ? `Priority: ${p1.floorBreaches.length} ${cfg.unitPlural} below margin floor require immediate attention.` : ''}`
+                  : `Pricing execution is strong at ${(p1.priceRealisation || 0).toFixed(1)}% realisation. Opportunity exists to capture WTP on ${p1.results.filter(r => r.wtp > 0.03).length} ${cfg.unitPlural} with available headroom.`
+                }
+              </div>
+            </div>
+
+            <div className="doc-footer">
+              <span>MarginCOS · P1 Pricing</span>
+              <span>Rev {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }).replace(/\//g, '·').replace(/\b(\d)\b/g, '0$1')}</span>
             </div>
           </>
         )}

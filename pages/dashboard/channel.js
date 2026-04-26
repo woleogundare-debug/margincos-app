@@ -69,6 +69,39 @@ export default function ChannelPage() {
 
         {!authLoading && profileLoaded && access.pillars.includes('channel') && hasResults && p3 && (
           <>
+            <div className="doc-head">
+              <div>
+                <div className="doc-meta"><span className="page-pillar-code">P3</span>Channel pillar</div>
+                <h1 className="doc-title">Channel Economics</h1>
+                <div className="doc-period">{activePeriod?.label}</div>
+              </div>
+              <div className="doc-actions">
+                <button className="btn-ed">Channel deep-dive</button>
+                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Open JBP planner</button>
+              </div>
+            </div>
+
+            {p3 && (
+              <div className="insight">
+                <div className="insight-label">Watch</div>
+                <div className="insight-body">
+                  <div className="insight-text">
+                    {weakChannels.length > 0
+                      ? <><em>{weakChannels.length} channel{weakChannels.length > 1 ? 's' : ''}</em> below 15% contribution margin</>
+                      : <><em>{fNAbs(p3.totalDistExposure)}/month</em> partner margin drag</>
+                    }
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 1</div>
+                <div className="exhibit-title">Channel contribution health</div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Channels Active"
                 value={p3.channelResults?.length || 0}
@@ -138,6 +171,14 @@ export default function ChannelPage() {
                   />
                 </div>
               )}
+            </div>
+
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 2</div>
+                <div className="exhibit-title">Channel performance summary</div>
+                <div className="exhibit-sub">Net contribution margin by primary route to market</div>
+              </div>
             </div>
 
             {/* Desktop: Channel summary */}
@@ -214,6 +255,26 @@ export default function ChannelPage() {
                 </NarrativeBox>
               </PillarCard>
             )}
+
+            <div className="source-line">
+              <span><strong>Source:</strong> channel P&amp;L · trade-spend audit · route-to-market profitability model</span>
+              <span><strong>Margin:</strong> net contribution after COGS + trade spend deductions</span>
+            </div>
+
+            <div className="commentary">
+              <div className="commentary-label">Analyst commentary</div>
+              <div className="commentary-text">
+                {p3.channelResults?.length > 0
+                  ? `Portfolio spans ${p3.channelResults.length} active channels. ${weakChannels.length > 0 ? `${weakChannels.length} channel${weakChannels.length > 1 ? 's' : ''} below 15% contribution margin threshold — recommend renegotiation or rebalancing strategy.` : 'All channels performing above contribution margin threshold.'} Top revenue contributor: ${p3.channelResults[0]?.channel ? (CHANNEL_LABELS[p3.channelResults[0].channel] || p3.channelResults[0].channel) : 'N/A'}`
+                  : 'No channel data available. Add channel classification and margin details to enable analysis.'
+                }
+              </div>
+            </div>
+
+            <div className="doc-footer">
+              <span>MarginCOS · P3 Channel Economics</span>
+              <span>Rev {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }).replace(/\//g, '·').replace(/\b(\d)\b/g, '0$1')}</span>
+            </div>
           </>
         )}
     </>

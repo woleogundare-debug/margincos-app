@@ -69,6 +69,39 @@ export default function TradePage() {
 
         {!authLoading && profileLoaded && access.pillars.includes('trade') && hasResults && p4 && (
           <>
+            <div className="doc-head">
+              <div>
+                <div className="doc-meta"><span className="page-pillar-code">P4</span>Trade pillar</div>
+                <h1 className="doc-title">Trade Execution</h1>
+                <div className="doc-period">{activePeriod?.label}</div>
+              </div>
+              <div className="doc-actions">
+                <button className="btn-ed">Promo planner</button>
+                <button className="btn-ed" style={{ background: 'var(--red-brand, #C0392B)', color: '#fff', borderColor: 'var(--red-brand, #C0392B)' }}>Halt selected</button>
+              </div>
+            </div>
+
+            {p4 && (
+              <div className="insight">
+                <div className="insight-label">Managed</div>
+                <div className="insight-body">
+                  <div className="insight-text">
+                    {lossCount > 0
+                      ? <><em>{lossCount} promo{lossCount > 1 ? 's' : ''}</em> loss-making - {fN(Math.abs(p4.totalPromoImpact))}/month exposure</>
+                      : <>Portfolio impact: <em>{fN(p4.totalPromoImpact)}/month</em> net positive</>
+                    }
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 1</div>
+                <div className="exhibit-title">Trade execution performance</div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label={`${cfg.narrative.p4ItemName.charAt(0).toUpperCase() + cfg.narrative.p4ItemName.slice(1)}s Analysed`} value={p4.results?.length || 0}
                 pill={`${cfg.unitPlural} with ${cfg.narrative.p4Activity}`} accent="purple" />
@@ -139,6 +172,14 @@ export default function TradePage() {
               )}
             </div>
 
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 2</div>
+                <div className="exhibit-title">{cfg.narrative.p4ItemName} detail</div>
+                <div className="exhibit-sub">Net margin impact of current promotional activity by {cfg.unit}</div>
+              </div>
+            </div>
+
             {/* Desktop table */}
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
@@ -190,6 +231,26 @@ export default function TradePage() {
                   : p4.results?.length > 0 ? cfg.narrative.p4AllProfitable : ''}
               </NarrativeBox>
             </PillarCard>
+            </div>
+
+            <div className="source-line">
+              <span><strong>Source:</strong> promo P&amp;L · 90-day trailing window · scanner data + trade ledger</span>
+              <span><strong>ROI:</strong> incremental margin / promo spend; net of cannibalisation</span>
+            </div>
+
+            <div className="commentary">
+              <div className="commentary-label">Analyst commentary</div>
+              <div className="commentary-text">
+                {p4.results?.length > 0
+                  ? `Portfolio impact: ${fN(p4.totalPromoImpact)}/month net ${p4.totalPromoImpact >= 0 ? 'benefit' : 'loss'}. ${lossCount > 0 ? `${lossCount} loss-making ${cfg.narrative.p4ItemName}${lossCount > 1 ? 's' : ''} require(s) repricing or restructuring to restore profitability.` : `All ${cfg.narrative.p4ItemName}s profitable. Current trade execution strategy maintaining margin integrity.`}`
+                  : `Add ${cfg.narrative.p4ItemName} depth and lift data to enable profitability analysis.`
+                }
+              </div>
+            </div>
+
+            <div className="doc-footer">
+              <span>MarginCOS · P4 Trade Execution</span>
+              <span>Rev {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }).replace(/\//g, '·').replace(/\b(\d)\b/g, '0$1')}</span>
             </div>
           </>
         )}

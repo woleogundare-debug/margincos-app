@@ -236,33 +236,74 @@ export default function OverviewPage() {
         {/* Results */}
         {hasResults && results && (
           <>
-            {/* Mobile pillar scorecard — horizontal scroll */}
-            <div className="md:hidden overflow-x-auto scrollbar-hide mb-4">
-              <div className="flex gap-2 min-w-max py-1">
-                {[
-                  { label: 'Pricing', color: '#0D9488',
-                    rag: results.p1?.floorBreaches?.length > 0 ? 'red' : results.p1?.totalGain > 0 ? 'amber' : 'green' },
-                  { label: 'Cost', color: '#DC2626',
-                    rag: results.p2?.avgAbsorbedPct > 60 ? 'red' : results.p2?.avgAbsorbedPct > 30 ? 'amber' : 'green' },
-                  { label: 'Channel', color: '#D97706',
-                    rag: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'amber' : 'green' },
-                  { label: 'Trade', color: '#7C3AED',
-                    rag: results.p4?.results?.some(r => !r.profitable) ? 'red' : results.p4?.results?.length > 0 ? 'green' : 'grey' },
-                ].map(p => (
-                  <div key={p.label}
-                    className="flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl border border-gray-100 bg-white min-w-[90px]"
-                    style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                    <span className={clsx('w-2.5 h-2.5 rounded-full',
-                      p.rag === 'green' ? 'bg-teal-500' : p.rag === 'amber' ? 'bg-amber-400' : p.rag === 'red' ? 'bg-red-500' : 'bg-gray-300'
-                    )} />
-                    <span className="text-xs font-semibold text-center" style={{ color: '#1B2A4A' }}>{p.label}</span>
-                    <span className="text-[10px] text-gray-400 capitalize">{p.rag}</span>
-                  </div>
-                ))}
+            {/* ── Doc Head (editorial) ── */}
+            <div className="doc-head">
+              <div>
+                <div className="doc-meta">Commercial Intelligence — Briefing {activePeriod?.label ? activePeriod.label.replace(/\s/g, '·') : ''}</div>
+                <h1 className="doc-title">Overview</h1>
+                <div className="doc-period">
+                  Analysis complete · {activePeriod?.label} · {results.skuCount} active {cfg.unitPlural} · last run {ranAt?.toLocaleTimeString() || '—'}
+                </div>
+              </div>
+              <div className="doc-actions">
+                {isProfessional && (
+                  <DownloadReportButton
+                    results={results}
+                    companyName={reportCompanyName}
+                    periodLabel={isConsolidated ? `Consolidated — ${consolidatedMonth}` : activePeriod?.label}
+                    tier={tier}
+                    isEnterprise={isEnterprise}
+                    chronologicalDelta={chronologicalDelta}
+                    vertical={activePeriod?.vertical}
+                  />
+                )}
+                <button className="btn-ed" onClick={run} disabled={running}>↻ Re-run</button>
               </div>
             </div>
 
-            {/* KPI Tiles */}
+            {/* ── Insight headline ── */}
+            {results.revenueAtRisk > 0 && (
+              <div className="insight">
+                <div className="insight-label">Headline</div>
+                <div className="insight-body">
+                  <div className="insight-text">
+                    Portfolio margin at <strong>{results.totalRevenue > 0 ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) : '—'}%</strong>.{' '}
+                    <em>{fNAbs(results.revenueAtRisk)} of revenue is priced below its cost floor</em>.{' '}
+                    {results.actions?.length > 0 && (
+                      <>{results.actions.length} prioritised actions identified across {new Set(results.actions.map(a => a.pillar)).size} pillars.</>
+                    )}
+                  </div>
+                  <div className="insight-delta">
+                    <span><strong>Margin</strong> {results.totalRevenue > 0 ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) + '%' : '—'}
+                      {deltas?.portfolio?.totalCurrentMargin && deltas.portfolio.totalCurrentMargin.direction !== 'flat' && (
+                        <span className={deltas.portfolio.totalCurrentMargin.direction === 'up' ? 'up' : 'down'}> {deltas.portfolio.totalCurrentMargin.direction === 'up' ? '▲' : '▼'} {fNAbs(Math.abs(deltas.portfolio.totalCurrentMargin.value))}</span>
+                      )}
+                    </span>
+                    <span><strong>At-risk revenue</strong> {fNAbs(results.revenueAtRisk)}
+                      {deltas?.portfolio?.revenueAtRisk && deltas.portfolio.revenueAtRisk.direction !== 'flat' && (
+                        <span className="up"> {deltas.portfolio.revenueAtRisk.direction === 'up' ? '▲' : '▼'} {fNAbs(Math.abs(deltas.portfolio.revenueAtRisk.value))}</span>
+                      )}
+                    </span>
+                    {results.p1?.totalGain > 0 && (
+                      <span><strong>P1 upside</strong> {fN(results.p1.totalGain)}/mo</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Exhibit 1: Portfolio at a glance (KPIs) ── */}
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 1</div>
+                <div className="exhibit-title">Portfolio at a glance</div>
+                <div className="exhibit-sub">Snapshot · {activePeriod?.label} · monthly basis</div>
+              </div>
+              <div className="exhibit-meta">
+                <div className="total">All values monthly</div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
               <KpiTile
                 label="Total Revenue"
@@ -316,69 +357,140 @@ export default function OverviewPage() {
               />
             </div>
 
+            {/* ── Exhibit 2: Four-pillar health ── */}
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 2</div>
+                <div className="exhibit-title">Four-pillar health</div>
+                <div className="exhibit-sub">RAG status across the four commercial levers · {activePeriod?.label}</div>
+              </div>
+              <div className="exhibit-meta">
+                <Link href="/dashboard/actions" style={{ color: 'var(--teal)', fontSize: 12, fontWeight: 700, textDecoration: 'none' }}>View action queue →</Link>
+              </div>
+            </div>
+            <div className="pillars mb-6">
+              {[
+                { code: 'P1', name: cfg.p1.name,
+                  rag: results.p1?.floorBreaches?.length > 0 ? 'red' : results.p1?.totalGain > 0 ? 'amber' : 'green',
+                  status: results.p1?.floorBreaches?.length > 0 ? 'At Risk' : results.p1?.totalGain > 0 ? 'Watch' : 'Managed',
+                  value: results.p1?.totalGain > 0 ? '+' + fNAbs(results.p1.totalGain) : '—',
+                  sub: 'repricing upside' },
+                { code: 'P2', name: cfg.p2.name,
+                  rag: results.p2?.avgAbsorbedPct > 60 ? 'red' : results.p2?.avgAbsorbedPct > 30 ? 'amber' : 'green',
+                  status: results.p2?.avgAbsorbedPct > 60 ? 'At Risk' : results.p2?.avgAbsorbedPct > 30 ? 'Watch' : 'Managed',
+                  value: results.p2?.totalAbsorbed ? '−' + fNAbs(results.p2.totalAbsorbed) : '—',
+                  sub: 'cost absorbed' },
+                { code: 'P3', name: cfg.p3.name,
+                  rag: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'amber' : 'green',
+                  status: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'Watch' : 'Managed',
+                  value: results.p3?.channelResults?.[0] ? results.p3.channelResults[0].channel + ' leads' : '—',
+                  sub: 'by revenue' },
+                { code: 'P4', name: cfg.p4.name,
+                  rag: results.p4?.results?.some(r => !r.profitable) ? 'red' : results.p4?.results?.length > 0 ? 'green' : 'grey',
+                  status: results.p4?.results?.some(r => !r.profitable) ? 'At Risk' : 'Managed',
+                  value: results.p4?.results?.filter(r => !r.profitable).length > 0 ? results.p4.results.filter(r => !r.profitable).length + ' loss-making' : 'All profitable',
+                  sub: 'promos' },
+              ].map(p => (
+                <div className="pillar" key={p.code}>
+                  <span className={`rag ${p.rag}`}></span>
+                  <div className="meta">
+                    <div className="row1">
+                      <span className="code">{p.code}</span>
+                      <span>{p.name}</span>
+                    </div>
+                    <div className={`row2 ${p.rag}`}>● {p.status}</div>
+                  </div>
+                  <div className="figure">
+                    <strong>{p.value}</strong>
+                    <span>{p.sub}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {/* Consolidated Division Breakdown — shown only in consolidated view */}
             {isConsolidated && consolidatedDivisionBreakdown.length > 0 && (
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-6">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <>
+                <div className="exhibit-head">
                   <div>
-                    <h2 className="text-sm font-bold text-navy">Division Breakdown</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">{consolidatedSector} · {consolidatedMonth}</p>
+                    <div className="exhibit-num">Exhibit 2b</div>
+                    <div className="exhibit-title">Division breakdown</div>
+                    <div className="exhibit-sub">{consolidatedSector} · {consolidatedMonth}</div>
                   </div>
                   {consolidatedMissing?.length > 0 && (
-                    <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1">
-                      {consolidatedMissing.length} division{consolidatedMissing.length > 1 ? 's' : ''} missing data
-                    </span>
+                    <div className="exhibit-meta">
+                      <span className="count" style={{ color: 'var(--gold)' }}>{consolidatedMissing.length} division{consolidatedMissing.length > 1 ? 's' : ''} missing data</span>
+                    </div>
                   )}
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                <div className="panel">
+                  <table className="dtable">
                     <thead>
-                      <tr className="text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-slate-100">
-                        <th className="text-left px-6 py-3">Division</th>
-                        <th className="text-right px-6 py-3">Active {cfg.unitPlural}</th>
-                        <th className="text-right px-6 py-3">Revenue</th>
-                        <th className="text-right px-6 py-3">Margin %</th>
-                        <th className="text-right px-6 py-3">Revenue at Risk</th>
+                      <tr>
+                        <th>Division</th>
+                        <th className="right">Active {cfg.unitPlural}</th>
+                        <th className="right">Revenue</th>
+                        <th className="right">Margin %</th>
+                        <th className="right">Revenue at Risk</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody>
                       {consolidatedDivisionBreakdown.map((div, i) => (
-                        <tr key={i} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-3 font-semibold text-navy">{div.divisionName}</td>
-                          <td className="px-6 py-3 text-right text-gray-600">{div.rowCount}</td>
-                          <td className="px-6 py-3 text-right text-gray-700 font-medium">{fNAbs(div.totalRevenue)}</td>
-                          <td className="px-6 py-3 text-right">
-                            <span className={`font-semibold ${div.portfolioMarginPct >= 0 ? 'text-teal-600' : 'text-red-500'}`}>
-                              {div.portfolioMarginPct.toFixed(1)}%
-                            </span>
+                        <tr key={i}>
+                          <td className="bold">{div.divisionName}</td>
+                          <td className="right muted">{div.rowCount}</td>
+                          <td className="right">{fNAbs(div.totalRevenue)}</td>
+                          <td className={`right ${div.portfolioMarginPct >= 0 ? 'pos' : 'neg'}`}>
+                            {div.portfolioMarginPct.toFixed(1)}%
                           </td>
-                          <td className="px-6 py-3 text-right text-red-500 font-medium">{fNAbs(div.revenueAtRisk)}</td>
+                          <td className="right neg">{fNAbs(div.revenueAtRisk)}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                  {consolidatedMissing?.length > 0 && (
+                    <div className="source-line">
+                      <span>Missing data for: {consolidatedMissing.map(d => d.name).join(', ')}</span>
+                    </div>
+                  )}
                 </div>
-                {consolidatedMissing?.length > 0 && (
-                  <div className="px-6 py-3 border-t border-slate-100 text-xs text-gray-400">
-                    Missing data for: {consolidatedMissing.map(d => d.name).join(', ')}
-                  </div>
-                )}
-              </div>
+              </>
             )}
 
-            {/* Priority Actions — filtered by tier entitlement */}
+            {/* ── Exhibit 3: Priority Actions — filtered by tier entitlement ── */}
             {(() => {
               const allowedPillars = TIER_ACCESS[tier]?.allowedPillars || ['P1'];
               const gatedActions = (results.actions || []).filter(a => allowedPillars.includes(a.pillar));
               if (!gatedActions.length) return null;
+
+              // Sort by absolute value descending
+              const sortedActions = [...gatedActions].sort((a, b) => Math.abs(b.value || 0) - Math.abs(a.value || 0));
+
+              // Compute total recoverable (positive values only)
+              const totalRecoverable = sortedActions.reduce((s, a) => {
+                const v = a.value || 0;
+                return v > 0 ? s + v : s;
+              }, 0);
+
               return (
                 <>
+                  <div className="exhibit-head">
+                    <div>
+                      <div className="exhibit-num">Exhibit 3</div>
+                      <div className="exhibit-title">Priority actions</div>
+                      <div className="exhibit-sub">Sorted by recoverable margin impact · per month</div>
+                    </div>
+                    <div className="exhibit-meta">
+                      {totalRecoverable > 0 && (
+                        <><span className="total">{fNAbs(totalRecoverable)} total recoverable</span><span className="total-suffix"> /month</span><span className="sep">·</span></>
+                      )}
+                      <span className="count">{sortedActions.length} identified</span>
+                    </div>
+                  </div>
+
                   {/* Mobile card layout */}
                   <div className="md:hidden space-y-2 mb-6">
-                    <p className="text-xs font-bold text-navy uppercase tracking-wider mb-2">
-                      Priority Actions · {gatedActions.length} identified
-                    </p>
-                    {gatedActions.map((action, i) => (
+                    {sortedActions.map((action, i) => (
                       <div key={i} className="bg-white rounded-xl border-l-4 border-gray-100 px-4 py-3 flex items-start gap-3"
                         style={{ borderLeftColor: action.color }}>
                         <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5"
@@ -395,52 +507,122 @@ export default function OverviewPage() {
                       </div>
                     ))}
                   </div>
-                  {/* Desktop: Priority Actions */}
-                  <div className="hidden md:block bg-white rounded-2xl border border-slate-100 shadow-sm mb-6">
-                    <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                      <h2 className="text-sm font-bold text-navy">Priority Actions</h2>
-                      <span className="text-xs text-slate-400">{gatedActions.length} identified</span>
+                  {/* Desktop: Priority Actions with urgency bars */}
+                  <div className="hidden md:block panel panel-tabular action-table mb-6">
+                    <div className="table-head">
+                      <div></div>
+                      <div>#</div>
+                      <div>Recommendation</div>
+                      <div style={{ textAlign: 'right' }}>Recoverable</div>
+                      <div></div>
                     </div>
-                    <div>
-                      {gatedActions.map((action, i) => (
-                        <ActionItem key={i} action={action} index={i} />
-                      ))}
+                    {sortedActions.map((action, i) => {
+                      const urgClass = action.timeline === 'IMMEDIATE' ? 'u-immediate'
+                        : action.timeline?.includes('30') ? 'u-30' : 'u-week';
+                      const urgTagClass = action.timeline === 'IMMEDIATE' ? 'urg-imm'
+                        : action.timeline?.includes('30') ? 'urg-30' : 'urg-wk';
+                      return (
+                        <div className="action" key={i}>
+                          <div className={`urgency-bar ${urgClass}`}></div>
+                          <div className="a-rank">{String(i + 1).padStart(2, '0')}</div>
+                          <div className="a-body">
+                            <h4 className="a-title">{action.title}</h4>
+                            <p className="a-detail">{action.detail}</p>
+                            <div className="a-tags">
+                              <span className="a-tag"><span className="pill">{action.pillar}</span></span>
+                              <span className={`a-tag ${urgTagClass}`}>● {action.timeline}</span>
+                            </div>
+                          </div>
+                          <div className="a-recov">
+                            {action.value ? (
+                              <>
+                                <div className={`v ${action.value < 0 ? 'v-neg' : ''}`}>
+                                  {action.value > 0 ? '+' : ''}{fNAbs(Math.abs(action.value))}
+                                </div>
+                                <div className="per">/month</div>
+                              </>
+                            ) : <div className="v">—</div>}
+                          </div>
+                          <div></div>
+                        </div>
+                      );
+                    })}
+                    <div className="source-line">
+                      <span><strong>Methodology:</strong> Net margin impact, holding volume constant; 30-day window</span>
+                      <span><strong>Source:</strong> P1–P4 analysis engine</span>
                     </div>
                   </div>
                 </>
               );
             })()}
 
-            {/* Pillar Summary Grid */}
+            {/* ── Commentary callout ── */}
+            <div className="commentary">
+              <div className="commentary-label">Analyst commentary</div>
+              <div className="commentary-text">
+                {results.revenueAtRisk > 0 ? (
+                  <>The compression is <em>concentrated in P2 (cost)</em>, where {results.p2?.floorBreaches?.length || 'several'} {cfg.unitPlural} account for the bulk of absorbed input-cost pressure. </>
+                ) : (
+                  <>Portfolio is in good standing. </>
+                )}
+                {results.p1?.totalGain > 0 && (
+                  <><strong>P1 repricing opportunity of {fN(results.p1.totalGain)}/month</strong> is available across {cfg.unitPlural} with WTP headroom. </>
+                )}
+                {results.p4?.results?.some(r => !r.profitable) && (
+                  <>Trade pillar shows {results.p4.results.filter(r => !r.profitable).length} loss-making promotions that should be reviewed.</>
+                )}
+              </div>
+            </div>
+
+            {/* ── Pillar navigation grid ── */}
+            <div className="exhibit-head">
+              <div>
+                <div className="exhibit-num">Exhibit 4</div>
+                <div className="exhibit-title">Pillar deep-dives</div>
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {[
-                { label: cfg.p1.name, color: '#0D9488', href: '/dashboard/pricing',
+                { label: cfg.p1.name, code: 'P1', href: '/dashboard/pricing',
+                  rag: results.p1?.floorBreaches?.length > 0 ? 'red' : results.p1?.totalGain > 0 ? 'amber' : 'green',
                   stat: results.p1?.totalGain > 0 ? fN(results.p1.totalGain) : 'No gap',
                   sub: 'repricing opportunity' },
-                { label: cfg.p2.name, color: '#DC2626', href: '/dashboard/cost',
+                { label: cfg.p2.name, code: 'P2', href: '/dashboard/cost',
+                  rag: results.p2?.avgAbsorbedPct > 60 ? 'red' : results.p2?.avgAbsorbedPct > 30 ? 'amber' : 'green',
                   stat: fNAbs(results.p2?.totalAbsorbed || 0),
                   sub: 'cost absorbed /month' },
-                { label: cfg.p3.name, color: '#D97706', href: '/dashboard/channel',
+                { label: cfg.p3.name, code: 'P3', href: '/dashboard/channel',
+                  rag: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'amber' : 'green',
                   stat: results.p3?.channelResults?.length
                     ? results.p3.channelResults[0]?.channel + ' top channel'
                     : '—',
                   sub: 'by revenue' },
-                { label: cfg.p4.name, color: '#7C3AED', href: '/dashboard/trade',
+                { label: cfg.p4.name, code: 'P4', href: '/dashboard/trade',
+                  rag: results.p4?.results?.some(r => !r.profitable) ? 'red' : results.p4?.results?.length > 0 ? 'green' : 'grey',
                   stat: results.p4?.results?.filter(r => !r.profitable).length > 0
                     ? results.p4.results.filter(r => !r.profitable).length + ' loss-making promos'
                     : 'All promos profitable',
                   sub: '' },
-              ].map(({ label, color, href, stat, sub }) => (
+              ].map(({ label, code, href, rag, stat, sub }) => (
                 <Link key={href} href={href}>
                   <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:shadow-md hover:border-slate-200 transition-all cursor-pointer group">
-                    <div className="w-3 h-3 rounded-full mb-3" style={{ background: color }} />
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className={`rag ${rag}`}></span>
+                      <span className="page-pillar-code">{code}</span>
+                    </div>
                     <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{label}</p>
                     <p className="text-lg font-black text-navy leading-tight">{stat}</p>
                     {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
-                    <p className="text-xs text-teal font-semibold mt-3 group-hover:underline">View detail →</p>
+                    <p className="text-xs font-semibold mt-3 group-hover:underline" style={{ color: 'var(--teal)' }}>View detail →</p>
                   </div>
                 </Link>
               ))}
+            </div>
+
+            {/* ── Doc Footer ── */}
+            <div className="doc-footer">
+              <span>MarginCOS · Commercial Operating System</span>
+              <span>Confidential · prepared for {companyName} · Rev {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }).replace('/', '·')}</span>
             </div>
           </>
         )}

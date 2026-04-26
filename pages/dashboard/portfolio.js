@@ -346,6 +346,13 @@ export default function PortfolioPage() {
         {/* ── Active period content ── */}
         {activePeriod && !loading && (
           <>
+            {/* Doc head — editorial chrome */}
+            <div className="doc-head mb-8">
+              <div className="doc-meta">SKU master · {activeSkuCount} active</div>
+              <h1 className="doc-title">Portfolio Manager</h1>
+              <div className="doc-period">{activePeriod?.label}</div>
+            </div>
+
             {/* Desktop header — title above, controls below */}
             <div className="hidden md:block mb-6">
               <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '28px', fontWeight: 700, color: '#1B2A4A', marginBottom: '16px' }}>
@@ -398,7 +405,7 @@ export default function PortfolioPage() {
                   )}
                 </div>
                 {/* Right group: action buttons — hidden in consolidated mode (read-only) */}
-                <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="doc-actions flex items-center gap-3 flex-shrink-0">
                   {!isConsolidated && (
                     <>
                       <Button variant="secondary" size="sm" onClick={() => {
@@ -604,6 +611,17 @@ export default function PortfolioPage() {
             {/* SKU Grid tab */}
             {activeTab === 'sku' && (
               <>
+                <div className="exhibit-head">
+                  <div>
+                    <div className="exhibit-num">Exhibit 1</div>
+                    <div className="exhibit-title">SKU identity</div>
+                    <div className="exhibit-sub">Master product list with category, channel, and status metadata</div>
+                  </div>
+                  <div className="exhibit-meta">
+                    <span className="count">{gridRows.length} SKUs</span>
+                  </div>
+                </div>
+
                 <SkuGrid
                   skuRows={gridRows.slice(0, visibleCount)}
                   onSave={handleSaveSku}
@@ -633,6 +651,10 @@ export default function PortfolioPage() {
                     </button>
                   </div>
                 )}
+                <div className="source-line">
+                  <span><strong>Source:</strong> SKU master database</span>
+                  <span><strong>Last sync:</strong> {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
               </>
             )}
 
@@ -646,6 +668,11 @@ export default function PortfolioPage() {
                 cfg={cfg}
               />
             )}
+
+            {/* Doc footer */}
+            <div className="doc-footer mt-12">
+              MarginCOS · Portfolio Manager
+            </div>
           </>
         )}
 

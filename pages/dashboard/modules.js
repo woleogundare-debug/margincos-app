@@ -50,18 +50,18 @@ function M1Module({ results, deltas, cfg, isConsolidated }) {
       </div>
 
       {/* Classification breakdown */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="text-center p-4 bg-emerald-50 rounded-xl">
-          <p className="text-2xl font-black text-emerald-700">{m1.results.filter(s => s.classification.includes('Protect')).length}</p>
-          <p className="text-xs font-semibold text-emerald-600 mt-1">★ Protect</p>
+      <div className="summary-row">
+        <div className="summary-card">
+          <div className="lbl">★ Protect</div>
+          <div className="v green">{m1.results.filter(s => s.classification.includes('Protect')).length}</div>
         </div>
-        <div className="text-center p-4 bg-blue-50 rounded-xl">
-          <p className="text-2xl font-black text-blue-700">{m1.results.filter(s => s.classification.includes('Grow')).length}</p>
-          <p className="text-xs font-semibold text-blue-600 mt-1">▲ Grow</p>
+        <div className="summary-card">
+          <div className="lbl">▲ Grow</div>
+          <div className="v">{m1.results.filter(s => s.classification.includes('Grow')).length}</div>
         </div>
-        <div className="text-center p-4 bg-red-50 rounded-xl">
-          <p className="text-2xl font-black text-red-700">{m1.dilutiveCount}</p>
-          <p className="text-xs font-semibold text-red-600 mt-1">Review / Reprice</p>
+        <div className="summary-card">
+          <div className="lbl">Review / Reprice</div>
+          <div className="v red">{m1.dilutiveCount}</div>
         </div>
       </div>
       <M1QuadrantChart results={m1.results} portfolioAvgMarginPct={m1.portfolioAvgMarginPct} cfg={cfg} />
@@ -135,7 +135,7 @@ function M3Module({ results, deltas, cfg }) {
   return (
     <>
       {/* KpiTile replaces plain stat boxes for delta-tracked metrics */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         <KpiTile
           label="Total Trade Spend"
           value={fNAbs(m3.totalSpend)}
@@ -161,14 +161,16 @@ function M3Module({ results, deltas, cfg }) {
         {(() => {
           const bestIsPositive = (m3.bestChannel?.roi ?? -Infinity) > 0;
           return bestIsPositive ? (
-            <div className="text-center p-4 bg-amber-50 rounded-xl">
-              <p className="text-2xl font-black text-amber-600">{m3.bestChannel.channel}</p>
-              <p className="text-xs font-semibold text-amber-700 mt-1">Best ROI Channel · {m3.bestChannel.roi.toFixed(2)}×</p>
+            <div className="summary-card">
+              <div className="lbl">Best ROI Channel</div>
+              <div className="v gold">{m3.bestChannel.channel}</div>
+              <div className="sub">{m3.bestChannel.roi.toFixed(2)}×</div>
             </div>
           ) : (
-            <div className="text-center p-4 bg-red-50 rounded-xl">
-              <p className="text-2xl font-black text-red-500">—</p>
-              <p className="text-xs font-semibold text-red-600 mt-1">All channels dilutive</p>
+            <div className="summary-card">
+              <div className="lbl">Channel Status</div>
+              <div className="v red">—</div>
+              <div className="sub">All channels dilutive</div>
             </div>
           );
         })()}
@@ -209,14 +211,14 @@ function M4Module({ results, deltas, cfg }) {
   );
   return (
     <>
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="text-center p-4 bg-slate-50 rounded-xl">
-          <p className="text-2xl font-black text-navy">{m4.totalDistributors}</p>
-          <p className="text-xs font-semibold text-slate-500 mt-1">{cfg.fields.partner}s Scored</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+        <div className="summary-card">
+          <div className="lbl">{cfg.fields.partner}s Scored</div>
+          <div className="v">{m4.totalDistributors}</div>
         </div>
-        <div className="text-center p-4 bg-teal-50 rounded-xl">
-          <p className="text-2xl font-black text-teal-700">{m4.avgContPct.toFixed(1)}%</p>
-          <p className="text-xs font-semibold text-teal-600 mt-1">Avg True Contribution</p>
+        <div className="summary-card">
+          <div className="lbl">Avg True Contribution</div>
+          <div className="v teal">{m4.avgContPct.toFixed(1)}%</div>
         </div>
         <KpiTile
           label="Need Renegotiation"
@@ -290,6 +292,44 @@ export default function ModulesPage() {
           </div>
         ) : (
         <>
+        {hasResults && (
+          <>
+            {/* Doc head — editorial chrome */}
+            <div className="doc-head mb-8">
+              <div>
+                <div className="doc-meta">Enterprise · Module library</div>
+                <h1 className="doc-title">Enterprise Modules</h1>
+                <div className="doc-period">{results?.m1?.results ? results.m1.results.length : 0} modules</div>
+              </div>
+              <div className="doc-actions">
+                <button className="btn-ed">Module catalogue</button>
+                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Request access</button>
+              </div>
+            </div>
+
+            {/* Summary row — 3 cards if data available */}
+            {results && (
+              <div className="summary-row mb-8">
+                <div className="summary-card">
+                  <div className="lbl">Module 1</div>
+                  <div className="v">M1</div>
+                  <div className="sub">{cfg.m1.name}</div>
+                </div>
+                <div className="summary-card">
+                  <div className="lbl">Module 2</div>
+                  <div className="v">M2</div>
+                  <div className="sub">{cfg.m2.name}</div>
+                </div>
+                <div className="summary-card">
+                  <div className="lbl">Module 3</div>
+                  <div className="v">M3</div>
+                  <div className="sub">{cfg.m3.name}</div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
         {!hasResults && (
           <div className="mb-6">
             <Button variant="navy" size="md" onClick={run} loading={running}>
@@ -299,9 +339,13 @@ export default function ModulesPage() {
           </div>
         )}
 
-        <div className="space-y-12">
+        <div className="module-grid space-y-12">
           {/* M1 */}
           <section>
+            <div className="exhibit-head mb-4">
+              <span className="exhibit-num">01</span>
+              <h2 className="exhibit-title">{cfg.m1.name}</h2>
+            </div>
             <ModuleGate tier={tier} moduleName={`M1 · ${cfg.m1.name}`}
               description={`Classifies every ${cfg.unit} into a strategic quadrant based on margin and revenue share. Identifies dilutive ${cfg.unitPlural}, delist candidates, and high-value defenders.`}>
               <PillarCard code="M1" title={cfg.m1.name}
@@ -316,6 +360,10 @@ export default function ModulesPage() {
 
           {/* M2 */}
           <section>
+            <div className="exhibit-head mb-4">
+              <span className="exhibit-num">02</span>
+              <h2 className="exhibit-title">{cfg.m2.name}</h2>
+            </div>
             <ModuleGate tier={tier} moduleName={`M2 · ${cfg.m2.name}`}
               description="Projects margin impact under five cost recovery scenarios from 0% to 100%. Identifies the minimum recovery rate required to defend the portfolio.">
               <PillarCard code="M2" title={cfg.m2.name}
@@ -330,6 +378,10 @@ export default function ModulesPage() {
 
           {/* M3 */}
           <section>
+            <div className="exhibit-head mb-4">
+              <span className="exhibit-num">03</span>
+              <h2 className="exhibit-title">{cfg.m3.name}</h2>
+            </div>
             <ModuleGate tier={tier} moduleName={`M3 · ${cfg.m3.name}`}
               description="Computes return on trade investment by channel. Identifies dilutive spend, accretive channels, and reallocation opportunities.">
               <PillarCard code="M3" title={cfg.m3.name}
@@ -344,6 +396,10 @@ export default function ModulesPage() {
 
           {/* M4 */}
           <section>
+            <div className="exhibit-head mb-4">
+              <span className="exhibit-num">04</span>
+              <h2 className="exhibit-title">{cfg.m4.name}</h2>
+            </div>
             <ModuleGate tier={tier} moduleName={`M4 · ${cfg.m4.name}`}
               description={`Scores every named ${cfg.fields.partner.toLowerCase()} on true contribution margin (net of margin, rebates, logistics, and credit cost). Classifies into Strategic, Grow, Renegotiate, Review.`}>
               <PillarCard code="M4" title={cfg.m4.name}
@@ -353,6 +409,19 @@ export default function ModulesPage() {
               </PillarCard>
             </ModuleGate>
           </section>
+
+          {/* Module roadmap commentary */}
+          <div className="commentary mt-12 p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <p className="commentary-label text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Module roadmap</p>
+            <p className="commentary-text text-sm text-slate-700 leading-relaxed">
+              Future releases will extend the module library with advanced diagnostics: portfolio rebalancing recommendations, automated cost recovery recovery optimization, and predictive scenarios based on market data. Check back for updates.
+            </p>
+          </div>
+        </div>
+
+        {/* Doc footer */}
+        <div className="doc-footer mt-12">
+          MarginCOS · Enterprise modules
         </div>
         </>
         )}
