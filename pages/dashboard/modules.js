@@ -302,8 +302,6 @@ export default function ModulesPage() {
                 <div className="doc-period">{results?.m1?.results ? results.m1.results.length : 0} modules</div>
               </div>
               <div className="doc-actions">
-                <button className="btn-ed">Module catalogue</button>
-                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Request access</button>
               </div>
             </div>
 
@@ -410,13 +408,6 @@ export default function ModulesPage() {
             </ModuleGate>
           </section>
 
-          {/* Module roadmap commentary */}
-          <div className="commentary mt-12 p-6 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="commentary-label text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Module roadmap</p>
-            <p className="commentary-text text-sm text-slate-700 leading-relaxed">
-              Future releases will extend the module library with advanced diagnostics: portfolio rebalancing recommendations, automated cost recovery recovery optimization, and predictive scenarios based on market data. Check back for updates.
-            </p>
-          </div>
         </div>
 
         {/* Doc footer */}

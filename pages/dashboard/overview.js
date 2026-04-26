@@ -236,28 +236,10 @@ export default function OverviewPage() {
         {/* Results */}
         {hasResults && results && (
           <>
-            {/* ── Doc Head (editorial) ── */}
+            {/* ── Doc Head (editorial label only — status bar handles buttons) ── */}
             <div className="doc-head">
               <div>
                 <div className="doc-meta">Commercial Intelligence — Briefing {activePeriod?.label ? activePeriod.label.replace(/\s/g, '·') : ''}</div>
-                <h1 className="doc-title">Overview</h1>
-                <div className="doc-period">
-                  Analysis complete · {activePeriod?.label} · {results.skuCount} active {cfg.unitPlural} · last run {ranAt?.toLocaleTimeString() || '—'}
-                </div>
-              </div>
-              <div className="doc-actions">
-                {isProfessional && (
-                  <DownloadReportButton
-                    results={results}
-                    companyName={reportCompanyName}
-                    periodLabel={isConsolidated ? `Consolidated — ${consolidatedMonth}` : activePeriod?.label}
-                    tier={tier}
-                    isEnterprise={isEnterprise}
-                    chronologicalDelta={chronologicalDelta}
-                    vertical={activePeriod?.vertical}
-                  />
-                )}
-                <button className="btn-ed" onClick={run} disabled={running}>↻ Re-run</button>
               </div>
             </div>
 
