@@ -21,6 +21,8 @@ import BoardPresentationChart from '../../components/blog/BoardPresentationChart
 import TradeCreditCalculator from '../../components/blog/TradeCreditCalculator';
 import ChannelWaterfallChart from '../../components/blog/ChannelWaterfallChart';
 import ChannelRankingTable from '../../components/blog/ChannelRankingTable';
+import MarginDistributionChart from '../../components/blog/MarginDistributionChart';
+import PromoBreakevenChart from '../../components/blog/PromoBreakevenChart';
 
 export async function getStaticPaths() {
   const blogDir = path.join(process.cwd(), 'content/blog');
@@ -77,7 +79,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
   const { title, description, excerpt, date, author, category, readTime, slug } = frontmatter;
   const metaDescription = excerpt || description;
 
-  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart, PassThroughBenchmarkChart, PortfolioDistributionChart, BoardPresentationChart, TradeCreditCalculator, ChannelWaterfallChart, ChannelRankingTable };
+  const mdxComponents = { PassThroughChart, MarginLeakageChart, RRPFloorChart, RepricingGapChart, DieselCostChart, LaneCostFloorChart, FleetGapChart, PassThroughBenchmarkChart, PortfolioDistributionChart, BoardPresentationChart, TradeCreditCalculator, ChannelWaterfallChart, ChannelRankingTable, MarginDistributionChart, PromoBreakevenChart };
 
   return (
     <>

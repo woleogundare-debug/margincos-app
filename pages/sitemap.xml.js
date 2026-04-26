@@ -1,5 +1,5 @@
 const SITE_URL = 'https://margincos.com';
-const LASTMOD   = '2026-04-04';
+const LASTMOD   = '2026-04-24';
 
 const pages = [
   { url: '/',                                      priority: '1.0', changefreq: 'weekly'  },
@@ -19,6 +19,7 @@ const pages = [
   { url: '/blog/logistics-lane-profitability-nigeria',      priority: '0.7', changefreq: 'monthly' },
   { url: '/blog/cost-pass-through-rate-calculation',        priority: '0.8', changefreq: 'monthly' },
   { url: '/blog/hidden-cost-trade-credit',                   priority: '0.8', changefreq: 'monthly' },
+  { url: '/blog/fmcg-margin-leakage-signs',                  priority: '0.8', changefreq: 'monthly' },
   { url: '/privacy',                               priority: '0.3', changefreq: 'yearly'  },
   { url: '/terms',                                 priority: '0.3', changefreq: 'yearly'  },
 ];

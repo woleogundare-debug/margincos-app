@@ -8,6 +8,7 @@ import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import ExportButton from '../../components/ExportButton';
 import { exportActions } from '../../lib/exportToExcel';
 import { getFormatterSym } from '../../lib/formatters';
+import { TIER_ACCESS } from '../../lib/constants';
 
 const PILLAR_COLORS = {
   P1: '#D4A843', P2: '#C0392B', P3: '#0D8F8F', P4: '#8A6BBE',
@@ -65,8 +66,11 @@ export default function ActionsPage() {
     }));
   }, [isConsolidated, activeResults]);
 
-  // Source of truth for display: consolidated (in-memory) or DB-backed
-  const displayActions = isConsolidated ? consolidatedActions : actions;
+  // Source of truth for display: consolidated (in-memory) or DB-backed,
+  // then filtered by tier entitlement so non-Enterprise users never see M1-M4.
+  const allowedPillars = TIER_ACCESS[tier]?.allowedPillars || ['P1'];
+  const displayActions = (isConsolidated ? consolidatedActions : actions)
+    .filter(a => allowedPillars.includes(a.pillar));
 
   const [filter, setFilter] = useState('open');
   const [pillarFilter, setPillarFilter] = useState('all');
@@ -91,9 +95,9 @@ export default function ActionsPage() {
     setResolveNote('');
   };
 
-  // Static list — always render all tabs immediately, regardless of load state.
-  // A tab with no matching actions simply shows the empty state; that's fine.
+  // Pillar tabs filtered by tier — non-Enterprise users never see M1-M4 tabs.
   const PILLAR_ORDER = ['all', 'P1', 'P2', 'P3', 'P4', 'M1', 'M2', 'M3', 'M4'];
+  const visiblePillars = PILLAR_ORDER.filter(p => p === 'all' || allowedPillars.includes(p));
 
   return (
     <>
@@ -178,9 +182,9 @@ export default function ActionsPage() {
               ))}
             </div>
 
-            {/* Pillar filter */}
+            {/* Pillar filter — tabs gated by tier */}
             <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-              {PILLAR_ORDER.map(p => (
+              {visiblePillars.map(p => (
                 <button key={p}
                   onClick={() => setPillarFilter(p)}
                   className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all"
