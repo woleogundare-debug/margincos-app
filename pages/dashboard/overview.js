@@ -134,27 +134,19 @@ export default function OverviewPage() {
   return (
     <>
       <Head><title>Overview | MarginCOS</title></Head>
-        {/* Run Analysis banner */}
+        {/* ── Doc Head (editorial header + status + buttons) ── */}
         {!noData && (
-          <div className={clsx(
-            'flex items-center justify-between px-6 py-4 rounded-2xl mb-6 border',
-            hasResults
-              ? 'bg-teal-50 border-teal/20'
-              : 'bg-navy/5 border-navy/10'
-          )}>
+          <div className="doc-head">
             <div>
-              <p className="text-sm font-bold text-navy">
+              <div className="doc-meta">Commercial Intelligence — Briefing {activePeriod?.label ? activePeriod.label.replace(/\s/g, '·') : ''}</div>
+              <h1 className="doc-title">Overview</h1>
+              <div className="doc-period">
                 {hasResults
-                  ? `Analysis complete · ${activePeriod?.label}`
-                  : 'Ready to analyse'}
-              </p>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {hasResults
-                  ? `Last run: ${ranAt?.toLocaleTimeString()} · ${results?.skuCount} active ${cfg.unitPlural}`
-                  : `${skuRows.filter(r => r.active === 'Y' || r.active === true).length} ${cfg.unitPlural} in portfolio`}
-              </p>
+                  ? `Analysis complete · ${activePeriod?.label} · ${results?.skuCount} active ${cfg.unitPlural} · last run ${ranAt?.toLocaleTimeString() || '—'}`
+                  : `Ready to analyse · ${skuRows.filter(r => r.active === 'Y' || r.active === true).length} ${cfg.unitPlural} in portfolio`}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="doc-actions">
               {hasResults && isProfessional && (
                 <DownloadReportButton
                   results={results}
@@ -236,13 +228,6 @@ export default function OverviewPage() {
         {/* Results */}
         {hasResults && results && (
           <>
-            {/* ── Doc Head (editorial label only — status bar handles buttons) ── */}
-            <div className="doc-head">
-              <div>
-                <div className="doc-meta">Commercial Intelligence — Briefing {activePeriod?.label ? activePeriod.label.replace(/\s/g, '·') : ''}</div>
-              </div>
-            </div>
-
             {/* ── Insight headline ── */}
             {results.revenueAtRisk > 0 && (
               <div className="insight">
