@@ -74,10 +74,7 @@ export default function CostPage() {
                 <h1 className="doc-title">Cost Pass-Through</h1>
                 <div className="doc-period">{activePeriod?.label}</div>
               </div>
-              <div className="doc-actions">
-                <button className="btn-ed">Export drivers</button>
-                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Run scenario</button>
-              </div>
+              <div className="doc-actions"></div>
             </div>
 
             {p2 && (

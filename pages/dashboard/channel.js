@@ -75,10 +75,7 @@ export default function ChannelPage() {
                 <h1 className="doc-title">Channel Economics</h1>
                 <div className="doc-period">{activePeriod?.label}</div>
               </div>
-              <div className="doc-actions">
-                <button className="btn-ed">Channel deep-dive</button>
-                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Open JBP planner</button>
-              </div>
+              <div className="doc-actions"></div>
             </div>
 
             {p3 && (

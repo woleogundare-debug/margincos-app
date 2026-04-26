@@ -75,10 +75,7 @@ export default function TradePage() {
                 <h1 className="doc-title">Trade Execution</h1>
                 <div className="doc-period">{activePeriod?.label}</div>
               </div>
-              <div className="doc-actions">
-                <button className="btn-ed">Promo planner</button>
-                <button className="btn-ed" style={{ background: 'var(--red-brand, #C0392B)', color: '#fff', borderColor: 'var(--red-brand, #C0392B)' }}>Halt selected</button>
-              </div>
+              <div className="doc-actions"></div>
             </div>
 
             {p4 && (

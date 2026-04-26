@@ -65,10 +65,7 @@ export default function PricingPage() {
                 <h1 className="doc-title">Pricing</h1>
                 <div className="doc-period">{activePeriod?.label}</div>
               </div>
-              <div className="doc-actions">
-                <button className="btn-ed">Re-run elasticity</button>
-                <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Apply proposals</button>
-              </div>
+              <div className="doc-actions"></div>
             </div>
 
             {p1 && (

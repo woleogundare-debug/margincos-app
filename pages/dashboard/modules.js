@@ -129,7 +129,8 @@ function M3Module({ results, deltas, cfg }) {
   const m3 = results?.m3;
   if (!m3?.hasData) return (
     <div className="py-8 text-center text-sm text-slate-400">
-      No trade investment data. Populate the Trade Investment form in Portfolio Manager.
+      No trade investment data. Populate the Trade Investment form in{' '}
+      <a href="/dashboard/portfolio" className="text-[#0D8F8F] underline hover:text-[#0b7272]">Portfolio Manager</a>.
     </div>
   );
   return (
@@ -301,8 +302,7 @@ export default function ModulesPage() {
                 <h1 className="doc-title">Enterprise Modules</h1>
                 <div className="doc-period">4 modules · {results?.m1?.results?.length || 0} {cfg.unitPlural} analysed</div>
               </div>
-              <div className="doc-actions">
-              </div>
+              <div className="doc-actions"></div>
             </div>
 
             {/* Summary row — 3 cards if data available */}
@@ -341,8 +341,9 @@ export default function ModulesPage() {
           {/* M1 */}
           <section>
             <div className="exhibit-head mb-4">
-              <span className="exhibit-num">01</span>
-              <h2 className="exhibit-title">{cfg.m1.name}</h2>
+              <div className="exhibit-num">Exhibit 1</div>
+              <h3 className="exhibit-title">{cfg.m1.name}</h3>
+              <div className="exhibit-sub">M1 · Quadrant classification: Protect · Grow · Reprice · Review</div>
             </div>
             <ModuleGate tier={tier} moduleName={`M1 · ${cfg.m1.name}`}
               description={`Classifies every ${cfg.unit} into a strategic quadrant based on margin and revenue share. Identifies dilutive ${cfg.unitPlural}, delist candidates, and high-value defenders.`}>
@@ -354,13 +355,12 @@ export default function ModulesPage() {
             </ModuleGate>
           </section>
 
-          <hr className="border-slate-200" />
-
           {/* M2 */}
-          <section>
+          <section style={{ borderTop: '1px solid var(--rule, #e6e1d6)', paddingTop: '2rem' }}>
             <div className="exhibit-head mb-4">
-              <span className="exhibit-num">02</span>
-              <h2 className="exhibit-title">{cfg.m2.name}</h2>
+              <div className="exhibit-num">Exhibit 2</div>
+              <h3 className="exhibit-title">{cfg.m2.name}</h3>
+              <div className="exhibit-sub">M2 · Five scenarios: 0% → 100% cost recovery rate</div>
             </div>
             <ModuleGate tier={tier} moduleName={`M2 · ${cfg.m2.name}`}
               description="Projects margin impact under five cost recovery scenarios from 0% to 100%. Identifies the minimum recovery rate required to defend the portfolio.">
@@ -372,13 +372,12 @@ export default function ModulesPage() {
             </ModuleGate>
           </section>
 
-          <hr className="border-slate-200" />
-
           {/* M3 */}
-          <section>
+          <section style={{ borderTop: '1px solid var(--rule, #e6e1d6)', paddingTop: '2rem' }}>
             <div className="exhibit-head mb-4">
-              <span className="exhibit-num">03</span>
-              <h2 className="exhibit-title">{cfg.m3.name}</h2>
+              <div className="exhibit-num">Exhibit 3</div>
+              <h3 className="exhibit-title">{cfg.m3.name}</h3>
+              <div className="exhibit-sub">M3 · ROI per channel · Blended portfolio ROI · Spend intensity</div>
             </div>
             <ModuleGate tier={tier} moduleName={`M3 · ${cfg.m3.name}`}
               description="Computes return on trade investment by channel. Identifies dilutive spend, accretive channels, and reallocation opportunities.">
@@ -390,13 +389,12 @@ export default function ModulesPage() {
             </ModuleGate>
           </section>
 
-          <hr className="border-slate-200" />
-
           {/* M4 */}
-          <section>
+          <section style={{ borderTop: '1px solid var(--rule, #e6e1d6)', paddingTop: '2rem' }}>
             <div className="exhibit-head mb-4">
-              <span className="exhibit-num">04</span>
-              <h2 className="exhibit-title">{cfg.m4.name}</h2>
+              <div className="exhibit-num">Exhibit 4</div>
+              <h3 className="exhibit-title">{cfg.m4.name}</h3>
+              <div className="exhibit-sub">M4 · True contribution · Credit cost · 2×2 quadrant scoring</div>
             </div>
             <ModuleGate tier={tier} moduleName={`M4 · ${cfg.m4.name}`}
               description={`Scores every named ${cfg.fields.partner.toLowerCase()} on true contribution margin (net of margin, rebates, logistics, and credit cost). Classifies into Strategic, Grow, Renegotiate, Review.`}>
