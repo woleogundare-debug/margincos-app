@@ -595,20 +595,22 @@ export default function TeamPage() {
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div className="team-invite-row" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <input
                   type="email"
                   placeholder="colleague@company.com"
                   value={inviteEmail}
                   onChange={e => { setInviteEmail(e.target.value); setInviteSent(false); }}
+                  className="team-invite-field"
                   style={{
                     flex: 1, padding: '10px 14px', border: `1px solid ${c.ruleStrong}`, borderRadius: 8,
-                    fontFamily: font.dm, fontSize: 13, color: c.navy, outline: 'none',
+                    fontFamily: font.dm, fontSize: 13, color: c.navy, outline: 'none', minWidth: 180,
                   }}
                 />
                 <select
                   value={inviteRole}
                   onChange={e => setInviteRole(e.target.value)}
+                  className="team-invite-field"
                   style={{
                     padding: '10px 14px', border: `1px solid ${c.ruleStrong}`, borderRadius: 8,
                     fontFamily: font.dm, fontSize: 13, color: c.navy, background: '#fff', minWidth: 130,
@@ -619,6 +621,7 @@ export default function TeamPage() {
                 </select>
                 {divisions.length > 0 && (
                   <select
+                    className="team-invite-field"
                     style={{
                       padding: '10px 14px', border: `1px solid ${c.ruleStrong}`, borderRadius: 8,
                       fontFamily: font.dm, fontSize: 13, color: c.navy, background: '#fff', minWidth: 180,
@@ -633,6 +636,7 @@ export default function TeamPage() {
                 <button
                   onClick={handleInvite}
                   disabled={inviting || !inviteEmail}
+                  className="team-invite-field"
                   style={{
                     fontFamily: font.dm, fontSize: 12.5, fontWeight: 600,
                     padding: '10px 18px', borderRadius: 8,

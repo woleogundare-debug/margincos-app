@@ -339,7 +339,7 @@ html, body  { overflow-x: hidden; }
 .doc-head {
   display: flex; justify-content: space-between; align-items: flex-end;
   border-bottom: 1px solid var(--rule-strong);
-  padding-bottom: 14px; gap: 24px;
+  padding-bottom: 14px; gap: 24px; flex-wrap: wrap;
 }
 .doc-meta {
   font-size: 10px; font-weight: 700; color: var(--gray);
@@ -354,8 +354,10 @@ html, body  { overflow-x: hidden; }
 .doc-period { font-size: 12px; color: var(--text-light); margin-top: 6px; }
 .doc-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
 @media (max-width: 600px) {
+  .doc-head { gap: 12px; }
   .doc-actions { width: 100%; }
   .doc-actions > * { flex: 1 1 auto; min-width: 0; text-align: center; }
+  .team-invite-field { flex: 1 1 100% !important; min-width: 0 !important; width: 100% !important; }
 }
 .doc-footer {
   margin-top: 28px; padding-top: 14px;
