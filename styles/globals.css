@@ -352,7 +352,11 @@ html, body  { overflow-x: hidden; }
   letter-spacing: -0.025em; line-height: 1.05;
 }
 .doc-period { font-size: 12px; color: var(--text-light); margin-top: 6px; }
-.doc-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.doc-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+@media (max-width: 600px) {
+  .doc-actions { width: 100%; }
+  .doc-actions > * { flex: 1 1 auto; min-width: 0; text-align: center; }
+}
 .doc-footer {
   margin-top: 28px; padding-top: 14px;
   border-top: 1px solid var(--rule);
@@ -508,6 +512,10 @@ html, body  { overflow-x: hidden; }
   border-radius: var(--r-md); overflow: hidden;
 }
 @media (max-width: 767px) { .pillars { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .pillars { grid-template-columns: 1fr; }
+  .pillar { border-right: none; border-bottom: 1px solid var(--rule); }
+  .pillar:last-child { border-bottom: none; }
+}
 .pillar {
   padding: 14px 16px; border-right: 1px solid var(--rule);
   display: flex; align-items: center; gap: 14px;

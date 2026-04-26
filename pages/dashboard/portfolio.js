@@ -346,13 +346,6 @@ export default function PortfolioPage() {
         {/* ── Active period content ── */}
         {activePeriod && !loading && (
           <>
-            {/* Doc head — editorial chrome */}
-            <div className="doc-head mb-8">
-              <div className="doc-meta">SKU master · {activeSkuCount} active</div>
-              <h1 className="doc-title">Portfolio Manager</h1>
-              <div className="doc-period">{activePeriod?.label}</div>
-            </div>
-
             {/* Desktop header — title above, controls below */}
             <div className="hidden md:block mb-6">
               <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '28px', fontWeight: 700, color: '#1B2A4A', marginBottom: '16px' }}>

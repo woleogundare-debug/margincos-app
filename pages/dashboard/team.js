@@ -646,16 +646,16 @@ export default function TeamPage() {
               {error && <p style={{ fontSize: 12, color: c.red, fontWeight: 600, marginTop: 10 }}>{error}</p>}
 
               {/* Role permission cards */}
-              <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+              <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 14 }}>
                 {ROLE_DEFS.map(r => {
                   const count = r.code === 'Admin' ? adminCount : r.code === 'Member' ? memberCount : (members.length - adminCount - memberCount);
                   return (
                     <div key={r.code} style={{ padding: '12px 14px', background: c.paper, border: `1px solid ${c.rule}`, borderRadius: 8 }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <strong style={{ fontFamily: font.mono, fontSize: 11, color: c.navy, letterSpacing: '0.06em' }}>
+                      <div style={{ marginBottom: 4 }}>
+                        <strong style={{ fontFamily: font.mono, fontSize: 11, color: c.navy, letterSpacing: '0.06em', display: 'block' }}>
                           {r.code.toUpperCase()}
                         </strong>
-                        <span style={{ fontFamily: font.mono, fontSize: 10, color: c.textLight }}>
+                        <span style={{ fontFamily: font.mono, fontSize: 10, color: c.textLight, display: 'block', marginTop: 2 }}>
                           {count} active
                         </span>
                       </div>
