@@ -348,7 +348,7 @@ export default function PortfolioPage() {
           <>
             {/* Desktop header — title above, controls below */}
             <div className="hidden md:block mb-6">
-              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '28px', fontWeight: 700, color: '#1B2A4A', marginBottom: '16px' }}>
+              <h1 className="doc-title" style={{ marginBottom: '16px' }}>
                 Portfolio Manager
               </h1>
               <div className="flex items-center justify-between gap-3">
@@ -452,7 +452,7 @@ export default function PortfolioPage() {
             {/* Row 1 — Mobile header */}
             <div className="md:hidden mb-3">
               <div className="flex items-center justify-between mb-2">
-                <h1 className="text-lg font-bold text-navy" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h1 className="doc-title" style={{ fontSize: 22 }}>
                   Portfolio Manager
                 </h1>
                 {/* Mobile action icons — hidden in consolidated mode */}
