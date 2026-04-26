@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import {
@@ -90,6 +90,28 @@ export default function TeamPage() {
 
   // Tier label
   const tierLabel = isEnterprise ? 'Enterprise' : tier === 'professional' ? 'Professional' : 'Essentials';
+
+  // Activity feed state
+  const [activities, setActivities] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+
+  useEffect(() => {
+    if (!team?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/team/activity');
+        if (!res.ok) throw new Error('Activity fetch failed');
+        const { activities: data } = await res.json();
+        if (!cancelled) setActivities(data || []);
+      } catch (_) {
+        // Silently degrade - empty feed is fine
+      } finally {
+        if (!cancelled) setActivityLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [team?.id]);
 
   // Last activity (most recent member by joined_at)
   const lastActivity = members.length > 0
@@ -839,15 +861,77 @@ export default function TeamPage() {
             <div className="exhibit-title">Recent activity</div>
             <div className="exhibit-sub">Audit trail - last actions across the workspace</div>
           </div>
-          <div className="exhibit-meta">
-            <span className="count">Coming soon</span>
-          </div>
+          {activities.length > 0 && (
+            <div className="exhibit-meta">
+              <span className="count">{activities.length} event{activities.length !== 1 ? 's' : ''}</span>
+            </div>
+          )}
         </div>
 
-        <div className="panel" style={{ textAlign: 'center', padding: '32px 20px' }}>
-          <p style={{ fontSize: 13, color: 'var(--text-light, #8899AA)', margin: 0 }}>
-            Activity logging will be available in a future release. Team actions, analysis runs, and data changes will appear here.
-          </p>
+        <div className="panel" style={{ overflow: 'hidden' }}>
+          {activityLoading && (
+            <div style={{ padding: '24px 18px', textAlign: 'center' }}>
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#0D8F8F] border-t-transparent mx-auto" />
+            </div>
+          )}
+
+          {!activityLoading && activities.length === 0 && (
+            <div style={{ padding: '32px 20px', textAlign: 'center' }}>
+              <p style={{ fontSize: 13, color: c.gray, margin: 0 }}>
+                No activity recorded yet. Activity will appear here as team members sign in, upload portfolio data, and resolve actions.
+              </p>
+            </div>
+          )}
+
+          {!activityLoading && activities.length > 0 && (
+            <div>
+              {activities.map((a, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 12,
+                    padding: '12px 18px',
+                    borderBottom: idx < activities.length - 1 ? `1px solid ${c.rule}` : 'none',
+                    background: idx % 2 === 1 ? c.paper : '#fff',
+                  }}
+                >
+                  <span style={{
+                    width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 12, marginTop: 1,
+                    background: a.type === 'login' ? c.teal50
+                      : a.type === 'action' ? '#F5F3FF'
+                      : c.gold50,
+                    color: a.type === 'login' ? c.teal
+                      : a.type === 'action' ? '#7C3AED'
+                      : '#8C6A0A',
+                  }}>
+                    {a.type === 'login' ? '↗' : a.type === 'action' ? '✓' : '◈'}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, color: c.navy, fontFamily: font.dm, lineHeight: 1.5 }}>
+                      {a.description}
+                    </div>
+                    <div style={{ fontSize: 11, color: c.gray, fontFamily: font.dm, marginTop: 2 }}>
+                      {a.actor && <span style={{ fontWeight: 600, color: c.textLight }}>{a.actor}</span>}
+                      {a.actor && ' · '}
+                      {formatRelativeTime(a.timestamp)}
+                      {a.pillar && (
+                        <span style={{
+                          marginLeft: 8, fontSize: 9, fontWeight: 800,
+                          letterSpacing: '0.1em', textTransform: 'uppercase',
+                          padding: '1px 5px', borderRadius: 2,
+                          background: c.paper2, color: c.textLight,
+                        }}>
+                          {a.pillar}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── Commentary callout ── */}
@@ -897,6 +981,23 @@ const tdStyle = {
 };
 
 TeamPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+
+function formatRelativeTime(iso) {
+  if (!iso) return '';
+  const now = Date.now();
+  const then = new Date(iso).getTime();
+  const diffMs = now - then;
+  const mins  = Math.floor(diffMs / 60000);
+  const hours = Math.floor(diffMs / 3600000);
+  const days  = Math.floor(diffMs / 86400000);
+
+  if (mins < 1)   return 'just now';
+  if (mins < 60)  return `${mins} min${mins > 1 ? 's' : ''} ago`;
+  if (hours < 24)  return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  if (days === 1)  return 'yesterday';
+  if (days < 7)    return `${days} days ago`;
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 
 function LockIcon() {
   return (
