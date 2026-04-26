@@ -496,8 +496,8 @@ export function DashboardLayout({ children }) {
       </aside>
 
       {/* ── Main content ── */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6 pt-20 md:pt-6">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 py-6 pt-20 md:pt-6">
           {children}
         </main>
       </div>
