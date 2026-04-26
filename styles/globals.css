@@ -663,7 +663,7 @@ html, body  { overflow-x: hidden; }
 
 /* ── Summary row (3-up KPI cards) ── */
 .summary-row {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px; margin: 16px 0 6px;
 }
 @media (max-width: 767px) { .summary-row { grid-template-columns: 1fr; } }
