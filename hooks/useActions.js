@@ -8,6 +8,28 @@ const URGENCY_MAP = {
   'Within 30 days':  'WITHIN 30 DAYS',
 };
 
+// Pool-aware reducer: sums positive action values, treating actions that share
+// a recoverable_pool_id as a single recoverable (MAX within the pool). Mirrors
+// the totalRecoverable computation on /dashboard/actions and /dashboard/overview.
+// Defined at module scope so the reference is stable across renders and the
+// stats useMemo cache below does not invalidate on every parent re-render.
+function sumPoolAware(rows) {
+  const seenPools = new Map();
+  let standaloneTotal = 0;
+  for (const a of rows) {
+    const v = a.value || 0;
+    if (v <= 0) continue;
+    if (a.recoverable_pool_id) {
+      const prev = seenPools.get(a.recoverable_pool_id) || 0;
+      if (v > prev) seenPools.set(a.recoverable_pool_id, v);
+    } else {
+      standaloneTotal += v;
+    }
+  }
+  const pooledTotal = Array.from(seenPools.values()).reduce((s, v) => s + v, 0);
+  return standaloneTotal + pooledTotal;
+}
+
 export function useActions(teamId, periodId, divisionId) {
   const [actions, setActions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -169,10 +191,8 @@ export function useActions(teamId, periodId, divisionId) {
     inProgress:    actions.filter(a => a.status === 'in_progress').length,
     resolved:      actions.filter(a => a.status === 'resolved').length,
     dismissed:     actions.filter(a => a.status === 'dismissed').length,
-    totalValue:    actions.reduce((sum, a) => sum + (a.value || 0), 0),
-    resolvedValue: actions
-      .filter(a => a.status === 'resolved')
-      .reduce((sum, a) => sum + (a.value || 0), 0),
+    totalValue:    sumPoolAware(actions),
+    resolvedValue: sumPoolAware(actions.filter(a => a.status === 'resolved')),
   }), [actions]);
 
   return {
