@@ -102,7 +102,22 @@ export default function ActionsPage() {
   // Compute summary stats for editorial cards
   const totalRecoverable = useMemo(() => {
     const positiveActions = displayActions.filter(a => a.value > 0);
-    return positiveActions.reduce((s, a) => s + (a.value || 0), 0);
+    // Sum-distinct-by-pool: actions sharing a recoverable_pool_id contribute
+    // their value once (the max within the pool, which is the pool's recoverable).
+    // Actions with null pool_id contribute their full value.
+    const seenPools = new Map(); // pool_id -> max value
+    let standaloneTotal = 0;
+    for (const a of positiveActions) {
+      const v = a.value || 0;
+      if (a.recoverable_pool_id) {
+        const prev = seenPools.get(a.recoverable_pool_id) || 0;
+        if (v > prev) seenPools.set(a.recoverable_pool_id, v);
+      } else {
+        standaloneTotal += v;
+      }
+    }
+    const pooledTotal = Array.from(seenPools.values()).reduce((s, v) => s + v, 0);
+    return standaloneTotal + pooledTotal;
   }, [displayActions]);
   const immediateCount = displayActions.filter(a => a.urgency === 'IMMEDIATE').length;
   const uniquePillars = [...new Set(displayActions.map(a => a.pillar).filter(Boolean))];

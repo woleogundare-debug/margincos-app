@@ -141,6 +141,7 @@ export function useActions(teamId, periodId, divisionId) {
       pillar: a.pillar,
       urgency: URGENCY_MAP[a.timeline] || a.timeline || a.urgency,
       value: a.value || null,
+      recoverable_pool_id: a.recoverable_pool_id || null,
       status: 'open',
     }));
     const { data, error } = await sb

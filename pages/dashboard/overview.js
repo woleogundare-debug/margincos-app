@@ -433,11 +433,26 @@ export default function OverviewPage() {
               // Sort by absolute value descending
               const sortedActions = [...gatedActions].sort((a, b) => Math.abs(b.value || 0) - Math.abs(a.value || 0));
 
-              // Compute total recoverable (positive values only)
-              const totalRecoverable = sortedActions.reduce((s, a) => {
-                const v = a.value || 0;
-                return v > 0 ? s + v : s;
-              }, 0);
+              // Compute total recoverable (positive values only).
+              // Sum-distinct-by-pool: actions sharing a recoverable_pool_id contribute
+              // their value once (the max within the pool). Standalone actions
+              // (null pool_id) contribute their full value.
+              const totalRecoverable = (() => {
+                const seenPools = new Map();
+                let standaloneTotal = 0;
+                for (const a of sortedActions) {
+                  const v = a.value || 0;
+                  if (v <= 0) continue;
+                  if (a.recoverable_pool_id) {
+                    const prev = seenPools.get(a.recoverable_pool_id) || 0;
+                    if (v > prev) seenPools.set(a.recoverable_pool_id, v);
+                  } else {
+                    standaloneTotal += v;
+                  }
+                }
+                const pooledTotal = Array.from(seenPools.values()).reduce((s, v) => s + v, 0);
+                return standaloneTotal + pooledTotal;
+              })();
 
               return (
                 <>
