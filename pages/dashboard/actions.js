@@ -158,7 +158,7 @@ export default function ActionsPage() {
               </div>
               <div className="summary-card">
                 <div className="lbl">Pillar coverage</div>
-                <div className="v">{uniquePillars.length} / 4</div>
+                <div className="v">{uniquePillars.length} / {allowedPillars.length}</div>
                 <div className="sub">Pillars represented in queue</div>
               </div>
             </div>
