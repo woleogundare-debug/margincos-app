@@ -1,0 +1,420 @@
+[
+  {
+    "sector": "Logistics",
+    "source": "MarginCOS_Data_Template_v3.2_Logistics.xlsx",
+    "output": "MarginCOS_Data_Template_v4_Logistics.xlsx",
+    "1_region": {
+      "reference_lists_column": "F",
+      "operating_region_before": [
+        "Lagos",
+        "Nairobi",
+        "Johannesburg",
+        "Accra",
+        "Dar es Salaam",
+        "Cairo",
+        "Casablanca",
+        "Dubai",
+        "Mumbai",
+        "Singapore",
+        "London",
+        "S\u00e3o Paulo",
+        "Mexico City",
+        "Jakarta",
+        "Manila",
+        "Other"
+      ],
+      "operating_region_after": [
+        "North America",
+        "Latin America",
+        "EMEA",
+        "Sub-Saharan Africa",
+        "Middle East & North Africa",
+        "Asia Pacific",
+        "Other"
+      ],
+      "route_region_dv_removed": true
+    },
+    "2_currency": [
+      {
+        "dv_ranges": "G5:G504",
+        "before": "Enter a number greater than 0. No \u20a6 symbol or commas.",
+        "after": "Numbers only - do not include currency symbols (e.g. \u20a6, $, \u20ac, \u00a3) or commas."
+      },
+      {
+        "dv_ranges": "H5:H504",
+        "before": "Enter a number greater than 0. No \u20a6 symbol or commas.",
+        "after": "Numbers only - do not include currency symbols (e.g. \u20a6, $, \u20ac, \u00a3) or commas."
+      }
+    ],
+    "5_examples": {
+      "rows_written": 5,
+      "formula_cols_preserved": [],
+      "cells_cleared_beyond_examples": 0
+    },
+    "7_tier_badges": [
+      {
+        "col": "G",
+        "tier": "ESS",
+        "label": "ESS  Contracted Rate"
+      },
+      {
+        "col": "H",
+        "tier": "ESS",
+        "label": "ESS  Fully-Loaded Cost"
+      },
+      {
+        "col": "I",
+        "tier": "ESS",
+        "label": "ESS  Distance (km)"
+      },
+      {
+        "col": "J",
+        "tier": "ESS",
+        "label": "ESS  Market Rate"
+      },
+      {
+        "col": "K",
+        "tier": "ESS",
+        "label": "ESS  Rate Sensitivity"
+      },
+      {
+        "col": "L",
+        "tier": "ESS",
+        "label": "ESS  Proposed Rate Chg %"
+      },
+      {
+        "col": "M",
+        "tier": "ESS",
+        "label": "ESS  Min Margin Floor %"
+      },
+      {
+        "col": "N",
+        "tier": "ESS",
+        "label": "ESS  Rate Headroom %"
+      },
+      {
+        "col": "O",
+        "tier": "ESS",
+        "label": "ESS  Return Lane ID"
+      },
+      {
+        "col": "P",
+        "tier": "ESS",
+        "label": "ESS  Backhaul Rate"
+      },
+      {
+        "col": "Q",
+        "tier": "ESS",
+        "label": "ESS  Backhaul Cost"
+      },
+      {
+        "col": "R",
+        "tier": "ESS",
+        "label": "ESS  Backhaul Recovery %"
+      },
+      {
+        "col": "S",
+        "tier": "PRO",
+        "label": "PRO  Fuel Cost/km"
+      },
+      {
+        "col": "T",
+        "tier": "PRO",
+        "label": "PRO  Driver Cost/Trip"
+      },
+      {
+        "col": "U",
+        "tier": "PRO",
+        "label": "PRO  Maintenance/Trip"
+      },
+      {
+        "col": "V",
+        "tier": "PRO",
+        "label": "PRO  Tolls & Levies/Trip"
+      },
+      {
+        "col": "W",
+        "tier": "PRO",
+        "label": "PRO  Cost Inflation %"
+      },
+      {
+        "col": "X",
+        "tier": "PRO",
+        "label": "PRO  Rate Recovery %"
+      },
+      {
+        "col": "Y",
+        "tier": "PRO",
+        "label": "PRO  Prior Period Cost"
+      },
+      {
+        "col": "Z",
+        "tier": "PRO",
+        "label": "PRO  FX Exposure %"
+      },
+      {
+        "col": "AA",
+        "tier": "PRO",
+        "label": "PRO  Truck ID"
+      },
+      {
+        "col": "AB",
+        "tier": "PRO",
+        "label": "PRO  Truck Type"
+      },
+      {
+        "col": "AC",
+        "tier": "PRO",
+        "label": "PRO  Contract Type"
+      },
+      {
+        "col": "AD",
+        "tier": "PRO",
+        "label": "PRO  Customer"
+      },
+      {
+        "col": "AE",
+        "tier": "PRO",
+        "label": "PRO  Customer Margin %"
+      },
+      {
+        "col": "AF",
+        "tier": "PRO",
+        "label": "PRO  Rebate %"
+      },
+      {
+        "col": "AG",
+        "tier": "PRO",
+        "label": "PRO  Payment Terms (Days)"
+      },
+      {
+        "col": "AH",
+        "tier": "PRO",
+        "label": "PRO  Fuel Surcharge"
+      },
+      {
+        "col": "AI",
+        "tier": "PRO",
+        "label": "PRO  Monthly Trips"
+      },
+      {
+        "col": "AJ",
+        "tier": "PRO",
+        "label": "PRO  Discount Depth %"
+      },
+      {
+        "col": "AK",
+        "tier": "PRO",
+        "label": "PRO  Volume Response %"
+      }
+    ],
+    "6_tier_accents": [
+      {
+        "col": "G",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "H",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "I",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "J",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "K",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "L",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "M",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "N",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "O",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "P",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "Q",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "R",
+        "tier": "ESS",
+        "color": "0D8F8F"
+      },
+      {
+        "col": "S",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "T",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "U",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "V",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "W",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "X",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "Y",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "Z",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AA",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AB",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AC",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AD",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AE",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AF",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AG",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AH",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AI",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AJ",
+        "tier": "PRO",
+        "color": "D4A843"
+      },
+      {
+        "col": "AK",
+        "tier": "PRO",
+        "color": "D4A843"
+      }
+    ],
+    "8_start_here": [
+      {
+        "cell": "B2",
+        "before": "MarginCOS  \u00b7  CLIENT DATA TEMPLATE  \u00b7  v3.2",
+        "after": "MarginCOS  \u00b7  CLIENT DATA TEMPLATE  \u00b7  v4"
+      },
+      {
+        "cell": "B5",
+        "before": null,
+        "after": "v4 updates: globalised region dropdown (7 world regions), currency-agnostic labels and error messages, sheet protection enabled to prevent accidental edits, formula logic hidden, tier badges (ESS/PRO) added to column headers. Capacity: 500 data rows (rows 5-504)."
+      }
+    ],
+    "4_hidden_formulas": {
+      "Start Here": 0,
+      "Lane Data": 0,
+      "Reference_Lists": 0,
+      "Validation Rules": 0
+    },
+    "unlock_input_cells": {
+      "formula_cols_kept_locked": [],
+      "cells_unlocked": 19000,
+      "data_range": "rows 5-504, cols A-AL"
+    },
+    "3_protection": {
+      "sheets": [
+        "Start Here",
+        "Lane Data",
+        "Reference_Lists",
+        "Validation Rules"
+      ],
+      "password_set": "margincos2026",
+      "insertColumns": "blocked",
+      "deleteColumns": "blocked",
+      "insertRows": "blocked",
+      "deleteRows": "blocked",
+      "sort": "allowed",
+      "autoFilter": "allowed"
+    },
+    "9_post_save_flag_relaxation": {
+      "sheets_patched": [
+        "xl/worksheets/sheet1.xml",
+        "xl/worksheets/sheet2.xml",
+        "xl/worksheets/sheet3.xml",
+        "xl/worksheets/sheet4.xml"
+      ],
+      "flags_forced_to_zero": [
+        "formatCells",
+        "formatColumns",
+        "formatRows"
+      ]
+    }
+  }
+]
