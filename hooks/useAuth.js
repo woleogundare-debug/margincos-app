@@ -8,6 +8,7 @@ export function useAuth() {
   const [companyName, setCompanyName] = useState('');
   const [teamId,     setTeamId]     = useState(null);
   const [divisionId, setDivisionId] = useState(null);
+  const [isSuperadmin, setIsSuperadmin] = useState(false);
   const [loading,       setLoading]       = useState(true);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
@@ -17,13 +18,14 @@ export function useAuth() {
     try {
       const { data } = await sb
         .from('profiles')
-        .select('tier, company_name, team_id, division_id')
+        .select('tier, company_name, team_id, division_id, is_superadmin')
         .eq('user_id', userId)
         .single();
       if (data) {
         setTier(data.tier || 'essentials');
         setCompanyName(data.company_name || '');
         setDivisionId(data.division_id || null);
+        setIsSuperadmin(data.is_superadmin === true);
 
         if (data.team_id) {
           setTeamId(data.team_id);
@@ -73,6 +75,7 @@ export function useAuth() {
         setCompanyName('');
         setTeamId(null);
         setDivisionId(null);
+        setIsSuperadmin(false);
         setProfileLoaded(true); // no session — mark as resolved so nothing spins
       }
       setLoading(false);
@@ -99,6 +102,7 @@ export function useAuth() {
     companyName,
     teamId,
     divisionId,
+    isSuperadmin,
     loading,
     profileLoaded,
     signOut,

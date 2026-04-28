@@ -3,6 +3,8 @@ import { ChevronDownIcon, PlusIcon, CalendarDaysIcon, CheckIcon } from '@heroico
 import { Modal } from '../ui/index';
 import { Button } from '../ui/Button';
 import { SectorSelector } from './SectorSelector';
+import { useAuth } from '../../hooks/useAuth';
+import { useTeam } from '../../hooks/useTeam';
 import clsx from 'clsx';
 
 const MONTHS = [
@@ -19,6 +21,8 @@ function formatPeriodDate(created_at) {
 }
 
 export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDelete, loading, divisions = [], activeDivision = null }) {
+  const { isSuperadmin } = useAuth();
+  const { team } = useTeam();
   const [open,               setOpen]               = useState(false);
   const [showModal,          setShowModal]          = useState(false);
   const [selectedMonth,      setSelectedMonth]      = useState(MONTHS[new Date().getMonth()]);
@@ -45,12 +49,25 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
   }, [open]);
 
   const handleCreate = async () => {
-    if (!form.vertical) { setError('Vertical is required'); return; }
+    // Resolve vertical explicitly. Superadmin uses the dropdown; everyone else
+    // inherits team.sector. Never trust the form state for non-superadmin paths
+    // because the dropdown may not have rendered.
+    let vertical;
+    if (isSuperadmin) {
+      vertical = form.vertical;
+    } else {
+      if (!team?.sector) {
+        setError('Team sector not configured. Contact administrator.');
+        return;
+      }
+      vertical = team.sector;
+    }
+    if (!vertical) { setError('Vertical is required'); return; }
     if (!activeDivision?.id) { setError('No division selected'); return; }
     setCreating(true);
     await onCreate({
       label: periodLabel,
-      vertical: form.vertical,
+      vertical,
       division_id: activeDivision.id,
     });
     setCreating(false);
@@ -220,14 +237,38 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-2">
-              Sector <span className="text-red-500">*</span>
-            </label>
-            <SectorSelector
-              value={form.vertical}
-              onChange={vertical => setForm(f => ({ ...f, vertical }))}
-              showComingSoon={false}
-            />
+            {isSuperadmin ? (
+              <>
+                <label className="block text-xs font-semibold text-slate-600 mb-2">
+                  Sector <span className="text-red-500">*</span>
+                </label>
+                <SectorSelector
+                  value={form.vertical}
+                  onChange={vertical => setForm(f => ({ ...f, vertical }))}
+                  showComingSoon={false}
+                />
+              </>
+            ) : team?.sector ? (
+              <>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                  Sector
+                </label>
+                <div
+                  className="w-full px-3 py-2.5 border border-slate-100 rounded-lg text-sm font-medium bg-slate-50"
+                  style={{ color: '#1B2A4A' }}>
+                  {team.sector}
+                </div>
+              </>
+            ) : (
+              <>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                  Sector
+                </label>
+                <p className="text-xs text-red-600 font-medium">
+                  Team sector not configured. Contact administrator.
+                </p>
+              </>
+            )}
           </div>
 
           {/* Division — read-only display sourced from parent's activeDivision */}
