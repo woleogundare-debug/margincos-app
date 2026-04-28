@@ -336,6 +336,12 @@ export default function AdminPanel() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span
+                        className="text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200 text-gray-600 bg-gray-50"
+                        title="Sector"
+                      >
+                        {team.sector || '—'}
+                      </span>
+                      <span
                         className="text-xs px-2.5 py-1 rounded-full font-medium capitalize"
                         style={tierColour(team.tier)}
                       >

@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   // Separate queries to avoid nested join breaking after RLS changes
   const { data: teams } = await serviceClient
     .from('teams')
-    .select('id, name, tier, status, created_at')
+    .select('id, name, tier, status, sector, created_at')
     .order('created_at', { ascending: false });
 
   const teamsWithMembers = await Promise.all(
