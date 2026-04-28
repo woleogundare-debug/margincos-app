@@ -74,7 +74,17 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     }).select().single();
     if (error) {
       if (process.env.NODE_ENV !== 'production') console.error('[createPeriod] Supabase error:', error.message, error.details, error.hint, error.code);
-      setError(error.message);
+      // Map enforce_period_sector_inheritance trigger exceptions to clean
+      // user-facing messages. The trigger raises 42501 (sector mismatch) or
+      // 23514 (team sector not configured); both surface raw Postgres text by
+      // default. Other errors pass through unchanged.
+      let userMessage = error.message;
+      if (error.code === '42501' && error.message?.includes('Sector mismatch')) {
+        userMessage = "Cannot create a period with a sector different from your team's configured sector. Contact your administrator if your team sector needs to change.";
+      } else if (error.code === '23514' && error.message?.includes('Team sector not configured')) {
+        userMessage = 'Team sector not configured. Contact your administrator.';
+      }
+      setError(userMessage);
       return null;
     }
     if (process.env.NODE_ENV !== 'production') console.log('[createPeriod] Created:', data.id);
