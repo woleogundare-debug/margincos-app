@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { ChevronDownIcon, PlusIcon, CalendarDaysIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { Modal } from '../ui/index';
 import { Button } from '../ui/Button';
 import { SectorSelector } from './SectorSelector';
 import { useAuth } from '../../hooks/useAuth';
 import { useTeam } from '../../hooks/useTeam';
+import { TIER_LIMITS } from '../../lib/constants';
 import clsx from 'clsx';
 
 const MONTHS = [
@@ -21,8 +23,12 @@ function formatPeriodDate(created_at) {
 }
 
 export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDelete, loading, divisions = [], activeDivision = null }) {
-  const { isSuperadmin } = useAuth();
+  const { isSuperadmin, tier } = useAuth();
   const { team } = useTeam();
+  // Tier cap on period creation. Mirrors enforce_tier_limit() DB trigger and
+  // the gate in usePortfolio.createPeriod. Superadmin always bypasses.
+  const maxPeriods   = TIER_LIMITS[tier]?.maxPeriods ?? null;
+  const atPeriodCap  = !isSuperadmin && maxPeriods !== null && periods.length >= maxPeriods;
   const [open,               setOpen]               = useState(false);
   const [showModal,          setShowModal]          = useState(false);
   const [selectedMonth,      setSelectedMonth]      = useState(MONTHS[new Date().getMonth()]);
@@ -191,12 +197,22 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
                 {deleteError}
               </p>
             )}
-            <button
-              onClick={() => { setOpen(false); setShowModal(true); }}
-              className="w-full flex items-center gap-2 px-4 py-3 text-sm font-semibold text-teal hover:bg-teal-50 transition-colors border-t border-slate-100">
-              <PlusIcon className="h-4 w-4" />
-              New period
-            </button>
+            {atPeriodCap ? (
+              <Link
+                href="/pricing"
+                onClick={() => setOpen(false)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors"
+                style={{ borderTop: '1.5px dashed #C4CAD4' }}>
+                Upgrade for more periods →
+              </Link>
+            ) : (
+              <button
+                onClick={() => { setOpen(false); setShowModal(true); }}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm font-semibold text-teal hover:bg-teal-50 transition-colors border-t border-slate-100">
+                <PlusIcon className="h-4 w-4" />
+                New period
+              </button>
+            )}
           </div>
         )}
       </div>

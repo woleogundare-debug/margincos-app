@@ -64,6 +64,17 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
 
   // ── Create new period ─────────────────────────────────────────
   const createPeriod = useCallback(async ({ label, vertical, company_name, division_id }) => {
+    // UI-layer tier cap gate. Mirrors the enforce_tier_limit() DB trigger so
+    // the user sees a clean message before the request leaves the browser.
+    // The DB trigger remains the structural backstop for non-UI clients.
+    const maxPeriods = TIER_LIMITS[tier]?.maxPeriods ?? null;
+    if (maxPeriods !== null && periods.length >= maxPeriods) {
+      const tierLabel = tier === 'essentials' ? 'Essentials' : tier === 'professional' ? 'Professional' : tier;
+      const userMessage = `Your ${tierLabel} plan allows up to ${maxPeriods} period${maxPeriods === 1 ? '' : 's'}. Upgrade to add more.`;
+      setError(userMessage);
+      return null;
+    }
+
     if (process.env.NODE_ENV !== 'production') console.log('[createPeriod] Inserting:', { user_id: userId, label, vertical, division_id: division_id || divisionId });
     const { data, error } = await sb.from('periods').insert({
       user_id: userId, label, vertical,
@@ -74,15 +85,28 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     }).select().single();
     if (error) {
       if (process.env.NODE_ENV !== 'production') console.error('[createPeriod] Supabase error:', error.message, error.details, error.hint, error.code);
-      // Map enforce_period_sector_inheritance trigger exceptions to clean
-      // user-facing messages. The trigger raises 42501 (sector mismatch) or
-      // 23514 (team sector not configured); both surface raw Postgres text by
-      // default. Other errors pass through unchanged.
+      // Map DB trigger exceptions to clean user-facing messages:
+      //   - enforce_period_sector_inheritance: 42501 (sector mismatch) or 23514 (team sector missing)
+      //   - enforce_tier_limit: 42501 (tier cap reached) - covers maxPeriods/maxDivisions/maxSkus/maxLanes
+      // Other errors pass through unchanged.
       let userMessage = error.message;
       if (error.code === '42501' && error.message?.includes('Sector mismatch')) {
         userMessage = "Cannot create a period with a sector different from your team's configured sector. Contact your administrator if your team sector needs to change.";
       } else if (error.code === '23514' && error.message?.includes('Team sector not configured')) {
         userMessage = 'Team sector not configured. Contact your administrator.';
+      } else if (error.code === '42501' && error.message?.includes('Tier cap reached')) {
+        // Format: "Tier cap reached: <tier> plan allows up to <N> <field>. Upgrade to add more."
+        // Translate the field name to plain-English resource and produce a clean message.
+        const fieldToResource = { maxPeriods: 'period', maxDivisions: 'division', maxSkus: 'product', maxLanes: 'lane' };
+        const tierLabels = { essentials: 'Essentials', professional: 'Professional', enterprise: 'Enterprise' };
+        const m = error.message.match(/Tier cap reached: (\w+) plan allows up to (\d+) (\w+)\./);
+        if (m) {
+          const [, tierKey, count, field] = m;
+          const tierLabel = tierLabels[tierKey] || tierKey;
+          const resource  = fieldToResource[field] || field;
+          const noun      = count === '1' ? resource : resource + 's';
+          userMessage = `Your ${tierLabel} plan allows up to ${count} ${noun}. Upgrade to add more.`;
+        }
       }
       setError(userMessage);
       return null;
@@ -96,7 +120,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     await loadPeriods();
     await selectPeriod(data);
     return data;
-  }, [userId, divisionId, teamId, ensureDivisionSector, loadPeriods, selectPeriod]);
+  }, [userId, divisionId, teamId, tier, periods, ensureDivisionSector, loadPeriods, selectPeriod]);
 
   // ── Save single SKU/Lane row (insert or upsert, optimistic) ──
   // merge=false (default): uses .insert() so the UNIQUE constraint fires
