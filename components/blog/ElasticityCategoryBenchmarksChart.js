@@ -57,9 +57,9 @@ export default function ElasticityCategoryBenchmarksChart() {
       ref={containerRef}
       style={{
         margin: '32px 0',
-        marginLeft: isNarrow ? '-44px' : 0,
-        marginRight: isNarrow ? '-44px' : 0,
-        padding: isNarrow ? '20px 12px' : '24px',
+        marginLeft: isNarrow ? '-32px' : 0,
+        marginRight: isNarrow ? '-32px' : 0,
+        padding: isNarrow ? '20px 10px' : '24px',
         backgroundColor: '#F8FAFC',
         border: '1px solid #E5E8EC',
         borderRadius: '8px',
@@ -86,11 +86,11 @@ export default function ElasticityCategoryBenchmarksChart() {
       }}>
         Working elasticity ranges, Nigerian FMCG categories
       </h3>
-      <ResponsiveContainer width="100%" height={isNarrow ? 380 : 360}>
+      <ResponsiveContainer width="100%" height={isNarrow ? 320 : 360}>
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ top: 10, right: isNarrow ? 18 : 30, left: 5, bottom: 50 }}
+          margin={{ top: 10, right: isNarrow ? 18 : 30, left: 5, bottom: isNarrow ? 20 : 50 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E8EC" horizontal={false} />
           <XAxis
@@ -98,7 +98,7 @@ export default function ElasticityCategoryBenchmarksChart() {
             domain={[-2.0, 0]}
             stroke="#64748b"
             tick={{ fontSize: 11 }}
-            label={{ value: 'Price elasticity (less negative = less elastic)', position: 'insideBottom', offset: -38, style: { fill: '#475569', fontSize: 10, textAnchor: 'middle' } }}
+            label={isNarrow ? undefined : { value: 'Price elasticity (less negative = less elastic)', position: 'insideBottom', offset: -38, style: { fill: '#475569', fontSize: 11, textAnchor: 'middle' } }}
             ticks={[-2.0, -1.5, -1.0, -0.5, 0]}
           />
           <YAxis
@@ -127,6 +127,11 @@ export default function ElasticityCategoryBenchmarksChart() {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      {isNarrow && (
+        <p style={{ fontSize: '11px', color: '#475569', textAlign: 'center', margin: '8px 0 0', fontWeight: 600 }}>
+          Price elasticity (less negative = less elastic)
+        </p>
+      )}
       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '12px', fontStyle: 'italic', lineHeight: 1.5 }}>
         Source: Carthena Advisory's analysis identifies these working ranges among Nigerian FMCG portfolios. Bars show midpoint with error bars indicating typical range. Individual SKU elasticity may sit anywhere within or beyond category range depending on brand strength, distribution, and competitive posture.
       </p>

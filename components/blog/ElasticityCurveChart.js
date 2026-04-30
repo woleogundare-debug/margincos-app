@@ -74,9 +74,9 @@ export default function ElasticityCurveChart() {
       ref={containerRef}
       style={{
         margin: '32px 0',
-        marginLeft: isNarrow ? '-44px' : 0,
-        marginRight: isNarrow ? '-44px' : 0,
-        padding: isNarrow ? '20px 12px' : '24px',
+        marginLeft: isNarrow ? '-32px' : 0,
+        marginRight: isNarrow ? '-32px' : 0,
+        padding: isNarrow ? '20px 10px' : '24px',
         backgroundColor: '#F8FAFC',
         border: '1px solid #E5E8EC',
         borderRadius: '8px',
@@ -148,7 +148,7 @@ export default function ElasticityCurveChart() {
           <p style={{ fontSize: '11px', color: '#475569', textAlign: 'center', margin: '6px 0 10px', fontWeight: 600 }}>
             Volume index (baseline = 100)
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '14px', rowGap: '6px', fontSize: '10.5px', color: '#1B2A4A', padding: '10px 4px 0', borderTop: '1px solid #E5E8EC' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', rowGap: '6px', fontSize: '11px', color: '#1B2A4A', padding: '10px 4px 0', borderTop: '1px solid #E5E8EC' }}>
             {[
               { color: '#0D8F8F', text: 'e = -0.5 (inelastic)' },
               { color: '#D4A843', text: 'e = -1.0 (unit elastic)' },

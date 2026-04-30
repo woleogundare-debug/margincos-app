@@ -74,9 +74,9 @@ export default function ElasticityProfitImpactChart() {
       ref={containerRef}
       style={{
         margin: '32px 0',
-        marginLeft: isNarrow ? '-44px' : 0,
-        marginRight: isNarrow ? '-44px' : 0,
-        padding: isNarrow ? '20px 12px' : '24px',
+        marginLeft: isNarrow ? '-32px' : 0,
+        marginRight: isNarrow ? '-32px' : 0,
+        padding: isNarrow ? '20px 10px' : '24px',
         backgroundColor: '#F8FAFC',
         border: '1px solid #E5E8EC',
         borderRadius: '8px',
