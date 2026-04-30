@@ -1,13 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 
-// Gross profit impact of an 8% price increase across elasticity values
-// Hypothetical SKU: 100M NGN/month revenue, 30% gross margin, 30M NGN baseline gross profit
-// At each elasticity, compute new revenue and new gross profit, then delta vs baseline
-
 const baselineRevenue = 100_000_000;
-const baselineGM      = 0.30;
-const baselineGP      = baselineRevenue * baselineGM;
-const priceIncrease   = 0.08;
+const baselineGM = 0.30;
+const baselineGP = baselineRevenue * baselineGM;
+const priceIncrease = 0.08;
 
 const computeGP = (elasticity) => {
   const volumeMultiplier = 1 + elasticity * priceIncrease;
@@ -25,7 +21,7 @@ const data = [
 ].map(d => ({
   ...d,
   grossProfitM: +(d.grossProfit / 1_000_000).toFixed(2),
-  deltaM:       +((d.grossProfit - baselineGP) / 1_000_000).toFixed(2),
+  deltaM: +((d.grossProfit - baselineGP) / 1_000_000).toFixed(2),
 }));
 
 const tooltipStyle = {
@@ -37,9 +33,6 @@ const tooltipStyle = {
   padding: '8px 12px',
   boxShadow: '0 2px 8px rgba(27,42,74,0.15)',
 };
-const tooltipLabelStyle = { color: '#1B2A4A', fontWeight: 600, marginBottom: 4 };
-const tooltipItemStyle  = { color: '#475569', padding: '2px 0' };
-const tooltipCursor     = { fill: 'rgba(13,143,143,0.08)' };
 
 export default function ElasticityProfitImpactChart() {
   return (
@@ -89,22 +82,17 @@ export default function ElasticityProfitImpactChart() {
           />
           <Tooltip
             contentStyle={tooltipStyle}
-            labelStyle={tooltipLabelStyle}
-            itemStyle={tooltipItemStyle}
-            cursor={tooltipCursor}
+            labelStyle={{ color: '#1B2A4A', fontWeight: 600, marginBottom: 4 }}
+            itemStyle={{ color: '#475569' }}
+            cursor={{ fill: 'rgba(13,143,143,0.08)' }}
             formatter={(value, name, props) => [
-              `₦${value}M (${props.payload.deltaM > 0 ? '+' : ''}₦${props.payload.deltaM}M vs baseline)`,
+              `₦${value}M (${props.payload.deltaM >= 0 ? '+' : ''}₦${props.payload.deltaM}M vs baseline)`,
               'Gross profit',
             ]}
           />
-          <ReferenceLine
-            y={30}
-            stroke="#475569"
-            strokeDasharray="4 4"
-            label={{ value: 'Baseline ₦30M', position: 'right', fill: '#475569', fontSize: 11 }}
-          />
+          <ReferenceLine y={30} stroke="#475569" strokeDasharray="4 4" label={{ value: 'Baseline ₦30M', position: 'right', fill: '#475569', fontSize: 11 }} />
           <Bar dataKey="grossProfitM" radius={[4, 4, 0, 0]}>
-            {data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+            {data.map((entry, i) => <Cell key={`cell-${i}`} fill={entry.color} />)}
           </Bar>
         </BarChart>
       </ResponsiveContainer>

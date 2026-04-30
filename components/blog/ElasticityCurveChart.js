@@ -20,8 +20,17 @@ const tooltipStyle = {
   padding: '8px 12px',
   boxShadow: '0 2px 8px rgba(27,42,74,0.15)',
 };
-const tooltipLabelStyle = { color: '#1B2A4A', fontWeight: 600, marginBottom: 4 };
-const tooltipItemStyle  = { color: '#475569', padding: '2px 0' };
+
+const tooltipLabelStyle = {
+  color: '#1B2A4A',
+  fontWeight: 600,
+  marginBottom: 4,
+};
+
+const tooltipItemStyle = {
+  color: '#475569',
+  padding: '2px 0',
+};
 
 export default function ElasticityCurveChart() {
   return (

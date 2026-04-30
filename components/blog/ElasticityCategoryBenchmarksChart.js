@@ -1,11 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ErrorBar } from 'recharts';
 
-// Category-level elasticity ranges for Nigerian FMCG
-// Each row: category, low end of range, high end of range, midpoint (for bar), error bar size
 const data = [
-  { category: 'Essential staples',      low: -0.7, high: -0.3, midpoint: -0.5, errorRange: 0.2, color: '#0D8F8F' },
-  { category: 'Premium personal care',  low: -1.4, high: -0.8, midpoint: -1.1, errorRange: 0.3, color: '#D4A843' },
-  { category: 'Beverages',              low: -1.6, high: -1.0, midpoint: -1.3, errorRange: 0.3, color: '#D4A843' },
+  { category: 'Essential staples',     low: -0.7, high: -0.3, midpoint: -0.5, errorRange: 0.2, color: '#0D8F8F' },
+  { category: 'Premium personal care', low: -1.4, high: -0.8, midpoint: -1.1, errorRange: 0.3, color: '#D4A843' },
+  { category: 'Beverages',             low: -1.6, high: -1.0, midpoint: -1.3, errorRange: 0.3, color: '#D4A843' },
   { category: 'Snacks & confectionery', low: -1.8, high: -1.2, midpoint: -1.5, errorRange: 0.3, color: '#C0392B' },
 ];
 
@@ -18,9 +16,6 @@ const tooltipStyle = {
   padding: '8px 12px',
   boxShadow: '0 2px 8px rgba(27,42,74,0.15)',
 };
-const tooltipLabelStyle = { color: '#1B2A4A', fontWeight: 600, marginBottom: 4 };
-const tooltipItemStyle  = { color: '#475569', padding: '2px 0' };
-const tooltipCursor     = { fill: 'rgba(13,143,143,0.08)' };
 
 export default function ElasticityCategoryBenchmarksChart() {
   return (
@@ -71,22 +66,22 @@ export default function ElasticityCategoryBenchmarksChart() {
           />
           <Tooltip
             contentStyle={tooltipStyle}
-            labelStyle={tooltipLabelStyle}
-            itemStyle={tooltipItemStyle}
-            cursor={tooltipCursor}
+            labelStyle={{ color: '#1B2A4A', fontWeight: 600, marginBottom: 4 }}
+            itemStyle={{ color: '#475569' }}
+            cursor={{ fill: 'rgba(13,143,143,0.08)' }}
             formatter={(value, name, props) => [
               `${props.payload.low} to ${props.payload.high} (midpoint ${props.payload.midpoint})`,
               'Elasticity range',
             ]}
           />
           <Bar dataKey="midpoint" radius={[0, 4, 4, 0]} barSize={28}>
-            {data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+            {data.map((entry, i) => <Cell key={`cell-${i}`} fill={entry.color} />)}
             <ErrorBar dataKey="errorRange" width={6} strokeWidth={2} stroke="#1B2A4A" direction="x" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '12px', fontStyle: 'italic' }}>
-        Source: Carthena Advisory analysis. Bars show midpoint with error bars indicating typical range. Individual SKU elasticity may sit anywhere within or beyond category range depending on brand strength, distribution, and competitive posture.
+        Source: Carthena Advisory's analysis identifies these working ranges among Nigerian FMCG portfolios. Bars show midpoint with error bars indicating typical range. Individual SKU elasticity may sit anywhere within or beyond category range depending on brand strength, distribution, and competitive posture.
       </p>
     </div>
   );
