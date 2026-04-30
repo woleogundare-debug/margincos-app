@@ -33,6 +33,14 @@ const tooltipStyle = {
   fontSize: 12,
   padding: '8px 12px',
   boxShadow: '0 2px 8px rgba(27,42,74,0.15)',
+  whiteSpace: 'normal',
+  maxWidth: 200,
+};
+
+const tooltipWrapperStyle = {
+  maxWidth: 200,
+  zIndex: 5,
+  outline: 'none',
 };
 
 export default function ElasticityProfitImpactChart() {
@@ -50,7 +58,15 @@ export default function ElasticityProfitImpactChart() {
     measure();
     const ro = new ResizeObserver(measure);
     if (node.parentElement) ro.observe(node.parentElement);
-    return () => ro.disconnect();
+    window.addEventListener('resize', measure);
+    const interval = setInterval(measure, 500);
+    const tid = setTimeout(() => clearInterval(interval), 3000);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+      clearInterval(interval);
+      clearTimeout(tid);
+    };
   }, []);
 
   return (
@@ -101,9 +117,10 @@ export default function ElasticityProfitImpactChart() {
             stroke="#64748b"
             tick={{ fontSize: isNarrow ? 10 : 11 }}
             interval={0}
-            angle={isNarrow ? -28 : 0}
+            angle={isNarrow ? -45 : 0}
             textAnchor={isNarrow ? 'end' : 'middle'}
-            height={isNarrow ? 50 : 40}
+            height={isNarrow ? 64 : 40}
+            tickMargin={isNarrow ? 6 : 4}
             label={isNarrow ? undefined : { value: 'Elasticity assumption', position: 'insideBottom', offset: -8, style: { fill: '#475569', fontSize: 11 } }}
           />
           <YAxis
@@ -113,12 +130,14 @@ export default function ElasticityProfitImpactChart() {
             label={isNarrow ? undefined : { value: 'Gross profit (₦M/month)', angle: -90, position: 'insideLeft', offset: 0, style: { fill: '#475569', fontSize: 11, textAnchor: 'middle' } }}
           />
           <Tooltip
+            wrapperStyle={tooltipWrapperStyle}
             contentStyle={tooltipStyle}
             labelStyle={{ color: '#1B2A4A', fontWeight: 600, marginBottom: 4 }}
-            itemStyle={{ color: '#475569' }}
+            itemStyle={{ color: '#475569', whiteSpace: 'normal' }}
             cursor={{ fill: 'rgba(13,143,143,0.08)' }}
+            allowEscapeViewBox={{ x: false, y: false }}
             formatter={(value, name, props) => [
-              `₦${value}M (${props.payload.deltaM >= 0 ? '+' : ''}₦${props.payload.deltaM}M vs baseline)`,
+              `₦${value}M (${props.payload.deltaM >= 0 ? '+' : ''}₦${props.payload.deltaM}M vs base)`,
               'Gross profit',
             ]}
           />

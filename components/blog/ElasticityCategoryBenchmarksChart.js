@@ -16,6 +16,14 @@ const tooltipStyle = {
   fontSize: 12,
   padding: '8px 12px',
   boxShadow: '0 2px 8px rgba(27,42,74,0.15)',
+  whiteSpace: 'normal',
+  maxWidth: 200,
+};
+
+const tooltipWrapperStyle = {
+  maxWidth: 200,
+  zIndex: 5,
+  outline: 'none',
 };
 
 export default function ElasticityCategoryBenchmarksChart() {
@@ -33,7 +41,15 @@ export default function ElasticityCategoryBenchmarksChart() {
     measure();
     const ro = new ResizeObserver(measure);
     if (node.parentElement) ro.observe(node.parentElement);
-    return () => ro.disconnect();
+    window.addEventListener('resize', measure);
+    const interval = setInterval(measure, 500);
+    const tid = setTimeout(() => clearInterval(interval), 3000);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+      clearInterval(interval);
+      clearTimeout(tid);
+    };
   }, []);
 
   return (
@@ -94,13 +110,15 @@ export default function ElasticityCategoryBenchmarksChart() {
             interval={0}
           />
           <Tooltip
+            wrapperStyle={tooltipWrapperStyle}
             contentStyle={tooltipStyle}
-            labelStyle={{ color: '#1B2A4A', fontWeight: 600, marginBottom: 4 }}
-            itemStyle={{ color: '#475569' }}
+            labelStyle={{ color: '#1B2A4A', fontWeight: 600, marginBottom: 4, whiteSpace: 'normal' }}
+            itemStyle={{ color: '#475569', whiteSpace: 'normal' }}
             cursor={{ fill: 'rgba(13,143,143,0.08)' }}
+            allowEscapeViewBox={{ x: false, y: false }}
             formatter={(value, name, props) => [
-              `${props.payload.low} to ${props.payload.high} (midpoint ${props.payload.midpoint})`,
-              'Elasticity range',
+              `${props.payload.low} to ${props.payload.high} (mid ${props.payload.midpoint})`,
+              'Range',
             ]}
           />
           <Bar dataKey="midpoint" radius={[0, 4, 4, 0]} barSize={isNarrow ? 22 : 28}>

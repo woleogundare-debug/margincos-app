@@ -20,17 +20,27 @@ const tooltipStyle = {
   fontSize: 12,
   padding: '8px 12px',
   boxShadow: '0 2px 8px rgba(27,42,74,0.15)',
+  whiteSpace: 'normal',
+  maxWidth: 200,
+};
+
+const tooltipWrapperStyle = {
+  maxWidth: 200,
+  zIndex: 5,
+  outline: 'none',
 };
 
 const tooltipLabelStyle = {
   color: '#1B2A4A',
   fontWeight: 600,
   marginBottom: 4,
+  whiteSpace: 'normal',
 };
 
 const tooltipItemStyle = {
   color: '#475569',
   padding: '2px 0',
+  whiteSpace: 'normal',
 };
 
 export default function ElasticityCurveChart() {
@@ -48,7 +58,15 @@ export default function ElasticityCurveChart() {
     measure();
     const ro = new ResizeObserver(measure);
     if (node.parentElement) ro.observe(node.parentElement);
-    return () => ro.disconnect();
+    window.addEventListener('resize', measure);
+    const interval = setInterval(measure, 500);
+    const tid = setTimeout(() => clearInterval(interval), 3000);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+      clearInterval(interval);
+      clearTimeout(tid);
+    };
   }, []);
 
   return (
@@ -105,9 +123,11 @@ export default function ElasticityCurveChart() {
             label={isNarrow ? undefined : { value: 'Volume index (baseline = 100)', angle: -90, position: 'insideLeft', offset: 0, style: { fill: '#475569', fontSize: 11, textAnchor: 'middle' } }}
           />
           <Tooltip
+            wrapperStyle={tooltipWrapperStyle}
             contentStyle={tooltipStyle}
             labelStyle={tooltipLabelStyle}
             itemStyle={tooltipItemStyle}
+            allowEscapeViewBox={{ x: false, y: false }}
             labelFormatter={(value) => `Price increase: ${value}%`}
           />
           {!isNarrow && (
@@ -128,11 +148,18 @@ export default function ElasticityCurveChart() {
           <p style={{ fontSize: '11px', color: '#475569', textAlign: 'center', margin: '6px 0 10px', fontWeight: 600 }}>
             Volume index (baseline = 100)
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', fontSize: '10.5px', color: '#1B2A4A', padding: '8px 4px 0', borderTop: '1px solid #E5E8EC' }}>
-            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#0D8F8F', verticalAlign:'middle', marginRight:6}} />e = -0.5 (inelastic)</span>
-            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#D4A843', verticalAlign:'middle', marginRight:6}} />e = -1.0 (unit elastic)</span>
-            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#C0392B', verticalAlign:'middle', marginRight:6}} />e = -1.5 (elastic)</span>
-            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#1B2A4A', verticalAlign:'middle', marginRight:6}} />e = -2.0 (highly elastic)</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '14px', rowGap: '6px', fontSize: '10.5px', color: '#1B2A4A', padding: '10px 4px 0', borderTop: '1px solid #E5E8EC' }}>
+            {[
+              { color: '#0D8F8F', text: 'e = -0.5 (inelastic)' },
+              { color: '#D4A843', text: 'e = -1.0 (unit elastic)' },
+              { color: '#C0392B', text: 'e = -1.5 (elastic)' },
+              { color: '#1B2A4A', text: 'e = -2.0 (highly elastic)' },
+            ].map((item, i) => (
+              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, lineHeight: 1.2 }}>
+                <span style={{ display: 'inline-block', width: 14, height: 3, background: item.color, borderRadius: 1, flexShrink: 0 }} />
+                <span>{item.text}</span>
+              </span>
+            ))}
           </div>
         </>
       )}
