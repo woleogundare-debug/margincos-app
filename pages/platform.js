@@ -128,6 +128,54 @@ const MODULES = [
 export default function PlatformPage() {
   const rootRef = useScrollReveal();
 
+  // Hash-scroll handler: Next.js client-side navigation scrolls to top on route change,
+  // which clobbers the URL fragment scroll. This effect retries the scroll until the
+  // target's document position has stabilised (i.e. content above has finished mounting).
+  // Uses 'instant' behaviour so Next.js's scroll reset cannot interrupt mid-animation.
+  useEffect(() => {
+    const HEADER_OFFSET = 80;
+    let lastTop = -1;
+    let stableHits = 0;
+    let attempts = 0;
+    let timeoutId = null;
+    const MAX_ATTEMPTS = 80; // ~8s at 100ms intervals - generous window for slow content settling
+
+    const tick = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return;
+      attempts += 1;
+      const el = document.getElementById(hash);
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY;
+        if (top === lastTop && top > HEADER_OFFSET) {
+          stableHits += 1;
+        } else {
+          stableHits = 0;
+          lastTop = top;
+        }
+        if (stableHits >= 2) {
+          window.scrollTo({ top: top - HEADER_OFFSET, behavior: 'instant' });
+          return;
+        }
+      }
+      if (attempts < MAX_ATTEMPTS) timeoutId = setTimeout(tick, 100);
+    };
+
+    const onHashChange = () => {
+      lastTop = -1;
+      stableHits = 0;
+      attempts = 0;
+      tick();
+    };
+
+    tick();
+    window.addEventListener('hashchange', onHashChange);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      window.removeEventListener('hashchange', onHashChange);
+    };
+  }, []);
+
   return (
     <>
       <Head>
@@ -206,7 +254,8 @@ export default function PlatformPage() {
             </div>
 
             <div className="space-y-24">
-              <div id="pricing-intelligence">
+              <div id="p1">
+                <span id="pricing-intelligence" aria-hidden="true" />
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
                 problem="Most businesses reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume without recovering the margin that was lost."
                 context="In high-inflation markets, the cost of pricing inaction compounds monthly. A product priced 8% below its willingness-to-pay ceiling isn't just leaving margin on the table — it's setting the baseline from which every future increase is measured. Most commercial teams know they're behind on pricing. They don't know by how much, on which products, or against which competitors. MarginCOS answers all three."
@@ -221,7 +270,8 @@ export default function PlatformPage() {
                 users={['CFO', 'Commercial Director']}
                 graphic={<P1PricingGraphic />} />
               </div>
-              <div id="cost-pass-through">
+              <div id="p2">
+                <span id="cost-pass-through" aria-hidden="true" />
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
                 problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the product level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
                 context="Carthena Advisory's benchmarking across FMCG and manufacturing portfolios shows that commercially disciplined businesses sustain a cost pass-through rate of 70–75%. The median we observe in diagnostic work sits between 40–55%. That gap represents the margin being silently absorbed every month — not as a line item on the P&L, but as slow-moving gross margin compression that appears only in the quarterly review, long after the recovery window has closed. MarginCOS calculates this rate at the individual product level, classifies every SKU by recovery status, and quantifies exactly what closing the gap is worth in your local currency."
@@ -236,7 +286,8 @@ export default function PlatformPage() {
                 users={['CFO', 'Finance Director', 'Supply Chain']}
                 graphic={<P2CostGraphic />} />
               </div>
-              <div id="channel-economics">
+              <div id="p3">
+                <span id="channel-economics" aria-hidden="true" />
                 <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
                 problem="Gross margin looks healthy until logistics, distributor margin, trade credit costs, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable on the surface."
                 context="The channel economics gap is a calculation most businesses have never done in full. Gross margin is measured at the portfolio level. Net contribution by channel — after freight, distributor take, trade credit financing costs, and promotional rebates — is rarely calculated at all. In markets where distributor margins run 18–25% and trade credit terms extend to 60–90 days, the difference between gross and net channel margin can exceed 30 percentage points on the same product. MarginCOS builds this waterfall for every channel and every partner, making the true economics visible for the first time."
@@ -251,7 +302,8 @@ export default function PlatformPage() {
                 users={['Commercial Director', 'Sales Director', 'Trade Marketing']}
                 graphic={<P3ChannelGraphic />} />
               </div>
-              <div id="trade-execution">
+              <div id="p4">
+                <span id="trade-execution" aria-hidden="true" />
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
                 problem="Commercial investment is the largest untracked cost line in most P&Ls. Without spend ROI visibility, promotional depth routinely exceeds margin — with no mechanism to catch it before the spend is committed."
                 context="Promotions are approved because they drive volume. But volume at what margin? Most commercial teams don't have the answer until the post-campaign review — which is too late. A promotion that requires 35% volume uplift to break even, but historically delivers 12%, is a margin destruction event approved in a budget meeting with no financial model attached. MarginCOS calculates the break-even uplift for every commercial action before the spend is committed, tracks actual delivery against it, and surfaces the historical ROI data needed to make the next investment decision with confidence."

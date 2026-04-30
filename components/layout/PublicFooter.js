@@ -33,10 +33,10 @@ export function PublicFooter() {
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Platform</h4>
             <nav className="space-y-2.5">
               {[
-                { label: 'Pricing Intelligence', href: '/platform#pricing-intelligence', title: 'Pricing Intelligence Engine' },
-                { label: 'Cost Pass-Through',    href: '/platform#cost-pass-through',    title: 'Cost Pass-Through Engine' },
-                { label: 'Channel Economics',    href: '/platform#channel-economics',    title: 'Channel Economics Engine' },
-                { label: 'Trade Execution',      href: '/platform#trade-execution',      title: 'Trade Execution Engine' },
+                { label: 'Pricing Intelligence', href: '/platform#p1', title: 'Pricing Intelligence Engine' },
+                { label: 'Cost Pass-Through',    href: '/platform#p2', title: 'Cost Pass-Through Engine' },
+                { label: 'Channel Economics',    href: '/platform#p3', title: 'Channel Economics Engine' },
+                { label: 'Trade Execution',      href: '/platform#p4', title: 'Trade Execution Engine' },
               ].map((l, i) => (
                 <Link key={i} href={l.href} title={l.title}
                   className="block text-xs text-white/50 hover:text-white transition-colors">
