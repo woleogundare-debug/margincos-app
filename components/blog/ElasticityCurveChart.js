@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const data = Array.from({ length: 21 }, (_, i) => {
@@ -33,14 +34,36 @@ const tooltipItemStyle = {
 };
 
 export default function ElasticityCurveChart() {
+  const containerRef = useRef(null);
+  const [isNarrow, setIsNarrow] = useState(false);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const measure = () => {
+      const parent = node.parentElement;
+      if (!parent) return;
+      setIsNarrow(parent.getBoundingClientRect().width < 480);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (node.parentElement) ro.observe(node.parentElement);
+    return () => ro.disconnect();
+  }, []);
+
   return (
-    <div style={{
-      margin: '32px 0',
-      padding: '24px',
-      backgroundColor: '#F8FAFC',
-      border: '1px solid #E5E8EC',
-      borderRadius: '8px',
-    }}>
+    <div
+      ref={containerRef}
+      style={{
+        margin: '32px 0',
+        marginLeft: isNarrow ? '-44px' : 0,
+        marginRight: isNarrow ? '-44px' : 0,
+        padding: isNarrow ? '20px 12px' : '24px',
+        backgroundColor: '#F8FAFC',
+        border: '1px solid #E5E8EC',
+        borderRadius: '8px',
+      }}
+    >
       <div style={{
         fontSize: '11px',
         fontWeight: 700,
@@ -58,23 +81,28 @@ export default function ElasticityCurveChart() {
         color: '#1B2A4A',
         marginBottom: '16px',
         marginTop: 0,
+        lineHeight: 1.3,
       }}>
         Volume response to price increase, by elasticity
       </h3>
-      <ResponsiveContainer width="100%" height={320}>
-        <LineChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
+      <ResponsiveContainer width="100%" height={isNarrow ? 280 : 340}>
+        <LineChart
+          data={data}
+          margin={{ top: 10, right: isNarrow ? 12 : 30, left: isNarrow ? 2 : 32, bottom: isNarrow ? 30 : 50 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E8EC" />
           <XAxis
             dataKey="priceIncrease"
             stroke="#64748b"
-            tick={{ fontSize: 12 }}
-            label={{ value: 'Price increase (%)', position: 'bottom', offset: 10, style: { fill: '#475569', fontSize: 12 } }}
+            tick={{ fontSize: isNarrow ? 10 : 11 }}
+            label={{ value: 'Price increase (%)', position: 'insideBottom', offset: -4, style: { fill: '#475569', fontSize: 11 } }}
           />
           <YAxis
             stroke="#64748b"
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: isNarrow ? 10 : 11 }}
             domain={[60, 102]}
-            label={{ value: 'Volume index (baseline = 100)', angle: -90, position: 'insideLeft', style: { fill: '#475569', fontSize: 12 } }}
+            width={isNarrow ? 30 : 56}
+            label={isNarrow ? undefined : { value: 'Volume index (baseline = 100)', angle: -90, position: 'insideLeft', offset: 0, style: { fill: '#475569', fontSize: 11, textAnchor: 'middle' } }}
           />
           <Tooltip
             contentStyle={tooltipStyle}
@@ -82,14 +110,33 @@ export default function ElasticityCurveChart() {
             itemStyle={tooltipItemStyle}
             labelFormatter={(value) => `Price increase: ${value}%`}
           />
-          <Legend wrapperStyle={{ paddingTop: 20, fontSize: 12 }} />
+          {!isNarrow && (
+            <Legend
+              verticalAlign="bottom"
+              wrapperStyle={{ paddingTop: 16, fontSize: 12, lineHeight: 1.6 }}
+              iconSize={10}
+            />
+          )}
           <Line type="monotone" dataKey="e = -0.5 (inelastic)"      stroke="#0D8F8F" strokeWidth={2.5} dot={false} />
           <Line type="monotone" dataKey="e = -1.0 (unit elastic)"   stroke="#D4A843" strokeWidth={2.5} dot={false} />
           <Line type="monotone" dataKey="e = -1.5 (elastic)"        stroke="#C0392B" strokeWidth={2.5} dot={false} />
           <Line type="monotone" dataKey="e = -2.0 (highly elastic)" stroke="#1B2A4A" strokeWidth={2.5} dot={false} />
         </LineChart>
       </ResponsiveContainer>
-      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '12px', fontStyle: 'italic' }}>
+      {isNarrow && (
+        <>
+          <p style={{ fontSize: '11px', color: '#475569', textAlign: 'center', margin: '6px 0 10px', fontWeight: 600 }}>
+            Volume index (baseline = 100)
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', fontSize: '10.5px', color: '#1B2A4A', padding: '8px 4px 0', borderTop: '1px solid #E5E8EC' }}>
+            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#0D8F8F', verticalAlign:'middle', marginRight:6}} />e = -0.5 (inelastic)</span>
+            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#D4A843', verticalAlign:'middle', marginRight:6}} />e = -1.0 (unit elastic)</span>
+            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#C0392B', verticalAlign:'middle', marginRight:6}} />e = -1.5 (elastic)</span>
+            <span><span style={{display:'inline-block', width:10, height:2.5, background:'#1B2A4A', verticalAlign:'middle', marginRight:6}} />e = -2.0 (highly elastic)</span>
+          </div>
+        </>
+      )}
+      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '12px', fontStyle: 'italic', lineHeight: 1.5 }}>
         Source: Carthena Advisory analysis. Volume response computed as percentage change = elasticity × price change percentage.
       </p>
     </div>
