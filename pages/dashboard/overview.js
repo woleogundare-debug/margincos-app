@@ -7,6 +7,7 @@ import { KpiTile, ActionItem, EmptyState } from '../../components/dashboard/inde
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { useTeam } from '../../hooks/useTeam';
 import { useActions } from '../../hooks/useActions';
 import { fNAbs, fN, getFormatterSym } from '../../lib/formatters';
@@ -42,6 +43,7 @@ export default function OverviewPage() {
   const lastSavedAt = useRef(null); // tracks ranAt timestamp of last saved actions
 
   const { team } = useTeam();
+  const { currSym } = useCurrency();
   const { stats: actionStats, bulkAddFromAnalysis, loadActions } = useActions(team?.id, activePeriod?.id, activeDivision?.id);
 
   // Auto-save actions to DB when analysis completes.
@@ -156,6 +158,7 @@ export default function OverviewPage() {
                   isEnterprise={isEnterprise}
                   chronologicalDelta={chronologicalDelta}
                   vertical={activePeriod?.vertical}
+                  currencySym={currSym}
                 />
               )}
               <Button variant={hasResults ? 'secondary' : 'navy'} size="md" onClick={run} loading={running}>

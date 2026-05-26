@@ -5,7 +5,7 @@ import {
 } from '@react-pdf/renderer';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
-import { getFormatterSym } from '../../lib/formatters';
+import { getFormatterSym, setFormatterSym } from '../../lib/formatters';
 
 /* ── Fonts (TTF required — React-PDF cannot parse woff2) ──── */
 Font.register({
@@ -1857,8 +1857,13 @@ const DisclaimerPage = ({ companyName }) => (
 /* ══════════════════════════════════════════════════════════════
    MAIN DOCUMENT
    ══════════════════════════════════════════════════════════════ */
-export default function MarginCOSReport({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta, vertical }) {
+export default function MarginCOSReport({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta, vertical, currencySym }) {
   if (!results) return null;
+  // Seed the formatter symbol from the currency passed in by the calling page
+  // (overview.js reads it from useCurrency). This makes the PDF currency
+  // deterministic on the team's operating currency rather than relying on
+  // ambient module state, keeping the report in lockstep with the dashboard.
+  if (currencySym) setFormatterSym(currencySym);
   const cfg = getSectorConfig(vertical);
 
   return (

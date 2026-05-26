@@ -6,7 +6,7 @@ import MarginCOSReport from './MarginCOSReport';
  * Client-side PDF report generation button.
  * Must be loaded with dynamic(() => import(...), { ssr: false }).
  */
-export default function DownloadReportButton({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta, vertical }) {
+export default function DownloadReportButton({ results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta, vertical, currencySym }) {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState(null);
 
@@ -24,6 +24,7 @@ export default function DownloadReportButton({ results, companyName, periodLabel
           isEnterprise={isEnterprise}
           chronologicalDelta={chronologicalDelta}
           vertical={vertical}
+          currencySym={currencySym}
         />
       ).toBlob();
 
@@ -46,7 +47,7 @@ export default function DownloadReportButton({ results, companyName, periodLabel
     } finally {
       setGenerating(false);
     }
-  }, [results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta, vertical, generating]);
+  }, [results, companyName, periodLabel, tier, isEnterprise, chronologicalDelta, vertical, currencySym, generating]);
 
   if (!results) return null;
 

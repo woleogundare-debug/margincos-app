@@ -11,6 +11,7 @@ import {
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { useTeam } from '../../hooks/useTeam';
 import { useAuth } from '../../hooks/useAuth';
+import { useCurrency, CURRENCIES } from '../../contexts/CurrencyContext';
 import useDivisions from '../../hooks/useDivisions';
 import { TIER_LIMITS } from '../../lib/constants';
 import { getInitials } from '../../lib/initials';
@@ -77,6 +78,26 @@ export default function TeamPage() {
   // Member management state (role change, division assignment, removal)
   const [memberError, setMemberError] = useState('');
   const [busyMemberId, setBusyMemberId] = useState(null);
+
+  // Operating-currency selector state (admins only). setCurrCode persists to
+  // teams.operating_currency and updates context immediately on success.
+  const { currCode, setCurrCode } = useCurrency();
+  const [savingCurrency, setSavingCurrency] = useState(false);
+  const [currencyMsg, setCurrencyMsg] = useState('');
+
+  const handleCurrencyChange = async (code) => {
+    if (!code || code === currCode) return;
+    setSavingCurrency(true);
+    setCurrencyMsg('');
+    const res = await setCurrCode(code);
+    setSavingCurrency(false);
+    if (res?.ok) {
+      setCurrencyMsg('Saved');
+      setTimeout(() => setCurrencyMsg(''), 2500);
+    } else {
+      setCurrencyMsg(res?.error || 'Failed to update currency');
+    }
+  };
 
   const isEnterprise = tier === 'enterprise' || tier === 'admin';
   const isProfessionalOrAbove = tier === 'professional' || isEnterprise;
@@ -301,6 +322,46 @@ export default function TeamPage() {
             <div className="sub">{lastActivity?.profile?.full_name || lastActivity?.profile?.email || '—'}</div>
           </div>
         </div>
+
+        {/* ── Operating currency (admins only) ── */}
+        {isAdmin && (
+          <div className="mb-6 mt-4" style={{ background: '#fff', border: '1px solid var(--rule, #E8ECF0)', borderRadius: 12, padding: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A4A', marginBottom: 4 }}>Operating currency</div>
+                <div style={{ fontSize: 12, color: '#8896A7', maxWidth: 460 }}>
+                  Sets the currency symbol used across all dashboards, charts, and PDF reports for this team. Applies to display only; uploaded figures are not converted.
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <select
+                  value={currCode}
+                  onChange={(e) => handleCurrencyChange(e.target.value)}
+                  disabled={savingCurrency}
+                  style={{
+                    fontSize: 14,
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    border: '1px solid var(--rule, #E8ECF0)',
+                    background: '#fff',
+                    color: '#1B2A4A',
+                    minWidth: 160,
+                    cursor: savingCurrency ? 'wait' : 'pointer',
+                  }}
+                >
+                  {Object.entries(CURRENCIES).map(([code, { sym }]) => (
+                    <option key={code} value={code}>{code} — {sym}</option>
+                  ))}
+                </select>
+                {currencyMsg && (
+                  <span style={{ fontSize: 12, fontWeight: 600, color: currencyMsg === 'Saved' ? '#0D8F8F' : '#C0392B' }}>
+                    {currencyMsg}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── Essentials tier lock ── */}
         {!isProfessionalOrAbove && (
