@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { useAuth } from '../hooks/useAuth';
@@ -265,6 +265,27 @@ export function AnalysisProvider({ children }) {
     setComparisonPeriodId(null);
     setComparisonResults(null);
   }, [activePeriod?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Currency-change invalidation ─────────────────────────────────────────
+  // The M2 priority-action detail is a pre-rendered string that bakes in the
+  // currency symbol at analysis time. Formatter-based surfaces (KPIs, charts,
+  // tables) react to currSym automatically, but cached action.detail strings do
+  // not — so a currency change made on /dashboard/team would leave the old
+  // symbol in the action queue and PDF until the next manual re-run. This effect
+  // forces a deliberate re-compute of whichever analysis path is active whenever
+  // currSym changes (skipping the initial mount). The re-run reads the new symbol
+  // from in-memory context state, so it does not depend on the Supabase persist
+  // completing — no race with setCurrCode's write.
+  const didMountRef = useRef(false);
+  useEffect(() => {
+    if (!didMountRef.current) { didMountRef.current = true; return; }
+    if (isConsolidated && consolidatedSector && consolidatedMonth) {
+      runConsolidation(consolidatedSector, consolidatedMonth);
+    } else if (hasResults) {
+      run();
+    }
+    if (comparisonPeriodId) loadComparisonPeriod(comparisonPeriodId);
+  }, [currSym]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Derive the comparison period's metadata from the periods array
   const comparisonPeriodMeta = useMemo(() => {
