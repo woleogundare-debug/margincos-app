@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { fNAbs, CHANNEL_LABELS } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
@@ -17,6 +18,7 @@ import { exportP3ChannelEconomics } from '../../lib/exportToExcel';
 export default function ChannelPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta } = useAnalysisContext();
+  const { currSym } = useCurrency();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p3 = results?.p3;
   const deltas = useMemo(() => {
@@ -182,7 +184,7 @@ export default function ChannelPage() {
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportP3ChannelEconomics(sorted, activePeriod?.label)}
+                onExport={() => exportP3ChannelEconomics(sorted, activePeriod?.label, currSym)}
               />
             </div>
             <div className="hidden md:block">

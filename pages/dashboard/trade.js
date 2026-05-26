@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
@@ -17,6 +18,7 @@ import { exportP4TradeExecution } from '../../lib/exportToExcel';
 export default function TradePage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
+  const { currSym } = useCurrency();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p4 = results?.p4;
   const deltas = useMemo(() => {
@@ -181,7 +183,7 @@ export default function TradePage() {
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportP4TradeExecution(sorted, activePeriod?.label, cfg.unitId)}
+                onExport={() => exportP4TradeExecution(sorted, activePeriod?.label, cfg.unitId, currSym)}
               />
             </div>
             <div className="hidden md:block">

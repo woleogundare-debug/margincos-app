@@ -548,7 +548,7 @@ export default function PortfolioPage() {
                 <div className="ml-auto pb-2">
                   <ExportButton
                     show={(isProfessional || isEnterprise) && skuRows.length > 0}
-                    onExport={() => exportPortfolio(skuRows, activePeriod?.label)}
+                    onExport={() => exportPortfolio(skuRows, activePeriod?.label, currSym)}
                   />
                 </div>
               )}

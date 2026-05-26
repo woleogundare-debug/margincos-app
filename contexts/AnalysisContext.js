@@ -6,6 +6,7 @@ import { useTeam } from '../hooks/useTeam';
 import useDivisions from '../hooks/useDivisions';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { runFullAnalysis } from '../lib/engine/analysis';
+import { useCurrency } from './CurrencyContext';
 
 const AnalysisContext = createContext(null);
 
@@ -14,6 +15,9 @@ export function AnalysisProvider({ children }) {
   // isAdmin derives from team_members.role (matches RLS is_team_admin() helper).
   // See Path C refactor: useAuth no longer carries an isAdmin field at all.
   const { isAdmin, loading: teamLoading } = useTeam();
+  // Operating-currency symbol, threaded into the analysis engine so the M2
+  // priority-action narrative interpolates the active symbol at analysis time.
+  const { currSym } = useCurrency();
 
   // ── Division state — loads async; gracefully degrades if table not yet migrated
   // Non-admins are pinned to their profile.division_id; admins can switch freely.
@@ -162,7 +166,7 @@ export function AnalysisProvider({ children }) {
 
       // 6. Run consolidated analysis on merged dataset
       const vertical      = matchingPeriods[0]?.vertical || sector;
-      const mergedResults = runFullAnalysis(taggedRows, taggedCI, vertical);
+      const mergedResults = runFullAnalysis(taggedRows, taggedCI, vertical, currSym);
 
       // 6. Build per-division breakdown for KPI tiles in overview.js
       const breakdown = sectorDivisions
@@ -170,7 +174,7 @@ export function AnalysisProvider({ children }) {
         .map(div => {
           const divRows    = taggedRows.filter(r => r._division === div.name);
           const divCI      = taggedCI.filter(r => r._division === div.name);
-          const divResults = divRows.length > 0 ? runFullAnalysis(divRows, divCI, vertical) : null;
+          const divResults = divRows.length > 0 ? runFullAnalysis(divRows, divCI, vertical, currSym) : null;
           const rev        = divResults?.totalRevenue || 0;
           const margin     = divResults?.totalCurrentMargin || 0;
           const activeRows = divRows.filter(r => {
@@ -201,7 +205,7 @@ export function AnalysisProvider({ children }) {
     } finally {
       setConsolidatedLoading(false);
     }
-  }, [teamId]);
+  }, [teamId, currSym]);
 
   const clearConsolidation = useCallback(() => {
     setIsConsolidated(false);
@@ -239,7 +243,7 @@ export function AnalysisProvider({ children }) {
       ]);
       if (skuRes.error) throw skuRes.error;
       if (tradeRes.error) throw tradeRes.error;
-      const compResults = runFullAnalysis(skuRes.data || [], tradeRes.data || [], compPeriodMeta?.vertical);
+      const compResults = runFullAnalysis(skuRes.data || [], tradeRes.data || [], compPeriodMeta?.vertical, currSym);
       setComparisonResults(compResults);
     } catch (err) {
       console.error('[loadComparisonPeriod] Failed:', err.message);
@@ -247,7 +251,7 @@ export function AnalysisProvider({ children }) {
     } finally {
       setComparisonLoading(false);
     }
-  }, [user?.id, periods]);
+  }, [user?.id, periods, currSym]);
 
   const clearComparison = useCallback(() => {
     setComparisonPeriodId(null);

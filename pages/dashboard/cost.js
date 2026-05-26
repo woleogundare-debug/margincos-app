@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { fNAbs } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
@@ -17,6 +18,7 @@ import { exportP2CostPassThrough } from '../../lib/exportToExcel';
 export default function CostPage() {
   const { tier, loading: authLoading, profileLoaded } = useAuth();
   const { activePeriod, activeResults: results, running, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
+  const { currSym } = useCurrency();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p2 = results?.p2;
   const deltas = useMemo(() => {
@@ -189,7 +191,7 @@ export default function CostPage() {
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportP2CostPassThrough(sorted, activePeriod?.label, cfg.unitId)}
+                onExport={() => exportP2CostPassThrough(sorted, activePeriod?.label, cfg.unitId, currSym)}
               />
             </div>
             <div className="hidden md:block">
@@ -242,7 +244,7 @@ export default function CostPage() {
             </div>
 
             <div className="source-line">
-              <span><strong>Source:</strong> vendor invoice ledger, FX-adjusted to NGN</span>
+              <span><strong>Source:</strong> vendor invoice ledger, FX-adjusted</span>
               <span><strong>Severity:</strong> normalised YoY price change, capped at 33%</span>
             </div>
 

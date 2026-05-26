@@ -1,9 +1,11 @@
 import { useState, useCallback, useMemo } from 'react';
 import { runFullAnalysis } from '../lib/engine/analysis';
 import { getSectorConfig } from '../lib/sectorConfig';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 export function useAnalysis(skuRows, tradeInvestment, vertical) {
   const cfg = getSectorConfig(vertical);
+  const { currSym } = useCurrency();
   const [results,   setResults]   = useState(null);
   const [running,   setRunning]   = useState(false);
   const [ranAt,     setRanAt]     = useState(null);
@@ -19,7 +21,7 @@ export function useAnalysis(skuRows, tradeInvestment, vertical) {
     // Use setTimeout to yield to the UI before the computation
     setTimeout(() => {
       try {
-        const result = runFullAnalysis(skuRows, tradeInvestment || [], vertical);
+        const result = runFullAnalysis(skuRows, tradeInvestment || [], vertical, currSym);
         if (!result) {
           setError(`No active ${cfg.unitPlural} found. Mark at least one ${cfg.unit} as active.`);
         } else {
@@ -32,7 +34,7 @@ export function useAnalysis(skuRows, tradeInvestment, vertical) {
         setRunning(false);
       }
     }, 50);
-  }, [skuRows, tradeInvestment, vertical]);
+  }, [skuRows, tradeInvestment, vertical, currSym]);
 
   const clear = useCallback(() => {
     setResults(null);

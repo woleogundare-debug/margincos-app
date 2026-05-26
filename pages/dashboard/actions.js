@@ -5,6 +5,7 @@ import { useActions } from '../../hooks/useActions';
 import { useTeam } from '../../hooks/useTeam';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import ExportButton from '../../components/ExportButton';
 import { exportActions } from '../../lib/exportToExcel';
 import { getFormatterSym } from '../../lib/formatters';
@@ -34,6 +35,7 @@ const fmtN = (v) => {
 export default function ActionsPage() {
   const { tier } = useAuth();
   const { team, loading: teamLoading } = useTeam();
+  const { currSym } = useCurrency();
   // activePeriod + consolidation state from shared context
   const { activePeriod, isConsolidated, activeResults, activeDivision } = useAnalysisContext();
   const {
@@ -140,7 +142,7 @@ export default function ActionsPage() {
             <div className="doc-actions">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportActions(filtered)}
+                onExport={() => exportActions(filtered, currSym)}
                 label="Export Actions"
               />
               <button className="btn-ed" style={{ background: 'var(--teal, #0D8F8F)', color: '#fff', borderColor: 'var(--teal, #0D8F8F)' }}>Assign owners</button>
@@ -184,7 +186,7 @@ export default function ActionsPage() {
             <div>
               <div className="exhibit-num">Exhibit 1</div>
               <div className="exhibit-title">Action queue</div>
-              <div className="exhibit-sub">Sorted by recoverable margin impact · NGN/month</div>
+              <div className="exhibit-sub">Sorted by recoverable margin impact · {currSym}/month</div>
             </div>
             <div className="exhibit-meta">
               <span className="count">{filtered.length} of {displayActions.length} shown</span>

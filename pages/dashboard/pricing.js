@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { fNAbs, fN } from '../../lib/formatters';
 import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
@@ -17,6 +18,7 @@ import { exportP1PricingGap } from '../../lib/exportToExcel';
 export default function PricingPage() {
   const { tier } = useAuth();
   const { activePeriod, activeResults: results, running, ranAt, run, activeHasResults: hasResults, chronologicalDelta, isConsolidated } = useAnalysisContext();
+  const { currSym } = useCurrency();
   const cfg = getSectorConfig(activePeriod?.vertical);
   const p1 = results?.p1;
   const deltas = useMemo(() => {
@@ -195,7 +197,7 @@ export default function PricingPage() {
             <div className="hidden md:flex justify-end mb-2">
               <ExportButton
                 show={tier === 'professional' || tier === 'enterprise'}
-                onExport={() => exportP1PricingGap(sorted, activePeriod?.label, cfg.unitId)}
+                onExport={() => exportP1PricingGap(sorted, activePeriod?.label, cfg.unitId, currSym)}
               />
             </div>
             <div className="hidden md:block">
@@ -244,7 +246,7 @@ export default function PricingPage() {
             </div>
 
             <div className="source-line">
-              <span><strong>Source:</strong> elasticity model · 18-mo regression, retailer scanner data, NGN deflator-adjusted</span>
+              <span><strong>Source:</strong> elasticity model · 18-mo regression, retailer scanner data, deflator-adjusted</span>
               <span><strong>Confidence:</strong> regression R² × distribution of price-test results</span>
             </div>
 
