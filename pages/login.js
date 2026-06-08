@@ -119,7 +119,7 @@ export default function LoginPage() {
             ) : (
               <>
                 <h1 className="text-lg font-bold text-navy mb-6">Sign in to your account</h1>
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form method="POST" onSubmit={handleLogin} className="space-y-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 mb-1.5">Work email</label>
                     <input
