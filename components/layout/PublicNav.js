@@ -46,7 +46,7 @@ export function PublicNav() {
     setMobilePlatformOpen(false);
   }, [router.pathname]);
 
-  /* Login click — route to dashboard if session exists */
+  /* Login click - route to dashboard if session exists */
   const handleLoginClick = useCallback(async (e) => {
     e.preventDefault();
     const sb = getSupabaseClient();
@@ -80,7 +80,7 @@ export function PublicNav() {
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
 
         {/* Logo */}
-        <Link href="/" title="MarginCOS – Commercial Operating System for Margin Recovery" className="flex flex-col group">
+        <Link href="/" title="MarginCOS - Commercial Operating System for Margin Recovery" className="flex flex-col group">
           <span className="text-2xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
             <span className={clsx('transition-colors', scrolled ? 'text-navy' : 'text-white')}>Margin</span>
             <span style={{ color: '#C0392B' }}>COS</span>
@@ -104,7 +104,7 @@ export function PublicNav() {
             Home
           </Link>
 
-          {/* Platform — dropdown trigger */}
+          {/* Platform - dropdown trigger */}
           <div
             className="relative"
             onMouseEnter={handleDropEnter}
@@ -210,7 +210,7 @@ export function PublicNav() {
               Home
             </Link>
 
-            {/* Platform — expandable section */}
+            {/* Platform - expandable section */}
             <div>
               <button
                 onClick={() => setMobilePlatformOpen(!mobilePlatformOpen)}

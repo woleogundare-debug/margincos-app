@@ -1,8 +1,8 @@
 export default function PassThroughBenchmarkChart() {
   const zones = [
-    { label: 'At Risk',  range: '0 – 40%',  width: 40, color: '#C0392B', note: 'Margin destruction. Repricing or rationalisation required.' },
-    { label: 'Watch',    range: '40 – 70%', width: 30, color: '#D4A843', note: 'Margin eroding. Action needed within 30 days.' },
-    { label: 'Managed',  range: '70 – 90%', width: 20, color: '#0D8F8F', note: 'Margin protected. Monitor only.' },
+    { label: 'At Risk',  range: '0 - 40%',  width: 40, color: '#C0392B', note: 'Margin destruction. Repricing or rationalisation required.' },
+    { label: 'Watch',    range: '40 - 70%', width: 30, color: '#D4A843', note: 'Margin eroding. Action needed within 30 days.' },
+    { label: 'Managed',  range: '70 - 90%', width: 20, color: '#0D8F8F', note: 'Margin protected. Monitor only.' },
     { label: 'Overshoot',range: '90%+',     width: 10, color: '#4A5568', note: 'Volume risk. Price may be exceeding market tolerance.' },
   ];
 
@@ -17,7 +17,7 @@ export default function PassThroughBenchmarkChart() {
         Pass-through rate benchmark zones
       </p>
       <p style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: '24px', lineHeight: 1.3 }}>
-        Where most companies sit — and where leaders sit
+        Where most companies sit - and where leaders sit
       </p>
 
       {/* Segmented bar */}
@@ -50,7 +50,7 @@ export default function PassThroughBenchmarkChart() {
         ))}
       </div>
       <p style={{ color: '#8899AA', fontSize: '11px', marginTop: '16px' }}>
-        Source: Carthena Advisory analysis across FMCG and manufacturing portfolios, 2024–2026
+        Source: Carthena Advisory analysis across FMCG and manufacturing portfolios, 2024-2026
       </p>
     </div>
   );

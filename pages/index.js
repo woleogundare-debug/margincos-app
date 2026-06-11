@@ -92,7 +92,7 @@ export default function HomePage({ css, sectionsHtml }) {
   return (
     <>
       <Head>
-        <title>MarginCOS — Commercial Operating System for Margin Recovery</title>
+        <title>MarginCOS - Commercial Operating System for Margin Recovery</title>
         <meta name="description" content="The Commercial Operating System for margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution. In your currency." />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://margincos.com/" />
@@ -100,7 +100,7 @@ export default function HomePage({ css, sectionsHtml }) {
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/" />
-        <meta property="og:title" content="MarginCOS — Commercial Operating System for Margin Recovery" />
+        <meta property="og:title" content="MarginCOS - Commercial Operating System for Margin Recovery" />
         <meta property="og:description" content="The Commercial Operating System for margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution. In your currency." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
@@ -110,7 +110,7 @@ export default function HomePage({ css, sectionsHtml }) {
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="MarginCOS — Commercial Operating System for Margin Recovery" />
+        <meta name="twitter:title" content="MarginCOS - Commercial Operating System for Margin Recovery" />
         <meta name="twitter:description" content="The Commercial Operating System for margin recovery. Pricing intelligence, cost pass-through, channel economics and trade execution. In your currency." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
 

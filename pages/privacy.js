@@ -15,7 +15,7 @@ const sections = [
     subsections: [
       {
         subtitle: '2.1 Account Information',
-        text: 'When you register for MarginCOS, we collect your full name, work email address, company name, job title, and chosen password (stored as a salted hash — we never store plaintext passwords).',
+        text: 'When you register for MarginCOS, we collect your full name, work email address, company name, job title, and chosen password (stored as a salted hash - we never store plaintext passwords).',
       },
       {
         subtitle: '2.2 Commercial Portfolio Data',
@@ -65,7 +65,7 @@ const sections = [
     body: `We do not sell, rent, or trade your personal information or commercial data to any third party. We share data only with the following categories of service providers, strictly under data processing agreements:`,
     list: [
       'Infrastructure providers: Supabase (database and authentication), Vercel (hosting)',
-      'Analytics: Anonymised, aggregated usage data only — never individual client commercial data',
+      'Analytics: Anonymised, aggregated usage data only - never individual client commercial data',
     ],
     after: 'All third-party processors are contractually bound to process data only on our instructions and to maintain equivalent or higher security standards.',
   },

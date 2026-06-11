@@ -140,7 +140,7 @@ export default function TeamPage() {
     : null;
   const lastActivityLabel = lastActivity?.joined_at
     ? new Date(lastActivity.joined_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    : '—';
+    : '-';
 
   // Admin count for role cards
   const adminCount = members.filter(m => m.role === 'admin').length;
@@ -319,7 +319,7 @@ export default function TeamPage() {
           <div className="summary-card">
             <div className="lbl">Last member joined</div>
             <div className="v" style={{ fontSize: 18 }}>{lastActivityLabel}</div>
-            <div className="sub">{lastActivity?.profile?.full_name || lastActivity?.profile?.email || '—'}</div>
+            <div className="sub">{lastActivity?.profile?.full_name || lastActivity?.profile?.email || '-'}</div>
           </div>
         </div>
 
@@ -350,7 +350,7 @@ export default function TeamPage() {
                   }}
                 >
                   {Object.entries(CURRENCIES).map(([code, { sym }]) => (
-                    <option key={code} value={code}>{code} — {sym}</option>
+                    <option key={code} value={code}>{code} - {sym}</option>
                   ))}
                 </select>
                 {currencyMsg && (
@@ -379,7 +379,7 @@ export default function TeamPage() {
           </div>
         )}
 
-        {/* ━━━ Exhibit 1 — Team Members ━━━ */}
+        {/* ━━━ Exhibit 1 - Team Members ━━━ */}
         <div className="exhibit-head">
           <div>
             <div className="exhibit-num">Exhibit 1</div>
@@ -426,7 +426,7 @@ export default function TeamPage() {
                     const displayName = m.profile?.full_name || m.profile?.email || 'Team Member';
                     const initials = getInitials(m.profile?.full_name, m.profile?.email);
                     const joinedAt = m.joined_at ? new Date(m.joined_at) : null;
-                    const joinedLabel = joinedAt ? joinedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                    const joinedLabel = joinedAt ? joinedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-';
                     const memberDivisionId = m.profile?.division_id || '';
                     const isEvenRow = idx % 2 === 1;
 
@@ -469,13 +469,13 @@ export default function TeamPage() {
                                 style={{ fontSize: 11, border: `1px solid ${c.rule}`, borderRadius: 6, padding: '2px 6px', background: '#fff' }}
                                 title={isSelf ? 'Assign yourself to a division' : 'Assign to division'}
                               >
-                                <option value="">—</option>
+                                <option value="">-</option>
                                 {divisions.map(d => (
                                   <option key={d.id} value={d.id}>{d.name}</option>
                                 ))}
                               </select>
                             ) : (
-                              <span>{divisions.find(d => d.id === memberDivisionId)?.name || '—'}</span>
+                              <span>{divisions.find(d => d.id === memberDivisionId)?.name || '-'}</span>
                             )}
                           </td>
                         )}
@@ -553,7 +553,7 @@ export default function TeamPage() {
                   {pendingInvitations && pendingInvitations.map((inv, idx) => {
                     const isEvenRow = (members.length + idx) % 2 === 1;
                     const sentAt = inv.created_at ? new Date(inv.created_at) : null;
-                    const sentLabel = sentAt ? sentAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                    const sentLabel = sentAt ? sentAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-';
                     const expiresAt = inv.expires_at ? new Date(inv.expires_at) : null;
                     const isExpired = expiresAt && expiresAt < new Date();
 
@@ -576,7 +576,7 @@ export default function TeamPage() {
                           </div>
                         </td>
                         <td style={{ ...tdStyle, color: c.textLight, fontSize: 12, background: isEvenRow ? c.paper : '#fff' }}>{inv.email}</td>
-                        {divisions.length >= 2 && <td className="hidden md:table-cell" style={{ ...tdStyle, color: c.textLight, background: isEvenRow ? c.paper : '#fff' }}>—</td>}
+                        {divisions.length >= 2 && <td className="hidden md:table-cell" style={{ ...tdStyle, color: c.textLight, background: isEvenRow ? c.paper : '#fff' }}>-</td>}
                         <td style={{ ...tdStyle, background: isEvenRow ? c.paper : '#fff' }}>
                           <span style={{
                             fontFamily: font.mono, fontSize: 11, fontWeight: 700,
@@ -638,7 +638,7 @@ export default function TeamPage() {
           )}
         </div>
 
-        {/* ━━━ Exhibit 2 — Invite a team member ━━━ */}
+        {/* ━━━ Exhibit 2 - Invite a team member ━━━ */}
         {isAdmin && isProfessionalOrAbove && (
           <>
             <div id="team-invite-section" className="exhibit-head">
@@ -735,7 +735,7 @@ export default function TeamPage() {
           </>
         )}
 
-        {/* ━━━ Exhibit 3 — Divisions ━━━ */}
+        {/* ━━━ Exhibit 3 - Divisions ━━━ */}
         {isProfessionalOrAbove && (
           <>
             <div className="exhibit-head">
@@ -921,7 +921,7 @@ export default function TeamPage() {
           </>
         )}
 
-        {/* ━━━ Exhibit 4 — Recent Activity ━━━ */}
+        {/* ━━━ Exhibit 4 - Recent Activity ━━━ */}
         <div id="team-audit-section" className="exhibit-head">
           <div>
             <div className="exhibit-num">Exhibit 4</div>

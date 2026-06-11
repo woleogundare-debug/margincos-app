@@ -13,7 +13,7 @@ export default function App({ Component, pageProps }) {
     const sb = getSupabaseClient();
     if (!sb) return;
 
-    // Refresh session on every route change — ensures the in-memory session
+    // Refresh session on every route change - ensures the in-memory session
     // stays current and the browser client is hydrated before pages mount
     const handleRouteChange = async () => {
       await sb.auth.getSession();
@@ -25,7 +25,7 @@ export default function App({ Component, pageProps }) {
 
   // getLayout pattern: each page can export a static .getLayout function that
   // wraps its content in a persistent layout. DashboardLayout is mounted once
-  // in _app.js and never unmounts during dashboard→dashboard navigation —
+  // in _app.js and never unmounts during dashboard→dashboard navigation -
   // sidebar DOM, scroll position, and hamburger state all persist across routes.
   const getLayout = Component.getLayout || ((page) => page);
 

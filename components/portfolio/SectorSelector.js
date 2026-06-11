@@ -1,14 +1,14 @@
 /**
- * SectorSelector — sector/vertical selection for period creation.
+ * SectorSelector - sector/vertical selection for period creation.
  *
  * Props:
- *   value          {string}  — currently selected vertical ('FMCG' | 'Manufacturing' | 'Retail' | '')
- *   onChange       {fn}      — called with the new vertical string when a selection is made
- *   showComingSoon {bool}    — if true, renders coming-soon sector tiles with waitlist links
- *                             (cards variant only — default: false)
- *   variant        {string}  — 'dropdown' (default) | 'cards'
- *                             'dropdown' — compact <select> + description below, scales to many sectors
- *                             'cards'    — full-width stacked card grid (for onboarding/marketing use)
+ *   value          {string}  - currently selected vertical ('FMCG' | 'Manufacturing' | 'Retail' | '')
+ *   onChange       {fn}      - called with the new vertical string when a selection is made
+ *   showComingSoon {bool}    - if true, renders coming-soon sector tiles with waitlist links
+ *                             (cards variant only - default: false)
+ *   variant        {string}  - 'dropdown' (default) | 'cards'
+ *                             'dropdown' - compact <select> + description below, scales to many sectors
+ *                             'cards'    - full-width stacked card grid (for onboarding/marketing use)
  */
 
 import clsx from 'clsx';
@@ -19,7 +19,7 @@ const LIVE_SECTORS = [
     key: 'FMCG',
     label: 'FMCG',
     icon: '🛒',
-    desc: 'Product-level pricing intelligence across your portfolio — pricing gaps, cost pass-through, channel economics, and promotional ROI.',
+    desc: 'Product-level pricing intelligence across your portfolio - pricing gaps, cost pass-through, channel economics, and promotional ROI.',
   },
   {
     key: 'Manufacturing',
@@ -51,14 +51,14 @@ const SOON_SECTORS = [
 ];
 
 function waitlistHref(sector) {
-  const subject = encodeURIComponent(`MarginCOS Waitlist — ${sector}`);
+  const subject = encodeURIComponent(`MarginCOS Waitlist - ${sector}`);
   const body = encodeURIComponent(
     `Hi,\n\nI'd like to join the waitlist for MarginCOS ${sector} support.\n\nCompany:\nRole:\n`
   );
   return `mailto:info@carthenaadvisory.com?subject=${subject}&body=${body}`;
 }
 
-/* ── Dropdown variant — compact, scales to many sectors ── */
+/* ── Dropdown variant - compact, scales to many sectors ── */
 function DropdownSector({ value, onChange }) {
   const selected = LIVE_SECTORS.find(s => s.key === value) || LIVE_SECTORS[0];
   return (
@@ -85,7 +85,7 @@ function DropdownSector({ value, onChange }) {
   );
 }
 
-/* ── Cards variant — stacked card grid for onboarding/marketing contexts ── */
+/* ── Cards variant - stacked card grid for onboarding/marketing contexts ── */
 function CardsSector({ value, onChange, showComingSoon }) {
   return (
     <div>
@@ -128,7 +128,7 @@ function CardsSector({ value, onChange, showComingSoon }) {
         })}
       </div>
 
-      {/* Coming-soon — only when showComingSoon={true} */}
+      {/* Coming-soon - only when showComingSoon={true} */}
       {showComingSoon && (
         <>
           <div className="flex items-center gap-2 mb-2.5">

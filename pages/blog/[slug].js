@@ -87,7 +87,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
   return (
     <>
       <Head>
-        <title>{title} — MarginCOS</title>
+        <title>{title} - MarginCOS</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={`https://margincos.com/blog/${slug}`} />
         <meta property="og:title" content={title} />
@@ -280,7 +280,7 @@ export default function BlogPost({ frontmatter, mdxSource }) {
           </div>
         </div>
 
-        {/* CTA — hidden in print */}
+        {/* CTA - hidden in print */}
         <div className="no-print mt-16 p-8 bg-navy rounded-xl text-center">
           <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
             Ready to close the margin gap?

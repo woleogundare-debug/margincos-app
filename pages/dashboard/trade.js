@@ -159,7 +159,7 @@ export default function TradePage() {
                     headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.depth, cfg.fields.lift, cfg.fields.impact, cfg.fields.status]}
                     rows={sorted.map(r => [
                       r.sku,
-                      ...(isConsolidated ? [r._division || '—'] : []),
+                      ...(isConsolidated ? [r._division || '-'] : []),
                       (r.depth * 100).toFixed(1) + '%',
                       (r.lift * 100).toFixed(1) + '%',
                       { content: <span className={r.netImpact >= 0 ? 'text-emerald-600 font-semibold' : 'text-red-600 font-semibold'}>{fN(r.netImpact)}</span> },
@@ -208,11 +208,11 @@ export default function TradePage() {
                   ]}
                   rows={sorted.map(r => [
                     r.sku,
-                    ...(isConsolidated ? [r._division || '—'] : []),
+                    ...(isConsolidated ? [r._division || '-'] : []),
                     r.category,
                     (r.depth * 100).toFixed(1) + '%',
                     (r.lift * 100).toFixed(1) + '%',
-                    r.bevLift !== null ? (r.bevLift * 100).toFixed(1) + '%' : '—',
+                    r.bevLift !== null ? (r.bevLift * 100).toFixed(1) + '%' : '-',
                     { content: <span className={r.netImpact >= 0 ? 'text-emerald-600 font-semibold' : 'text-red-600 font-semibold'}>{fN(r.netImpact)}</span> },
                     { content: r.profitable
                         ? <Badge color="green">✓ Profitable</Badge>

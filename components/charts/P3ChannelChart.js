@@ -2,8 +2,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useCurrency } from '../../contexts/CurrencyContext';
 
 const COLORS = {
-  rev:        '#1B2A4A', // navy   — revenue
-  contMargin: '#0D8F8F', // teal   — contribution margin
+  rev:        '#1B2A4A', // navy   - revenue
+  contMargin: '#0D8F8F', // teal   - contribution margin
 };
 
 // contPct is already 0-100 (not a decimal)

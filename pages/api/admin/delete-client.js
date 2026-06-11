@@ -37,26 +37,26 @@ export default async function handler(req, res) {
 
     // ── Cascade through period-linked data ───────────────────────────────────
     if (periodIds.length > 0) {
-      // Step 1 — action_items (has ON DELETE CASCADE on period_id, but be explicit)
+      // Step 1 - action_items (has ON DELETE CASCADE on period_id, but be explicit)
       await serviceClient.from('action_items').delete().in('period_id', periodIds);
 
-      // Step 2 — sku_rows
+      // Step 2 - sku_rows
       await serviceClient.from('sku_rows').delete().in('period_id', periodIds);
 
-      // Step 3 — logistics_rows (has ON DELETE CASCADE on period_id)
+      // Step 3 - logistics_rows (has ON DELETE CASCADE on period_id)
       await serviceClient.from('logistics_rows').delete().in('period_id', periodIds);
 
-      // Step 4 — trade_investment
+      // Step 4 - trade_investment
       await serviceClient.from('trade_investment').delete().in('period_id', periodIds);
 
-      // Step 5 — logistics_commercial_investment (has ON DELETE CASCADE on period_id)
+      // Step 5 - logistics_commercial_investment (has ON DELETE CASCADE on period_id)
       await serviceClient.from('logistics_commercial_investment').delete().in('period_id', periodIds);
     }
 
-    // Step 6 — Delete periods (unblocks the periods_team_id_fkey FK constraint)
+    // Step 6 - Delete periods (unblocks the periods_team_id_fkey FK constraint)
     await serviceClient.from('periods').delete().eq('team_id', teamId);
 
-    // Step 7 — Null out profiles.division_id AND team_id before divisions/team are deleted
+    // Step 7 - Null out profiles.division_id AND team_id before divisions/team are deleted
     // profiles.division_id references divisions, which cascades from the team delete,
     // so it must be cleared here or Postgres will throw profiles_division_id_fkey.
     if (userIds.length > 0) {
@@ -66,14 +66,14 @@ export default async function handler(req, res) {
         .in('user_id', userIds);
     }
 
-    // Step 8 — Delete team via RPC (sets transaction-local flag to bypass the
+    // Step 8 - Delete team via RPC (sets transaction-local flag to bypass the
     // enforce_last_admin trigger, then FK CASCADE handles team_members,
     // divisions, and team_invitations).
     const { error: teamError } = await serviceClient
       .rpc('admin_cascade_delete_team', { p_team_id: teamId });
     if (teamError) throw teamError;
 
-    // Step 9 — Delete profiles and auth users
+    // Step 9 - Delete profiles and auth users
     if (userIds.length > 0) {
       await serviceClient.from('profiles').delete().in('user_id', userIds);
 

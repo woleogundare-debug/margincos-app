@@ -25,7 +25,7 @@ const STATUS_CONFIG = {
 
 const fmtN = (v) => {
   const s = getFormatterSym();
-  if (!v) return '—';
+  if (!v) return '-';
   if (Math.abs(v) >= 1e9) return `${s}${(v/1e9).toFixed(1)}B`;
   if (Math.abs(v) >= 1e6) return `${s}${(v/1e6).toFixed(1)}M`;
   if (Math.abs(v) >= 1e3) return `${s}${(v/1e3).toFixed(0)}K`;
@@ -97,7 +97,7 @@ export default function ActionsPage() {
     setResolveNote('');
   };
 
-  // Pillar tabs filtered by tier — non-Enterprise users never see M1-M4 tabs.
+  // Pillar tabs filtered by tier - non-Enterprise users never see M1-M4 tabs.
   const PILLAR_ORDER = ['all', 'P1', 'P2', 'P3', 'P4', 'M1', 'M2', 'M3', 'M4'];
   const visiblePillars = PILLAR_ORDER.filter(p => p === 'all' || allowedPillars.includes(p));
 
@@ -181,7 +181,7 @@ export default function ActionsPage() {
             </div>
           )}
 
-          {/* ── Exhibit 1 — Action queue ── */}
+          {/* ── Exhibit 1 - Action queue ── */}
           <div className="exhibit-head">
             <div>
               <div className="exhibit-num">Exhibit 1</div>
@@ -212,7 +212,7 @@ export default function ActionsPage() {
               ))}
             </div>
 
-            {/* Pillar filter — tabs gated by tier */}
+            {/* Pillar filter - tabs gated by tier */}
             <div style={{ display: 'flex', gap: 4, background: 'var(--paper-2, #F0F2F5)', borderRadius: 8, padding: 4 }}>
               {visiblePillars.map(p => (
                 <button key={p}
@@ -308,7 +308,7 @@ export default function ActionsPage() {
                           {action.resolution_note && <span style={{ color: 'var(--teal, #0D8F8F)', fontStyle: 'italic' }}>&ldquo;{action.resolution_note}&rdquo;</span>}
                         </div>
                       )}
-                      {/* Action buttons — hidden in consolidated (read-only) mode */}
+                      {/* Action buttons - hidden in consolidated (read-only) mode */}
                       {!isConsolidated && action.status !== 'resolved' && action.status !== 'dismissed' && (
                         <div style={{ display: 'flex', gap: 8, marginTop: 10, paddingTop: 10, borderTop: '1px dotted var(--rule, #E2E6EC)' }}>
                           {action.status === 'open' && (
@@ -340,7 +340,7 @@ export default function ActionsPage() {
                           <div className="per">/month</div>
                         </>
                       ) : (
-                        <div className="v" style={{ color: 'var(--text-light)' }}>—</div>
+                        <div className="v" style={{ color: 'var(--text-light)' }}>-</div>
                       )}
                     </div>
                   </div>

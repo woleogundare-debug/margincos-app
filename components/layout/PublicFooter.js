@@ -5,9 +5,9 @@ export function PublicFooter() {
     <footer className="bg-navy-dark text-white">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-10 md:gap-8">
-          {/* Column 1 — Brand */}
+          {/* Column 1 - Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" title="MarginCOS – Commercial Operating System for Margin Recovery" className="flex flex-col gap-1 mb-4">
+            <Link href="/" title="MarginCOS - Commercial Operating System for Margin Recovery" className="flex flex-col gap-1 mb-4">
               <span className="text-2xl font-bold tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
                 <span className="text-white">Margin</span>
                 <span style={{ color: '#C0392B' }}>COS</span>
@@ -28,7 +28,7 @@ export function PublicFooter() {
             </p>
           </div>
 
-          {/* Column 2 — Platform */}
+          {/* Column 2 - Platform */}
           <div>
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Platform</h4>
             <nav className="space-y-2.5">
@@ -52,7 +52,7 @@ export function PublicFooter() {
             </nav>
           </div>
 
-          {/* Column 3 — Enterprise */}
+          {/* Column 3 - Enterprise */}
           <div>
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Enterprise</h4>
             <nav className="space-y-2.5">
@@ -70,7 +70,7 @@ export function PublicFooter() {
             </nav>
           </div>
 
-          {/* Column 4 — Company */}
+          {/* Column 4 - Company */}
           <div>
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Company</h4>
             <nav className="space-y-2.5">
@@ -85,7 +85,7 @@ export function PublicFooter() {
             </nav>
           </div>
 
-          {/* Column 5 — Resources */}
+          {/* Column 5 - Resources */}
           <div>
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Resources</h4>
             <nav className="space-y-2.5">
@@ -99,7 +99,7 @@ export function PublicFooter() {
             </nav>
           </div>
 
-          {/* Column 6 — Legal */}
+          {/* Column 6 - Legal */}
           <div>
             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Legal</h4>
             <nav className="space-y-2.5">

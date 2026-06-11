@@ -5,9 +5,9 @@ import { requireAuth, createSupabaseServiceClient } from '../../../lib/supabase/
  *
  * Returns a merged, reverse-chronological activity feed for the
  * caller's team. Three source types:
- *   1. login  — last_sign_in_at per member (auth.users, service role)
- *   2. action — status changes on action_items (in_progress / resolved / dismissed)
- *   3. period — portfolio period creation (periods table)
+ *   1. login  - last_sign_in_at per member (auth.users, service role)
+ *   2. action - status changes on action_items (in_progress / resolved / dismissed)
+ *   3. period - portfolio period creation (periods table)
  *
  * Returns at most 15 entries.
  */

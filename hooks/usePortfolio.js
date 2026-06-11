@@ -23,7 +23,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       .from('periods')
       .select('*')
       .eq('user_id', userId);
-    // Filter by division when one is active — fall back to all user periods if none
+    // Filter by division when one is active - fall back to all user periods if none
     if (divisionId) {
       query = query.eq('division_id', divisionId);
     }
@@ -131,7 +131,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
   const saveSku = useCallback(async (row, { merge = false } = {}) => {
     // Guard: don't attempt save without required context
     if (!activePeriod?.id || !userId) {
-      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted — missing context:', { period_id: activePeriod?.id, user_id: userId });
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted - missing context:', { period_id: activePeriod?.id, user_id: userId });
       return null;
     }
     const tableName = activePeriod.vertical === 'Logistics' ? 'logistics_rows' : 'sku_rows';
@@ -145,15 +145,15 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       const pkLabel = pkField === 'lane_id' ? 'Lane ID' : 'SKU ID';
       const err = new Error(`${pkLabel} cannot be empty`);
       err.code = 'EMPTY_PK';
-      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted —', err.message);
+      if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Aborted -', err.message);
       throw err;
     }
     setSaving(true);
     const tempId = row._tempId;
-    // Strip _tempId — it's a client-only key, not a DB column
+    // Strip _tempId - it's a client-only key, not a DB column
     const { _tempId, ...rest } = row;
     const payload = { ...rest, period_id: activePeriod.id, user_id: userId, division_id: divisionId || null };
-    // Normalize active to 'Y'/'N' text — DB column is text, not boolean
+    // Normalize active to 'Y'/'N' text - DB column is text, not boolean
     const a = payload.active;
     payload.active = (a === true || a === 'Y' || a === 'y' || a === 'true' || a === 'Active') ? 'Y' : (a === false || a === 'N' || a === 'n' || a === 'false' || a === 'No' || a === 'Inactive') ? 'N' : 'Y';
     // For new rows (no id yet), remove id so Supabase auto-generates it
@@ -162,7 +162,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     let data, error;
     try {
       if (payload.id) {
-        // Existing row — always update by primary key
+        // Existing row - always update by primary key
         if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Updating', tableName, ':', { id: payload.id, [pkField]: payload[pkField] });
         ({ data, error } = await sb
           .from(tableName)
@@ -171,7 +171,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
           .select()
           .single());
       } else if (merge) {
-        // Bulk-import path — upsert so duplicate (period_id, sku_id) patches
+        // Bulk-import path - upsert so duplicate (period_id, sku_id) patches
         if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Upserting (merge) to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
         ({ data, error } = await sb
           .from(tableName)
@@ -179,7 +179,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
           .select()
           .single());
       } else {
-        // Inline-edit new row — plain insert lets 23505 fire on duplicate
+        // Inline-edit new row - plain insert lets 23505 fire on duplicate
         if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Inserting to', tableName, ':', { [pkField]: payload[pkField], period_id: payload.period_id });
         ({ data, error } = await sb
           .from(tableName)
@@ -188,7 +188,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
           .single());
       }
     } catch (networkErr) {
-      // Network-level failure (offline, DNS, timeout) — the await itself
+      // Network-level failure (offline, DNS, timeout) - the await itself
       // rejected rather than returning a Supabase error response.
       setSaving(false);
       if (process.env.NODE_ENV !== 'production') console.error('[saveSku] Network error:', networkErr.message);
@@ -205,7 +205,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     }
     if (process.env.NODE_ENV !== 'production') console.log('[saveSku] Saved successfully:', data.id);
     setSkuRows(prev => {
-      // Replace matching row — match on id OR _tempId for newly created rows
+      // Replace matching row - match on id OR _tempId for newly created rows
       const idx = prev.findIndex(r => r.id === data.id || (tempId && r._tempId === tempId));
       return idx >= 0 ? prev.map((r, i) => i === idx ? data : r) : [...prev, data];
     });
@@ -226,7 +226,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
 
   // ── Add new blank SKU / Lane ──────────────────────────────────
   const addSku = useCallback(async () => {
-    // Enforce tier cap — null means unlimited
+    // Enforce tier cap - null means unlimited
     const isLogistics = activePeriod?.vertical === 'Logistics';
     const limit = isLogistics
       ? (TIER_LIMITS[tier]?.maxLanes ?? null)
@@ -344,7 +344,7 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       // Immediately clear any stale state from a previous session before fetching.
       // Without this reset, a returning user briefly sees the old session's data
       // (activePeriod set, loading=false, skuRows populated) while the new
-      // loadPeriods() is in flight — causing the Portfolio "data flash" on sign-in.
+      // loadPeriods() is in flight - causing the Portfolio "data flash" on sign-in.
       setActivePeriod(null);
       setPeriods([]);
       setSkuRows([]);
@@ -352,14 +352,14 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
       setLoading(true);
       loadPeriods();
     } else {
-      // No user yet (auth still resolving) — loading stays true until userId arrives
+      // No user yet (auth still resolving) - loading stays true until userId arrives
     }
   }, [userId, loadPeriods]);
 
   // ── Reset active state when division switches ────────────────
   // loadPeriods is recreated by useCallback when divisionId changes,
   // which re-triggers the [userId, loadPeriods] effect above.
-  // CRITICAL: also clear `periods` here — otherwise the auto-select effect
+  // CRITICAL: also clear `periods` here - otherwise the auto-select effect
   // immediately fires selectPeriod(periods[0]) on the OLD division's stale
   // periods list before the new filtered loadPeriods completes.
   // setLoading(true) here prevents the brief empty-grid flash: without it,
@@ -378,12 +378,12 @@ export function usePortfolio(userId, tier = 'essentials', divisionId = null, tea
     if (periods.length > 0 && !activePeriod) {
       selectPeriod(periods[0]);
     } else if (userId && periods.length === 0 && !activePeriod) {
-      // userId present but no periods found — stop loading spinner
+      // userId present but no periods found - stop loading spinner
       setLoading(false);
     }
   }, [periods, activePeriod, selectPeriod, userId]);
 
-  // Stats for UI — active is stored as text 'Y'/'N' in Supabase
+  // Stats for UI - active is stored as text 'Y'/'N' in Supabase
   const isActive = (r) => r.active === 'Y' || r.active === true || r.active === 'y';
   const activeSkuCount   = skuRows.filter(r => isActive(r) && !r._tempId).length;
   const isLogisticsActive = activePeriod?.vertical === 'Logistics';

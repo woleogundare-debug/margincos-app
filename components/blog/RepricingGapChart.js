@@ -57,7 +57,7 @@ export default function RepricingGapChart() {
             borderRadius: '8px',
             boxSizing: 'border-box',
           }}>
-            {/* SKU name — fixed width, never wraps or clips the bar */}
+            {/* SKU name - fixed width, never wraps or clips the bar */}
             <span style={{
               fontSize: '12px',
               fontWeight: 600,
@@ -69,7 +69,7 @@ export default function RepricingGapChart() {
               {sku.name}
             </span>
 
-            {/* Bar container — takes all remaining space, shrinks on mobile */}
+            {/* Bar container - takes all remaining space, shrinks on mobile */}
             <div style={{ flex: 1, minWidth: 0, height: '10px', position: 'relative' }}>
               <div style={{
                 width: `${barPct}%`,
@@ -80,7 +80,7 @@ export default function RepricingGapChart() {
               }} />
             </div>
 
-            {/* Value — fixed width, always stays inside the card */}
+            {/* Value - fixed width, always stays inside the card */}
             <span style={{
               fontSize: '12px',
               fontWeight: 700,

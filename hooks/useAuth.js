@@ -31,7 +31,7 @@ export function useAuth() {
           setTeamId(data.team_id);
         } else {
           // profiles.team_id may be null for admin/dev accounts not created via
-          // create-client.js — fall back to team_members as the authoritative source.
+          // create-client.js - fall back to team_members as the authoritative source.
           const { data: membership } = await sb
             .from('team_members')
             .select('team_id')
@@ -41,7 +41,7 @@ export function useAuth() {
         }
       }
     } catch (_) {
-      // Network error or missing profile row — silently fall back to 'essentials'
+      // Network error or missing profile row - silently fall back to 'essentials'
     } finally {
       setProfileLoaded(true); // tier is now known, one way or another
     }
@@ -51,7 +51,7 @@ export function useAuth() {
     const sb = getSupabaseClient();
     if (!sb) { setLoading(false); return; }
 
-    // Hydrate session immediately on mount — don't rely solely on INITIAL_SESSION
+    // Hydrate session immediately on mount - don't rely solely on INITIAL_SESSION
     // which can fire before the browser client has read the session from cookies.
     sb.auth.getSession().then(({ data: { session } }) => {
       if (session) {
@@ -59,7 +59,7 @@ export function useAuth() {
         setUser(session.user);
         fetchProfile(session.user.id); // fire-and-forget; setProfileLoaded(true) fires inside
       } else {
-        setProfileLoaded(true); // no session — no profile to load, mark as resolved
+        setProfileLoaded(true); // no session - no profile to load, mark as resolved
       }
       setLoading(false); // always fires, regardless of session
     });
@@ -76,7 +76,7 @@ export function useAuth() {
         setTeamId(null);
         setDivisionId(null);
         setIsSuperadmin(false);
-        setProfileLoaded(true); // no session — mark as resolved so nothing spins
+        setProfileLoaded(true); // no session - mark as resolved so nothing spins
       }
       setLoading(false);
     });
@@ -87,7 +87,7 @@ export function useAuth() {
   const signOut = useCallback(async () => {
     const sb = getSupabaseClient();
     if (sb) await sb.auth.signOut();
-    // Force full-page navigation — clears all React state, hooks, and subscriptions.
+    // Force full-page navigation - clears all React state, hooks, and subscriptions.
     // Don't rely on the state chain (onAuthStateChange → user=null → redirect effect)
     // which can race across multiple useAuth instances.
     if (typeof window !== 'undefined') {

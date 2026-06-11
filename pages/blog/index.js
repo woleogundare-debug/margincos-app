@@ -33,10 +33,10 @@ export default function BlogIndex({ posts }) {
   return (
     <>
       <Head>
-        <title>Insights — MarginCOS</title>
+        <title>Insights - MarginCOS</title>
         <meta name="description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for businesses navigating inflationary markets." />
         <link rel="canonical" href="https://margincos.com/blog" />
-        <meta property="og:title" content="Insights — MarginCOS" />
+        <meta property="og:title" content="Insights - MarginCOS" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/blog" />
         <meta property="og:description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for businesses navigating inflationary markets." />
@@ -44,7 +44,7 @@ export default function BlogIndex({ posts }) {
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Insights — MarginCOS" />
+        <meta name="twitter:title" content="Insights - MarginCOS" />
         <meta name="twitter:description" content="Articles on margin recovery, pricing intelligence, and commercial strategy for businesses navigating inflationary markets." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>

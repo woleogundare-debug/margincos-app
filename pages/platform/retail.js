@@ -8,15 +8,15 @@ export default function RetailPage() {
       metaTitle="Retail Margin Recovery Software | MarginCOS"
       metaDescription="Uncover hidden margin leakage across channels, distributors, and trade terms. Product-level margin visibility for retail operators navigating inflationary markets."
       heroHeadline="Margin Intelligence for Retail"
-      heroSubheadline="Multi-channel complexity where margin leaks silently through credit terms, supplier discount erosion, category mix, and promotional overspend. MarginCOS gives your CFO and Buying Director visibility on which categories are destroying value — and exactly how much is recoverable."
-      stat1={{ value: '2–4%', label: 'Average retail net margin globally' }}
+      heroSubheadline="Multi-channel complexity where margin leaks silently through credit terms, supplier discount erosion, category mix, and promotional overspend. MarginCOS gives your CFO and Buying Director visibility on which categories are destroying value - and exactly how much is recoverable."
+      stat1={{ value: '2-4%', label: 'Average retail net margin globally' }}
       stat2={{ value: '60%+', label: 'Of promotions run without a break-even calculation' }}
-      stat3={{ value: '15–25%', label: 'Margin uplift achievable through category repricing' }}
+      stat3={{ value: '15-25%', label: 'Margin uplift achievable through category repricing' }}
       pillars={[
         {
           id: 'P1',
           name: 'Category Pricing Intelligence',
-          problem: 'Retail prices are set by category managers working from last season\'s data. Competitor price gaps, supplier cost changes, and margin floor breaches accumulate across hundreds of SKUs — and nobody has quantified the aggregate recovery opportunity until the annual review.',
+          problem: 'Retail prices are set by category managers working from last season\'s data. Competitor price gaps, supplier cost changes, and margin floor breaches accumulate across hundreds of SKUs - and nobody has quantified the aggregate recovery opportunity until the annual review.',
           delivers: [
             'Category-level pricing intelligence with competitor benchmarks in % and value terms',
             'Margin floor breach alerts across your full product range',
@@ -28,9 +28,9 @@ export default function RetailPage() {
         {
           id: 'P2',
           name: 'Supplier Cost Pass-Through',
-          problem: 'Supplier price increases are frequent and compound. Without systematic cost pass-through analysis at the category level, retail businesses absorb inflation into margin rather than adjusting shelf prices — creating a structural gap that widens every quarter.',
+          problem: 'Supplier price increases are frequent and compound. Without systematic cost pass-through analysis at the category level, retail businesses absorb inflation into margin rather than adjusting shelf prices - creating a structural gap that widens every quarter.',
           delivers: [
-            'Cost pass-through rate vs. Carthena Advisory benchmark — 70–75% among commercially disciplined retailers',
+            'Cost pass-through rate vs. Carthena Advisory benchmark - 70-75% among commercially disciplined retailers',
             'Supplier cost increase decomposition by category',
             'Shelf price adjustment recommendations with consumer price sensitivity modelling',
           ],
@@ -54,7 +54,7 @@ export default function RetailPage() {
           name: 'Promotional Discount ROI',
           problem: 'Promotional discounts, volume deals, and supplier-funded promotions are the largest untracked cost in retail P&Ls. Without per-promotion profitability analysis, discounts are approved on volume targets without calculating whether the margin trade-off is positive.',
           delivers: [
-            'Promotion profitability per category — revenue, discount cost, and net margin impact',
+            'Promotion profitability per category - revenue, discount cost, and net margin impact',
             'Break-even volume uplift for every promotion before it runs',
             'Loss-making promotion identification with margin-positive restructuring recommendations',
           ],
@@ -64,7 +64,7 @@ export default function RetailPage() {
       ]}
       modules={[
         { id: 'M1', name: 'Category Rationalisation',           desc: 'Classify every category and sub-category into a grow / maintain / exit framework based on margin contribution vs. footfall and strategic role.' },
-        { id: 'M2', name: 'Forward Inflation Scenario Engine',   desc: 'Model supplier cost trajectories and stress-test your category pricing strategy. See how margin erodes at different inflation rates — and what shelf price adjustments are required.' },
+        { id: 'M2', name: 'Forward Inflation Scenario Engine',   desc: 'Model supplier cost trajectories and stress-test your category pricing strategy. See how margin erodes at different inflation rates - and what shelf price adjustments are required.' },
         { id: 'M3', name: 'Commercial Spend ROI Analyser',       desc: 'Calculate the return on every unit of supplier co-investment, promotional funding, and markdown budget. Surface which promotions generate margin and which dilute it.' },
         { id: 'M4', name: 'Supplier Performance Scorecard',      desc: 'Rank every supplier relationship by true net margin contribution after rebates, terms, returns, and shrinkage. Identify which supplier relationships to grow, renegotiate, or exit.' },
       ]}

@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Honeypot check — bots fill this field, humans don't
+  // Honeypot check - bots fill this field, humans don't
   const { website, _loadedAt, turnstileToken, name, email, company, role, revenue, message } = req.body;
 
   if (website && website.length > 0) {
@@ -19,16 +19,16 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true });
   }
 
-  // Time-based check — real humans take at least 3 seconds to fill a form
+  // Time-based check - real humans take at least 3 seconds to fill a form
   if (_loadedAt) {
     const elapsed = Date.now() - Number(_loadedAt);
     if (elapsed < 3000) {
-      // Submitted in under 3 seconds — bot. Silent 200 same as honeypot.
+      // Submitted in under 3 seconds - bot. Silent 200 same as honeypot.
       return res.status(200).json({ success: true });
     }
   }
 
-  // Cloudflare Turnstile verification — layer 3 of the defence stack
+  // Cloudflare Turnstile verification - layer 3 of the defence stack
   if (!turnstileToken) {
     return res.status(403).json({ error: 'Human verification required. Please complete the verification and try again.' });
   }
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Required fields missing' });
   }
 
-  // Work email validation — reject free/consumer email providers
+  // Work email validation - reject free/consumer email providers
   const freeEmailDomains = [
     'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
     'mail.com', 'protonmail.com', 'icloud.com', 'me.com', 'live.com',
@@ -91,7 +91,7 @@ export default async function handler(req, res) {
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',
       to: 'info@carthenaadvisory.com',
-      subject: `New Diagnostic Request — ${company}`,
+      subject: `New Diagnostic Request - ${company}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1B2A4A; padding: 24px; border-radius: 8px 8px 0 0;">
@@ -124,7 +124,7 @@ export default async function handler(req, res) {
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',
       to: email,
-      subject: 'Your diagnostic request has been received — MarginCOS',
+      subject: 'Your diagnostic request has been received - MarginCOS',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1B2A4A; padding: 24px; border-radius: 8px 8px 0 0;">

@@ -29,7 +29,7 @@ function useScrollReveal() {
 /* ── Pillar colour mapping (matches platform.js order) ── */
 const PILLAR_COLORS = ['teal', 'red', 'gold', 'purple'];
 
-/* ── PillarSection — exact copy from pages/platform.js ── */
+/* ── PillarSection - exact copy from pages/platform.js ── */
 function PillarSection({ num, title, color, problem, delivers, users, reverse, image }) {
   const badgeColors  = { teal: 'bg-teal', red: 'bg-red-brand', gold: 'bg-gold', purple: 'bg-purple' };
   const borderColors = { teal: 'border-teal/20', red: 'border-red-brand/20', gold: 'border-gold/20', purple: 'border-purple/20' };
@@ -104,7 +104,7 @@ const MODULE_BG = [
   'bg-gold-50/40 border-gold/20',
 ];
 
-/* ── Related sector links — hardcoded per sector for internal linking ── */
+/* ── Related sector links - hardcoded per sector for internal linking ── */
 const RELATED_SECTORS = {
   fmcg:          [{ href: '/platform/manufacturing', label: 'Manufacturing' }, { href: '/platform/retail',        label: 'Retail' },         { href: '/platform/logistics',    label: 'Logistics' }],
   manufacturing: [{ href: '/platform/fmcg',          label: 'FMCG' },         { href: '/platform/retail',        label: 'Retail' },         { href: '/platform/logistics',    label: 'Logistics' }],
@@ -115,7 +115,7 @@ const RELATED_SECTORS = {
   aviation:      [{ href: '/platform/logistics',     label: 'Logistics' },    { href: '/platform/manufacturing', label: 'Manufacturing' },   { href: '/platform/fmcg',         label: 'FMCG' }],
 };
 
-/* ── SectorPage — shared template for all seven sector pages ── */
+/* ── SectorPage - shared template for all seven sector pages ── */
 export default function SectorPage({
   sectorName,
   sectorSlug,
@@ -215,7 +215,7 @@ export default function SectorPage({
               </span>
               <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy">Advanced Intelligence Modules</h2>
               <p data-reveal className="opacity-0 mt-4 text-slate-500 leading-relaxed">
-                Enterprise clients access four advanced analytical modules that go deeper — portfolio-level rationalisation, forward scenario planning, commercial spend analytics, and partner performance scorecards. These run on the same data alongside the four core pillars.
+                Enterprise clients access four advanced analytical modules that go deeper - portfolio-level rationalisation, forward scenario planning, commercial spend analytics, and partner performance scorecards. These run on the same data alongside the four core pillars.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -273,7 +273,7 @@ export default function SectorPage({
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <a
-                  href={`mailto:info@carthenaadvisory.com?subject=MarginCOS Waitlist — ${sectorName}&body=Hi,%0A%0AI'd like to join the waitlist for MarginCOS ${sectorName} support.%0A%0ACompany:%0ARole:%0A`}
+                  href={`mailto:info@carthenaadvisory.com?subject=MarginCOS Waitlist - ${sectorName}&body=Hi,%0A%0AI'd like to join the waitlist for MarginCOS ${sectorName} support.%0A%0ACompany:%0ARole:%0A`}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-brand text-white font-semibold text-sm hover:bg-red-light transition-all">
                   Join the Waitlist
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -5,10 +5,10 @@ export default function RRPFloorChart() {
     { label: 'WTP Ceiling',        value: 2650, color: '#D4A843', pct: 100,  sub: 'Consumer willingness-to-pay upper bound' },
     { label: 'Cost Floor',         value: 2324, color: '#3A5068', pct: 87.7, sub: 'Minimum RRP to preserve 32% gross margin' },
     { label: 'Competitor Anchor',  value: 2114, color: '#0D8F8F', pct: 79.8, sub: 'Reference RRP from nearest competitor SKU' },
-    { label: 'Current RRP',        value: 1850, color: '#C0392B', pct: 69.8, sub: 'Actual shelf price — below cost floor' },
+    { label: 'Current RRP',        value: 1850, color: '#C0392B', pct: 69.8, sub: 'Actual shelf price - below cost floor' },
   ];
 
-  // Floor sits at 87.7% of track width — used for the danger zone overlay
+  // Floor sits at 87.7% of track width - used for the danger zone overlay
   const floorPct = 87.7;
   const rrpPct   = 69.8;
 
@@ -19,10 +19,10 @@ export default function RRPFloorChart() {
         RRP Floor calculation
       </p>
       <p style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: '6px', lineHeight: 1.3 }}>
-        500g Cooking Oil — RRP vs Floor Inputs (₦)
+        500g Cooking Oil - RRP vs Floor Inputs (₦)
       </p>
       <p style={{ color: '#A0B0C0', fontSize: '13px', marginBottom: '28px' }}>
-        Current RRP sits ₦474 below the cost floor — operating at 14.6% actual gross margin against a 32% target.
+        Current RRP sits ₦474 below the cost floor - operating at 14.6% actual gross margin against a 32% target.
       </p>
 
       {/* Bars */}

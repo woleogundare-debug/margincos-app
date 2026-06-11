@@ -6,7 +6,7 @@
   <rect x="360" y="12" width="84" height="20" fill="#7C3AED" rx="10"/>
   <text x="402" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Logistics</text>
   <!-- Load profitability scatter -->
-  <text x="18" y="68" font-size="9" fill="#64748B">Revenue vs Fully-Loaded Cost — Per Trip Breakdown</text>
+  <text x="18" y="68" font-size="9" fill="#64748B">Revenue vs Fully-Loaded Cost - Per Trip Breakdown</text>
   <!-- Axes -->
   <line x1="70" y1="210" x2="420" y2="210" stroke="#CBD5E1" stroke-width="1"/>
   <line x1="70" y1="65" x2="70" y2="210" stroke="#CBD5E1" stroke-width="1"/>
@@ -56,5 +56,5 @@
   <rect x="266" y="258" width="176" height="20" fill="#DCFCE7" rx="4"/>
   <text x="274" y="272" font-size="9" fill="#065F46" font-weight="600">Backhaul: ₦2.1M recoverable</text>
   <rect x="18" y="282" width="230" height="10" fill="#EFF6FF" rx="3"/>
-  <text x="26" y="290" font-size="7" fill="#1D4ED8" font-weight="600">Action: refuse Trip A below ₦310/km — reroute or renegotiate</text>
+  <text x="26" y="290" font-size="7" fill="#1D4ED8" font-weight="600">Action: refuse Trip A below ₦310/km - reroute or renegotiate</text>
 </svg>

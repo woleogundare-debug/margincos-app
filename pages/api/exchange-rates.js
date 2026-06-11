@@ -16,7 +16,7 @@ const FALLBACK_RATES = { NGN: 1650, EUR: 0.92, GBP: 0.79 };
 const SOURCE_URL     = 'https://open.er-api.com/v6/latest/USD';
 const CACHE_TTL_MS   = 60 * 60 * 1000; // 1 hour
 
-// In-process cache — persists across requests in the same serverless
+// In-process cache - persists across requests in the same serverless
 // instance.  Vercel warm instances reuse this, so the upstream API
 // call is rare in practice.
 let _cache    = null;
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('[exchange-rates] fetch failed:', err.message);
 
-    // Return fallback — never a 500 so the pricing page always works
+    // Return fallback - never a 500 so the pricing page always works
     return res.status(200).json({
       rates:     FALLBACK_RATES,
       updatedAt: null,

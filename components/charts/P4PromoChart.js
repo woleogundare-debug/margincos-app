@@ -2,8 +2,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useCurrency } from '../../contexts/CurrencyContext';
 
 const COLORS = {
-  profitable:    '#0D8F8F', // teal  — positive net impact
-  unprofitable:  '#D95F4B', // red   — negative net impact
+  profitable:    '#0D8F8F', // teal  - positive net impact
+  unprofitable:  '#D95F4B', // red   - negative net impact
 };
 
 export default function P4PromoChart({ results, cfg }) {

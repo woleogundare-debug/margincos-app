@@ -6,7 +6,7 @@
   <rect x="382" y="12" width="62" height="20" fill="#DC2626" rx="10"/>
   <text x="413" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Retail</text>
   <!-- Trend chart: margin over 6 months with cost shock overlay -->
-  <text x="18" y="68" font-size="9" fill="#64748B">Gross Margin Trend vs Input Cost Index — Last 6 Months</text>
+  <text x="18" y="68" font-size="9" fill="#64748B">Gross Margin Trend vs Input Cost Index - Last 6 Months</text>
   <!-- Axes -->
   <line x1="60" y1="200" x2="420" y2="200" stroke="#CBD5E1" stroke-width="1"/>
   <line x1="60" y1="70" x2="60" y2="200" stroke="#CBD5E1" stroke-width="1"/>
@@ -52,7 +52,7 @@
   <rect x="18" y="228" width="220" height="20" fill="#FEE2E2" rx="4"/>
   <text x="26" y="242" font-size="9" fill="#991B1B" font-weight="600">Margin squeezed 4.1pp over 6 months</text>
   <rect x="246" y="228" width="196" height="20" fill="#FEF3C7" rx="4"/>
-  <text x="254" y="242" font-size="9" fill="#92400E" font-weight="600">₦22.3M absorbed — no pricing action taken</text>
+  <text x="254" y="242" font-size="9" fill="#92400E" font-weight="600">₦22.3M absorbed - no pricing action taken</text>
   <rect x="18" y="252" width="200" height="20" fill="#EFF6FF" rx="4"/>
   <text x="26" y="266" font-size="9" fill="#1D4ED8" font-weight="600">FX-linked SKUs: 42 requiring cost review</text>
   <rect x="226" y="252" width="216" height="20" fill="#DCFCE7" rx="4"/>

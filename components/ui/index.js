@@ -65,7 +65,7 @@ export function RagBadge({ status }) {
     amber: { dot: 'bg-amber-500',   text: 'Monitor',         cls: 'bg-amber-50  text-amber-700'   },
     red:   { dot: 'bg-red-500',     text: 'Action Required', cls: 'bg-red-50    text-red-700'      },
     grey:  { dot: 'bg-slate-400',   text: 'No Data',         cls: 'bg-slate-100 text-slate-500'   },
-  }[status] || { dot: 'bg-slate-400', text: '—', cls: 'bg-slate-100 text-slate-500' };
+  }[status] || { dot: 'bg-slate-400', text: '-', cls: 'bg-slate-100 text-slate-500' };
 
   return (
     <span className={clsx('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold', cfg.cls)}>

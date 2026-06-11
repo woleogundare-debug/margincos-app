@@ -62,7 +62,7 @@ export function useActions(teamId, periodId, divisionId) {
       const { data, error } = await query;
       if (error) throw error;
 
-      // Stabilise array reference — only update state when data actually changed.
+      // Stabilise array reference - only update state when data actually changed.
       // Prevents useMemo consumers from recomputing on identical payloads.
       setActions(prev => {
         if (!data || data.length === 0) return [];
@@ -70,7 +70,7 @@ export function useActions(teamId, periodId, divisionId) {
           prev.length === data.length &&
           prev[0]?.id === data[0]?.id &&
           prev[prev.length - 1]?.id === data[data.length - 1]?.id
-        ) return prev; // same data — reuse reference, skip re-render cascade
+        ) return prev; // same data - reuse reference, skip re-render cascade
         return data;
       });
     } catch (err) {
@@ -128,7 +128,7 @@ export function useActions(teamId, periodId, divisionId) {
 
     const effectivePeriodId = currentPeriodId || periodId || null;
 
-    // Dedup guard — only check for rows that match the exact period being written.
+    // Dedup guard - only check for rows that match the exact period being written.
     // No longer includes `period_id IS NULL` in the match: legacy orphaned rows
     // (saved before period tracking existed) must not block inserts for a real period.
     // Those orphans are swept by the period-delete API when a period is removed.
@@ -147,13 +147,13 @@ export function useActions(teamId, periodId, divisionId) {
     const { count } = await countQuery;
 
     if (count > 0) {
-      // Actions already persisted for this exact team + period — refresh display only.
+      // Actions already persisted for this exact team + period - refresh display only.
       lastFetchKey.current = null;
       await loadActions();
       return;
     }
 
-    // No existing rows for this exact team + period — safe to insert.
+    // No existing rows for this exact team + period - safe to insert.
     const rows = engineActions.map(a => ({
       team_id: teamId,
       period_id: effectivePeriodId,
@@ -184,7 +184,7 @@ export function useActions(teamId, periodId, divisionId) {
     return loadActions();
   }, [loadActions]);
 
-  // Memoized stats — only recomputes when actions array reference changes
+  // Memoized stats - only recomputes when actions array reference changes
   const stats = useMemo(() => ({
     total:         actions.length,
     open:          actions.filter(a => a.status === 'open').length,

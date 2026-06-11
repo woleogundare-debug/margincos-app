@@ -66,7 +66,7 @@ const FEATURES = [
 ];
 
 const FAQS = [
-  { q: 'Do I need to integrate my ERP?', a: 'No. MarginCOS works from exported commercial data entered directly into the platform. There is no ERP integration required — most teams are live within 48 hours.' },
+  { q: 'Do I need to integrate my ERP?', a: 'No. MarginCOS works from exported commercial data entered directly into the platform. There is no ERP integration required - most teams are live within 48 hours.' },
   { q: 'How long does onboarding take?', a: 'Essentials and Professional clients are live within 48 hours. Enterprise includes a structured 4-week onboarding with a dedicated account manager.' },
   { q: 'What data do I need to get started?', a: 'Pricing, cost, volume, and channel data for your active portfolio. A sector-specific data template is available inside the platform to guide data preparation.' },
   { q: 'Is my data shared with other clients?', a: 'No. Row-level security ensures each client\u2019s data is completely isolated at the database level. No client can see or access another\u2019s data.' },
@@ -166,10 +166,10 @@ export default function PricingPage() {
   return (
     <>
       <Head>
-        <title>Pricing Plans — MarginCOS Margin Recovery Platform</title>
+        <title>Pricing Plans - MarginCOS Margin Recovery Platform</title>
         <meta name="description" content="MarginCOS pricing: three tiers from $250/month. Essentials for single-pillar pricing intelligence, Professional for full margin analysis, Enterprise for multi-user commercial analytics with dedicated onboarding. Multi-currency rates available." />
         <link rel="canonical" href="https://margincos.com/pricing" />
-        <meta property="og:title" content="Pricing — MarginCOS Margin Recovery Platform" />
+        <meta property="og:title" content="Pricing - MarginCOS Margin Recovery Platform" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/pricing" />
         <meta property="og:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses navigating inflationary markets. Multi-currency rates available." />
@@ -178,7 +178,7 @@ export default function PricingPage() {
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
-        <meta name="twitter:title" content="Pricing — MarginCOS Margin Recovery Platform" />
+        <meta name="twitter:title" content="Pricing - MarginCOS Margin Recovery Platform" />
         <meta name="twitter:description" content="Three tiers from $250/month. Essentials, Professional, and Enterprise plans for businesses navigating inflationary markets. Multi-currency rates available." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -211,7 +211,7 @@ export default function PricingPage() {
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1 className="fade-in-up text-3xl md:text-5xl font-black text-white leading-tight">MarginCOS Pricing</h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              Built for FMCG and manufacturing businesses globally — with pricing in USD, NGN, EUR, and GBP. All plans include a 14-day pilot.
+              Built for FMCG and manufacturing businesses globally - with pricing in USD, NGN, EUR, and GBP. All plans include a 14-day pilot.
             </p>
           </div>
         </section>
@@ -219,7 +219,7 @@ export default function PricingPage() {
         <section className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
 
-            {/* 1 — Board-ready report banner */}
+            {/* 1 - Board-ready report banner */}
             <div className="max-w-4xl mx-auto mb-16 rounded-2xl overflow-hidden border border-gray-100"
               style={{ boxShadow: '0 2px 16px rgba(27,42,74,0.08)' }}>
               <div className="p-8 md:p-10" style={{ backgroundColor: '#1B2A4A' }}>
@@ -244,7 +244,7 @@ export default function PricingPage() {
                       Board-ready Margin Intelligence Reports
                     </h3>
                     <p className="text-sm leading-relaxed mb-0" style={{ color: '#A8B8CC' }}>
-                      Every analysis generates a branded, multi-page PDF report — cover page, executive
+                      Every analysis generates a branded, multi-page PDF report - cover page, executive
                       summary with priority actions, and a full pillar-by-pillar breakdown with consultant-grade
                       narrative interpretation. Formatted to go directly to the CFO, MD, or board without
                       further editing.
@@ -255,7 +255,7 @@ export default function PricingPage() {
                   style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                   {[
                     { label: 'Essentials', desc: 'P1 Pricing Intelligence report' },
-                    { label: 'Professional', desc: 'Full P1–P4 pillar report' },
+                    { label: 'Professional', desc: 'Full P1-P4 pillar report' },
                     { label: 'Enterprise', desc: 'Full report + advanced modules' },
                     { label: 'All plans', desc: 'Branded PDF, instant download' },
                   ].map((item, i) => (
@@ -268,16 +268,16 @@ export default function PricingPage() {
               </div>
             </div>
 
-            {/* 2 — "Transparent Pricing" heading block */}
+            {/* 2 - "Transparent Pricing" heading block */}
             <div className="text-center max-w-[560px] mx-auto mb-12">
               <div className="section-tag-gold-pill">Transparent Pricing</div>
               <h2 className="pricing-cards-heading">Simple. Scalable. No surprises.</h2>
               <p className="pricing-cards-sub">Every plan includes the PDF Margin Intelligence Report, Action Tracker, and Excel import. No ERP integration required.</p>
             </div>
 
-            {/* 3 — Monthly/Annual toggle + currency switcher */}
+            {/* 3 - Monthly/Annual toggle + currency switcher */}
             <div className="flex flex-col items-center gap-4 mb-10">
-              {/* Row 1 — Monthly/Annual toggle */}
+              {/* Row 1 - Monthly/Annual toggle */}
               <div className="flex items-center gap-6">
                 <span className={`text-sm font-medium ${!annual ? 'text-navy' : 'text-gray-400'}`}>Monthly</span>
                 <button onClick={() => setAnnual(!annual)}
@@ -290,7 +290,7 @@ export default function PricingPage() {
                   <span className="text-sm font-semibold" style={{ color: '#0D8F8F' }}>(save 15%)</span>
                 )}
               </div>
-              {/* Row 2 — Currency selector */}
+              {/* Row 2 - Currency selector */}
               <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-1 py-1">
                 {currencies.map(c => (
                   <button
@@ -309,12 +309,12 @@ export default function PricingPage() {
               </div>
             </div>
 
-            {/* 4 — Interactive pricing cards */}
+            {/* 4 - Interactive pricing cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto items-start">
               {TIERS.map(tier => <PricingCard key={tier.key} tier={tier} annual={annual} formatPrice={formatPrice} />)}
             </div>
 
-            {/* 5 — Disclaimer with live-rate status */}
+            {/* 5 - Disclaimer with live-rate status */}
             <p className="text-center text-xs text-gray-400 mt-4">
               All prices shown in {currency.label}.{' '}
               {ratesMeta.loading ? (
@@ -331,7 +331,7 @@ export default function PricingPage() {
                   .
                 </span>
               ) : (
-                <span>Rates are indicative estimates — live rates temporarily unavailable.</span>
+                <span>Rates are indicative estimates - live rates temporarily unavailable.</span>
               )}{' '}
               Contracts are invoiced in USD unless otherwise agreed. Implementation is one-off.
 </p>
@@ -360,7 +360,7 @@ export default function PricingPage() {
                         <td key={k} className="py-3 px-4 text-center">
                           {f[k]
                             ? <svg className="w-5 h-5 mx-auto text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-                            : <span className="text-slate-300">—</span>}
+                            : <span className="text-slate-300">-</span>}
                         </td>
                       ))}
                     </tr>

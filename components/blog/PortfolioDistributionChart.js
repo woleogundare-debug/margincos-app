@@ -48,7 +48,7 @@ export default function PortfolioDistributionChart() {
       </div>
 
       <div style={{ display: 'flex', gap: '16px', marginTop: '14px', flexWrap: 'wrap' }}>
-        {[{ color: '#0D8F8F', label: 'Managed (70%+)' }, { color: '#D4A843', label: 'Watch (40–70%)' }, { color: '#C0392B', label: 'At Risk (<40%)' }].map((l, i) => (
+        {[{ color: '#0D8F8F', label: 'Managed (70%+)' }, { color: '#D4A843', label: 'Watch (40-70%)' }, { color: '#C0392B', label: 'At Risk (<40%)' }].map((l, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: l.color }} />
             <span style={{ color: '#8899AA', fontSize: '11px' }}>{l.label}</span>

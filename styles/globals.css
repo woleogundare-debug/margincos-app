@@ -1,4 +1,4 @@
-/* Self-hosted fonts — eliminates Google Fonts CDN latency */
+/* Self-hosted fonts - eliminates Google Fonts CDN latency */
 @font-face {
   font-family: 'Playfair Display';
   font-style: normal;
@@ -173,7 +173,7 @@ html, body  { overflow-x: hidden; }
 
 /* ── Hero entrance animations ───────────────────────────────────────
    @keyframes + animation declarations live here (globals.css) so they
-   fire from the very first CSS parse — before React hydrates or styled-
+   fire from the very first CSS parse - before React hydrates or styled-
    jsx injects. Previously a two-piece fix (opacity:0 here + animations
    in styled-jsx). Now single source of truth, zero hydration gap.
    animation-fill-mode:both handles opacity:0 before play and opacity:1
@@ -193,7 +193,7 @@ html, body  { overflow-x: hidden; }
 
 /* ── Homepage mobile overrides ─────────────────────────────────────
    These must live here (not in styled-jsx) because the homepage uses
-   dangerouslySetInnerHTML — styled-jsx dynamic blocks are JS-injected
+   dangerouslySetInnerHTML - styled-jsx dynamic blocks are JS-injected
    and arrive after hydration, causing blank/misaligned first load.
 ------------------------------------------------------------------- */
 @media (max-width: 900px) {
@@ -274,7 +274,7 @@ html, body  { overflow-x: hidden; }
   }
   .pillars-list { position: static !important; }
 
-  /* ── Pillar panel — grid item min-width fix + content sizing ──
+  /* ── Pillar panel - grid item min-width fix + content sizing ──
      min-width:auto (CSS Grid default) prevents .pillars-display from
      shrinking below its content size even with grid-template-columns:1fr,
      causing the panel to bleed right. min-width:0 unlocks proper shrink.
@@ -311,7 +311,7 @@ html, body  { overflow-x: hidden; }
 }
 
 /* ============================================================
-   MarginCOS — Editorial design-system components
+   MarginCOS - Editorial design-system components
    Ported from handoff/shared/margincos.css (Rev 04·26·a)
    ============================================================ */
 

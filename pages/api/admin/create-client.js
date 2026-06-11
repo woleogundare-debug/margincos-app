@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   // All admin operations use the service role client
   const serviceClient = createSupabaseServiceClient();
 
-  // Verify superadmin status from DB — not from client-supplied values
+  // Verify superadmin status from DB - not from client-supplied values
   const { data: profile } = await serviceClient
     .from('profiles')
     .select('is_superadmin')
@@ -76,7 +76,7 @@ export default async function handler(req, res) {
       .single();
 
     if (divisionError) {
-      console.error('Admin create-client — division creation error (non-fatal):', divisionError.message);
+      console.error('Admin create-client - division creation error (non-fatal):', divisionError.message);
       // Non-fatal: client can still use the platform; migration may not yet be run
     }
 
@@ -102,7 +102,7 @@ export default async function handler(req, res) {
     await resend.emails.send({
       from: 'MarginCOS <info@carthenaadvisory.com>',
       to: adminEmail,
-      subject: 'Welcome to MarginCOS — Your account is ready',
+      subject: 'Welcome to MarginCOS - Your account is ready',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1B2A4A; padding: 24px; border-radius: 8px 8px 0 0;">

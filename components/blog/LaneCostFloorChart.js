@@ -8,14 +8,14 @@ export default function LaneCostFloorChart() {
       value: 940000,
       pct: (940000 / MAX) * 100,
       color: '#3A5068',
-      sub: 'Viable at ₦1,100/litre diesel — rate cleared this comfortably',
+      sub: 'Viable at ₦1,100/litre diesel - rate cleared this comfortably',
     },
     {
       label: 'Contracted Rate',
       value: 1100000,
       pct: (1100000 / MAX) * 100,
       color: '#C0392B',
-      sub: 'Rate locked 18 months ago — now below the 2026 cost floor',
+      sub: 'Rate locked 18 months ago - now below the 2026 cost floor',
     },
     {
       label: 'Cost Floor (2026)',
@@ -33,10 +33,10 @@ export default function LaneCostFloorChart() {
     <div className="stat-card">
       {/* Header */}
       <p style={{ color: '#0D8F8F', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '6px' }}>
-        Lane cost floor — worked example
+        Lane cost floor - worked example
       </p>
       <p style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: '6px', lineHeight: 1.3 }}>
-        Lagos-Kano, 30-tonne truck — Contracted Rate vs Cost Floor (₦ per trip)
+        Lagos-Kano, 30-tonne truck - Contracted Rate vs Cost Floor (₦ per trip)
       </p>
       <p style={{ color: '#A0B0C0', fontSize: '13px', marginBottom: '28px' }}>
         The contracted rate cleared the 2024 floor by ₦160,000. It now sits ₦260,000 below the 2026 floor.

@@ -45,7 +45,7 @@ export default function LoginPage() {
         : authError.message);
       setLoading(false);
     }
-    // On success: keep the loading spinner — navigation will unmount this page.
+    // On success: keep the loading spinner - navigation will unmount this page.
   };
 
   const handleResetRequest = async () => {

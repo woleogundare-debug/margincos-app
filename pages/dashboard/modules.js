@@ -23,7 +23,7 @@ function M1Module({ results, deltas, cfg, isConsolidated }) {
 
   return (
     <>
-      {/* Delta KPIs — period-over-period trend */}
+      {/* Delta KPIs - period-over-period trend */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         <KpiTile
           label="Margin at Stake"
@@ -69,7 +69,7 @@ function M1Module({ results, deltas, cfg, isConsolidated }) {
         headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), 'Category', 'Margin %', 'Rev Share %', 'vs. Avg', cfg.fields.classification, cfg.fields.action]}
         rows={m1.results.sort((a, b) => b.skuMarginPct - a.skuMarginPct).map(r => [
           r.sku,
-          ...(isConsolidated ? [r._division || '—'] : []),
+          ...(isConsolidated ? [r._division || '-'] : []),
           r.category,
           r.skuMarginPct.toFixed(1) + '%',
           r.revShare.toFixed(1) + '%',
@@ -79,7 +79,7 @@ function M1Module({ results, deltas, cfg, isConsolidated }) {
         ])}
       />
       <NarrativeBox>
-        Portfolio average margin: {m1.portfolioAvgMarginPct.toFixed(1)}%. {m1.dilutiveCount} {m1.dilutiveCount !== 1 ? cfg.unitPlural : cfg.unit} below average — diluting portfolio margin by {fNAbs(Math.abs(m1.dilutiveMargin))}/month. Margin at stake from sub-par {cfg.unitPlural}: {fNAbs(m1.marginAtStake)}/month.
+        Portfolio average margin: {m1.portfolioAvgMarginPct.toFixed(1)}%. {m1.dilutiveCount} {m1.dilutiveCount !== 1 ? cfg.unitPlural : cfg.unit} below average - diluting portfolio margin by {fNAbs(Math.abs(m1.dilutiveMargin))}/month. Margin at stake from sub-par {cfg.unitPlural}: {fNAbs(m1.marginAtStake)}/month.
       </NarrativeBox>
     </>
   );
@@ -92,7 +92,7 @@ function M2Module({ results, deltas, cfg }) {
 
   return (
     <>
-      {/* Delta KPI — worst-case scenario trend */}
+      {/* Delta KPI - worst-case scenario trend */}
       <div className="mb-4">
         <KpiTile
           label="Zero Recovery Impact"
@@ -150,7 +150,7 @@ function M3Module({ results, deltas, cfg }) {
         />
         <KpiTile
           label="Blended Portfolio ROI"
-          value={m3.blendedROI != null ? m3.blendedROI.toFixed(2) + '×' : '—'}
+          value={m3.blendedROI != null ? m3.blendedROI.toFixed(2) + '×' : '-'}
           pill="across all trade channels"
           accent="teal"
           delta={deltas?.m3?.blendedROI && deltas.m3.blendedROI.direction !== 'flat' && Math.abs(deltas.m3.blendedROI.value) >= 0.01 ? {
@@ -170,7 +170,7 @@ function M3Module({ results, deltas, cfg }) {
           ) : (
             <div className="summary-card">
               <div className="lbl">Channel Status</div>
-              <div className="v red">—</div>
+              <div className="v red">-</div>
               <div className="sub">All channels dilutive</div>
             </div>
           );
@@ -183,8 +183,8 @@ function M3Module({ results, deltas, cfg }) {
           r.channel,
           fNAbs(r.total),
           fNAbs(r.netRev),
-          { content: r.roi != null ? <span className={r.roi >= 1 ? 'text-emerald-600 font-bold' : 'text-red-600 font-bold'}>{r.roi.toFixed(2)}×</span> : '—' },
-          r.spendIntensity != null ? r.spendIntensity.toFixed(1) + '%' : '—',
+          { content: r.roi != null ? <span className={r.roi >= 1 ? 'text-emerald-600 font-bold' : 'text-red-600 font-bold'}>{r.roi.toFixed(2)}×</span> : '-' },
+          r.spendIntensity != null ? r.spendIntensity.toFixed(1) + '%' : '-',
           { content: <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: r.statusBg, color: r.statusColor }}>{r.status}</span> },
         ])}
       />
@@ -192,10 +192,10 @@ function M3Module({ results, deltas, cfg }) {
         {m3.bestChannel && (m3.bestChannel.roi ?? -Infinity) > 0
           ? `Best performing channel: ${m3.bestChannel.channel} at ${m3.bestChannel.roi?.toFixed(2)}× ROI. `
           : m3.bestChannel
-            ? `All channels are generating a sub-zero return on trade spend — no channel is currently ROI-positive. `
+            ? `All channels are generating a sub-zero return on trade spend - no channel is currently ROI-positive. `
             : null}
         {m3.worstChannel && m3.worstChannel.channel !== m3.bestChannel?.channel
-          && `Lowest ROI: ${m3.worstChannel.channel} — review spend reallocation opportunity. `}
+          && `Lowest ROI: ${m3.worstChannel.channel} - review spend reallocation opportunity. `}
         Total portfolio trade spend: {fNAbs(m3.totalSpend)}/month.
       </NarrativeBox>
     </>
@@ -257,13 +257,13 @@ function M4Module({ results, deltas, cfg }) {
           { content: <span className={r.trueContrib >= 0 ? 'text-emerald-600 font-semibold' : 'text-red-600 font-semibold'}>{fNAbs(r.trueContrib)}</span> },
           r.contPct.toFixed(1) + '%',
           r.revShare.toFixed(1) + '%',
-          r.creditCost > 0 ? fNAbs(r.creditCost) : '—',
+          r.creditCost > 0 ? fNAbs(r.creditCost) : '-',
           { content: <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: r.classBg, color: r.classColor }}>{r.classification}</span> },
         ])}
       />
       <NarrativeBox>
         {m4.renegotiateCount > 0
-          ? `${m4.renegotiateCount} ${m4.renegotiateCount > 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} classified as Renegotiate — high volume but dilutive terms. Priority for commercial renegotiation. `
+          ? `${m4.renegotiateCount} ${m4.renegotiateCount > 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} classified as Renegotiate - high volume but dilutive terms. Priority for commercial renegotiation. `
           : `All ${cfg.fields.partner.toLowerCase()}s generating positive true contribution. `}
         {m4.totalCreditCost > 0 && `Working capital cost of credit extension: ${fNAbs(m4.totalCreditCost)}/month (at 28% WACC rate). `}
         True contribution includes {cfg.fields.partner.toLowerCase()} margin, rebates, logistics costs, and credit cost.
@@ -295,7 +295,7 @@ export default function ModulesPage() {
         <>
         {hasResults && (
           <>
-            {/* Doc head — editorial chrome */}
+            {/* Doc head - editorial chrome */}
             <div className="doc-head mb-8">
               <div>
                 <div className="doc-meta">Enterprise · Module library</div>
@@ -305,7 +305,7 @@ export default function ModulesPage() {
               <div className="doc-actions"></div>
             </div>
 
-            {/* Summary row — 3 cards if data available */}
+            {/* Summary row - 3 cards if data available */}
             {results && (
               <div className="summary-row mb-8">
                 <div className="summary-card">

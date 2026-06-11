@@ -55,7 +55,7 @@ export default async function handler(req, res) {
   }
 
   // Sweep legacy orphans: rows saved before period tracking existed have period_id = NULL.
-  // These are scoped to the team and are truly unattributed — safe to delete on any
+  // These are scoped to the team and are truly unattributed - safe to delete on any
   // period removal. Without this, orphaned null-period rows persist forever, appear in
   // consolidated-mode queries, and block the bulkAddFromAnalysis dedup guard.
   if (period.team_id) {
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       .is('period_id', null);
 
     if (orphanError) {
-      // Non-fatal: log but don't block the response — the primary period is already deleted.
+      // Non-fatal: log but don't block the response - the primary period is already deleted.
       console.error('[deletePeriod] Failed to sweep null-period orphan actions:', orphanError.message);
     }
   }

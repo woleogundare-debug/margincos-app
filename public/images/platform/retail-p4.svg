@@ -6,7 +6,7 @@
   <rect x="382" y="12" width="62" height="20" fill="#7C3AED" rx="10"/>
   <text x="413" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Retail</text>
   <!-- Net impact bubble chart: spend vs return per campaign -->
-  <text x="18" y="68" font-size="9" fill="#64748B">Trade Spend vs Net Return — This Period (bubble = spend size)</text>
+  <text x="18" y="68" font-size="9" fill="#64748B">Trade Spend vs Net Return - This Period (bubble = spend size)</text>
   <!-- Axes -->
   <line x1="100" y1="210" x2="420" y2="210" stroke="#CBD5E1" stroke-width="1"/>
   <line x1="100" y1="65" x2="100" y2="210" stroke="#CBD5E1" stroke-width="1"/>
@@ -42,7 +42,7 @@
   <rect x="206" y="230" width="236" height="20" fill="#FEE2E2" rx="4"/>
   <text x="214" y="244" font-size="9" fill="#991B1B" font-weight="600">Net loss from D+E+F: ₦17M vs ₦4.3M gain</text>
   <rect x="18" y="254" width="300" height="20" fill="#F3E8FF" rx="4"/>
-  <text x="26" y="268" font-size="9" fill="#6D28D9" font-weight="600">Campaign E: requires 62% volume lift — actual recorded: 19%</text>
+  <text x="26" y="268" font-size="9" fill="#6D28D9" font-weight="600">Campaign E: requires 62% volume lift - actual recorded: 19%</text>
   <rect x="18" y="278" width="280" height="14" fill="#DCFCE7" rx="3"/>
-  <text x="26" y="289" font-size="8" fill="#065F46" font-weight="600">Redirect E &amp; F spend to Campaign A — ₦6.2M recoverable</text>
+  <text x="26" y="289" font-size="8" fill="#065F46" font-weight="600">Redirect E &amp; F spend to Campaign A - ₦6.2M recoverable</text>
 </svg>

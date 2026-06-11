@@ -216,14 +216,14 @@ export default function ChannelPage() {
                     : <Badge color="green">✓ Healthy</Badge>
                   },
                 ])}
-                emptyMessage={`No channel data — set primary channel and ${cfg.fields.partner.toLowerCase()} margin on each ${cfg.unit}.`}
+                emptyMessage={`No channel data - set primary channel and ${cfg.fields.partner.toLowerCase()} margin on each ${cfg.unit}.`}
               />
               <NarrativeBox>
                 {p3.channelResults?.length > 0
                   ? `${p3.channelResults.length} active channels. Top channel by revenue: ${CHANNEL_LABELS[p3.channelResults[0]?.channel] || p3.channelResults[0]?.channel}. `
                   : 'No channel data yet. '}
                 {weakChannels.length > 0
-                  ? `${weakChannels.length} channel${weakChannels.length > 1 ? 's' : ''} below 15% contribution margin — recommend ${cfg.fields.partner.toLowerCase()} margin renegotiation or volume rebalancing.`
+                  ? `${weakChannels.length} channel${weakChannels.length > 1 ? 's' : ''} below 15% contribution margin - recommend ${cfg.fields.partner.toLowerCase()} margin renegotiation or volume rebalancing.`
                   : 'All channels above minimum contribution threshold.'}
                 {p3.hasLogisticsCost && ' Logistics costs deducted in contribution calculation.'}
                 {p3.hasRebate && ` ${cfg.fields.partner} rebates deducted from net price.`}
@@ -231,7 +231,7 @@ export default function ChannelPage() {
             </PillarCard>
             </div>
 
-            {/* Partner view — if data present */}
+            {/* Partner view - if data present */}
             {p3.hasDistributorName && (
               <PillarCard
                 title={`${cfg.fields.partner} Breakdown`}
@@ -264,7 +264,7 @@ export default function ChannelPage() {
               <div className="commentary-label">Analyst commentary</div>
               <div className="commentary-text">
                 {p3.channelResults?.length > 0
-                  ? `Portfolio spans ${p3.channelResults.length} active channels. ${weakChannels.length > 0 ? `${weakChannels.length} channel${weakChannels.length > 1 ? 's' : ''} below 15% contribution margin threshold — recommend renegotiation or rebalancing strategy.` : 'All channels performing above contribution margin threshold.'} Top revenue contributor: ${p3.channelResults[0]?.channel ? (CHANNEL_LABELS[p3.channelResults[0].channel] || p3.channelResults[0].channel) : 'N/A'}`
+                  ? `Portfolio spans ${p3.channelResults.length} active channels. ${weakChannels.length > 0 ? `${weakChannels.length} channel${weakChannels.length > 1 ? 's' : ''} below 15% contribution margin threshold - recommend renegotiation or rebalancing strategy.` : 'All channels performing above contribution margin threshold.'} Top revenue contributor: ${p3.channelResults[0]?.channel ? (CHANNEL_LABELS[p3.channelResults[0].channel] || p3.channelResults[0].channel) : 'N/A'}`
                   : 'No channel data available. Add channel classification and margin details to enable analysis.'
                 }
               </div>

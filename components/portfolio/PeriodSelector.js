@@ -40,7 +40,7 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
   const [deleteError,        setDeleteError]        = useState('');
   const dropdownRef = useRef(null);
 
-  // Auto-generated label — canonical format for sorting and display
+  // Auto-generated label - canonical format for sorting and display
   const periodLabel = `${selectedMonth} ${selectedYear}`;
 
   useEffect(() => {
@@ -287,7 +287,7 @@ export function PeriodSelector({ periods, activePeriod, onSelect, onCreate, onDe
             )}
           </div>
 
-          {/* Division — read-only display sourced from parent's activeDivision */}
+          {/* Division - read-only display sourced from parent's activeDivision */}
           {activeDivision && (
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">

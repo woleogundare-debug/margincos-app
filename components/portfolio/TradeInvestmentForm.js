@@ -147,7 +147,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId,
                     </td>
                   ))}
                   <td className="px-4 py-2 text-right font-bold text-teal">
-                    {rowTotal > 0 ? nairaFormat(rowTotal) : <span className="text-gray-300">—</span>}
+                    {rowTotal > 0 ? nairaFormat(rowTotal) : <span className="text-gray-300">-</span>}
                   </td>
                 </tr>
               );
@@ -162,7 +162,7 @@ export function TradeInvestmentForm({ tradeInvestment, onSave, saving, periodId,
               </td>
               {categories.map(cat => (
                 <td key={cat.key} className="px-3 py-3 text-right text-xs font-bold text-navy">
-                  {catTotals[cat.key] > 0 ? nairaFormat(catTotals[cat.key]) : <span className="text-gray-400">—</span>}
+                  {catTotals[cat.key] > 0 ? nairaFormat(catTotals[cat.key]) : <span className="text-gray-400">-</span>}
                 </td>
               ))}
               <td className="px-4 py-3 text-right text-sm font-black" style={{ color: '#D4A843' }}>

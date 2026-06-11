@@ -1,9 +1,9 @@
 /**
- * P1 Pricing Intelligence — WTP Headroom by Product
+ * P1 Pricing Intelligence - WTP Headroom by Product
  * Stacked bar chart: navy = current price captured, gold = recoverable gap.
  * Each bar normalised to its own WTP ceiling (= 100% height).
  *
- * Y-axis labels removed — gap % labels above each bar tell the story.
+ * Y-axis labels removed - gap % labels above each bar tell the story.
  * A dashed ceiling line + "WTP Ceiling" label top-right replaces the axis.
  */
 export default function P1PricingGraphic() {
@@ -43,7 +43,7 @@ export default function P1PricingGraphic() {
           x2={START_X + 4 * STEP + BAR_W + 4} y2={TOP_Y}
           stroke="#CBD5E1" strokeWidth="0.75" strokeDasharray="4 3"
         />
-        {/* "WTP Ceiling" label — right-aligned, clear of bars */}
+        {/* "WTP Ceiling" label - right-aligned, clear of bars */}
         <text
           x={START_X + 4 * STEP + BAR_W + 8} y={TOP_Y + 4}
           fontSize="7.5" fill="#94A3B8"
@@ -66,19 +66,19 @@ export default function P1PricingGraphic() {
 
           return (
             <g key={label}>
-              {/* Gold (gap) portion — top of bar */}
+              {/* Gold (gap) portion - top of bar */}
               <rect
                 x={x} y={TOP_Y}
                 width={BAR_W} height={goldH}
                 rx="3" fill="#D4A843"
               />
-              {/* Navy (captured price) portion — bottom of bar */}
+              {/* Navy (captured price) portion - bottom of bar */}
               <rect
                 x={x} y={TOP_Y + goldH}
                 width={BAR_W} height={navyH}
                 rx="2" fill="#1B2A4A"
               />
-              {/* Gap % label — centred above bar, clear of ceiling line */}
+              {/* Gap % label - centred above bar, clear of ceiling line */}
               <text
                 x={x + BAR_W / 2} y={TOP_Y - 6}
                 fontSize="9" fill="#D4A843" textAnchor="middle" fontWeight="700"

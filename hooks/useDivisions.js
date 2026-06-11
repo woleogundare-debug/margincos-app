@@ -38,7 +38,7 @@ export default function useDivisions(teamId, { userDivisionId = null, isAdmin = 
       // Auto-select on load. Admins fall back to the team default;
       // non-admins are pinned to their profile.division_id assignment.
       setActiveDivision(prev => {
-        // Honour existing admin selection — but re-pin non-admins if
+        // Honour existing admin selection - but re-pin non-admins if
         // a stale selection from a previous session differs from their
         // current userDivisionId assignment.
         if (prev) {
@@ -57,7 +57,7 @@ export default function useDivisions(teamId, { userDivisionId = null, isAdmin = 
         return null;
       });
     } else if (error) {
-      // Divisions table may not exist yet (pre-migration) — graceful degradation
+      // Divisions table may not exist yet (pre-migration) - graceful degradation
       if (process.env.NODE_ENV !== 'production') {
         console.warn('[useDivisions] Could not load divisions (table may not exist yet):', error.message);
       }
@@ -178,7 +178,7 @@ export default function useDivisions(teamId, { userDivisionId = null, isAdmin = 
     return { error };
   }, [divisions, activeDivision, loadDivisions, isAdmin, userDivisionId]);
 
-  // ── Sector grouping — for consolidation eligibility ──────────────────────
+  // ── Sector grouping - for consolidation eligibility ──────────────────────
   const divisionsBySector = useMemo(() => {
     const groups = {};
     divisions.forEach(div => {

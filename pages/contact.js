@@ -87,7 +87,7 @@ export default function ContactPage() {
         <title>Book a Diagnostic | MarginCOS</title>
         <meta name="description" content="A 90-minute diagnostic session applying MarginCOS to your actual commercial data. No cost, no obligation." />
         <link rel="canonical" href="https://margincos.com/contact" />
-        <meta property="og:title" content="Request a Diagnostic — MarginCOS" />
+        <meta property="og:title" content="Request a Diagnostic - MarginCOS" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/contact" />
         <meta property="og:description" content="Book a free 30-minute diagnostic session. We'll show you exactly what MarginCOS finds on a portfolio like yours." />
@@ -96,12 +96,12 @@ export default function ContactPage() {
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
-        <meta name="twitter:title" content="Request a Diagnostic — MarginCOS" />
+        <meta name="twitter:title" content="Request a Diagnostic - MarginCOS" />
         <meta name="twitter:description" content="Book a free 30-minute diagnostic session. We'll show you exactly what MarginCOS finds on a portfolio like yours." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>
 
-      {/* Turnstile script — loads after page is interactive */}
+      {/* Turnstile script - loads after page is interactive */}
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         strategy="afterInteractive"
@@ -127,7 +127,7 @@ export default function ContactPage() {
         <section className="bg-white py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
-              {/* Form — 3 cols */}
+              {/* Form - 3 cols */}
               <div className="lg:col-span-3">
                 {submitted ? (
                   <div className="bg-teal-50 border border-teal-200 rounded-xl p-8 text-center">
@@ -140,7 +140,7 @@ export default function ContactPage() {
                     onSubmit={handleSubmit}
                     className="space-y-5"
                   >
-                    {/* Honeypot — hidden from real users, bots will fill it */}
+                    {/* Honeypot - hidden from real users, bots will fill it */}
                     <input
                       type="text"
                       name="website"
@@ -240,7 +240,7 @@ export default function ContactPage() {
                 )}
               </div>
 
-              {/* What to expect — 2 cols */}
+              {/* What to expect - 2 cols */}
               <div className="lg:col-span-2">
                 <div data-reveal className="opacity-0 bg-slate-50 rounded-2xl border border-slate-100 p-8">
                   <h3 className="text-lg font-bold text-navy mb-6">What to expect</h3>

@@ -47,7 +47,7 @@ export default function OverviewPage() {
   const { stats: actionStats, bulkAddFromAnalysis, loadActions } = useActions(team?.id, activePeriod?.id, activeDivision?.id);
 
   // Auto-save actions to DB when analysis completes.
-  // [ranAt] is the sole dependency — this effect fires exactly once per analysis
+  // [ranAt] is the sole dependency - this effect fires exactly once per analysis
   // run and never again until a new run produces a different ranAt value.
   // Refs capture the latest values of bulkAddFromAnalysis / loadActions /
   // activePeriod without adding them to the dep array (avoids cascade re-fires).
@@ -69,7 +69,7 @@ export default function OverviewPage() {
 
     const save = async () => {
       try {
-        if (!activePeriodRef.current?.id) return; // never write period_id=null — would poison dedup guard
+        if (!activePeriodRef.current?.id) return; // never write period_id=null - would poison dedup guard
         if (resultsRef.current?.actions?.length) {
           await bulkAddRef.current(
             resultsRef.current.actions,
@@ -140,11 +140,11 @@ export default function OverviewPage() {
         {!noData && (
           <div className="doc-head">
             <div>
-              <div className="doc-meta">Commercial Intelligence — Briefing {activePeriod?.label ? activePeriod.label.replace(/\s/g, '·') : ''}</div>
+              <div className="doc-meta">Commercial Intelligence - Briefing {activePeriod?.label ? activePeriod.label.replace(/\s/g, '·') : ''}</div>
               <h1 className="doc-title">Overview</h1>
               <div className="doc-period">
                 {hasResults
-                  ? `Analysis complete · ${activePeriod?.label} · ${results?.skuCount} active ${cfg.unitPlural} · last run ${ranAt?.toLocaleTimeString() || '—'}`
+                  ? `Analysis complete · ${activePeriod?.label} · ${results?.skuCount} active ${cfg.unitPlural} · last run ${ranAt?.toLocaleTimeString() || '-'}`
                   : `Ready to analyse · ${skuRows.filter(r => r.active === 'Y' || r.active === true).length} ${cfg.unitPlural} in portfolio`}
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function OverviewPage() {
                 <DownloadReportButton
                   results={results}
                   companyName={reportCompanyName}
-                  periodLabel={isConsolidated ? `Consolidated — ${consolidatedMonth}` : activePeriod?.label}
+                  periodLabel={isConsolidated ? `Consolidated - ${consolidatedMonth}` : activePeriod?.label}
                   tier={tier}
                   isEnterprise={isEnterprise}
                   chronologicalDelta={chronologicalDelta}
@@ -237,14 +237,14 @@ export default function OverviewPage() {
                 <div className="insight-label">Headline</div>
                 <div className="insight-body">
                   <div className="insight-text">
-                    Portfolio margin at <strong>{results.totalRevenue > 0 ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) : '—'}%</strong>.{' '}
+                    Portfolio margin at <strong>{results.totalRevenue > 0 ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) : '-'}%</strong>.{' '}
                     <em>{fNAbs(results.revenueAtRisk)} of revenue is priced below its cost floor</em>.{' '}
                     {results.actions?.length > 0 && (
                       <>{results.actions.length} prioritised actions identified across {new Set(results.actions.map(a => a.pillar)).size} pillars.</>
                     )}
                   </div>
                   <div className="insight-delta">
-                    <span><strong>Margin</strong> {results.totalRevenue > 0 ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) + '%' : '—'}
+                    <span><strong>Margin</strong> {results.totalRevenue > 0 ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) + '%' : '-'}
                       {deltas?.portfolio?.totalCurrentMargin && deltas.portfolio.totalCurrentMargin.direction !== 'flat' && (
                         <span className={deltas.portfolio.totalCurrentMargin.direction === 'up' ? 'up' : 'down'}> {deltas.portfolio.totalCurrentMargin.direction === 'up' ? '▲' : '▼'} {fNAbs(Math.abs(deltas.portfolio.totalCurrentMargin.value))}</span>
                       )}
@@ -291,7 +291,7 @@ export default function OverviewPage() {
                 label="Portfolio Margin"
                 value={results.totalRevenue > 0
                   ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) + '%'
-                  : '—'}
+                  : '-'}
                 pill={fNAbs(results.totalCurrentMargin) + ' gross margin'}
                 accent="teal"
                 description={`Weighted average gross margin across all active ${cfg.unitPlural}`}
@@ -343,17 +343,17 @@ export default function OverviewPage() {
                 { code: 'P1', name: cfg.p1.name,
                   rag: results.p1?.floorBreaches?.length > 0 ? 'red' : results.p1?.totalGain > 0 ? 'amber' : 'green',
                   status: results.p1?.floorBreaches?.length > 0 ? 'At Risk' : results.p1?.totalGain > 0 ? 'Watch' : 'Managed',
-                  value: results.p1?.totalGain > 0 ? '+' + fNAbs(results.p1.totalGain) : '—',
+                  value: results.p1?.totalGain > 0 ? '+' + fNAbs(results.p1.totalGain) : '-',
                   sub: 'repricing upside' },
                 { code: 'P2', name: cfg.p2.name,
                   rag: results.p2?.avgAbsorbedPct > 60 ? 'red' : results.p2?.avgAbsorbedPct > 30 ? 'amber' : 'green',
                   status: results.p2?.avgAbsorbedPct > 60 ? 'At Risk' : results.p2?.avgAbsorbedPct > 30 ? 'Watch' : 'Managed',
-                  value: results.p2?.totalAbsorbed ? '−' + fNAbs(results.p2.totalAbsorbed) : '—',
+                  value: results.p2?.totalAbsorbed ? '−' + fNAbs(results.p2.totalAbsorbed) : '-',
                   sub: 'cost absorbed' },
                 { code: 'P3', name: cfg.p3.name,
                   rag: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'amber' : 'green',
                   status: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'Watch' : 'Managed',
-                  value: results.p3?.channelResults?.[0] ? results.p3.channelResults[0].channel + ' leads' : '—',
+                  value: results.p3?.channelResults?.[0] ? results.p3.channelResults[0].channel + ' leads' : '-',
                   sub: 'by revenue' },
                 { code: 'P4', name: cfg.p4.name,
                   rag: results.p4?.results?.some(r => !r.profitable) ? 'red' : results.p4?.results?.length > 0 ? 'green' : 'grey',
@@ -378,7 +378,7 @@ export default function OverviewPage() {
               ))}
             </div>
 
-            {/* Consolidated Division Breakdown — shown only in consolidated view */}
+            {/* Consolidated Division Breakdown - shown only in consolidated view */}
             {isConsolidated && consolidatedDivisionBreakdown.length > 0 && (
               <>
                 <div className="exhibit-head">
@@ -427,7 +427,7 @@ export default function OverviewPage() {
               </>
             )}
 
-            {/* ── Exhibit 3: Priority Actions — filtered by tier entitlement ── */}
+            {/* ── Exhibit 3: Priority Actions - filtered by tier entitlement ── */}
             {(() => {
               const allowedPillars = TIER_ACCESS[tier]?.allowedPillars || ['P1'];
               const gatedActions = (results.actions || []).filter(a => allowedPillars.includes(a.pillar));
@@ -526,7 +526,7 @@ export default function OverviewPage() {
                                 </div>
                                 <div className="per">/month</div>
                               </>
-                            ) : <div className="v">—</div>}
+                            ) : <div className="v">-</div>}
                           </div>
                           <div></div>
                         </div>
@@ -534,7 +534,7 @@ export default function OverviewPage() {
                     })}
                     <div className="source-line">
                       <span><strong>Methodology:</strong> Net margin impact, holding volume constant; 30-day window</span>
-                      <span><strong>Source:</strong> P1–P4 analysis engine</span>
+                      <span><strong>Source:</strong> P1-P4 analysis engine</span>
                     </div>
                   </div>
                 </>
@@ -580,7 +580,7 @@ export default function OverviewPage() {
                   rag: results.p3?.channelResults?.some(c => c.contPct < 15 && c.rev > 0) ? 'amber' : 'green',
                   stat: results.p3?.channelResults?.length
                     ? results.p3.channelResults[0]?.channel + ' top channel'
-                    : '—',
+                    : '-',
                   sub: 'by revenue' },
                 { label: cfg.p4.name, code: 'P4', href: '/dashboard/trade',
                   rag: results.p4?.results?.some(r => !r.profitable) ? 'red' : results.p4?.results?.length > 0 ? 'green' : 'grey',

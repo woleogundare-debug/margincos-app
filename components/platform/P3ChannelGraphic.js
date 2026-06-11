@@ -1,5 +1,5 @@
 /**
- * P3 Channel Economics — Channel Margin Waterfall
+ * P3 Channel Economics - Channel Margin Waterfall
  * Vertical waterfall: Gross Margin 42% stepping down through
  * deductions to Net Margin 18%.
  *
@@ -59,7 +59,7 @@ export default function P3ChannelGraphic() {
         Channel Margin Waterfall
       </p>
       <p className="text-[10px] mb-3" style={{ color: '#94A3B8' }}>
-        Gross to net — every deduction itemised by channel
+        Gross to net - every deduction itemised by channel
       </p>
 
       <svg viewBox="0 0 284 215" className="w-full" aria-hidden="true">

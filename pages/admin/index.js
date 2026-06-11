@@ -339,7 +339,7 @@ export default function AdminPanel() {
                         className="text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200 text-gray-600 bg-gray-50"
                         title="Sector"
                       >
-                        {team.sector || '—'}
+                        {team.sector || '-'}
                       </span>
                       <span
                         className="text-xs px-2.5 py-1 rounded-full font-medium capitalize"

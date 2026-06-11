@@ -11,7 +11,7 @@ const sections = [
   },
   {
     title: '2. Service Description',
-    body: 'MarginCOS is a margin intelligence platform built for businesses navigating inflationary markets, currently serving FMCG, manufacturing, and retail companies. The Platform analyses commercial data across four pillars — Pricing Intelligence, Cost Pass-Through, Channel Economics, and Trade Execution — to identify margin recovery opportunities. Enterprise clients may also access advanced modules including Portfolio Rationalisation, Forward Scenario Engine, Commercial Spend ROI Analyser, and Partner Performance Scorecard.',
+    body: 'MarginCOS is a margin intelligence platform built for businesses navigating inflationary markets, currently serving FMCG, manufacturing, and retail companies. The Platform analyses commercial data across four pillars - Pricing Intelligence, Cost Pass-Through, Channel Economics, and Trade Execution - to identify margin recovery opportunities. Enterprise clients may also access advanced modules including Portfolio Rationalisation, Forward Scenario Engine, Commercial Spend ROI Analyser, and Partner Performance Scorecard.',
   },
   {
     title: '3. Account Registration and Access',
@@ -140,15 +140,15 @@ export default function TermsPage() {
     <>
       <Head>
         <title>Terms of Service | MarginCOS</title>
-        <meta name="description" content="Terms of Service for MarginCOS — subscription, data ownership, liability, and governing law." />
+        <meta name="description" content="Terms of Service for MarginCOS - subscription, data ownership, liability, and governing law." />
         <link rel="canonical" href="https://margincos.com/terms" />
         <meta property="og:title" content="Terms of Service | MarginCOS" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/terms" />
-        <meta property="og:description" content="Terms of Service for MarginCOS — subscription, data ownership, liability, and governing law." />
+        <meta property="og:description" content="Terms of Service for MarginCOS - subscription, data ownership, liability, and governing law." />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Terms of Service | MarginCOS" />
-        <meta name="twitter:description" content="Terms of Service for MarginCOS — subscription, data ownership, liability, and governing law." />
+        <meta name="twitter:description" content="Terms of Service for MarginCOS - subscription, data ownership, liability, and governing law." />
       </Head>
       <div className="min-h-screen">
         <PublicNav />

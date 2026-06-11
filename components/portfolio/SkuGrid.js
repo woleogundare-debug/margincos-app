@@ -50,7 +50,7 @@ const COLUMNS = [
 const LOGISTICS_COLUMNS = [
   // Identity
   { key: 'lane_id',       label: 'Lane ID',       group: 'identity', required: true,  type: 'text',   width: 'w-28', tip: 'Unique lane identifier.' },
-  { key: 'lane_name',     label: 'Lane',          group: 'identity', required: true,  type: 'text',   width: 'w-36', tip: 'Lane description, e.g. Lagos–Kano.' },
+  { key: 'lane_name',     label: 'Lane',          group: 'identity', required: true,  type: 'text',   width: 'w-36', tip: 'Lane description, e.g. Lagos-Kano.' },
   { key: 'route_region',  label: 'Route Region',  group: 'identity', required: true,  type: 'select', width: 'w-32', tip: 'Corridor classification.' },
   { key: 'cargo_type',    label: 'Cargo Type',    group: 'identity', required: true,  type: 'select', width: 'w-28', tip: 'Type of cargo carried.' },
   { key: 'fleet_division',label: 'Fleet Division',group: 'identity', required: false, type: 'text',   width: 'w-28', tip: 'Internal fleet division.' },
@@ -99,7 +99,7 @@ function getColumns(vertical) {
   return vertical === 'Logistics' ? LOGISTICS_COLUMNS : COLUMNS;
 }
 
-// Tab definitions — requiredTier: 'professional' means Professional or Enterprise
+// Tab definitions - requiredTier: 'professional' means Professional or Enterprise
 const TABS = [
   { key: 'identity',     label: 'Identity',             groups: ['identity', 'ext-identity'] },
   { key: 'pricing',      label: 'Pricing · P1',         groups: ['identity', 'pricing'] },
@@ -108,7 +108,7 @@ const TABS = [
   { key: 'trade',        label: 'Trade · P4',           groups: ['identity', 'trade'],   requiredTier: 'professional' },
 ];
 
-// Mobile card fields per tab — keys match COLUMNS
+// Mobile card fields per tab - keys match COLUMNS
 const CARD_FIELDS = {
   identity: [
     { key: 'sku_name',      label: 'Product Name' },
@@ -214,7 +214,7 @@ function formatCardValue(val, fmt) {
 
 // ── CSV Import helpers ──
 // CSV_FIELDS and NUMERIC_KEYS are derived dynamically inside the component
-// based on the active vertical — see getColumns(vertical) above.
+// based on the active vertical - see getColumns(vertical) above.
 
 function parseCSV(text) {
   const rows = [];
@@ -260,7 +260,7 @@ function validateCSVRows(rawRows, primaryKey, csvFields, numericKeys) {
 
   for (let r = 1; r < rawRows.length; r++) {
     const cells = rawRows[r];
-    // Silently skip blank template rows — a row with no primary key is empty filler, not user data
+    // Silently skip blank template rows - a row with no primary key is empty filler, not user data
     const pkIdx = keyMap[primaryKey];
     if (pkIdx === undefined || !(cells[pkIdx] || '').toString().trim()) continue;
     const rowErrors = [];
@@ -299,7 +299,7 @@ function downloadTemplate(cfg) {
 function ImportPreviewModal({ result, onConfirm, onCancel, importing, unitPlural, previewCols }) {
   if (!result) return null;
   const { valid, errors } = result;
-  // previewCols: [{key, label, align}] — determines which columns to show in the preview table
+  // previewCols: [{key, label, align}] - determines which columns to show in the preview table
   const cols = previewCols || [
     { key: 'sku_id',      label: 'SKU ID',       align: 'left'  },
     { key: 'sku_name',    label: 'Product Name', align: 'left'  },
@@ -429,7 +429,7 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
     let options = [];
     if (col.key === 'category' || col.key === 'route_region') {
       const baseOptions = categories.map(c => ({ value: c, label: c }));
-      // Prepend custom value if it doesn't exist in the taxonomy — preserves free-text imports
+      // Prepend custom value if it doesn't exist in the taxonomy - preserves free-text imports
       options = (local && !categories.includes(local))
         ? [{ value: local, label: local }, ...baseOptions]
         : baseOptions;
@@ -585,7 +585,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
   const isLogistics = vertical === 'Logistics';
   const primaryKey = isLogistics ? 'lane_id' : 'sku_id';
 
-  // Dynamic columns, CSV fields, and numeric keys — vary by vertical
+  // Dynamic columns, CSV fields, and numeric keys - vary by vertical
   const cols       = useMemo(() => getColumns(vertical), [vertical]);
   const csvFields  = useMemo(() => cols.filter(c => c.key !== 'active').map(c => c.key), [cols]);
   const numericKeys = useMemo(() => new Set(cols.filter(c => c.type === 'number' || c.type === 'pct').map(c => c.key)), [cols]);
@@ -771,13 +771,13 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
-      // Find data sheet — accept 'SKU Data', 'Lane Data', or fall back to last sheet
+      // Find data sheet - accept 'SKU Data', 'Lane Data', or fall back to last sheet
       const targetSheet =
         workbook.Sheets['SKU Data'] ||
         workbook.Sheets['Lane Data'] ||
         workbook.Sheets[workbook.SheetNames[workbook.SheetNames.length - 1]];
 
-      // Produce 2D array — row 0 = field keys, row 1 = display labels (skip), row 2+ = data
+      // Produce 2D array - row 0 = field keys, row 1 = display labels (skip), row 2+ = data
       const allRows = XLSX.utils.sheet_to_json(targetSheet, {
         header: 1,
         defval: '',
@@ -789,7 +789,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
         return;
       }
 
-      // Scan for header row — find row where any cell equals 'sku_id' or 'lane_id'
+      // Scan for header row - find row where any cell equals 'sku_id' or 'lane_id'
       const headerAnchors = ['sku_id', 'lane_id'];
       let headerRowIndex = 0;
       for (let i = 0; i < Math.min(allRows.length, 10); i++) {
@@ -801,12 +801,12 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       }
 
       const headers = allRows[headerRowIndex];
-      // Display labels are the row immediately after the header row — skip it
+      // Display labels are the row immediately after the header row - skip it
       const dataRows = allRows.slice(headerRowIndex + 2).filter(
         row => row.some(cell => cell !== '' && cell !== null && cell !== undefined)
       );
 
-      // Build objects directly — skip CSV roundtrip to avoid comma/encoding issues
+      // Build objects directly - skip CSV roundtrip to avoid comma/encoding issues
       const rowObjects = dataRows.map(row => {
         const obj = {};
         headers.forEach((key, idx) => {
@@ -948,7 +948,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                       );
                     })}
                   </div>
-                  {/* Card footer — hidden in read-only (consolidated) mode */}
+                  {/* Card footer - hidden in read-only (consolidated) mode */}
                   {onRowClick && !readOnly && (
                     <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-50">
                       {isRowFailed ? (
@@ -976,7 +976,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                 </div>
               );
             })}
-            {/* Mobile add button — hidden in read-only (consolidated) mode */}
+            {/* Mobile add button - hidden in read-only (consolidated) mode */}
             {!readOnly && (
               <button onClick={onAdd}
                 className="w-full py-3 text-xs font-semibold rounded-xl border border-dashed border-slate-200 text-navy/40 hover:text-navy hover:border-navy/30 transition-colors flex items-center justify-center gap-1.5">
@@ -991,7 +991,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
-            {/* Group label row — only for non-identity tabs */}
+            {/* Group label row - only for non-identity tabs */}
             {activeTab !== 'identity' && (() => {
               // Build group spans for colSpan labels
               const groups = [];
@@ -1084,10 +1084,10 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
                           isDuplicate && 'bg-red-50'
                         )}
                         style={col.minWidth ? { minWidth: col.minWidth } : undefined}
-                        title={isDuplicate ? `Duplicate ${primaryKey} "${val}" — each row must have a unique ID` : undefined}>
+                        title={isDuplicate ? `Duplicate ${primaryKey} "${val}" - each row must have a unique ID` : undefined}>
                         <div className={clsx(!readOnly && isDuplicate && 'ring-1 ring-red-400 rounded')}>
                           {readOnly
-                            ? <span className="text-xs text-slate-600 px-1">{val ?? '—'}</span>
+                            ? <span className="text-xs text-slate-600 px-1">{val ?? '-'}</span>
                             : <CellInput
                                 col={col} value={val} vertical={vertical}
                                 onChange={v => handleCellChange(rowKey, col.key, v)}
@@ -1124,7 +1124,7 @@ export function SkuGrid({ skuRows, onSave, onAdd, onDelete, onRowClick, onBulkIm
           </tbody>
         </table>
 
-        {/* Add SKU row button — hidden in read-only (consolidated) mode */}
+        {/* Add SKU row button - hidden in read-only (consolidated) mode */}
         {skuRows.length > 0 && !readOnly && (
           <button onClick={onAdd}
             className="w-full py-3 text-xs font-semibold text-navy/40 hover:text-navy hover:bg-slate-50 transition-colors border-t border-slate-100 flex items-center justify-center gap-1.5">

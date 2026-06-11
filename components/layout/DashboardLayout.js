@@ -57,7 +57,7 @@ const COMPARISON_PAGES = [
   '/dashboard/modules',
 ];
 
-// Renders the "Compare with…" period selector — uses context directly.
+// Renders the "Compare with…" period selector - uses context directly.
 // Only mounted on analysis pages where comparison is meaningful.
 function ComparisonBar() {
   const {
@@ -92,7 +92,7 @@ function ComparisonBar() {
         <option value="" style={{ color: '#1B2A4A' }}>No comparison</option>
         {otherPeriods
           .sort((a, b) => {
-            // Sort by reporting month (label), not created_at — import order can differ from month order
+            // Sort by reporting month (label), not created_at - import order can differ from month order
             const ta = new Date(a.label || 0).getTime() || 0;
             const tb = new Date(b.label || 0).getTime() || 0;
             return tb - ta; // most recent reporting month first
@@ -137,7 +137,7 @@ export function DashboardLayout({ children }) {
   const { isConsolidated } = useAnalysisContext();
   const showComparison = COMPARISON_PAGES.includes(router.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Show all items while profile is loading — prevents nav items disappearing
+  // Show all items while profile is loading - prevents nav items disappearing
   // then reappearing once the profile resolves (~200ms flash).
   const access = (loading || !profileLoaded)
     ? TIER_ACCESS.enterprise
@@ -165,7 +165,7 @@ export function DashboardLayout({ children }) {
     setPassLoading(false);
     if (error) { setPassError(error.message); return; }
     setPassSuccess(true);
-    // Session will refresh via onAuthStateChange — modal disappears automatically
+    // Session will refresh via onAuthStateChange - modal disappears automatically
     // once mustChangePassword becomes false. Clear fields ready for that.
     setNewPass('');
     setConfirmPass('');
@@ -177,7 +177,7 @@ export function DashboardLayout({ children }) {
     }
   }, [loading, user, router]);
 
-  // Close sidebar on route change — DashboardLayout is now persistent (getLayout
+  // Close sidebar on route change - DashboardLayout is now persistent (getLayout
   // pattern in _app.js), so the sidebar DOM is never destroyed between navigations.
   useEffect(() => {
     const handleRouteChange = () => setSidebarOpen(false);
@@ -231,7 +231,7 @@ export function DashboardLayout({ children }) {
               <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              <p className="text-sm text-emerald-700 font-medium">Password updated — loading your dashboard…</p>
+              <p className="text-sm text-emerald-700 font-medium">Password updated - loading your dashboard…</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -370,7 +370,7 @@ export function DashboardLayout({ children }) {
         <div className="w-8" />
       </div>
 
-      {/* Backdrop — mobile only */}
+      {/* Backdrop - mobile only */}
       {sidebarOpen && (
         <div
           className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity"
@@ -386,11 +386,11 @@ export function DashboardLayout({ children }) {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       )} style={{ backgroundColor: '#1B2A4A', minHeight: '100vh' }}>
 
-        {/* Inner flex wrapper — overflow-hidden clips at aside height so the
+        {/* Inner flex wrapper - overflow-hidden clips at aside height so the
             nav child can establish a real scroll container via overflow-y-auto.
             Without it the flex column grows unconstrained and scrollTop stays 0. */}
         <div className="flex flex-col h-full overflow-hidden">
-          {/* Close button — mobile only */}
+          {/* Close button - mobile only */}
           <div className="md:hidden flex justify-end p-4 flex-shrink-0">
             <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-white">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -413,7 +413,7 @@ export function DashboardLayout({ children }) {
             </Link>
           </div>
 
-          {/* Nav — scrollable area */}
+          {/* Nav - scrollable area */}
           <nav ref={navRef} className="flex-1 px-3 py-4 overflow-y-auto min-h-0">
             {NAV_SECTIONS.map((section, si) => {
               // Hide items the user's tier can't access; skip the section entirely if empty
@@ -461,10 +461,10 @@ export function DashboardLayout({ children }) {
             })}
           </nav>
 
-          {/* Comparison period selector — analysis pages only */}
+          {/* Comparison period selector - analysis pages only */}
           {showComparison && !isConsolidated && <ComparisonBar />}
 
-          {/* User footer — always visible, pinned bottom */}
+          {/* User footer - always visible, pinned bottom */}
           <div className="px-3 py-4 border-t border-white/10 flex-shrink-0">
             <div className="flex items-center gap-3 px-4 py-2">
               <div className="w-9 h-9 rounded-full bg-teal flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -477,7 +477,7 @@ export function DashboardLayout({ children }) {
                     {tier}
                   </span>
                 ) : (
-                  /* Shimmer placeholder — prevents the default 'essentials' tier from
+                  /* Shimmer placeholder - prevents the default 'essentials' tier from
                      flashing before useAuth.fetchProfile resolves the real tier. */
                   <span
                     className="inline-block h-[14px] w-12 rounded bg-white/10 animate-pulse"

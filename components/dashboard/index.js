@@ -23,7 +23,7 @@ export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal', 
       <p className="text-[11px] font-bold text-[#8896A7] uppercase tracking-[0.1em] mb-1">{label}</p>
       <p className="text-2xl font-black leading-none mb-2"
         style={{ color: '#1B2A4A', fontFamily: "'Playfair Display', Georgia, serif" }}>
-        {value ?? '—'}
+        {value ?? '-'}
       </p>
       {delta && (
         <div className="flex items-center gap-1.5 mb-1.5">
@@ -47,7 +47,7 @@ export function KpiTile({ label, value, pill, pillColor, icon, accent = 'teal', 
             padding: '2px 7px',
             borderRadius: '6px',
           }}>
-            {delta.direction === 'up' ? '▲' : delta.direction === 'down' ? '▼' : '—'}
+            {delta.direction === 'up' ? '▲' : delta.direction === 'down' ? '▼' : '-'}
             {' '}{delta.label}
           </span>
         </div>
@@ -158,7 +158,7 @@ export function ActionItem({ action, index }) {
       <div className="text-right flex-shrink-0">
         <p className="text-base font-black whitespace-nowrap"
           style={{ fontFamily: "'Playfair Display', Georgia, serif", color: isPositive ? '#27AE60' : '#C0392B' }}>
-          {isPositive ? '+' : ''}{Math.abs(action.value) > 0 ? formatValue(Math.abs(action.value)) : '—'}
+          {isPositive ? '+' : ''}{Math.abs(action.value) > 0 ? formatValue(Math.abs(action.value)) : '-'}
         </p>
         {action.value !== 0 && <p className="text-xs text-slate-400">/month</p>}
       </div>
@@ -197,7 +197,7 @@ export function EmptyState({ icon, title, description, action }) {
   );
 }
 
-// ── Pillar gate — shown when a user's tier doesn't include this pillar ──────
+// ── Pillar gate - shown when a user's tier doesn't include this pillar ──────
 export function PillarGate({ requiredTier = 'Professional', pillarName = 'this pillar' }) {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">

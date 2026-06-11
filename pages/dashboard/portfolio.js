@@ -42,7 +42,7 @@ export default function PortfolioPage() {
     consolidatedDivisionBreakdown, consolidatedMissing, consolidatedLoading,
     consolidatedRows,
     runConsolidation, clearConsolidation,
-    // Identity resolution flags — gate first-paint states to prevent flicker
+    // Identity resolution flags - gate first-paint states to prevent flicker
     profileLoaded, teamLoading, divisionsLoading,
   } = useAnalysisContext();
 
@@ -135,7 +135,7 @@ export default function PortfolioPage() {
   const handleBulkImport = useCallback(async (rows) => {
     const limit = TIER_LIMITS[tier]?.maxSkus ?? null;
 
-    // Hard block — reject the entire import if it would exceed the tier cap
+    // Hard block - reject the entire import if it would exceed the tier cap
     if (limit !== null && activeSkuCount + rows.length > limit) {
       setSkuLimitError(`Your ${tierLabel} plan supports up to ${limit} active ${cfg.unitPlural}. Upgrade your plan to continue.`);
       return;
@@ -168,7 +168,7 @@ export default function PortfolioPage() {
         <title>Portfolio Manager | MarginCOS</title>
       </Head>
       <>
-        {/* ── Division switcher — admin-only, multi-division clients ── */}
+        {/* ── Division switcher - admin-only, multi-division clients ── */}
         {canSwitchDivision && (
           <div className="mb-4 flex items-center gap-2 flex-wrap">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Division</span>
@@ -199,7 +199,7 @@ export default function PortfolioPage() {
           </div>
         )}
 
-        {/* ── Lockout state — non-admin with NULL division_id ──
+        {/* ── Lockout state - non-admin with NULL division_id ──
             Gated on identityResolved to prevent a first-paint flash: useAuth /
             useTeam / useDivisions resolve on different timelines, and on a
             clean-baseline tenant usePortfolio.loading flips to false faster
@@ -280,7 +280,7 @@ export default function PortfolioPage() {
                   Consolidated View
                 </span>
                 <h3 className="text-base font-bold text-slate-800 mt-0.5">
-                  {consolidatedSector} — {consolidatedMonth}
+                  {consolidatedSector} - {consolidatedMonth}
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
                   {consolidatedDivisionBreakdown.length} division{consolidatedDivisionBreakdown.length !== 1 ? 's' : ''} ·{' '}
@@ -302,7 +302,7 @@ export default function PortfolioPage() {
           </div>
         )}
 
-        {/* ── No period empty state — suppressed when lockout is active ──
+        {/* ── No period empty state - suppressed when lockout is active ──
             Also gated on identityResolved: without this, a non-admin with
             no division and no period would briefly see "Start your first
             analysis period" before the lockout state takes over. */}
@@ -346,7 +346,7 @@ export default function PortfolioPage() {
         {/* ── Active period content ── */}
         {activePeriod && !loading && (
           <>
-            {/* Desktop header — title above, controls below */}
+            {/* Desktop header - title above, controls below */}
             <div className="hidden md:block mb-6">
               <h1 className="doc-title" style={{ marginBottom: '16px' }}>
                 Portfolio Manager
@@ -397,7 +397,7 @@ export default function PortfolioPage() {
                     </>
                   )}
                 </div>
-                {/* Right group: action buttons — hidden in consolidated mode (read-only) */}
+                {/* Right group: action buttons - hidden in consolidated mode (read-only) */}
                 <div className="doc-actions flex items-center gap-3 flex-shrink-0">
                   {!isConsolidated && (
                     <>
@@ -426,7 +426,7 @@ export default function PortfolioPage() {
                   )}
                   {isOverSkuLimit ? (
                     <button
-                      onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active ${cfg.unitPlural}. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
+                      onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active ${cfg.unitPlural}. You have ${activeSkuCount} - upgrade your plan to run analysis.`)}
                       className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
                       style={{ backgroundColor: '#C0392B' }}
                     >
@@ -449,13 +449,13 @@ export default function PortfolioPage() {
               </div>
             </div>
 
-            {/* Row 1 — Mobile header */}
+            {/* Row 1 - Mobile header */}
             <div className="md:hidden mb-3">
               <div className="flex items-center justify-between mb-2">
                 <h1 className="doc-title" style={{ fontSize: 22 }}>
                   Portfolio Manager
                 </h1>
-                {/* Mobile action icons — hidden in consolidated mode */}
+                {/* Mobile action icons - hidden in consolidated mode */}
                 {!isConsolidated && (
                   <div className="flex items-center gap-1.5">
                     <button onClick={() => {
@@ -484,7 +484,7 @@ export default function PortfolioPage() {
               </div>
               {isOverSkuLimit ? (
                 <button
-                  onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active ${cfg.unitPlural}. You have ${activeSkuCount} — upgrade your plan to run analysis.`)}
+                  onClick={() => setSkuLimitError(`Your ${tierLabel} plan supports up to ${skuLimit} active ${cfg.unitPlural}. You have ${activeSkuCount} - upgrade your plan to run analysis.`)}
                   className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white opacity-50 cursor-not-allowed shadow-sm"
                   style={{ backgroundColor: '#C0392B' }}
                 >
@@ -505,7 +505,7 @@ export default function PortfolioPage() {
               )}
             </div>
 
-            {/* Row 2 — Period selector (mobile only) */}
+            {/* Row 2 - Period selector (mobile only) */}
             <div className="md:hidden flex items-center gap-3 mb-4">
               <PeriodSelector
                 periods={periods}
@@ -526,7 +526,7 @@ export default function PortfolioPage() {
               </p>
             )}
 
-            {/* Tab bar: Portfolio / Trade Investment — Trade tab hidden in consolidated mode */}
+            {/* Tab bar: Portfolio / Trade Investment - Trade tab hidden in consolidated mode */}
             <div className="flex items-center gap-1 mb-4 border-b border-slate-200">
               {[
                 { key: 'sku',   label: cfg.portfolioTab },

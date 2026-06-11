@@ -7,7 +7,7 @@ import { computeDeltas } from '../../lib/engine/delta';
 import { getSectorConfig } from '../../lib/sectorConfig';
 import { getFormatterSym, setFormatterSym } from '../../lib/formatters';
 
-/* ── Fonts (TTF required — React-PDF cannot parse woff2) ──── */
+/* ── Fonts (TTF required - React-PDF cannot parse woff2) ──── */
 Font.register({
   family: 'PlayfairDisplay',
   src: '/fonts/playfair-display-700.ttf',
@@ -16,7 +16,7 @@ Font.register({
 // PDF body font: Noto Sans (registered as 'DMSans' to avoid touching 30+
 // fontFamily references). Noto Sans includes U+20A6 (₦) and full Latin
 // Extended coverage; the original DM Sans TTF lacked currency symbols.
-// Web app CSS continues to use the real DM Sans woff2 files — this swap
+// Web app CSS continues to use the real DM Sans woff2 files - this swap
 // only affects react-pdf rendering.
 Font.register({
   family: 'DMSans',
@@ -136,22 +136,22 @@ const s = StyleSheet.create({
 
 /* ── Helpers ───────────────────────────────────────────────── */
 const fmt = (v, type) => {
-  if (v === null || v === undefined || v === '') return '—';
+  if (v === null || v === undefined || v === '') return '-';
   if (type === 'pct') {
     const num = parseFloat(v);
-    return isNaN(num) ? '—' : `${(num * 100).toFixed(1)}%`;
+    return isNaN(num) ? '-' : `${(num * 100).toFixed(1)}%`;
   }
   if (type === 'pctRaw') {
     const num = parseFloat(v);
-    return isNaN(num) ? '—' : `${num.toFixed(1)}%`;
+    return isNaN(num) ? '-' : `${num.toFixed(1)}%`;
   }
   if (type === 'naira') {
     const num = parseFloat(v);
-    return isNaN(num) ? '—' : `${getFormatterSym()}${Number(num).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    return isNaN(num) ? '-' : `${getFormatterSym()}${Number(num).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
   }
   if (type === 'nairaK') {
     const num = parseFloat(v);
-    if (isNaN(num)) return '—';
+    if (isNaN(num)) return '-';
     const sym = getFormatterSym();
     if (Math.abs(num) >= 1e9) return `${sym}${(num / 1e9).toFixed(1)}B`;
     if (Math.abs(num) >= 1e6) return `${sym}${(num / 1e6).toFixed(1)}M`;
@@ -168,7 +168,7 @@ const today = () => {
 
 /* ── Chart helpers ─────────────────────────────────────────── */
 const fmtN = (v) => {
-  if (v == null) return '—';
+  if (v == null) return '-';
   const abs = Math.abs(v);
   const sign = v < 0 ? '-' : '';
   const sym = getFormatterSym();
@@ -189,7 +189,7 @@ const TruncationNotice = ({ shown, total, unitPlural }) => (
     flexDirection: 'row',
   }}>
     <Text style={{ fontSize: 8, color: C.gold, fontWeight: 700 }}>
-      {`Showing top ${shown} of ${total} ${unitPlural} — sorted by financial impact (largest first)`}
+      {`Showing top ${shown} of ${total} ${unitPlural} - sorted by financial impact (largest first)`}
     </Text>
   </View>
 );
@@ -232,7 +232,7 @@ const NarrativeBlock = ({ lines }) => (
 );
 
 /* ══════════════════════════════════════════════════════════════
-   SVG CHART COMPONENTS — Phase A (inline) + Phase B (dedicated pages)
+   SVG CHART COMPONENTS - Phase A (inline) + Phase B (dedicated pages)
    ══════════════════════════════════════════════════════════════ */
 
 /* ── Phase A: P2 Waterfall (Cost page inline) ─────────────── */
@@ -440,7 +440,7 @@ const M3TradeROISvg = ({ results }) => {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   PHASE B — DEDICATED CHART PAGES
+   PHASE B - DEDICATED CHART PAGES
    ══════════════════════════════════════════════════════════════ */
 
 /* ── P1 Chart Page ────────────────────────────────────────── */
@@ -456,7 +456,7 @@ const P1ChartPage = ({ results, companyName, cfg }) => {
   return (
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P1 · Repricing Opportunities</Text>
-      <Text style={s.sectionSub}>{`Top 15 ${cfg.unitPlural} by margin gain potential — sorted by price delta descending`}</Text>
+      <Text style={s.sectionSub}>{`Top 15 ${cfg.unitPlural} by margin gain potential - sorted by price delta descending`}</Text>
       <Svg width={W} height={H}>
         <G>
           {/* zero line */}
@@ -508,7 +508,7 @@ const P4ChartPage = ({ results, companyName }) => {
   return (
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P4 · Promotion Net Impact</Text>
-      <Text style={s.sectionSub}>Top 15 promotions by net margin impact — teal = profitable, red = loss-making</Text>
+      <Text style={s.sectionSub}>Top 15 promotions by net margin impact - teal = profitable, red = loss-making</Text>
       <Svg width={W} height={H}>
         <G>
           <Line x1={labelW} y1={padT} x2={labelW} y2={padT + data.length * (barH + gap)} stroke={C.rule} strokeWidth={1} />
@@ -680,7 +680,7 @@ const M4ChartPage = ({ results, companyName, cfg }) => {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   NARRATIVE GENERATORS — P1 through P4
+   NARRATIVE GENERATORS - P1 through P4
    ══════════════════════════════════════════════════════════════ */
 
 const getPricingNarrative = (results, cfg) => {
@@ -694,11 +694,11 @@ const getPricingNarrative = (results, cfg) => {
   const lines = [];
 
   if (realisation >= 90) {
-    lines.push(`Your portfolio is achieving ${realisation.toFixed(1)}% of its willingness-to-pay potential — a strong realisation score that indicates pricing is broadly aligned with market tolerance.`);
+    lines.push(`Your portfolio is achieving ${realisation.toFixed(1)}% of its willingness-to-pay potential - a strong realisation score that indicates pricing is broadly aligned with market tolerance.`);
   } else if (realisation >= 75) {
     lines.push(`At ${realisation.toFixed(1)}% price realisation, your portfolio is capturing most but not all of its available pricing headroom. A targeted repricing exercise on the highest-gap ${cfg.unitPlural} would close this without broad price exposure.`);
   } else {
-    lines.push(`A price realisation score of ${realisation.toFixed(1)}% indicates significant underpricing across the portfolio. Willingness-to-pay has not been fully tested — this is recoverable margin that does not require new volume.`);
+    lines.push(`A price realisation score of ${realisation.toFixed(1)}% indicates significant underpricing across the portfolio. Willingness-to-pay has not been fully tested - this is recoverable margin that does not require new volume.`);
   }
 
   if (totalGain > 0) {
@@ -706,13 +706,13 @@ const getPricingNarrative = (results, cfg) => {
   }
 
   if (wtpGap > 0) {
-    lines.push(`A combined ${fmt(wtpGap, 'nairaK')} in untapped willingness-to-pay headroom exists across the portfolio. This represents the gap between current pricing and the price point at which volume loss would begin — the priority is to sequence price moves from lowest-elasticity ${cfg.unitPlural} first.`);
+    lines.push(`A combined ${fmt(wtpGap, 'nairaK')} in untapped willingness-to-pay headroom exists across the portfolio. This represents the gap between current pricing and the price point at which volume loss would begin - the priority is to sequence price moves from lowest-elasticity ${cfg.unitPlural} first.`);
   }
 
   if (floorBreaches > 0) {
-    lines.push(`${floorBreaches} ${floorBreaches !== 1 ? cfg.unitPlural + ' are' : cfg.unit + ' is'} currently priced below the minimum margin floor. Immediate corrective action is required — these ${cfg.unitPlural} are diluting portfolio margin with every unit sold.`);
+    lines.push(`${floorBreaches} ${floorBreaches !== 1 ? cfg.unitPlural + ' are' : cfg.unit + ' is'} currently priced below the minimum margin floor. Immediate corrective action is required - these ${cfg.unitPlural} are diluting portfolio margin with every unit sold.`);
   } else {
-    lines.push(`No ${cfg.unitPlural} are currently breaching the minimum margin floor — the portfolio is structurally sound on pricing floor compliance.`);
+    lines.push(`No ${cfg.unitPlural} are currently breaching the minimum margin floor - the portfolio is structurally sound on pricing floor compliance.`);
   }
 
   return lines;
@@ -728,7 +728,7 @@ const getCostNarrative = (results, cfg) => {
   const lines = [];
 
   if (portRecovery >= 70) {
-    lines.push(`Your portfolio is recovering ${portRecovery.toFixed(1)}% of input cost inflation through pricing — broadly in line with the 70-75% benchmark achieved by market leaders operating in comparable categories.`);
+    lines.push(`Your portfolio is recovering ${portRecovery.toFixed(1)}% of input cost inflation through pricing - broadly in line with the 70-75% benchmark achieved by market leaders operating in comparable categories.`);
   } else if (portRecovery >= 50) {
     lines.push(`At a ${portRecovery.toFixed(1)}% cost recovery rate, the portfolio is absorbing a meaningful portion of input cost inflation that peer companies are successfully passing through. The gap to the 70-75% leadership benchmark is ${(72.5 - portRecovery).toFixed(1)} percentage points.`);
   } else {
@@ -737,14 +737,14 @@ const getCostNarrative = (results, cfg) => {
 
   if (totalAbsorbed > 0 && totalShock > 0) {
     const absorbedPct = ((totalAbsorbed / totalShock) * 100).toFixed(1);
-    lines.push(`Of ${fmt(totalShock, 'nairaK')} in total input cost shock per month, ${fmt(totalAbsorbed, 'nairaK')} (${absorbedPct}%) is being absorbed rather than recovered. This compounds quarterly — the annualised exposure is ${fmt(totalAbsorbed * 12, 'nairaK')}.`);
+    lines.push(`Of ${fmt(totalShock, 'nairaK')} in total input cost shock per month, ${fmt(totalAbsorbed, 'nairaK')} (${absorbedPct}%) is being absorbed rather than recovered. This compounds quarterly - the annualised exposure is ${fmt(totalAbsorbed * 12, 'nairaK')}.`);
   }
 
   if (highAbsorption > 0) {
-    lines.push(`${highAbsorption} ${highAbsorption !== 1 ? cfg.unitPlural : cfg.unit} ${highAbsorption !== 1 ? 'are' : 'is'} absorbing more than 70% of their individual cost inflation. These represent the highest-priority intervention — either a pricing revision or a contractual cost-indexed escalation clause is required.`);
+    lines.push(`${highAbsorption} ${highAbsorption !== 1 ? cfg.unitPlural : cfg.unit} ${highAbsorption !== 1 ? 'are' : 'is'} absorbing more than 70% of their individual cost inflation. These represent the highest-priority intervention - either a pricing revision or a contractual cost-indexed escalation clause is required.`);
   }
 
-  lines.push(`The window for cost pass-through narrows as inflationary periods extend — price expectations reset around the new market level, making delayed recovery progressively harder. Early action on high-absorption ${cfg.unitPlural} preserves more recovery optionality than deferred action.`);
+  lines.push(`The window for cost pass-through narrows as inflationary periods extend - price expectations reset around the new market level, making delayed recovery progressively harder. Early action on high-absorption ${cfg.unitPlural} preserves more recovery optionality than deferred action.`);
   return lines;
 };
 
@@ -758,13 +758,13 @@ const getChannelNarrative = (results, cfg) => {
   const lines = [];
 
   if (bestChannel && worstChannel && bestChannel.channel !== worstChannel.channel) {
-    lines.push(`Channel contribution margins range from ${fmt(worstChannel.contPct, 'pctRaw')} (${worstChannel.channel}) to ${fmt(bestChannel.contPct, 'pctRaw')} (${bestChannel.channel}). This spread of ${((bestChannel.contPct - worstChannel.contPct)).toFixed(1)} percentage points indicates the route-to-market architecture requires review — not all channels are earning their cost of capital.`);
+    lines.push(`Channel contribution margins range from ${fmt(worstChannel.contPct, 'pctRaw')} (${worstChannel.channel}) to ${fmt(bestChannel.contPct, 'pctRaw')} (${bestChannel.channel}). This spread of ${((bestChannel.contPct - worstChannel.contPct)).toFixed(1)} percentage points indicates the route-to-market architecture requires review - not all channels are earning their cost of capital.`);
   } else if (channels.length > 0) {
-    lines.push(`Channel economics show varying contribution margins across active routes-to-market. Understanding the true net contribution per channel — after trade credit cost, logistics, and ${cfg.fields.partner.toLowerCase()} margin — is essential for allocating volume and investment correctly.`);
+    lines.push(`Channel economics show varying contribution margins across active routes-to-market. Understanding the true net contribution per channel - after trade credit cost, logistics, and ${cfg.fields.partner.toLowerCase()} margin - is essential for allocating volume and investment correctly.`);
   }
 
   if (lowContrib > 0) {
-    lines.push(`${lowContrib} channel${lowContrib !== 1 ? 's' : ''} ${lowContrib !== 1 ? 'are' : 'is'} contributing below the 15% minimum threshold. A channel delivering below this level is unlikely to cover its allocated overhead and trade credit financing cost — volume routed through these channels is diluting overall portfolio margin.`);
+    lines.push(`${lowContrib} channel${lowContrib !== 1 ? 's' : ''} ${lowContrib !== 1 ? 'are' : 'is'} contributing below the 15% minimum threshold. A channel delivering below this level is unlikely to cover its allocated overhead and trade credit financing cost - volume routed through these channels is diluting overall portfolio margin.`);
   }
 
   if (distExposure > 0) {
@@ -789,13 +789,13 @@ const getTradeNarrative = (results) => {
   } else if (lossMaking === total) {
     lines.push(`All ${total} active promotion${total !== 1 ? 's' : ''} in this period ${total !== 1 ? 'are' : 'is'} loss-making at the current discount depth and volume lift combination. Total promotional spend is destroying ${fmt(Math.abs(totalImpact), 'nairaK')} per month in margin without generating sufficient incremental volume to justify the cost.`);
   } else if (lossMaking > profitable) {
-    lines.push(`${lossMaking} of ${total} active promotions are loss-making — the majority of trade investment is not generating returns above the breakeven threshold. The ${profitable} profitable promotion${profitable !== 1 ? 's' : ''} demonstrate that the product can be promoted effectively; the issue is depth and lift calibration on the remainder.`);
+    lines.push(`${lossMaking} of ${total} active promotions are loss-making - the majority of trade investment is not generating returns above the breakeven threshold. The ${profitable} profitable promotion${profitable !== 1 ? 's' : ''} demonstrate that the product can be promoted effectively; the issue is depth and lift calibration on the remainder.`);
   } else {
-    lines.push(`${profitable} of ${total} active promotions are generating positive margin returns. The ${lossMaking} loss-making promotion${lossMaking !== 1 ? 's' : ''} require immediate restructuring — either depth reduction or a volume commitment from the trade partner that justifies the investment.`);
+    lines.push(`${profitable} of ${total} active promotions are generating positive margin returns. The ${lossMaking} loss-making promotion${lossMaking !== 1 ? 's' : ''} require immediate restructuring - either depth reduction or a volume commitment from the trade partner that justifies the investment.`);
   }
 
   if (total > 0) {
-    lines.push(`A promotion is margin-accretive only when the incremental volume generated exceeds the breakeven lift threshold — the additional units required to offset the margin cost of the discount. When actual lift falls below this threshold, each promotional unit sold destroys more margin than it generates in revenue.`);
+    lines.push(`A promotion is margin-accretive only when the incremental volume generated exceeds the breakeven lift threshold - the additional units required to offset the margin cost of the discount. When actual lift falls below this threshold, each promotional unit sold destroys more margin than it generates in revenue.`);
   }
 
   if (lossMaking > 0) {
@@ -805,7 +805,7 @@ const getTradeNarrative = (results) => {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   NARRATIVE GENERATORS — M1 through M4
+   NARRATIVE GENERATORS - M1 through M4
    ══════════════════════════════════════════════════════════════ */
 
 const getM1Narrative = (results, cfg) => {
@@ -824,15 +824,15 @@ const getM1Narrative = (results, cfg) => {
   lines.push(`Of ${total} active ${cfg.unitPlural}, ${protect} are classified as Protect (high margin, high volume), ${grow} as Grow (high margin, low volume), ${reprice} as Reprice (low margin, high volume), and ${review} as Review (low margin, low volume). This distribution determines where management attention and investment should be concentrated.`);
 
   if (dilutive > 0) {
-    lines.push(`${dilutive} ${dilutive !== 1 ? cfg.unitPlural + ' are' : cfg.unit + ' is'} below the portfolio average margin of ${avgMargin.toFixed(1)}%, collectively contributing ${fmt(dilutiveMargin, 'nairaK')} in below-average margin. These dilutive ${cfg.unitPlural} compress the overall portfolio margin — the question is whether their volume contribution justifies the margin drag.`);
+    lines.push(`${dilutive} ${dilutive !== 1 ? cfg.unitPlural + ' are' : cfg.unit + ' is'} below the portfolio average margin of ${avgMargin.toFixed(1)}%, collectively contributing ${fmt(dilutiveMargin, 'nairaK')} in below-average margin. These dilutive ${cfg.unitPlural} compress the overall portfolio margin - the question is whether their volume contribution justifies the margin drag.`);
   }
 
   if (review > 0) {
-    lines.push(`The ${review} ${review !== 1 ? cfg.unitPlural : cfg.unit} in the Review quadrant (low margin, low volume) are the strongest exit candidates. Exiting these ${cfg.unitPlural} would simplify the portfolio, reduce operational complexity, and remove the margin dilution they create — without material revenue impact given their low volume share.`);
+    lines.push(`The ${review} ${review !== 1 ? cfg.unitPlural : cfg.unit} in the Review quadrant (low margin, low volume) are the strongest exit candidates. Exiting these ${cfg.unitPlural} would simplify the portfolio, reduce operational complexity, and remove the margin dilution they create - without material revenue impact given their low volume share.`);
   }
 
   if (reprice > 0) {
-    lines.push(`The ${reprice} Reprice ${reprice !== 1 ? cfg.unitPlural : cfg.unit} present the highest-value opportunity — high-volume items that are underperforming on margin. A targeted pricing adjustment on these ${cfg.unitPlural} would have disproportionate portfolio impact due to their volume base.`);
+    lines.push(`The ${reprice} Reprice ${reprice !== 1 ? cfg.unitPlural : cfg.unit} present the highest-value opportunity - high-volume items that are underperforming on margin. A targeted pricing adjustment on these ${cfg.unitPlural} would have disproportionate portfolio impact due to their volume base.`);
   }
 
   return lines;
@@ -851,7 +851,7 @@ const getM2Narrative = (results, cfg) => {
     const halfRecovery = scenarios.find(sc => sc.recoveryRate === 0.50);
     const fullRecovery = scenarios[scenarios.length - 1];
 
-    lines.push(`Under a 40% input cost inflation scenario with zero price recovery, portfolio margin would decline by ${fmt(Math.abs(zeroRecovery?.marginChange || worstCase), 'nairaK')} per month — the worst-case exposure. At 50% recovery, the decline moderates to ${fmt(Math.abs(halfRecovery?.marginChange || 0), 'nairaK')}, and at full recovery the portfolio is protected.`);
+    lines.push(`Under a 40% input cost inflation scenario with zero price recovery, portfolio margin would decline by ${fmt(Math.abs(zeroRecovery?.marginChange || worstCase), 'nairaK')} per month - the worst-case exposure. At 50% recovery, the decline moderates to ${fmt(Math.abs(halfRecovery?.marginChange || 0), 'nairaK')}, and at full recovery the portfolio is protected.`);
 
     if (zeroRecovery?.projMarginPct != null) {
       lines.push(`The zero-recovery scenario would compress the portfolio margin to ${zeroRecovery.projMarginPct.toFixed(1)}%, a ${Math.abs(zeroRecovery.pctPtChange).toFixed(1)} percentage point decline from the current baseline. At this level, several ${cfg.unitPlural} would be operating below breakeven.`);
@@ -881,18 +881,18 @@ const getM3Narrative = (results) => {
 
   if (blendedROI != null) {
     const roiLabel = blendedROI >= 2 ? 'accretive' : blendedROI >= 0.5 ? 'marginal' : 'dilutive';
-    lines.push(`The blended trade spend ROI across all channels is ${blendedROI.toFixed(2)}x — classified as ${roiLabel}. Total trade investment of ${fmt(totalSpend, 'nairaK')} per month ${blendedROI >= 1 ? 'is generating a positive net return' : 'is not generating a net positive return'} when measured against channel contribution margins.`);
+    lines.push(`The blended trade spend ROI across all channels is ${blendedROI.toFixed(2)}x - classified as ${roiLabel}. Total trade investment of ${fmt(totalSpend, 'nairaK')} per month ${blendedROI >= 1 ? 'is generating a positive net return' : 'is not generating a net positive return'} when measured against channel contribution margins.`);
   }
 
   if (best && worst && best.channel !== worst.channel) {
-    lines.push(`${best.channel} delivers the highest trade ROI at ${best.roi?.toFixed(2) || '—'}x, while ${worst.channel} is the lowest-performing channel at ${worst.roi?.toFixed(2) || '—'}x. Reallocating spend from the lowest-ROI channel to the highest would improve portfolio trade efficiency without increasing total investment.`);
+    lines.push(`${best.channel} delivers the highest trade ROI at ${best.roi?.toFixed(2) || '-'}x, while ${worst.channel} is the lowest-performing channel at ${worst.roi?.toFixed(2) || '-'}x. Reallocating spend from the lowest-ROI channel to the highest would improve portfolio trade efficiency without increasing total investment.`);
   }
 
   if (dilutive > 0) {
-    lines.push(`${dilutive} channel${dilutive !== 1 ? 's are' : ' is'} generating a dilutive return on trade spend — the trade investment in ${dilutive !== 1 ? 'these channels' : 'this channel'} is destroying more margin than it generates. The spend categories to audit first are listing fees and co-op spend, which are typically the least volume-linked and most negotiable.`);
+    lines.push(`${dilutive} channel${dilutive !== 1 ? 's are' : ' is'} generating a dilutive return on trade spend - the trade investment in ${dilutive !== 1 ? 'these channels' : 'this channel'} is destroying more margin than it generates. The spend categories to audit first are listing fees and co-op spend, which are typically the least volume-linked and most negotiable.`);
   }
 
-  lines.push(`Trade spend reallocation is the highest-leverage margin action after pricing — it requires no price change, no volume growth, and no new customer acquisition. Simply redirecting investment from dilutive to accretive channels converts existing spend into margin improvement.`);
+  lines.push(`Trade spend reallocation is the highest-leverage margin action after pricing - it requires no price change, no volume growth, and no new customer acquisition. Simply redirecting investment from dilutive to accretive channels converts existing spend into margin improvement.`);
   return lines;
 };
 
@@ -909,18 +909,18 @@ const getM4Narrative = (results, cfg) => {
   const reviewDist = distributors.filter(d => d.classification.includes('Review')).length;
   const lines = [];
 
-  lines.push(`The portfolio operates through ${totalDist} active ${totalDist !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} with an average true net contribution of ${avgCont.toFixed(1)}%. ${strategic} ${strategic !== 1 ? 'are' : 'is'} classified as Strategic (high margin, high volume) — these are the relationships to protect and invest in selectively.`);
+  lines.push(`The portfolio operates through ${totalDist} active ${totalDist !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} with an average true net contribution of ${avgCont.toFixed(1)}%. ${strategic} ${strategic !== 1 ? 'are' : 'is'} classified as Strategic (high margin, high volume) - these are the relationships to protect and invest in selectively.`);
 
   if (renegotiate > 0) {
-    lines.push(`${renegotiate} ${renegotiate !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} ${renegotiate !== 1 ? 'are' : 'is'} classified as Renegotiate — high volume but dilutive net contribution. These relationships carry disproportionate revenue but are eroding portfolio margin through excessive ${cfg.fields.partner.toLowerCase()} margins, rebates, or credit terms. Restructuring these terms is the single highest-impact action.`);
+    lines.push(`${renegotiate} ${renegotiate !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} ${renegotiate !== 1 ? 'are' : 'is'} classified as Renegotiate - high volume but dilutive net contribution. These relationships carry disproportionate revenue but are eroding portfolio margin through excessive ${cfg.fields.partner.toLowerCase()} margins, rebates, or credit terms. Restructuring these terms is the single highest-impact action.`);
   }
 
   if (totalCredit > 0) {
-    lines.push(`Implicit credit financing cost across all ${cfg.fields.partner.toLowerCase()}s totals ${fmt(totalCredit, 'nairaK')} per month. This hidden cost of trade credit — calculated at the working capital rate against outstanding credit days — rarely appears in standard channel P&L but directly reduces true net contribution.`);
+    lines.push(`Implicit credit financing cost across all ${cfg.fields.partner.toLowerCase()}s totals ${fmt(totalCredit, 'nairaK')} per month. This hidden cost of trade credit - calculated at the working capital rate against outstanding credit days - rarely appears in standard channel P&L but directly reduces true net contribution.`);
   }
 
   if (reviewDist > 0) {
-    lines.push(`${reviewDist} ${renegotiate !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} ${reviewDist !== 1 ? 'are' : 'is'} in the Review quadrant — low margin and low volume. These relationships should be evaluated for continuation. Exiting the bottom-quartile ${cfg.fields.partner.toLowerCase()} relationships and consolidating volume through Strategic and Grow-classified partners typically improves portfolio contribution by 2-4 percentage points.`);
+    lines.push(`${reviewDist} ${renegotiate !== 1 ? cfg.fields.partner.toLowerCase() + 's' : cfg.fields.partner.toLowerCase()} ${reviewDist !== 1 ? 'are' : 'is'} in the Review quadrant - low margin and low volume. These relationships should be evaluated for continuation. Exiting the bottom-quartile ${cfg.fields.partner.toLowerCase()} relationships and consolidating volume through Strategic and Grow-classified partners typically improves portfolio contribution by 2-4 percentage points.`);
   }
 
   return lines;
@@ -933,22 +933,22 @@ const getM4Narrative = (results, cfg) => {
 /* ── Cover ─────────────────────────────────────────────────── */
 const getCoverSubtitle = (tier, cfg) => {
   if (tier === 'enterprise') {
-    return 'A full-spectrum margin intelligence analysis across pricing, cost recovery, channel economics, trade execution, and advanced commercial diagnostics — quantified in local currency across your active portfolio.';
+    return 'A full-spectrum margin intelligence analysis across pricing, cost recovery, channel economics, trade execution, and advanced commercial diagnostics - quantified in local currency across your active portfolio.';
   }
   if (tier === 'professional') {
-    return 'A comprehensive analysis of pricing intelligence, cost pass-through, channel economics, and trade execution across your active portfolio — every margin leak quantified in local currency.';
+    return 'A comprehensive analysis of pricing intelligence, cost pass-through, channel economics, and trade execution across your active portfolio - every margin leak quantified in local currency.';
   }
-  return `A pricing intelligence analysis across your active ${cfg.unit} portfolio — quantifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance.`;
+  return `A pricing intelligence analysis across your active ${cfg.unit} portfolio - quantifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance.`;
 };
 
 const getSummaryIntro = (tier, skuCount, cfg) => {
   if (tier === 'enterprise') {
-    return `This report analyses ${skuCount} active ${cfg.unitPlural} across all eight analytical engines — pricing intelligence, cost pass-through, channel economics, trade execution, and advanced commercial diagnostics. Every margin opportunity is quantified in local currency.`;
+    return `This report analyses ${skuCount} active ${cfg.unitPlural} across all eight analytical engines - pricing intelligence, cost pass-through, channel economics, trade execution, and advanced commercial diagnostics. Every margin opportunity is quantified in local currency.`;
   }
   if (tier === 'professional') {
-    return `This report analyses ${skuCount} active ${cfg.unitPlural} across four pillars — pricing intelligence, cost pass-through, channel economics, and trade execution. The analysis identifies actionable margin opportunities and quantifies recovery potential.`;
+    return `This report analyses ${skuCount} active ${cfg.unitPlural} across four pillars - pricing intelligence, cost pass-through, channel economics, and trade execution. The analysis identifies actionable margin opportunities and quantifies recovery potential.`;
   }
-  return `This report analyses ${skuCount} active ${cfg.unitPlural} across the Pricing Intelligence pillar — identifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance across your active portfolio.`;
+  return `This report analyses ${skuCount} active ${cfg.unitPlural} across the Pricing Intelligence pillar - identifying repricing opportunities, willingness-to-pay headroom, and margin floor compliance across your active portfolio.`;
 };
 
 const CoverPage = ({ companyName, periodLabel, skuCount, tier, cfg }) => (
@@ -1074,7 +1074,7 @@ const PricingPage = ({ results, companyName, cfg }) => {
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.cogs, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.marginPct, 'pctRaw')}</Text>
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.wtpGap, 'nairaK')}</Text>
-          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{r.compGap != null ? fmt(r.compGap, 'pctRaw') : '—'}</Text>
+          <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{r.compGap != null ? fmt(r.compGap, 'pctRaw') : '-'}</Text>
         </View>
       ))}
       {truncated && <TruncationNotice shown={20} total={sorted.length} unitPlural={cfg.unitPlural} />}
@@ -1185,7 +1185,7 @@ const ChannelPage = ({ results, companyName, cfg }) => {
           <Text style={[s.tableCell, { width: '20%', textAlign: 'right' }]}>{fmt(ch.contMargin, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right', color: ch.contPct < 15 ? C.red : C.navy }]}>{fmt(ch.contPct, 'pctRaw')}</Text>
           <Text style={[s.tableCell, { width: '10%', textAlign: 'right' }]}>{ch.skuCount}</Text>
-          <Text style={[s.tableCell, { width: '10%', textAlign: 'right' }]}>{ch.vol?.toLocaleString() || '—'}</Text>
+          <Text style={[s.tableCell, { width: '10%', textAlign: 'right' }]}>{ch.vol?.toLocaleString() || '-'}</Text>
         </View>
       ))}
       <PageFooter companyName={companyName} />
@@ -1239,7 +1239,7 @@ const TradePage = ({ results, companyName, cfg }) => {
           <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.depth, 'pct')}</Text>
           <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.lift, 'pct')}</Text>
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>
-            {r.bevLift != null ? `${parseFloat(r.bevLift).toFixed(1)}%` : '—'}
+            {r.bevLift != null ? `${parseFloat(r.bevLift).toFixed(1)}%` : '-'}
           </Text>
           <Text style={[s.tableCell, { width: '16%', textAlign: 'right', color: r.profitable ? C.teal : C.red, fontWeight: 700 }]}>
             {fmt(r.netImpact, 'nairaK')}
@@ -1262,7 +1262,7 @@ const TradePage = ({ results, companyName, cfg }) => {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   ENTERPRISE MODULE PAGES — M1 through M4
+   ENTERPRISE MODULE PAGES - M1 through M4
    ══════════════════════════════════════════════════════════════ */
 
 /* ── M1 Portfolio Rationalisation ──────────────────────────── */
@@ -1401,7 +1401,7 @@ const M3Page = ({ results, companyName, cfg }) => {
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>M3 | Trade Spend ROI Analyser</Text>
       <Text style={s.sectionSub}>
-        Total trade spend: {fmt(m3.totalSpend, 'nairaK')} /month | Blended ROI: {m3.blendedROI != null ? `${m3.blendedROI.toFixed(2)}x` : '—'}
+        Total trade spend: {fmt(m3.totalSpend, 'nairaK')} /month | Blended ROI: {m3.blendedROI != null ? `${m3.blendedROI.toFixed(2)}x` : '-'}
       </Text>
 
       <View style={s.kpiRow}>
@@ -1413,7 +1413,7 @@ const M3Page = ({ results, companyName, cfg }) => {
         <View style={[s.kpiCard, { borderLeftColor: m3.blendedROI >= 1 ? C.teal : C.red }]}>
           <Text style={s.kpiLabel}>Blended ROI</Text>
           <Text style={[s.kpiValue, { color: m3.blendedROI >= 1 ? C.teal : C.red }]}>
-            {m3.blendedROI != null ? `${m3.blendedROI.toFixed(2)}x` : '—'}
+            {m3.blendedROI != null ? `${m3.blendedROI.toFixed(2)}x` : '-'}
           </Text>
           <Text style={s.kpiSub}>Contribution / spend</Text>
         </View>
@@ -1421,7 +1421,7 @@ const M3Page = ({ results, companyName, cfg }) => {
           <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
             <Text style={s.kpiLabel}>Best Channel</Text>
             <Text style={[s.kpiValue, { color: C.gold }]}>{m3.bestChannel.channel}</Text>
-            <Text style={s.kpiSub}>{m3.bestChannel.roi?.toFixed(2) || '—'}x ROI</Text>
+            <Text style={s.kpiSub}>{m3.bestChannel.roi?.toFixed(2) || '-'}x ROI</Text>
           </View>
         )}
       </View>
@@ -1442,8 +1442,8 @@ const M3Page = ({ results, companyName, cfg }) => {
           <Text style={[s.tableCell, { width: '20%', fontWeight: 600 }]}>{r.channel}</Text>
           <Text style={[s.tableCell, { width: '16%', textAlign: 'right' }]}>{fmt(r.total, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '16%', textAlign: 'right' }]}>{fmt(r.netRev, 'nairaK')}</Text>
-          <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{r.roi != null ? `${r.roi.toFixed(2)}x` : '—'}</Text>
-          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{r.spendIntensity != null ? fmt(r.spendIntensity, 'pctRaw') : '—'}</Text>
+          <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{r.roi != null ? `${r.roi.toFixed(2)}x` : '-'}</Text>
+          <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{r.spendIntensity != null ? fmt(r.spendIntensity, 'pctRaw') : '-'}</Text>
           <View style={{ width: '22%', justifyContent: 'center', alignItems: 'center' }}>
             <Text style={[s.badge, { color: r.statusColor, backgroundColor: r.statusBg }]}>{r.status}</Text>
           </View>
@@ -1540,7 +1540,7 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
 
   const parts = [];
 
-  // Sentence 0 — SKU count context (only if portfolio size changed between periods)
+  // Sentence 0 - SKU count context (only if portfolio size changed between periods)
   if (prevSkuCount != null && currSkuCount != null && prevSkuCount !== currSkuCount) {
     const diff = currSkuCount - prevSkuCount;
     const abs  = Math.abs(diff);
@@ -1548,11 +1548,11 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
     const unitPlural = cfg ? cfg.unitPlural : 'records';
     const unitWord = cfg ? cfg.unit : 'record';
     parts.push(
-      `Note: the active portfolio ${dir} from ${prevSkuCount} to ${currSkuCount} ${unitPlural} between ${earlierLabel} and ${laterLabel} — the ${diff > 0 ? 'addition' : 'removal'} of ${abs} ${abs !== 1 ? unitPlural : unitWord} means some revenue and margin movement below reflects structural portfolio change, not purely like-for-like commercial performance.`
+      `Note: the active portfolio ${dir} from ${prevSkuCount} to ${currSkuCount} ${unitPlural} between ${earlierLabel} and ${laterLabel} - the ${diff > 0 ? 'addition' : 'removal'} of ${abs} ${abs !== 1 ? unitPlural : unitWord} means some revenue and margin movement below reflects structural portfolio change, not purely like-for-like commercial performance.`
     );
   }
 
-  // Sentence 1 — opening: overall revenue direction
+  // Sentence 1 - opening: overall revenue direction
   const rev = deltas.portfolio?.revenue;
   if (rev && rev.direction !== 'flat') {
     const pct = Math.abs(rev.pctChange || 0).toFixed(1);
@@ -1561,7 +1561,7 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
     );
   }
 
-  // Sentence 2 — what improved (if any), worded by direction type
+  // Sentence 2 - what improved (if any), worded by direction type
   if (improved.length > 0) {
     const hiUp   = improved.filter(m =>  m.positive); // higher-is-better, went up
     const loDown = improved.filter(m => !m.positive); // lower-is-better, went down
@@ -1570,7 +1570,7 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
       const upNames = hiUp.map(m => m.name.toLowerCase()).join(' and ');
       const dnNames = loDown.map(m => m.name.toLowerCase()).join(' and ');
       const upCap   = upNames.charAt(0).toUpperCase() + upNames.slice(1);
-      parts.push(`${upCap} grew over the period, while ${dnNames} declined — both positive signals.`);
+      parts.push(`${upCap} grew over the period, while ${dnNames} declined - both positive signals.`);
     } else if (hiUp.length > 0) {
       const names = hiUp.map(m => m.name.toLowerCase()).join(', ');
       parts.push(
@@ -1579,18 +1579,18 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
           : `Positive movement was recorded in ${names}.`
       );
     } else {
-      // All improvements are lower-is-better metrics declining — make it explicit
+      // All improvements are lower-is-better metrics declining - make it explicit
       const names = loDown.map(m => m.name.toLowerCase()).join(', ');
       const cap   = names.charAt(0).toUpperCase() + names.slice(1);
       parts.push(
         loDown.length === 1
-          ? `${loDown[0].name.charAt(0).toUpperCase() + loDown[0].name.slice(1)} declined — a positive signal.`
+          ? `${loDown[0].name.charAt(0).toUpperCase() + loDown[0].name.slice(1)} declined - a positive signal.`
           : `${cap} all declined, reflecting improved cost discipline and tighter channel management.`
       );
     }
   }
 
-  // Sentence 3 — what deteriorated, largest named specifically
+  // Sentence 3 - what deteriorated, largest named specifically
   if (deteriorated.length > 0) {
     const sorted = [...deteriorated].sort((a, b) => Math.abs(b.d.value) - Math.abs(a.d.value));
     const worst = sorted[0];
@@ -1604,12 +1604,12 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
     } else {
       const otherNames = sorted.slice(1).map(m => m.name.toLowerCase()).join(' and ');
       parts.push(
-        `${worstName} deteriorated by ${worstPct}%, alongside ${otherNames} — these areas require immediate attention to prevent further margin compression.`
+        `${worstName} deteriorated by ${worstPct}%, alongside ${otherNames} - these areas require immediate attention to prevent further margin compression.`
       );
     }
   }
 
-  // Sentence 4 — closing action statement
+  // Sentence 4 - closing action statement
   if (deteriorated.length > improved.length) {
     // Identify the specific priority action based on the worst metric
     const sorted = [...deteriorated].sort((a, b) => Math.abs(b.d.value) - Math.abs(a.d.value));
@@ -1617,18 +1617,18 @@ function generateTrendNarrative(deltas, earlierLabel, laterLabel, prevSkuCount, 
     const partnerLabel = cfg ? cfg.fields.partner : 'Distributor';
     const actionMap = {
       'Cost absorbed':    'Accelerating cost pass-through recovery is the highest-priority action to prevent the absorption gap compounding into next period.',
-      'Portfolio margin': 'Margin recovery should be the immediate commercial priority — review pricing and channel terms before the next period close.',
-      'Revenue at risk':  `Revenue at risk has widened — a targeted review of below-floor ${unitPlural} and WTP headroom capture is required.`,
-      'Channel exposure': `Channel economics have weakened — ${partnerLabel.toLowerCase()} margin and rebate terms should be reviewed as a priority.`,
-      'Repricing gain':   `Pricing headroom capture has slowed — review the ${unitPlural} with the largest WTP gaps to recover margin pace.`,
-      'Revenue':          'Top-line pressure requires investigation — volume, pricing, and channel mix should all be reviewed.',
+      'Portfolio margin': 'Margin recovery should be the immediate commercial priority - review pricing and channel terms before the next period close.',
+      'Revenue at risk':  `Revenue at risk has widened - a targeted review of below-floor ${unitPlural} and WTP headroom capture is required.`,
+      'Channel exposure': `Channel economics have weakened - ${partnerLabel.toLowerCase()} margin and rebate terms should be reviewed as a priority.`,
+      'Repricing gain':   `Pricing headroom capture has slowed - review the ${unitPlural} with the largest WTP gaps to recover margin pace.`,
+      'Revenue':          'Top-line pressure requires investigation - volume, pricing, and channel mix should all be reviewed.',
     };
     const actionKey = sorted[0].name;
-    parts.push(actionMap[actionKey] || 'The balance of movement is negative — prioritise the highest-value corrective actions before the next reporting cycle.');
+    parts.push(actionMap[actionKey] || 'The balance of movement is negative - prioritise the highest-value corrective actions before the next reporting cycle.');
   } else if (improved.length > deteriorated.length) {
-    parts.push('The overall trend is positive — areas of deterioration should be monitored to sustain momentum heading into the next period.');
+    parts.push('The overall trend is positive - areas of deterioration should be monitored to sustain momentum heading into the next period.');
   } else if (improved.length > 0 && deteriorated.length > 0) {
-    parts.push('Performance is mixed — sustain the gains in improving metrics while addressing the deteriorating areas before they compound.');
+    parts.push('Performance is mixed - sustain the gains in improving metrics while addressing the deteriorating areas before they compound.');
   }
 
   return parts.join(' ');
@@ -1720,7 +1720,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
         {metrics.slice(2, 4).map((m, i) => {
           const d = m.delta;
           // Explicit polarity: positiveDir is the direction that counts as good for this metric
-          // Revenue at Risk has isPositive: false — declining is improvement → positiveDir = 'down'
+          // Revenue at Risk has isPositive: false - declining is improvement → positiveDir = 'down'
           const positiveDir = m.isPositive ? 'up' : 'down';
           const color = d
             ? d.direction === 'flat' ? C.muted : d.direction === positiveDir ? C.teal : C.red
@@ -1752,7 +1752,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
           <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'right' }]}>Δ Change</Text>
         </View>
 
-        {/* SKU Count — context row, always first, styled distinctly */}
+        {/* SKU Count - context row, always first, styled distinctly */}
         {(() => {
           const prevCount = earlierResults.skuCount ?? null;
           const currCount = laterResults.skuCount  ?? null;
@@ -1762,11 +1762,11 @@ const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
               <Text style={[s.tableCell, { width: '30%', fontWeight: 700, fontSize: 7, textTransform: 'uppercase', letterSpacing: 0.5, color: C.navy }]}>
                 {`Active ${cfg.unitPlural}`}
               </Text>
-              <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{prevCount ?? '—'}</Text>
-              <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{currCount ?? '—'}</Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{prevCount ?? '-'}</Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right', fontWeight: 600 }]}>{currCount ?? '-'}</Text>
               <Text style={[s.tableCell, { width: '20%', textAlign: 'right', fontWeight: 700,
                 color: skuDiff == null ? C.muted : skuDiff === 0 ? C.muted : skuDiff > 0 ? C.teal : C.gold }]}>
-                {skuDiff != null ? `${skuDiff > 0 ? '+' : ''}${skuDiff} ${Math.abs(skuDiff) !== 1 ? cfg.unitPlural : cfg.unit}` : '—'}
+                {skuDiff != null ? `${skuDiff > 0 ? '+' : ''}${skuDiff} ${Math.abs(skuDiff) !== 1 ? cfg.unitPlural : cfg.unit}` : '-'}
               </Text>
             </View>
           );
@@ -1795,7 +1795,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
               <Text style={[s.tableCell, { width: '20%', textAlign: 'right', color: deltaColor }]}>
                 {diff != null
                   ? `${diff >= 0 ? '+' : ''}${fmt(diff, 'nairaK')}${diffPct != null ? ` (${diffPct.toFixed(1)}%)` : ''}`
-                  : '—'}
+                  : '-'}
               </Text>
             </View>
           );

@@ -2,9 +2,9 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useCurrency } from '../../contexts/CurrencyContext';
 
 const COLORS = {
-  shock:    '#D4A843', // gold  — total cost shock
-  absorbed: '#D95F4B', // red   — absorbed (margin erosion)
-  recovery: '#0D8F8F', // teal  — recovered through price
+  shock:    '#D4A843', // gold  - total cost shock
+  absorbed: '#D95F4B', // red   - absorbed (margin erosion)
+  recovery: '#0D8F8F', // teal  - recovered through price
 };
 
 // portRecoveryPct is already 0-100 (not a decimal)

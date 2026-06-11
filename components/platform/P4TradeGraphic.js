@@ -1,5 +1,5 @@
 /**
- * P4 Trade Execution — Promotion ROI Matrix
+ * P4 Trade Execution - Promotion ROI Matrix
  * 2×2 grid showing 4 promotions: 2 accretive (teal), 2 destructive (red).
  * Each card shows: promo name, volume uplift, margin impact, status badge.
  */
@@ -17,7 +17,7 @@ export default function P4TradeGraphic() {
       volume:  '+15%',
       margin:  '+$18K',
       status:  'accretive',
-      note:    'Break-even at +10% — delivered +15%',
+      note:    'Break-even at +10% - delivered +15%',
     },
     {
       name:    'Bundle Pack',
@@ -47,7 +47,7 @@ export default function P4TradeGraphic() {
         Promotion ROI Matrix
       </p>
       <p className="text-[10px] mb-3" style={{ color: '#94A3B8' }}>
-        Volume uplift vs. net margin impact — 4 live promotions
+        Volume uplift vs. net margin impact - 4 live promotions
       </p>
 
       <div className="grid grid-cols-2 gap-2.5">

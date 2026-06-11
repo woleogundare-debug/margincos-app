@@ -6,7 +6,7 @@ export default function DieselCostChart() {
         Diesel depot price movement
       </p>
       <p style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: '28px', lineHeight: 1.3 }}>
-        The single largest cost line has moved 55% — contracted rates haven&apos;t
+        The single largest cost line has moved 55% - contracted rates haven&apos;t
       </p>
 
       {/* Two-column layout */}

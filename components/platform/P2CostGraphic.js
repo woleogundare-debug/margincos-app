@@ -1,5 +1,5 @@
 /**
- * P2 Cost Pass-Through — Recovery Rate Benchmark
+ * P2 Cost Pass-Through - Recovery Rate Benchmark
  * Horizontal gauge bar with 3 colour zones.
  * Marker pin at 47% (where most companies sit).
  * Benchmark line at 75% (Carthena Advisory benchmark).
@@ -42,19 +42,19 @@ export default function P2CostGraphic() {
       <svg viewBox="0 0 284 178" className="w-full" aria-hidden="true">
 
         {/* ── Gauge track (3 zones) ── */}
-        {/* Red zone 0–40% — rounded left corners only */}
+        {/* Red zone 0-40% - rounded left corners only */}
         <rect
           x={GAUGE_X} y={GAUGE_Y}
           width={0.40 * GAUGE_W} height={GAUGE_H}
           rx={RADIUS} fill="#C0392B" opacity="0.85"
         />
-        {/* Gold zone 40–70% — no rounding (joins red on left, teal on right) */}
+        {/* Gold zone 40-70% - no rounding (joins red on left, teal on right) */}
         <rect
           x={redEnd} y={GAUGE_Y}
           width={0.30 * GAUGE_W} height={GAUGE_H}
           fill="#D4A843" opacity="0.85"
         />
-        {/* Teal zone 70–100% — rounded right corners only */}
+        {/* Teal zone 70-100% - rounded right corners only */}
         <rect
           x={goldEnd} y={GAUGE_Y}
           width={0.30 * GAUGE_W} height={GAUGE_H}

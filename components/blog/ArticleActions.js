@@ -147,7 +147,7 @@ export default function ArticleActions({ title, slug }) {
       titleBlock.innerHTML = `
         <div style="padding: 0 0 24px 0; margin-bottom: 32px; border-bottom: 2px solid #0D8F8F;">
           <p style="font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #0D8F8F; margin: 0 0 12px 0;">MarginCOS Insights</p>
-          <h1 style="font-family: Georgia, serif; font-size: 26px; font-weight: 700; color: #111; line-height: 1.3; margin: 0 0 12px 0;">${document.title.replace(' — MarginCOS', '')}</h1>
+          <h1 style="font-family: Georgia, serif; font-size: 26px; font-weight: 700; color: #111; line-height: 1.3; margin: 0 0 12px 0;">${document.title.replace(' - MarginCOS', '')}</h1>
           <p style="font-family: Arial, sans-serif; font-size: 13px; color: #666; margin: 0;">By Wole Ogundare &nbsp;·&nbsp; Founder, Carthena Advisory &amp; MarginCOS &nbsp;·&nbsp; carthenaadvisory.com</p>
         </div>
       `;

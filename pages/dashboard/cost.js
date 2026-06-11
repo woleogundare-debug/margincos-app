@@ -104,7 +104,7 @@ export default function CostPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <KpiTile label="Cost Absorbed" value={fNAbs(p2.totalAbsorbed)}
-                pill="Not priced in — margin erosion" accent="red"
+                pill="Not priced in - margin erosion" accent="red"
                 delta={deltas?.p2?.totalAbsorbed ? {
                   label: fNAbs(Math.abs(deltas.p2.totalAbsorbed.value)),
                   direction: deltas.p2.totalAbsorbed.direction,
@@ -120,7 +120,7 @@ export default function CostPage() {
               <KpiTile label="Portfolio Recovery Rate"
                 value={(p2.portRecoveryPct || 0).toFixed(1) + '%'}
                 pill={p2.portRecoveryPct < 40
-                  ? `⚠ Critical — below benchmark (${cfg.benchmark.costRecoveryShort})`
+                  ? `⚠ Critical - below benchmark (${cfg.benchmark.costRecoveryShort})`
                   : p2.portRecoveryPct < 70 ? `▲ Below benchmark (${cfg.benchmark.costRecoveryShort})` : '✓ Above benchmark'}
                 accent={p2.portRecoveryPct < 40 ? 'red' : p2.portRecoveryPct < 70 ? 'amber' : 'teal'}
                 delta={deltas?.p2?.portRecoveryPct ? {
@@ -148,7 +148,7 @@ export default function CostPage() {
               </div>
               <div className="px-4 py-3 bg-white">
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  {`Recovery rate: ${(p2.portRecoveryPct || 0).toFixed(1)}% — ${fNAbs(p2.totalAbsorbed)}/month absorbed into margin.`}
+                  {`Recovery rate: ${(p2.portRecoveryPct || 0).toFixed(1)}% - ${fNAbs(p2.totalAbsorbed)}/month absorbed into margin.`}
                 </p>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function CostPage() {
                     headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.shock, cfg.fields.passThrough, cfg.fields.absorbed]}
                     rows={sorted.map(r => [
                       r.sku,
-                      ...(isConsolidated ? [r._division || '—'] : []),
+                      ...(isConsolidated ? [r._division || '-'] : []),
                       fNAbs(r.shock),
                       (r.pt * 100).toFixed(0) + '%',
                       { content: <span className="text-red-600 font-semibold">{fNAbs(r.absorbed)}</span> },
@@ -211,7 +211,7 @@ export default function CostPage() {
                 ]}
                 rows={sorted.map(r => [
                   r.sku,
-                  ...(isConsolidated ? [r._division || '—'] : []),
+                  ...(isConsolidated ? [r._division || '-'] : []),
                   r.category,
                   fNAbs(r.shock),
                   { content: (
@@ -222,14 +222,14 @@ export default function CostPage() {
                   { content: <span className="text-red-600 font-semibold">{fNAbs(r.absorbed)}</span> },
                   { content: r.fxAbsorbed > 0
                     ? <Badge color="amber">{fNAbs(r.fxAbsorbed)}</Badge>
-                    : <span className="text-slate-300">—</span>
+                    : <span className="text-slate-300">-</span>
                   },
                   { content: r.usedActualInflation
-                    ? <Badge color="teal"><span title={`Inflation rate calculated from your ${cfg.fields.costPrior} — not self-reported. More reliable.`} className="cursor-help">Actual</span></Badge>
+                    ? <Badge color="teal"><span title={`Inflation rate calculated from your ${cfg.fields.costPrior} - not self-reported. More reliable.`} className="cursor-help">Actual</span></Badge>
                     : <Badge color="slate"><span title={`Based on the self-reported ${cfg.fields.costInflation} you entered. Add ${cfg.fields.costPrior} for a verified rate.`} className="cursor-help">Estimated</span></Badge>
                   },
                 ])}
-                emptyMessage={`No cost data — populate ${cfg.fields.cost} and ${cfg.fields.costInflation} fields.`}
+                emptyMessage={`No cost data - populate ${cfg.fields.cost} and ${cfg.fields.costInflation} fields.`}
               />
               <NarrativeBox>
                 {cfg.narrative.benchmarkNarrative(p2.portRecoveryPct || 0) + ' '}
@@ -237,8 +237,8 @@ export default function CostPage() {
                   ? `${fNAbs(p2.totalAbsorbed)}/month absorbed into margin and not priced through. `
                   : 'No cost absorption detected. '}
                 {p2.results.some(r => r.fxAbsorbed > 0)
-                  ? `FX-linked exposure identified on ${p2.results.filter(r => r.fxAbsorbed > 0).length} ${cfg.unitPlural} — priority for FX-indexed pricing clauses.`
-                  : 'No FX exposure data captured — populate FX Exposure % to decompose absorbed inflation.'}
+                  ? `FX-linked exposure identified on ${p2.results.filter(r => r.fxAbsorbed > 0).length} ${cfg.unitPlural} - priority for FX-indexed pricing clauses.`
+                  : 'No FX exposure data captured - populate FX Exposure % to decompose absorbed inflation.'}
               </NarrativeBox>
             </PillarCard>
             </div>

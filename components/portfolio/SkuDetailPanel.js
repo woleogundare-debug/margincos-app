@@ -10,7 +10,7 @@ import clsx from 'clsx';
 function getFieldGroups(cfg) { return [
   {
     label: 'Identity', color: 'text-navy', bg: 'bg-navy/5', fields: [
-      { key: 'sku_id',        label: 'SKU ID',         type: 'text',   required: true,  tip: 'Your internal product code. Must be unique \u2014 no two rows can share the same SKU ID.' },
+      { key: 'sku_id',        label: 'SKU ID',         type: 'text',   required: true,  tip: 'Your internal product code. Must be unique - no two rows can share the same SKU ID.' },
       { key: 'sku_name',      label: 'Product Name',   type: 'text',   required: true,  tip: 'Full product name as it appears on-pack or in your ERP system.' },
       { key: 'category',      label: 'Category',       type: 'select', required: true,  tip: 'Product category from your vertical\u2019s standard taxonomy.' },
       { key: 'segment',       label: 'Segment',        type: 'select', required: false, tip: 'Price positioning: Mass Market (volume-driven), Mid-Range, or Premium.' },
@@ -21,17 +21,17 @@ function getFieldGroups(cfg) { return [
   },
   {
     label: cfg.detailSections.p1, color: 'text-teal-700', bg: 'bg-teal-50', fields: [
-      { key: 'rrp',                       label: 'RRP (/unit)',              type: 'number', required: true,  tip: 'Recommended Retail Price \u2014 the shelf price consumers pay, per unit.' },
+      { key: 'rrp',                       label: 'RRP (/unit)',              type: 'number', required: true,  tip: 'Recommended Retail Price - the shelf price consumers pay, per unit.' },
       { key: 'competitor_price',          label: 'Competitor Price (/unit)', type: 'number', required: false, tip: 'The shelf price of your nearest direct competitor\u2019s equivalent product, per unit.' },
       { key: 'target_margin_floor_pct',   label: 'Margin Floor (%)',          type: 'pct',    required: false, tip: 'The minimum gross margin percentage you will accept for this SKU before flagging it for repricing or rationalisation.' },
       { key: 'price_elasticity',          label: 'Price Elasticity',          type: 'number', required: false, tip: 'How sensitive demand is to a price change. \u22121.5 means a 10% price rise reduces volume by 15%. Leave blank if unknown.' },
-      { key: 'proposed_price_change_pct', label: 'Proposed Price Change (%)', type: 'pct',    required: false, tip: 'The price increase or decrease you are considering. Enter as a percentage \u2014 e.g. 5 for a 5% increase.' },
+      { key: 'proposed_price_change_pct', label: 'Proposed Price Change (%)', type: 'pct',    required: false, tip: 'The price increase or decrease you are considering. Enter as a percentage - e.g. 5 for a 5% increase.' },
       { key: 'wtp_premium_pct',           label: 'WTP Premium (%)',           type: 'pct',    required: false, tip: 'Willingness-to-pay premium: how much more (%) consumers are prepared to pay above current RRP before switching.' },
     ]
   },
   {
     label: cfg.detailSections.p2, color: 'text-red-700', bg: 'bg-red-50', fields: [
-      { key: 'cogs_per_unit',       label: 'COGS (₦/unit)',           type: 'number', required: true,  tip: 'Cost of Goods Sold per unit \u2014 total landed cost including raw materials, packaging, and manufacturing.' },
+      { key: 'cogs_per_unit',       label: 'COGS (₦/unit)',           type: 'number', required: true,  tip: 'Cost of Goods Sold per unit - total landed cost including raw materials, packaging, and manufacturing.' },
       { key: 'cogs_prior_period',   label: 'Prior Period COGS (₦)',   type: 'number', required: false, tip: 'COGS per unit in the previous month or period. Used to calculate actual cost movement rather than relying on self-reported inflation rate.' },
       { key: 'cogs_inflation_rate', label: 'COGS Inflation Rate (%)', type: 'pct',    required: false, tip: 'The annual rate at which this SKU\u2019s input costs are rising. Used to calculate cost absorption.' },
       { key: 'pass_through_rate',   label: 'Pass-Through Rate (%)',   type: 'pct',    required: false, tip: 'Percentage of cost increases already passed on to the trade. 100% means full pass-through; 0% means fully absorbed.' },
@@ -41,19 +41,19 @@ function getFieldGroups(cfg) { return [
   {
     label: cfg.detailSections.p3, color: 'text-amber-700', bg: 'bg-amber-50', fields: [
       { key: 'primary_channel',        label: 'Primary Channel',            type: 'select', required: true,  tip: 'Primary route-to-market for this SKU. Select the channel that accounts for the majority of volume.' },
-      { key: 'channel_revenue_split',  label: 'Primary Ch. Vol %',          type: 'number', required: false, tip: 'What percentage of this SKU\u2019s total volume flows through its primary channel. Each SKU is independent \u2014 rows do not need to sum to 100%.' },
+      { key: 'channel_revenue_split',  label: 'Primary Ch. Vol %',          type: 'number', required: false, tip: 'What percentage of this SKU\u2019s total volume flows through its primary channel. Each SKU is independent - rows do not need to sum to 100%.' },
       { key: 'distributor_name',       label: 'Distributor Name',           type: 'text',   required: false, tip: 'Name of the primary distributor or wholesaler handling this SKU in this channel.' },
-      { key: 'distributor_margin_pct', label: 'Distributor Margin (%)',     type: 'pct',    required: false, tip: 'The margin percentage retained by the distributor or trade partner. Typically 8\u201315% for FMCG businesses.' },
+      { key: 'distributor_margin_pct', label: 'Distributor Margin (%)',     type: 'pct',    required: false, tip: 'The margin percentage retained by the distributor or trade partner. Typically 8-15% for FMCG businesses.' },
       { key: 'trade_rebate_pct',       label: 'Trade Rebate (%)',           type: 'pct',    required: false, tip: 'Retrospective rebate paid back to the trade at period-end, separate from the upfront distributor margin.' },
-      { key: 'logistics_cost_per_unit',label: 'Logistics Cost (₦/unit)',    type: 'number', required: false, tip: 'Cost to deliver one unit to the trade (₦) \u2014 includes freight, last-mile, and handling.' },
-      { key: 'credit_days',            label: 'Credit Days',                type: 'number', required: false, tip: 'Standard credit terms extended to distributors for this SKU \u2014 the number of days before payment is due.' },
+      { key: 'logistics_cost_per_unit',label: 'Logistics Cost (₦/unit)',    type: 'number', required: false, tip: 'Cost to deliver one unit to the trade (₦) - includes freight, last-mile, and handling.' },
+      { key: 'credit_days',            label: 'Credit Days',                type: 'number', required: false, tip: 'Standard credit terms extended to distributors for this SKU - the number of days before payment is due.' },
     ]
   },
   {
     label: cfg.detailSections.p4, color: 'text-purple-700', bg: 'bg-purple-50', fields: [
       { key: 'monthly_volume_units', label: 'Monthly Volume (units)', type: 'number', required: true,  tip: 'Number of units sold or distributed in the period.' },
-      { key: 'promo_depth_pct',      label: 'Promo Depth (%)',        type: 'pct',    required: false, tip: 'The discount percentage applied during a promotional period \u2014 e.g. 15 for a 15% promotional price cut.' },
-      { key: 'promo_lift_pct',       label: 'Promo Volume Lift (%)',  type: 'pct',    required: false, tip: 'Expected volume uplift during the promotion as a percentage \u2014 e.g. 20 means you expect 20% more units sold.' },
+      { key: 'promo_depth_pct',      label: 'Promo Depth (%)',        type: 'pct',    required: false, tip: 'The discount percentage applied during a promotional period - e.g. 15 for a 15% promotional price cut.' },
+      { key: 'promo_lift_pct',       label: 'Promo Volume Lift (%)',  type: 'pct',    required: false, tip: 'Expected volume uplift during the promotion as a percentage - e.g. 20 means you expect 20% more units sold.' },
     ]
   },
 ]; }
@@ -88,8 +88,8 @@ function FieldInput({ field, value, onChange, vertical }) {
       <select value={isYes ? 'Y' : 'N'}
         onChange={e => onChange(e.target.value)}
         className={clsx(baseClass, 'bg-white')}>
-        <option value="Y">Yes — include in analysis</option>
-        <option value="N">No — exclude from analysis</option>
+        <option value="Y">Yes - include in analysis</option>
+        <option value="N">No - exclude from analysis</option>
       </select>
     );
   }
@@ -110,7 +110,7 @@ function FieldInput({ field, value, onChange, vertical }) {
   );
 }
 
-// Completeness bar — optional fields only
+// Completeness bar - optional fields only
 function CompletenessBar({ row, vertical }) {
   const { categories } = getTaxonomy(vertical || 'FMCG');
   const cfg = getSectorConfig(vertical);
@@ -183,7 +183,7 @@ export function SkuDetailPanel({ row, onClose, onSave, saving, vertical, saveErr
         {/* Completeness */}
         <CompletenessBar row={form} vertical={vertical} />
 
-        {/* Save error banner (red) — visible inside the panel on mobile */}
+        {/* Save error banner (red) - visible inside the panel on mobile */}
         {saveError && (
           <div className="mx-6 mt-3 flex items-start justify-between gap-3 px-4 py-3 rounded-xl border border-red-200 bg-red-50 text-sm">
             <div className="flex items-start gap-2 text-red-800">

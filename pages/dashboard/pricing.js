@@ -109,7 +109,7 @@ export default function PricingPage() {
                 } : null} />
               <KpiTile label="Price Realisation"
                 value={(p1.priceRealisation || 0).toFixed(1) + '%'}
-                pill={p1.priceRealisation < 90 ? '⚠ Below 90% — pricing gap' : '✓ Strong realisation'}
+                pill={p1.priceRealisation < 90 ? '⚠ Below 90% - pricing gap' : '✓ Strong realisation'}
                 accent={p1.priceRealisation < 90 ? 'amber' : 'teal'}
                 delta={deltas?.p1?.priceRealisation ? {
                   label: Math.abs(deltas.p1.priceRealisation.value).toFixed(1) + 'pp',
@@ -127,7 +127,7 @@ export default function PricingPage() {
                 <p className="text-xs text-red-600">
                   {p1.floorBreaches.slice(0, 3).map(s => s.sku).join(', ')}
                   {p1.floorBreaches.length > 3 ? ` +${p1.floorBreaches.length - 3} more` : ''}
-                  {' — current gross margin below defined minimum. Immediate pricing review required.'}
+                  {' - current gross margin below defined minimum. Immediate pricing review required.'}
                 </p>
               </div>
             )}
@@ -173,10 +173,10 @@ export default function PricingPage() {
                     headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), cfg.fields.priceUnit, 'Margin %', cfg.fields.compGap, cfg.fields.gainPerMonth]}
                     rows={sorted.map(r => [
                       r.sku,
-                      ...(isConsolidated ? [r._division || '—'] : []),
+                      ...(isConsolidated ? [r._division || '-'] : []),
                       fNAbs(r.price),
                       r.marginPct.toFixed(1) + '%',
-                      r.compGap !== null ? (r.compGap > 0 ? '+' : '') + r.compGap.toFixed(1) + '%' : '—',
+                      r.compGap !== null ? (r.compGap > 0 ? '+' : '') + r.compGap.toFixed(1) + '%' : '-',
                       { content: <span className={r.delta > 0 ? 'text-emerald-600 font-semibold' : 'text-red-500'}>{fN(r.delta)}</span> },
                     ])}
                     emptyMessage="No pricing data."
@@ -216,7 +216,7 @@ export default function PricingPage() {
                 ]}
                 rows={sorted.map(r => [
                   r.sku,
-                  ...(isConsolidated ? [r._division || '—'] : []),
+                  ...(isConsolidated ? [r._division || '-'] : []),
                   r.category,
                   fNAbs(r.price),
                   { content: (
@@ -229,12 +229,12 @@ export default function PricingPage() {
                     ? <Badge color={r.compGap > 5 ? 'amber' : r.compGap < -5 ? 'green' : 'slate'}>
                         {r.compGap > 0 ? '+' : ''}{r.compGap.toFixed(1)}%
                       </Badge>
-                    : <span className="text-slate-300">—</span>
+                    : <span className="text-slate-300">-</span>
                   },
-                  r.wtpGap > 0 ? fNAbs(r.wtpGap) : '—',
+                  r.wtpGap > 0 ? fNAbs(r.wtpGap) : '-',
                   { content: <span className={r.delta > 0 ? 'text-emerald-600 font-semibold' : 'text-red-500'}>{fN(r.delta)}</span> },
                 ])}
-                emptyMessage={`No pricing data — ensure ${cfg.fields.price}, ${cfg.fields.cost}, and Volume are populated.`}
+                emptyMessage={`No pricing data - ensure ${cfg.fields.price}, ${cfg.fields.cost}, and Volume are populated.`}
               />
               <NarrativeBox>
                 {p1.totalGain > 0

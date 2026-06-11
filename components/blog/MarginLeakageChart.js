@@ -1,8 +1,8 @@
 export default function MarginLeakageChart() {
   const items = [
-    { label: 'SKUs with under-recovered inflation', value: '15–25%', sub: 'of portfolio by count driving majority of leakage', color: '#C0392B' },
-    { label: 'Average pass-through rate', value: '35–45%', sub: 'vs 70–75% benchmark among Nigerian leaders', color: '#D4A843' },
-    { label: 'Monthly margin left on table', value: '₦180–220M', sub: 'per ₦10B revenue company absorbing 40% inflation', color: '#0D8F8F' },
+    { label: 'SKUs with under-recovered inflation', value: '15-25%', sub: 'of portfolio by count driving majority of leakage', color: '#C0392B' },
+    { label: 'Average pass-through rate', value: '35-45%', sub: 'vs 70-75% benchmark among Nigerian leaders', color: '#D4A843' },
+    { label: 'Monthly margin left on table', value: '₦180-220M', sub: 'per ₦10B revenue company absorbing 40% inflation', color: '#0D8F8F' },
     { label: 'Loss-making promotional spend', value: 'High', sub: 'Promo depth exceeds breakeven lift at SKU level', color: '#8A6BBE' },
   ];
 

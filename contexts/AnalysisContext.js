@@ -19,7 +19,7 @@ export function AnalysisProvider({ children }) {
   // priority-action narrative interpolates the active symbol at analysis time.
   const { currSym } = useCurrency();
 
-  // ── Division state — loads async; gracefully degrades if table not yet migrated
+  // ── Division state - loads async; gracefully degrades if table not yet migrated
   // Non-admins are pinned to their profile.division_id; admins can switch freely.
   const {
     divisions,
@@ -35,7 +35,7 @@ export function AnalysisProvider({ children }) {
     loading: divisionsLoading,
   } = useDivisions(teamId, { userDivisionId: divisionId, isAdmin });
 
-  // ── Comparison period state — entirely additive ──────────────────────────
+  // ── Comparison period state - entirely additive ──────────────────────────
   const [comparisonPeriodId, setComparisonPeriodId] = useState(null);
   const [comparisonResults,  setComparisonResults]  = useState(null);
   const [comparisonLoading,  setComparisonLoading]  = useState(false);
@@ -75,7 +75,7 @@ export function AnalysisProvider({ children }) {
     hasResults,
   } = useAnalysis(skuRows, tradeInvestment, activePeriod?.vertical);
 
-  // ── Consolidation state — parallel to primary analysis; computed on demand ─
+  // ── Consolidation state - parallel to primary analysis; computed on demand ─
   const [isConsolidated,              setIsConsolidated]              = useState(false);
   const [consolidatedSector,          setConsolidatedSector]          = useState(null);
   const [consolidatedMonth,           setConsolidatedMonth]           = useState(null);
@@ -83,7 +83,7 @@ export function AnalysisProvider({ children }) {
   const [consolidatedLoading,         setConsolidatedLoading]         = useState(false);
   const [consolidatedDivisionBreakdown, setConsolidatedDivisionBreakdown] = useState([]);
   const [consolidatedMissing,         setConsolidatedMissing]         = useState([]);
-  // Raw tagged rows from the consolidation fetch — used by Portfolio grid
+  // Raw tagged rows from the consolidation fetch - used by Portfolio grid
   const [consolidatedRows,            setConsolidatedRows]            = useState([]);
 
   const runConsolidation = useCallback(async (sector, monthLabel) => {
@@ -222,7 +222,7 @@ export function AnalysisProvider({ children }) {
   const activeResults    = isConsolidated ? consolidatedResults : results;
   const activeHasResults = isConsolidated ? Boolean(consolidatedResults) : hasResults;
 
-  // ── Load a second period for comparison — does NOT touch primary state ───
+  // ── Load a second period for comparison - does NOT touch primary state ───
   const loadComparisonPeriod = useCallback(async (periodId) => {
     if (!periodId || !user?.id) {
       setComparisonPeriodId(null);
@@ -270,12 +270,12 @@ export function AnalysisProvider({ children }) {
   // The M2 priority-action detail is a pre-rendered string that bakes in the
   // currency symbol at analysis time. Formatter-based surfaces (KPIs, charts,
   // tables) react to currSym automatically, but cached action.detail strings do
-  // not — so a currency change made on /dashboard/team would leave the old
+  // not - so a currency change made on /dashboard/team would leave the old
   // symbol in the action queue and PDF until the next manual re-run. This effect
   // forces a deliberate re-compute of whichever analysis path is active whenever
   // currSym changes (skipping the initial mount). The re-run reads the new symbol
   // from in-memory context state, so it does not depend on the Supabase persist
-  // completing — no race with setCurrCode's write.
+  // completing - no race with setCurrCode's write.
   const didMountRef = useRef(false);
   useEffect(() => {
     if (!didMountRef.current) { didMountRef.current = true; return; }
@@ -296,7 +296,7 @@ export function AnalysisProvider({ children }) {
   // Chronological ordering: delta = later period results − earlier period results.
   // Positive delta always means the metric improved over time, regardless of which
   // period the user has active vs. selected as comparison.
-  // NOTE: We parse the period LABEL ("March 2026", "February 2026") — not created_at.
+  // NOTE: We parse the period LABEL ("March 2026", "February 2026") - not created_at.
   // created_at reflects when the data was imported, which can be out of order
   // (e.g. February data imported after March data). The label always carries the
   // true reporting month. new Date("March 2026") → Mar 1 2026, which is reliable.
@@ -311,11 +311,11 @@ export function AnalysisProvider({ children }) {
     const activeTime = parseReportingMonth(activePeriod.label);
     const compTime   = parseReportingMonth(comparisonPeriodMeta.label);
     if (activeTime >= compTime) {
-      // Active period is later (or equal) — delta = active − comparison
+      // Active period is later (or equal) - delta = active − comparison
       return { laterResults: results, earlierResults: comparisonResults,
                laterPeriod: activePeriod, earlierPeriod: comparisonPeriodMeta };
     } else {
-      // Comparison period is later — delta = comparison − active
+      // Comparison period is later - delta = comparison − active
       return { laterResults: comparisonResults, earlierResults: results,
                laterPeriod: comparisonPeriodMeta, earlierPeriod: activePeriod };
     }
@@ -351,7 +351,7 @@ export function AnalysisProvider({ children }) {
       divisionCount,
       canSwitchDivision,
       isAdmin,
-      // ── Identity resolution flags — for gating first-paint states ─────────
+      // ── Identity resolution flags - for gating first-paint states ─────────
       // profileLoaded: useAuth has completed fetchProfile (tier, teamId, divisionId)
       // teamLoading:   useTeam.loadTeam (team_members + teams + profiles join) in flight
       // divisionsLoading: useDivisions.loadDivisions in flight

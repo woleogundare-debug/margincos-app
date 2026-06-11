@@ -30,7 +30,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // All routes — SSR, SSG, and API
+        // All routes - SSR, SSG, and API
         source: '/(.*)',
         headers: [
           { key: 'X-Frame-Options',          value: 'DENY' },
@@ -45,7 +45,7 @@ const nextConfig = {
         ],
       },
       {
-        // Dashboard routes — never cache; browsers and proxies must always revalidate
+        // Dashboard routes - never cache; browsers and proxies must always revalidate
         source: '/dashboard/:path*',
         headers: [
           { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, proxy-revalidate' },
@@ -53,7 +53,7 @@ const nextConfig = {
         ],
       },
       {
-        // API routes — never cache; browsers and proxies must always revalidate
+        // API routes - never cache; browsers and proxies must always revalidate
         source: '/api/:path*',
         headers: [
           { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, proxy-revalidate' },

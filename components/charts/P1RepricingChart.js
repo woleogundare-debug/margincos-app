@@ -2,8 +2,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useCurrency } from '../../contexts/CurrencyContext';
 
 const COLORS = {
-  positive: '#0D8F8F', // teal — priced below competitors (room to move)
-  negative: '#D4A843', // gold — priced above competitors (caution)
+  positive: '#0D8F8F', // teal - priced below competitors (room to move)
+  negative: '#D4A843', // gold - priced above competitors (caution)
 };
 
 export default function P1RepricingChart({ results, cfg }) {

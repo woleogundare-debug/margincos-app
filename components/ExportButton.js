@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 /**
- * ExportButton — teal secondary button with spinner during export.
+ * ExportButton - teal secondary button with spinner during export.
  * Renders nothing if `show` is false (tier gate handled by parent).
  *
  * Props:
- *   onExport  — async function; called on click; must not throw (catch internally)
- *   label     — string; defaults to "Export to Excel"
- *   show      — boolean; if false, renders null (tier gate)
+ *   onExport  - async function; called on click; must not throw (catch internally)
+ *   label     - string; defaults to "Export to Excel"
+ *   show      - boolean; if false, renders null (tier gate)
  */
 export default function ExportButton({ onExport, label = 'Export to Excel', show = true }) {
   const [loading, setLoading] = useState(false);

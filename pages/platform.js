@@ -119,10 +119,10 @@ function PillarSection({ num, title, color, problem, context, delivers, users, r
 
 /* ── Enterprise modules (all 4) ── */
 const MODULES = [
-  { mod: 'M1', title: 'Portfolio Rationalisation', desc: 'Classify every item in your portfolio into a defend, reprice, or exit framework — based on margin contribution vs. strategic importance. Quantifies the margin at stake from underperforming items and names the specific candidates for action.', bg: 'bg-white border-purple/20' },
-  { mod: 'M2', title: 'Forward Scenario Engine', desc: 'Model your P&L under multiple cost inflation scenarios simultaneously. See how margin erodes at different input cost levels — and what pricing actions are needed to maintain your floor. Board-ready scenario table to anchor commercial commitments.', bg: 'bg-gold-50/40 border-gold/20' },
-  { mod: 'M3', title: 'Commercial Spend ROI Analyser', desc: 'Calculate the return on every unit of commercial investment — by category, by channel, by period. Surface which spend generates margin and which destroys it, before the next commitment is made.', bg: 'bg-white border-teal/20' },
-  { mod: 'M4', title: 'Partner Performance Scorecard', desc: 'Rank every partner and customer relationship by true net margin contribution — after logistics, credit, rebates, and service costs. Identify which relationships to protect, which to renegotiate, and which are structurally loss-making.', bg: 'bg-gold-50/40 border-gold/20' },
+  { mod: 'M1', title: 'Portfolio Rationalisation', desc: 'Classify every item in your portfolio into a defend, reprice, or exit framework - based on margin contribution vs. strategic importance. Quantifies the margin at stake from underperforming items and names the specific candidates for action.', bg: 'bg-white border-purple/20' },
+  { mod: 'M2', title: 'Forward Scenario Engine', desc: 'Model your P&L under multiple cost inflation scenarios simultaneously. See how margin erodes at different input cost levels - and what pricing actions are needed to maintain your floor. Board-ready scenario table to anchor commercial commitments.', bg: 'bg-gold-50/40 border-gold/20' },
+  { mod: 'M3', title: 'Commercial Spend ROI Analyser', desc: 'Calculate the return on every unit of commercial investment - by category, by channel, by period. Surface which spend generates margin and which destroys it, before the next commitment is made.', bg: 'bg-white border-teal/20' },
+  { mod: 'M4', title: 'Partner Performance Scorecard', desc: 'Rank every partner and customer relationship by true net margin contribution - after logistics, credit, rebates, and service costs. Identify which relationships to protect, which to renegotiate, and which are structurally loss-making.', bg: 'bg-gold-50/40 border-gold/20' },
 ];
 
 export default function PlatformPage() {
@@ -179,20 +179,20 @@ export default function PlatformPage() {
   return (
     <>
       <Head>
-        <title>Platform — Margin Intelligence for Businesses in Inflationary Markets | MarginCOS</title>
-        <meta name="description" content="Explore MarginCOS's eight analytical engines: pricing intelligence, cost pass-through tracking, channel margin analysis, and commercial spend ROI — built for businesses navigating high-inflation markets." />
+        <title>Platform - Margin Intelligence for Businesses in Inflationary Markets | MarginCOS</title>
+        <meta name="description" content="Explore MarginCOS's eight analytical engines: pricing intelligence, cost pass-through tracking, channel margin analysis, and commercial spend ROI - built for businesses navigating high-inflation markets." />
         <link rel="canonical" href="https://margincos.com/platform" />
-        <meta property="og:title" content="Platform — Pricing Intelligence & Margin Analytics | MarginCOS" />
+        <meta property="og:title" content="Platform - Pricing Intelligence & Margin Analytics | MarginCOS" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://margincos.com/platform" />
-        <meta property="og:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for businesses in high-inflation markets." />
+        <meta property="og:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI - built for businesses in high-inflation markets." />
         <meta property="og:image" content="https://margincos.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@margincos" />
-        <meta name="twitter:title" content="Platform — Pricing Intelligence & Margin Analytics | MarginCOS" />
-        <meta name="twitter:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI — built for businesses in high-inflation markets." />
+        <meta name="twitter:title" content="Platform - Pricing Intelligence & Margin Analytics | MarginCOS" />
+        <meta name="twitter:description" content="Eight analytical engines for pricing intelligence, cost pass-through analysis, and commercial spend ROI - built for businesses in high-inflation markets." />
         <meta name="twitter:image" content="https://margincos.com/og-image.png" />
       </Head>
 
@@ -206,7 +206,7 @@ export default function PlatformPage() {
               The MarginCOS Platform
             </h1>
             <p className="fade-in-up delay-200 mt-6 text-base md:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-              MarginCOS is a margin recovery platform built for businesses navigating inflationary markets. Eight analytical engines work simultaneously across your portfolio — giving your CFO and Commercial Director real-time pricing intelligence, cost pass-through analysis, and commercial spend ROI from a single data upload.
+              MarginCOS is a margin recovery platform built for businesses navigating inflationary markets. Eight analytical engines work simultaneously across your portfolio - giving your CFO and Commercial Director real-time pricing intelligence, cost pass-through analysis, and commercial spend ROI from a single data upload.
             </p>
           </div>
         </section>
@@ -222,10 +222,10 @@ export default function PlatformPage() {
                 <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy mb-8">What Makes MarginCOS Different</h2>
                 <div className="space-y-6">
                   {[
-                    { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template — designed from the ground up for the realities of operating in high-inflation, high-volatility markets.' },
-                    { title: 'Product-level granularity', desc: 'Not just portfolio averages — every metric, every recommendation, every figure is calculated at the individual product or service line level.' },
+                    { title: 'Built for inflationary markets', desc: 'Not adapted from a Western SaaS template - designed from the ground up for the realities of operating in high-inflation, high-volatility markets.' },
+                    { title: 'Product-level granularity', desc: 'Not just portfolio averages - every metric, every recommendation, every figure is calculated at the individual product or service line level.' },
                     { title: 'No ERP integration required', desc: 'Works from your existing commercial data. Enter via the in-app form or bulk import a CSV. Live in hours, not months.' },
-                    { title: 'Output in Local Currency', desc: 'Every recommendation is quantified in local currency impact — not abstract percentages, but real recoverable revenue per action.' },
+                    { title: 'Output in Local Currency', desc: 'Every recommendation is quantified in local currency impact - not abstract percentages, but real recoverable revenue per action.' },
                   ].map((item, i) => (
                     <div key={i} data-reveal className="opacity-0 flex items-start gap-4">
                       <div className="w-8 h-8 rounded-lg bg-teal/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -245,7 +245,7 @@ export default function PlatformPage() {
           </div>
         </section>
 
-        {/* FOUR PILLARS — DEEP DIVE */}
+        {/* FOUR PILLARS - DEEP DIVE */}
         <section className="bg-slate-50 py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -257,13 +257,13 @@ export default function PlatformPage() {
               <div id="p1">
                 <span id="pricing-intelligence" aria-hidden="true" />
                 <PillarSection num={1} title="Pricing Intelligence" color="teal" reverse={false}
-                problem="Most businesses reprice reactively — without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume without recovering the margin that was lost."
-                context="In high-inflation markets, the cost of pricing inaction compounds monthly. A product priced 8% below its willingness-to-pay ceiling isn't just leaving margin on the table — it's setting the baseline from which every future increase is measured. Most commercial teams know they're behind on pricing. They don't know by how much, on which products, or against which competitors. MarginCOS answers all three."
+                problem="Most businesses reprice reactively - without visibility on competitor positioning, margin floor breaches, or willingness-to-pay headroom. The result is chronic under-pricing or poorly timed increases that erode volume without recovering the margin that was lost."
+                context="In high-inflation markets, the cost of pricing inaction compounds monthly. A product priced 8% below its willingness-to-pay ceiling isn't just leaving margin on the table - it's setting the baseline from which every future increase is measured. Most commercial teams know they're behind on pricing. They don't know by how much, on which products, or against which competitors. MarginCOS answers all three."
                 delivers={[
-                  'Product-level pricing benchmarks against competitors — in local currency and as a percentage gap',
+                  'Product-level pricing benchmarks against competitors - in local currency and as a percentage gap',
                   'Willingness-to-pay headroom quantified per product in local currency per month of recoverable margin',
                   'Margin floor breach alerts across your full portfolio with specific repricing recommendations',
-                  'Price elasticity estimates by product category — volume risk modelled at 5%, 10%, and 15% price moves',
+                  'Price elasticity estimates by product category - volume risk modelled at 5%, 10%, and 15% price moves',
                   'Recommended increase quantum and timing based on inflation exposure and competitive headroom',
                   'Repricing priority list ranked by total monthly margin recovery opportunity',
                 ]}
@@ -273,15 +273,15 @@ export default function PlatformPage() {
               <div id="p2">
                 <span id="cost-pass-through" aria-hidden="true" />
                 <PillarSection num={2} title="Cost Pass-Through" color="red" reverse={true}
-                problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the product level, absorbed costs compound into structural margin erosion — invisible on the P&L until inflation recovery is no longer viable."
-                context="Carthena Advisory's benchmarking across FMCG and manufacturing portfolios shows that commercially disciplined businesses sustain a cost pass-through rate of 70–75%. The median we observe in diagnostic work sits between 40–55%. That gap represents the margin being silently absorbed every month — not as a line item on the P&L, but as slow-moving gross margin compression that appears only in the quarterly review, long after the recovery window has closed. MarginCOS calculates this rate at the individual product level, classifies every SKU by recovery status, and quantifies exactly what closing the gap is worth in your local currency."
+                problem="Input cost inflation accumulates silently. Without cost pass-through analysis at the product level, absorbed costs compound into structural margin erosion - invisible on the P&L until inflation recovery is no longer viable."
+                context="Carthena Advisory's benchmarking across FMCG and manufacturing portfolios shows that commercially disciplined businesses sustain a cost pass-through rate of 70-75%. The median we observe in diagnostic work sits between 40-55%. That gap represents the margin being silently absorbed every month - not as a line item on the P&L, but as slow-moving gross margin compression that appears only in the quarterly review, long after the recovery window has closed. MarginCOS calculates this rate at the individual product level, classifies every SKU by recovery status, and quantifies exactly what closing the gap is worth in your local currency."
                 delivers={[
-                  'Cost pass-through rate per product vs. the Carthena Advisory benchmark of 70–75%',
-                  'RAG classification of every product — Managed (70%+), Watch (40–70%), At Risk (below 40%)',
+                  'Cost pass-through rate per product vs. the Carthena Advisory benchmark of 70-75%',
+                  'RAG classification of every product - Managed (70%+), Watch (40-70%), At Risk (below 40%)',
                   'Revenue-at-risk figure: total portfolio revenue running below the 40% recovery threshold',
-                  'FX-linked cost decomposition by product — raw materials, packaging, logistics, and energy separated',
+                  'FX-linked cost decomposition by product - raw materials, packaging, logistics, and energy separated',
                   'Actual vs. self-reported inflation comparison to surface gaps between finance and supply chain data',
-                  'Monthly margin recovery opportunity in local currency — the quantified cost of inaction per month',
+                  'Monthly margin recovery opportunity in local currency - the quantified cost of inaction per month',
                 ]}
                 users={['CFO', 'Finance Director', 'Supply Chain']}
                 graphic={<P2CostGraphic />} />
@@ -289,14 +289,14 @@ export default function PlatformPage() {
               <div id="p3">
                 <span id="channel-economics" aria-hidden="true" />
                 <PillarSection num={3} title="Channel Economics" color="gold" reverse={false}
-                problem="Gross margin looks healthy until logistics, distributor margin, trade credit costs, and rebates are deducted by channel — revealing that some routes to market are actively destroying value while appearing profitable on the surface."
-                context="The channel economics gap is a calculation most businesses have never done in full. Gross margin is measured at the portfolio level. Net contribution by channel — after freight, distributor take, trade credit financing costs, and promotional rebates — is rarely calculated at all. In markets where distributor margins run 18–25% and trade credit terms extend to 60–90 days, the difference between gross and net channel margin can exceed 30 percentage points on the same product. MarginCOS builds this waterfall for every channel and every partner, making the true economics visible for the first time."
+                problem="Gross margin looks healthy until logistics, distributor margin, trade credit costs, and rebates are deducted by channel - revealing that some routes to market are actively destroying value while appearing profitable on the surface."
+                context="The channel economics gap is a calculation most businesses have never done in full. Gross margin is measured at the portfolio level. Net contribution by channel - after freight, distributor take, trade credit financing costs, and promotional rebates - is rarely calculated at all. In markets where distributor margins run 18-25% and trade credit terms extend to 60-90 days, the difference between gross and net channel margin can exceed 30 percentage points on the same product. MarginCOS builds this waterfall for every channel and every partner, making the true economics visible for the first time."
                 delivers={[
-                  'Full margin waterfall per channel — from list price to net landed margin, every deduction itemised',
+                  'Full margin waterfall per channel - from list price to net landed margin, every deduction itemised',
                   'Net route-to-market margin by channel after logistics, distributor take, credit, and rebates',
                   'Trade credit cost of capital calculated per channel and per partner based on actual payment terms',
-                  'Partner performance ranking by true net margin contribution — not revenue, not gross margin',
-                  'Minimum viable volume thresholds per channel — the point at which a route to market stops covering its cost',
+                  'Partner performance ranking by true net margin contribution - not revenue, not gross margin',
+                  'Minimum viable volume thresholds per channel - the point at which a route to market stops covering its cost',
                   'Weak channel identification with specific remediation actions: renegotiate, restructure, or exit',
                 ]}
                 users={['Commercial Director', 'Sales Director', 'Trade Marketing']}
@@ -305,15 +305,15 @@ export default function PlatformPage() {
               <div id="p4">
                 <span id="trade-execution" aria-hidden="true" />
                 <PillarSection num={4} title="Trade Execution" color="purple" reverse={true}
-                problem="Commercial investment is the largest untracked cost line in most P&Ls. Without spend ROI visibility, promotional depth routinely exceeds margin — with no mechanism to catch it before the spend is committed."
-                context="Promotions are approved because they drive volume. But volume at what margin? Most commercial teams don't have the answer until the post-campaign review — which is too late. A promotion that requires 35% volume uplift to break even, but historically delivers 12%, is a margin destruction event approved in a budget meeting with no financial model attached. MarginCOS calculates the break-even uplift for every commercial action before the spend is committed, tracks actual delivery against it, and surfaces the historical ROI data needed to make the next investment decision with confidence."
+                problem="Commercial investment is the largest untracked cost line in most P&Ls. Without spend ROI visibility, promotional depth routinely exceeds margin - with no mechanism to catch it before the spend is committed."
+                context="Promotions are approved because they drive volume. But volume at what margin? Most commercial teams don't have the answer until the post-campaign review - which is too late. A promotion that requires 35% volume uplift to break even, but historically delivers 12%, is a margin destruction event approved in a budget meeting with no financial model attached. MarginCOS calculates the break-even uplift for every commercial action before the spend is committed, tracks actual delivery against it, and surfaces the historical ROI data needed to make the next investment decision with confidence."
                 delivers={[
-                  'Promotion profitability per product — revenue uplift, promotional cost, and net margin impact side by side',
+                  'Promotion profitability per product - revenue uplift, promotional cost, and net margin impact side by side',
                   'Break-even volume uplift calculation for every promotion before spend is committed',
                   'Loss-making promotion flagging with margin-positive alternative mechanics suggested',
-                  'Historical promotion ROI by product, channel, and mechanic — what has and hasn\'t worked, quantified',
+                  'Historical promotion ROI by product, channel, and mechanic - what has and hasn\'t worked, quantified',
                   'Pre-commitment profitability check: break-even delivery requirement vs. realistic historical uplift estimate',
-                  'Commercial spend allocation model — ranked by expected margin return to guide next-period investment',
+                  'Commercial spend allocation model - ranked by expected margin return to guide next-period investment',
                 ]}
                 users={['Trade Marketing', 'Sales Director', 'CFO']}
                 graphic={<P4TradeGraphic />} />
@@ -329,7 +329,7 @@ export default function PlatformPage() {
               <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Enterprise</span>
               <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy">Advanced Intelligence Modules</h2>
               <p data-reveal className="opacity-0 mt-4 text-slate-500 leading-relaxed">
-                Enterprise clients access four advanced analytical modules — portfolio rationalisation, forward scenario planning, commercial spend analytics, and partner performance scoring. These modules run on the same data and appear alongside the four core pillars.
+                Enterprise clients access four advanced analytical modules - portfolio rationalisation, forward scenario planning, commercial spend analytics, and partner performance scoring. These modules run on the same data and appear alongside the four core pillars.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -352,7 +352,7 @@ export default function PlatformPage() {
             <span data-reveal className="opacity-0 inline-block text-xs font-bold text-teal uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full mb-3">Data Entry</span>
             <h2 data-reveal className="opacity-0 text-2xl md:text-3xl font-black text-navy mb-6">Your Data, Your Way</h2>
             <p data-reveal className="opacity-0 text-slate-500 leading-relaxed max-w-2xl mx-auto">
-              MarginCOS does not require an ERP integration. Clients enter their portfolio data directly into the platform — either product by product via the built-in form, or by uploading a CSV file for bulk import. A downloadable CSV template is available to guide data preparation. Most teams are live and running their first analysis within 48 hours.
+              MarginCOS does not require an ERP integration. Clients enter their portfolio data directly into the platform - either product by product via the built-in form, or by uploading a CSV file for bulk import. A downloadable CSV template is available to guide data preparation. Most teams are live and running their first analysis within 48 hours.
             </p>
           </div>
         </section>

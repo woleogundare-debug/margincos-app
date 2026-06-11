@@ -70,7 +70,7 @@ export function CurrencyProvider({ children }) {
       try {
         const { data: { session } } = await sb.auth.getSession();
         const userId = session?.user?.id;
-        if (!userId) return; // no session — stay on NGN default
+        if (!userId) return; // no session - stay on NGN default
 
         const { data: membership } = await sb
           .from('team_members')
@@ -94,7 +94,7 @@ export function CurrencyProvider({ children }) {
           setCurrSym(cv.sym);
         }
       } catch (_) {
-        // Network error or missing row — silently keep the NGN default
+        // Network error or missing row - silently keep the NGN default
       }
     })();
 
@@ -125,7 +125,7 @@ export function CurrencyProvider({ children }) {
     setCurrCodeState(code);
     setCurrSym(cv.sym);
 
-    if (!teamId) return { ok: true }; // no team context (e.g. marketing) — local only
+    if (!teamId) return { ok: true }; // no team context (e.g. marketing) - local only
 
     const sb = getSupabaseClient();
     if (!sb) return { ok: true };

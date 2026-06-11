@@ -1,7 +1,7 @@
 export default function PassThroughChart() {
   const bars = [
-    { label: 'Nigerian average (most companies)', pct: 38, color: '#C0392B', text: '35–45%' },
-    { label: 'Nigerian FMCG leaders (benchmark)', pct: 72, color: '#0D8F8F', text: '70–75%' },
+    { label: 'Nigerian average (most companies)', pct: 38, color: '#C0392B', text: '35-45%' },
+    { label: 'Nigerian FMCG leaders (benchmark)', pct: 72, color: '#0D8F8F', text: '70-75%' },
     { label: 'Recovery gap (available margin)', pct: 34, color: '#D4A843', text: '~30pp gap' },
   ];
 
@@ -25,7 +25,7 @@ export default function PassThroughChart() {
         </div>
       ))}
       <p style={{ color: '#8899AA', fontSize: '12px', marginTop: '8px' }}>
-        Source: Carthena Advisory analysis across Nigerian FMCG portfolios, 2024–2026
+        Source: Carthena Advisory analysis across Nigerian FMCG portfolios, 2024-2026
       </p>
     </div>
   );

@@ -6,7 +6,7 @@
   <rect x="340" y="12" width="104" height="20" fill="#DC2626" rx="10"/>
   <text x="392" y="26" text-anchor="middle" font-size="10" font-weight="600" fill="white">Manufacturing</text>
   <!-- Waterfall-style cost decomposition -->
-  <text x="18" y="68" font-size="9" fill="#64748B">Raw Material Cost Shock — Monthly Impact (₦ millions)</text>
+  <text x="18" y="68" font-size="9" fill="#64748B">Raw Material Cost Shock - Monthly Impact (₦ millions)</text>
   <!-- Base bar -->
   <rect x="56" y="100" width="52" height="80" fill="#1B2A4A" rx="3"/>
   <text x="82" y="94" text-anchor="middle" font-size="8" fill="#1B2A4A" font-weight="600">Base</text>
