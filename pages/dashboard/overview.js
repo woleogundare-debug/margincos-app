@@ -238,7 +238,7 @@ export default function OverviewPage() {
                 <div className="insight-body">
                   <div className="insight-text">
                     Portfolio margin at <strong>{results.totalRevenue > 0 ? (results.totalCurrentMargin / results.totalRevenue * 100).toFixed(1) : '-'}%</strong>.{' '}
-                    <em>{fNAbs(results.revenueAtRisk)} of revenue is priced below its cost floor</em>.{' '}
+                    <em>{fNAbs(results.revenueAtRisk)} in monthly margin is at risk from unrecovered cost</em>.{' '}
                     {results.actions?.length > 0 && (
                       <>{results.actions.length} prioritised actions identified across {new Set(results.actions.map(a => a.pillar)).size} pillars.</>
                     )}

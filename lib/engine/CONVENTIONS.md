@@ -98,3 +98,7 @@ After any engine input change, re-upload the Logistics template seed data with t
 - Floor breach detection fires on any lane with margin below `min_margin_floor_pct × 100`
 
 If any of these reads off, the convention has drifted somewhere. Trace input → engine → output → display and find the boundary.
+
+## Display precision
+
+Pass-through and rate precision: dashboard 0 dp, Excel and PDF exports 1 dp. Intentional - do not align. Executive dashboard reads cleaner at whole percentages; analyst exports carry the precision.

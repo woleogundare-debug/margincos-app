@@ -198,6 +198,7 @@ const TruncationNotice = ({ shown, total, unitPlural }) => (
 const PageFooter = ({ companyName }) => (
   <View style={s.footer} fixed>
     <Text style={s.footerText}>MarginCOS | {companyName || 'Confidential'}</Text>
+    <Text style={[s.footerText, { textAlign: 'center' }]}>A product of Carthena Advisory | carthenaadvisory.com</Text>
     <Text style={s.footerText} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
   </View>
 );
@@ -1059,7 +1060,7 @@ const PricingPage = ({ results, companyName, cfg }) => {
 
       <NarrativeBlock lines={getPricingNarrative(results, cfg)} />
 
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '25%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Price</Text>
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>COGS</Text>
@@ -1068,7 +1069,7 @@ const PricingPage = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Comp Gap</Text>
       </View>
       {rows.map((r, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '25%' }]} numberOfLines={1}>{r.sku}</Text>
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.price, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '15%', textAlign: 'right' }]}>{fmt(r.cogs, 'nairaK')}</Text>
@@ -1119,7 +1120,7 @@ const CostPage = ({ results, companyName, cfg }) => {
       <NarrativeBlock lines={getCostNarrative(results, cfg)} />
       <P2WaterfallSvg p2={p2} />
 
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '28%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Inflation</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Pass-Thru</Text>
@@ -1128,7 +1129,7 @@ const CostPage = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '15%', textAlign: 'right' }]}>Absorbed</Text>
       </View>
       {rows.map((r, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '28%' }]} numberOfLines={1}>{r.sku}</Text>
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.inf, 'pct')}</Text>
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.pt, 'pct')}</Text>
@@ -1170,7 +1171,7 @@ const ChannelPage = ({ results, companyName, cfg }) => {
       <NarrativeBlock lines={getChannelNarrative(results, cfg)} />
       <P3ChannelSvg channelResults={p3.channelResults} />
 
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '25%' }]}>Channel</Text>
         <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'right' }]}>Revenue</Text>
         <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'right' }]}>Contribution</Text>
@@ -1179,7 +1180,7 @@ const ChannelPage = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '10%', textAlign: 'right' }]}>Vol</Text>
       </View>
       {p3.channelResults.map((ch, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '25%', fontWeight: 600 }]}>{ch.channel}</Text>
           <Text style={[s.tableCell, { width: '20%', textAlign: 'right' }]}>{fmt(ch.rev, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '20%', textAlign: 'right' }]}>{fmt(ch.contMargin, 'nairaK')}</Text>
@@ -1224,7 +1225,7 @@ const TradePage = ({ results, companyName, cfg }) => {
 
       <NarrativeBlock lines={getTradeNarrative(results)} />
 
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '22%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'right' }]}>Depth</Text>
         <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'right' }]}>Lift</Text>
@@ -1234,7 +1235,7 @@ const TradePage = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '12%', textAlign: 'center' }]}>Status</Text>
       </View>
       {rows.map((r, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '22%' }]} numberOfLines={1}>{r.sku}</Text>
           <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.depth, 'pct')}</Text>
           <Text style={[s.tableCell, { width: '12%', textAlign: 'right' }]}>{fmt(r.lift, 'pct')}</Text>
@@ -1299,7 +1300,7 @@ const M1Page = ({ results, companyName, cfg }) => {
 
       <NarrativeBlock lines={getM1Narrative(results, cfg)} />
 
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '22%' }]}>{cfg.unitId}</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Margin %</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Rev Share</Text>
@@ -1308,7 +1309,7 @@ const M1Page = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '18%', textAlign: 'right' }]}>Margin</Text>
       </View>
       {rows.map((r, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '22%' }]} numberOfLines={1}>{r.sku}</Text>
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.skuMarginPct, 'pctRaw')}</Text>
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.revShare, 'pctRaw')}</Text>
@@ -1363,7 +1364,7 @@ const M2Page = ({ results, companyName, cfg }) => {
       <M2ScenarioSvg scenarios={m2.scenarios} />
 
       <View style={{ marginTop: 20 }}>
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '18%' }]}>Recovery Rate</Text>
         <Text style={[s.tableHeaderCell, { width: '16%', textAlign: 'right' }]}>Cost Shock</Text>
         <Text style={[s.tableHeaderCell, { width: '16%', textAlign: 'right' }]}>Absorbed</Text>
@@ -1372,7 +1373,7 @@ const M2Page = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'center' }]}>Risk Level</Text>
       </View>
       {m2.scenarios.map((sc, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '18%', fontWeight: 600 }]}>{(sc.recoveryRate * 100).toFixed(0)}% recovery</Text>
           <Text style={[s.tableCell, { width: '16%', textAlign: 'right' }]}>{fmt(sc.costShock, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '16%', textAlign: 'right' }]}>{fmt(sc.absorbed, 'nairaK')}</Text>
@@ -1429,7 +1430,7 @@ const M3Page = ({ results, companyName, cfg }) => {
       <NarrativeBlock lines={getM3Narrative(results, cfg)} />
       <M3TradeROISvg results={m3.results} />
 
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '20%' }]}>Channel</Text>
         <Text style={[s.tableHeaderCell, { width: '16%', textAlign: 'right' }]}>Spend</Text>
         <Text style={[s.tableHeaderCell, { width: '16%', textAlign: 'right' }]}>Net Rev</Text>
@@ -1438,7 +1439,7 @@ const M3Page = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '22%', textAlign: 'center' }]}>Status</Text>
       </View>
       {rows.map((r, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '20%', fontWeight: 600 }]}>{r.channel}</Text>
           <Text style={[s.tableCell, { width: '16%', textAlign: 'right' }]}>{fmt(r.total, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '16%', textAlign: 'right' }]}>{fmt(r.netRev, 'nairaK')}</Text>
@@ -1488,7 +1489,7 @@ const M4Page = ({ results, companyName, cfg }) => {
 
       <NarrativeBlock lines={getM4Narrative(results, cfg)} />
 
-      <View style={s.tableHeader}>
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '20%' }]}>{cfg.fields.partner}</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>Revenue</Text>
         <Text style={[s.tableHeaderCell, { width: '14%', textAlign: 'right' }]}>True Cont.</Text>
@@ -1498,7 +1499,7 @@ const M4Page = ({ results, companyName, cfg }) => {
         <Text style={[s.tableHeaderCell, { width: '20%', textAlign: 'center' }]}>Class</Text>
       </View>
       {rows.map((r, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]}>
+        <View key={i} style={[s.tableRow, i % 2 === 1 && s.tableRowAlt]} wrap={false}>
           <Text style={[s.tableCell, { width: '20%', fontWeight: 600 }]} numberOfLines={1}>{r.name}</Text>
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.rev, 'nairaK')}</Text>
           <Text style={[s.tableCell, { width: '14%', textAlign: 'right' }]}>{fmt(r.trueContrib, 'nairaK')}</Text>
@@ -1745,7 +1746,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
 
       {/* Trend summary table */}
       <View style={{ marginTop: 8 }}>
-        <View style={s.tableHeader}>
+        <View style={s.tableHeader} fixed>
           <Text style={[s.tableHeaderCell, { width: '30%' }]}>Metric</Text>
           <Text style={[s.tableHeaderCell, { width: '25%', textAlign: 'right' }]}>{earlier}</Text>
           <Text style={[s.tableHeaderCell, { width: '25%', textAlign: 'right' }]}>{later}</Text>
@@ -1758,7 +1759,7 @@ const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
           const currCount = laterResults.skuCount  ?? null;
           const skuDiff   = (currCount != null && prevCount != null) ? currCount - prevCount : null;
           return (
-            <View style={[s.tableRow, { backgroundColor: '#EEF2F7' }]}>
+            <View style={[s.tableRow, { backgroundColor: '#EEF2F7' }]} wrap={false}>
               <Text style={[s.tableCell, { width: '30%', fontWeight: 700, fontSize: 7, textTransform: 'uppercase', letterSpacing: 0.5, color: C.navy }]}>
                 {`Active ${cfg.unitPlural}`}
               </Text>
@@ -1778,23 +1779,24 @@ const ComparisonPage = ({ chronologicalDelta, companyName, cfg }) => {
           { label: 'Portfolio Margin', curr: laterResults.totalCurrentMargin,      prev: earlierResults.totalCurrentMargin,      pos: true  },
           { label: 'Revenue at Risk',  curr: laterResults.revenueAtRisk,           prev: earlierResults.revenueAtRisk,           pos: false },
           { label: 'Pricing Gain',     curr: laterResults.p1?.totalGain,           prev: earlierResults.p1?.totalGain,           pos: true  },
-          { label: 'Cost Absorbed',    curr: laterResults.p2?.totalAbsorbed,       prev: earlierResults.p2?.totalAbsorbed,       pos: false },
+          { label: 'Portfolio Recovery Rate', curr: laterResults.p2?.portRecoveryPct, prev: earlierResults.p2?.portRecoveryPct, pos: true, fmt: 'pctRaw' },
           { label: 'Channel Exposure', curr: laterResults.p3?.totalDistExposure,   prev: earlierResults.p3?.totalDistExposure,   pos: false },
         ].map((row, i) => {
+          const f = row.fmt || 'nairaK';
           const diff = (row.curr != null && row.prev != null) ? row.curr - row.prev : null;
-          const diffPct = (diff != null && row.prev !== 0) ? (diff / Math.abs(row.prev) * 100) : null;
+          const diffPct = (diff != null && row.prev !== 0 && f === 'nairaK') ? (diff / Math.abs(row.prev) * 100) : null;
           // Polarity-aware colour: improvement = teal, deterioration = red
           const isImprovement = diff == null ? null
             : row.pos ? diff >= 0 : diff <= 0;
           const deltaColor = diff == null ? C.muted : isImprovement ? C.teal : C.red;
           return (
-            <View key={i} style={[s.tableRow, i % 2 === 0 && s.tableRowAlt]}>
+            <View key={i} style={[s.tableRow, i % 2 === 0 && s.tableRowAlt]} wrap={false}>
               <Text style={[s.tableCell, { width: '30%', fontWeight: 600 }]}>{row.label}</Text>
-              <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.prev, 'nairaK')}</Text>
-              <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.curr, 'nairaK')}</Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.prev, f)}</Text>
+              <Text style={[s.tableCell, { width: '25%', textAlign: 'right' }]}>{fmt(row.curr, f)}</Text>
               <Text style={[s.tableCell, { width: '20%', textAlign: 'right', color: deltaColor }]}>
                 {diff != null
-                  ? `${diff >= 0 ? '+' : ''}${fmt(diff, 'nairaK')}${diffPct != null ? ` (${diffPct.toFixed(1)}%)` : ''}`
+                  ? `${diff >= 0 ? '+' : ''}${fmt(diff, f)}${diffPct != null ? ` (${diffPct.toFixed(1)}%)` : ''}`
                   : '-'}
               </Text>
             </View>
@@ -1847,7 +1849,6 @@ const DisclaimerPage = ({ companyName }) => (
     </Text>
     <View style={{ marginTop: 40 }}>
       <Text style={{ fontSize: 10, fontWeight: 700, color: C.navy, marginBottom: 4 }}>MarginCOS</Text>
-      <Text style={{ fontSize: 8, color: C.muted }}>A product of Carthena Advisory | carthenaadvisory.com</Text>
       <Text style={{ fontSize: 8, color: C.muted, marginTop: 2 }}>Generated {today()}</Text>
     </View>
     <PageFooter companyName={companyName} />
