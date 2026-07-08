@@ -386,21 +386,18 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
   const isCurrency = isNumeric && col.label.includes('₦');
   const isVolume = col.key === 'monthly_volume_units' || col.key === 'monthly_trips';
   const useCommaFormat = isCurrency || isVolume;
-  // pct fields are stored as decimals (0.65) but operators type and read
-  // them as integer-percent (65). Conversion happens at this boundary:
-  // display multiplies by 100, save divides by 100. The template upload
-  // path is untouched - templates already store decimals correctly.
-  // See lib/engine/CONVENTIONS.md.
+  // pct fields are stored and entered as decimals (0.65 = 65%), matching the
+  // template contract. No conversion at this boundary: the operator types the
+  // decimal, it is stored as-is, and it re-displays as-is. The trailing '%'
+  // glyph documents that the number is a proportion. See lib/engine/CONVENTIONS.md.
   const isPct = col.type === 'pct';
 
   const formatForDisplay = (val) => {
     if (val === '' || val === null || val === undefined) return val ?? '';
     if (isPct) {
+      // Decimal-native: display the stored decimal as-is (0.65), no x100.
       const num = typeof val === 'number' ? val : parseFloat(String(val).replace(/,/g, ''));
-      if (isNaN(num)) return val;
-      // Multiply decimal back to integer-percent for display, cleaning
-      // floating-point artefacts like 0.07 * 100 = 7.000000000000001.
-      return String(parseFloat((num * 100).toFixed(6)));
+      return isNaN(num) ? val : String(num);
     }
     if (!useCommaFormat) return val ?? '';
     const num = parseFloat(String(val).replace(/,/g, ''));
@@ -414,13 +411,8 @@ function CellInput({ col, value, onChange, onBlur, vertical }) {
   const { categories } = taxonomy;
   const handleChange = (v) => {
     setLocal(v);
-    if (isPct && typeof v === 'number' && !isNaN(v)) {
-      // Divide integer-percent input to decimal storage form, cleaning
-      // floating-point artefacts.
-      onChange(parseFloat((v / 100).toFixed(8)));
-    } else {
-      onChange(v);
-    }
+    // Decimal-native: store the entered decimal as-is (no /100 for pct).
+    onChange(v);
   };
 
   const baseClass = 'w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-teal rounded px-1.5 py-1.5 transition-all';

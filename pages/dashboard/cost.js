@@ -213,13 +213,18 @@ export default function CostPage() {
                   r.sku,
                   ...(isConsolidated ? [r._division || '-'] : []),
                   r.category,
-                  fNAbs(r.shock),
-                  { content: (
-                    <Badge color={r.pt >= 0.7 ? 'green' : r.pt >= 0.4 ? 'amber' : 'red'}>
-                      {(r.pt * 100).toFixed(0)}%
-                    </Badge>
-                  )},
-                  { content: <span className="text-red-600 font-semibold">{fNAbs(r.absorbed)}</span> },
+                  r.dataMissing ? { content: <span className="text-slate-300">-</span> } : fNAbs(r.shock),
+                  { content: r.dataMissing
+                    ? <Badge color="slate"><span title="Pass-through or cost inflation not provided - excluded from recovery.">Data missing</span></Badge>
+                    : (
+                      <Badge color={r.pt >= 0.7 ? 'green' : r.pt >= 0.4 ? 'amber' : 'red'}>
+                        {(r.pt * 100).toFixed(0)}%
+                      </Badge>
+                    )
+                  },
+                  { content: r.dataMissing
+                    ? <span className="text-slate-300">-</span>
+                    : <span className="text-red-600 font-semibold">{fNAbs(r.absorbed)}</span> },
                   { content: r.fxAbsorbed > 0
                     ? <Badge color="amber">{fNAbs(r.fxAbsorbed)}</Badge>
                     : <span className="text-slate-300">-</span>

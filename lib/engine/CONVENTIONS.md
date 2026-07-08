@@ -24,6 +24,18 @@ const pt = n(r.pass_through_rate) / 100;
 const pt = n(r.pass_through_rate);
 ```
 
+## Write boundary - decimal-native input
+
+All pct fields stored as decimals throughout the platform. Users enter decimals (0.65 for 65%). Display layers multiply by 100 only for read-only rendering (dashboards, PDF, Excel exports). No conversion at write boundary.
+
+Both write paths honour this: the template stores decimals, the bulk-import parser writes the file value untouched, and the SkuGrid inline editor stores the typed decimal as-is (the trailing `%` glyph is a label, not a scale). The DB CHECK constraints (`BETWEEN 0 AND 2`, and `0 AND 5` for promo lift / volume response) enforce the decimal range, so an accidental integer-percent entry (65) hard-fails at write rather than being silently mis-scaled.
+
+## NULL means missing, not zero
+
+A NULL in a pct field means genuinely missing data, not an empirically observed 0%. Read such fields with `nOrNull()`, not `n()`, wherever a zero would be misread as a finding. Portfolio aggregates (recovery rate, absorbed cost) exclude NULL rows rather than counting them as 100% absorbed. RAG classification skips NULL rows rather than colouring them red. The action queue suppresses NULL rows rather than listing them as high-absorption. A stored 0 is a real observation and is treated as such - only NULL/blank is "missing". Fields where zero is the correct default (margin floor absent, no promotion, no FX exposure) keep `n()`.
+
+Currently wired for P2 pass-through and cost inflation (`p2-cost.js`, `p2-logistics.js`), which emit `dataMissing: true` rows that the dashboard renders as a "Data missing" pill, the aggregates exclude, and the action queue skips. Distributor/customer margin reads still use `n()` pending the clamping cycle.
+
 ## Elasticity is NOT a percentage
 
 Price elasticity (`price_elasticity`, `rate_sensitivity`) is a dimensionless coefficient, typically -0.5 to -2.0. **Never normalise these.** They are not declared `type: 'pct'` in SkuGrid for exactly this reason. A blanket "remove `/100` from every percentage field" sweep must skip elasticity reads entirely.
