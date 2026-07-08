@@ -51,6 +51,15 @@ export default function CostPage() {
     : p2?.avgAbsorbedPct > 30 ? 'amber'
     : 'green';
 
+  // F-04: over-100% recovery (cost-plus pass-through > 1) is clamped for display;
+  // the engine keeps the raw value. Annotate with the count of cost-plus rows.
+  const rawRecoveryPct     = p2?.portRecoveryPct || 0;
+  const displayRecoveryPct = Math.min(100, rawRecoveryPct);
+  const costPlusCount      = (p2?.results || []).filter(r => r.pt != null && r.pt > 1).length;
+  const recoveryNote       = rawRecoveryPct > 100
+    ? ` (cost-plus on ${costPlusCount} ${costPlusCount === 1 ? cfg.unit : cfg.unitPlural})`
+    : '';
+
   return (
     <>
       <Head><title>Cost Pass-Through | MarginCOS</title></Head>
@@ -118,7 +127,7 @@ export default function CostPage() {
                   isPositive: false,
                 } : null} />
               <KpiTile label="Portfolio Recovery Rate"
-                value={(p2.portRecoveryPct || 0).toFixed(1) + '%'}
+                value={displayRecoveryPct.toFixed(1) + '%' + recoveryNote}
                 pill={p2.portRecoveryPct < 40
                   ? `⚠ Critical - below benchmark (${cfg.benchmark.costRecoveryShort})`
                   : p2.portRecoveryPct < 70 ? `▲ Below benchmark (${cfg.benchmark.costRecoveryShort})` : '✓ Above benchmark'}
@@ -148,7 +157,7 @@ export default function CostPage() {
               </div>
               <div className="px-4 py-3 bg-white">
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  {`Recovery rate: ${(p2.portRecoveryPct || 0).toFixed(1)}% - ${fNAbs(p2.totalAbsorbed)}/month absorbed into margin.`}
+                  {`Recovery rate: ${displayRecoveryPct.toFixed(1)}%${recoveryNote} - ${fNAbs(p2.totalAbsorbed)}/month absorbed into margin.`}
                 </p>
               </div>
             </div>
@@ -237,7 +246,7 @@ export default function CostPage() {
                 emptyMessage={`No cost data - populate ${cfg.fields.cost} and ${cfg.fields.costInflation} fields.`}
               />
               <NarrativeBox>
-                {cfg.narrative.benchmarkNarrative(p2.portRecoveryPct || 0) + ' '}
+                {cfg.narrative.benchmarkNarrative(displayRecoveryPct) + ' '}
                 {p2.totalAbsorbed > 0
                   ? `${fNAbs(p2.totalAbsorbed)}/month absorbed into margin and not priced through. `
                   : 'No cost absorption detected. '}

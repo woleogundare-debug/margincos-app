@@ -1092,11 +1092,17 @@ const CostPage = ({ results, companyName, cfg }) => {
   const rows = sorted.slice(0, 20);
   const truncated = sorted.length > 20;
 
+  // F-04: clamp over-100% recovery (cost-plus) for display; engine value untouched.
+  const rawRecovery     = p2.portRecoveryPct ?? 0;
+  const overRecovering  = rawRecovery > 100;
+  const displayRecovery = Math.min(100, rawRecovery);
+  const costPlusCount   = (p2.results || []).filter(r => r.pt != null && r.pt > 1).length;
+
   return (
     <Page size="A4" style={s.page}>
       <Text style={s.sectionTitle}>P2 | Cost Pass-Through</Text>
       <Text style={s.sectionSub}>
-        {`Portfolio recovery rate: ${fmt(p2.portRecoveryPct, 'pctRaw')} | Total cost absorbed: ${fmt(p2.totalAbsorbed, 'nairaK')} /month | Average ${cfg.unit} absorption: ${fmt(p2.avgAbsorbedPct, 'pctRaw')}`}
+        {`Portfolio recovery rate: ${fmt(displayRecovery, 'pctRaw')}${overRecovering ? ` (cost-plus on ${costPlusCount})` : ''} | Total cost absorbed: ${fmt(p2.totalAbsorbed, 'nairaK')} /month | Average ${cfg.unit} absorption: ${fmt(p2.avgAbsorbedPct, 'pctRaw')}`}
       </Text>
 
       <View style={s.kpiRow}>
@@ -1107,8 +1113,8 @@ const CostPage = ({ results, companyName, cfg }) => {
         </View>
         <View style={s.kpiCard}>
           <Text style={s.kpiLabel}>Recovery Rate</Text>
-          <Text style={[s.kpiValue, { color: C.teal }]}>{fmt(p2.portRecoveryPct, 'pctRaw')}</Text>
-          <Text style={s.kpiSub}>vs 70-75% benchmark</Text>
+          <Text style={[s.kpiValue, { color: C.teal }]}>{fmt(displayRecovery, 'pctRaw')}</Text>
+          <Text style={s.kpiSub}>{overRecovering ? `Cost-plus on ${costPlusCount} - capped at 100%` : 'vs 70-75% benchmark'}</Text>
         </View>
         <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
           <Text style={s.kpiLabel}>Cost Shock</Text>

@@ -31,6 +31,14 @@ export default function P2WaterfallChart({ p2 }) {
 
   const recovered = totalCostShock - totalAbsorbed;
 
+  // F-04: cost-plus pass-through (> 1) drives absorbed negative and recovery > 100%.
+  // Clamp for display only - engine data (p2) is untouched.
+  const overRecovering      = portRecoveryPct > 100;
+  const displayRecoveryPct  = Math.min(100, portRecoveryPct);
+  const costPlusCount       = (p2.results || []).filter(r => r.pt != null && r.pt > 1).length;
+  const recoveredDisplay    = Math.min(totalCostShock, recovered);
+  const absorbedDisplay     = Math.max(0, totalAbsorbed);
+
   const data = [
     {
       label: 'Cost Shock',
@@ -40,13 +48,13 @@ export default function P2WaterfallChart({ p2 }) {
     },
     {
       label: 'Recovered',
-      value: recovered,
+      value: recoveredDisplay,
       color: COLORS.recovery,
       description: 'Cost passed through to price',
     },
     {
       label: 'Absorbed',
-      value: totalAbsorbed,
+      value: absorbedDisplay,
       color: COLORS.absorbed,
       description: 'Residual margin erosion',
     },
@@ -94,7 +102,7 @@ export default function P2WaterfallChart({ p2 }) {
       {/* KPI pill */}
       <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {[
-          { label: 'Recovery Rate', value: pct(portRecoveryPct), color: COLORS.recovery },
+          { label: 'Recovery Rate', value: pct(displayRecoveryPct), color: COLORS.recovery },
           { label: 'Total Shock',   value: fmt(totalCostShock),  color: COLORS.shock    },
           { label: 'Absorbed',      value: fmt(totalAbsorbed),   color: COLORS.absorbed },
         ].map(({ label, value, color }) => (
@@ -141,6 +149,12 @@ export default function P2WaterfallChart({ p2 }) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+      {overRecovering && (
+        <p style={{ fontSize: '11px', color: '#8896A7', marginTop: '10px' }}>
+          Recovery capped at 100% for display - cost-plus recovery on {costPlusCount} {costPlusCount === 1 ? 'item' : 'items'} (raw {portRecoveryPct.toFixed(0)}%).
+        </p>
+      )}
     </div>
   );
 }
