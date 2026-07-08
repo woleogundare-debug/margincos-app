@@ -114,3 +114,7 @@ If any of these reads off, the convention has drifted somewhere. Trace input →
 ## Display precision
 
 Pass-through and rate precision: dashboard 0 dp, Excel and PDF exports 1 dp. Intentional - do not align. Executive dashboard reads cleaner at whole percentages; analyst exports carry the precision.
+
+## Service-role-only tables (upload_cycles)
+
+`upload_cycles` is service-role only. RLS is enabled and an explicit `deny_all` policy (`USING (false) WITH CHECK (false)` for anon and authenticated) blocks every client-key read and write; the table is written by server/service-role paths, never the anon or authenticated key. A table with RLS enabled and a `USING (false)` deny policy is intentional, not a misconfiguration - do not "fix" it by adding an allow policy. Service-role connections bypass RLS and are unaffected. This pattern (and the earlier `rls_enabled_no_policy` state it replaced) is the deliberate design for server-managed bookkeeping tables.
