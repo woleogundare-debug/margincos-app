@@ -42,6 +42,12 @@ const C = {
   white: '#FFFFFF',
 };
 
+/* ── M1/M4 chart classification colours (brand tokens; mirrors components/charts/chartTokens.js) ── */
+const CHART_GREEN = '#10B981';
+const M1C = { '★ Protect': C.teal, '▲ Grow': CHART_GREEN, '⚠ Reprice': C.gold, '✗ Review': C.red };
+const M4C = { '★ Strategic': C.teal, '▲ Grow': CHART_GREEN, '⚠ Renegotiate': C.gold, '✗ Review': C.red };
+const clsN = (x) => (x || '').replace(/^[^\w]+/, '').trim();
+
 /* ── Styles ────────────────────────────────────────────────── */
 const s = StyleSheet.create({
   page: {
@@ -1273,6 +1279,196 @@ const TradePage = ({ results, companyName, cfg }) => {
    ══════════════════════════════════════════════════════════════ */
 
 /* ── M1 Portfolio Rationalisation ──────────────────────────── */
+/* ── Finding-sentence header (gold label + Playfair serif finding) ── */
+const FindingHeaderPdf = ({ finding, fallbackLabel, fallbackTitle }) => (
+  <View style={{ marginBottom: 10 }}>
+    <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1.2, color: C.gold, textTransform: 'uppercase' }}>
+      {finding?.label || fallbackLabel}
+    </Text>
+    <Text style={{ fontFamily: 'PlayfairDisplay', fontSize: 15, fontWeight: 700, color: C.navy, marginTop: 3, lineHeight: 1.3 }}>
+      {finding?.sentence || fallbackTitle}
+    </Text>
+  </View>
+);
+
+/* ── M1 Marimekko (React-PDF SVG; fixed 0-100 y-scale, horizontal labels only) ── */
+const M1MarimekkoSvg = ({ m1 }) => {
+  const items0 = m1?.results;
+  if (!items0?.length) return null;
+  const W = 500, x0 = 30, y0 = 8, cw = W - 60, ch = 150;
+  const order = { Protect: 0, Grow: 1, Reprice: 2, Review: 3 };
+  const items = [...items0].sort((a, b) => (order[clsN(a.classification)] - order[clsN(b.classification)]) || (b.revShare - a.revShare));
+  const yOf = (m) => y0 + ch - (m / 100) * ch, hOf = (m) => (m / 100) * ch;
+  const avgY = yOf(m1.portfolioAvgMarginPct || 0);
+  let cx = x0;
+  const rects = items.map((r) => { const w = (r.revShare / 100) * cw; const o = { r, x: cx, y: yOf(r.skuMarginPct), w: Math.max(0.4, w - 0.5), h: hOf(r.skuMarginPct), label: w > cw * 0.03, mid: cx + w / 2 }; cx += w; return o; });
+  const H = y0 + ch + 38;
+  return (
+    <View style={{ marginBottom: 8 }} wrap={false}>
+      <Svg width={W} height={H}><G>
+        {[0, 20, 40, 60, 80, 100].map((t) => (
+          <G key={t}>
+            <Line x1={x0 - 3} y1={yOf(t)} x2={x0} y2={yOf(t)} stroke={C.rule} />
+            <SvgText fontFamily="DMSans" x={x0 - 6} y={yOf(t) + 2.5} fontSize={5.5} fill={C.muted} textAnchor="end">{t}%</SvgText>
+          </G>
+        ))}
+        <Line x1={x0} y1={y0} x2={x0} y2={y0 + ch} stroke={C.rule} />
+        <Line x1={x0} y1={y0 + ch} x2={x0 + cw} y2={y0 + ch} stroke={C.rule} />
+        {rects.map((b, i) => (
+          <G key={i}>
+            <Rect x={b.x} y={b.y} width={b.w} height={b.h} fill={M1C[b.r.classification] || C.muted} />
+            {b.label && <SvgText fontFamily="DMSans" x={b.mid} y={b.y + 7.5} fontSize={4.5} fill={C.white} textAnchor="middle">{b.r.skuId}</SvgText>}
+          </G>
+        ))}
+        <Line x1={x0} y1={avgY} x2={x0 + cw} y2={avgY} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
+        <SvgText fontFamily="DMSans" x={x0 + cw} y={avgY - 3} fontSize={6} fill={C.gold} textAnchor="end">Avg margin {(m1.portfolioAvgMarginPct || 0).toFixed(1)}%</SvgText>
+        <SvgText fontFamily="DMSans" x={x0} y={y0 + ch + 13} fontSize={6} fill={C.muted}>Width = revenue share (100%)   Height = gross margin %</SvgText>
+        {[['Protect', C.teal], ['Grow', CHART_GREEN], ['Reprice', C.gold], ['Review', C.red]].map(([lab, col], i) => (
+          <G key={lab}><Rect x={x0 + i * 90} y={y0 + ch + 21} width={7} height={7} fill={col} /><SvgText fontFamily="DMSans" x={x0 + i * 90 + 11} y={y0 + ch + 27} fontSize={6.5} fill={C.muted}>{lab}</SvgText></G>
+        ))}
+      </G></Svg>
+    </View>
+  );
+};
+
+/* ── M1 ranked bar (React-PDF SVG; Reprice + Review by margin at stake) ── */
+const M1RankedBarSvg = ({ m1 }) => {
+  const atRisk = (m1?.results || []).filter((r) => /Reprice|Review/.test(r.classification)).sort((a, b) => b.marginAtStake - a.marginAtStake).slice(0, 10);
+  if (!atRisk.length) return null;
+  const W = 500, labelW = 150, barMaxW = W - labelW - 95, barH = 12, gap = 5, padT = 6;
+  const H = padT + atRisk.length * (barH + gap) + 8;
+  const maxV = Math.max(...atRisk.map((r) => r.marginAtStake), 1);
+  return (
+    <View style={{ marginBottom: 8 }} wrap={false}>
+      <Svg width={W} height={H}><G>
+        {atRisk.map((r, i) => {
+          const bw = (r.marginAtStake / maxV) * barMaxW, y = padT + i * (barH + gap);
+          const col = /Review/.test(r.classification) ? C.red : C.gold, verb = /Review/.test(r.classification) ? 'Delist' : 'Reprice';
+          return (
+            <G key={i}>
+              <SvgText fontFamily="DMSans" x={labelW - 4} y={y + barH - 3} fontSize={7} fill={C.navy} textAnchor="end">{r.sku.length > 28 ? r.sku.slice(0, 27) + '…' : r.sku}</SvgText>
+              <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={col} rx={2} />
+              <SvgText fontFamily="DMSans" x={labelW + Math.max(2, bw) + 3} y={y + barH - 3} fontSize={6.5} fill={col} fontWeight={700}>{fmtN(r.marginAtStake)} · {verb}</SvgText>
+            </G>
+          );
+        })}
+      </G></Svg>
+    </View>
+  );
+};
+
+/* ── M4 named bubble (React-PDF SVG) ── */
+const M4BubbleSvg = ({ m4 }) => {
+  const d0 = m4?.results;
+  if (!d0?.length) return null;
+  const W = 500, x0 = 40, y0 = 12, cw = W - 70, ch = 175;
+  const revs = d0.map((r) => r.rev);
+  const useLog = (Math.max(...revs) / Math.max(1, Math.min(...revs))) > 10;
+  const lo = Math.log10(Math.min(...revs) || 1), hi = Math.log10(Math.max(...revs) || 1);
+  const sz = (v) => useLog ? 4 + (Math.log10(v || 1) - lo) / ((hi - lo) || 1) * 10 : 4 + (v / Math.max(...revs)) * 10;
+  const maxX = Math.max(...d0.map((r) => r.revShare), 12) * 1.08;
+  const yHi = Math.max(...d0.map((r) => r.contPct), 20) * 1.1, yLo = Math.min(0, Math.min(...d0.map((r) => r.contPct))) * 1.1;
+  const px = (v) => x0 + (v / maxX) * cw, py = (v) => y0 + ch - ((v - yLo) / ((yHi - yLo) || 1)) * ch;
+  const avgC = d0.reduce((s, r) => s + r.contPct, 0) / d0.length;
+  const H = y0 + ch + 36;
+  const placed = [];
+  return (
+    <View style={{ marginBottom: 8 }} wrap={false}>
+      <Svg width={W} height={H}><G>
+        <Rect x={px(10)} y={py(yHi)} width={x0 + cw - px(10)} height={py(avgC) - py(yHi)} fill={C.teal} fillOpacity={0.05} />
+        <Rect x={x0} y={py(yHi)} width={px(10) - x0} height={py(avgC) - py(yHi)} fill={CHART_GREEN} fillOpacity={0.05} />
+        <Rect x={px(10)} y={py(avgC)} width={x0 + cw - px(10)} height={py(yLo) - py(avgC)} fill={C.gold} fillOpacity={0.06} />
+        <Rect x={x0} y={py(avgC)} width={px(10) - x0} height={py(yLo) - py(avgC)} fill={C.red} fillOpacity={0.05} />
+        <Line x1={x0} y1={y0} x2={x0} y2={y0 + ch} stroke={C.rule} />
+        <Line x1={x0} y1={py(0)} x2={x0 + cw} y2={py(0)} stroke={C.rule} />
+        <Line x1={px(10)} y1={y0} x2={px(10)} y2={y0 + ch} stroke={C.gold} strokeDasharray="5 3" />
+        <SvgText fontFamily="DMSans" x={px(10)} y={y0 - 2} fontSize={6} fill={C.gold} textAnchor="middle">10% share</SvgText>
+        <Line x1={x0} y1={py(avgC)} x2={x0 + cw} y2={py(avgC)} stroke={C.gold} strokeDasharray="5 3" />
+        <SvgText fontFamily="DMSans" x={x0 + cw} y={py(avgC) - 3} fontSize={6} fill={C.gold} textAnchor="end">Avg {avgC.toFixed(1)}%</SvgText>
+        {d0.map((r, i) => {
+          const cxp = px(r.revShare), cyp = py(r.contPct), rad = sz(r.rev), col = M4C[r.classification] || C.muted;
+          let ly = cyp - rad - 2;
+          if (placed.some((p) => Math.abs(p.x - cxp) < 34 && Math.abs(p.y - ly) < 7)) ly = cyp + rad + 6;
+          placed.push({ x: cxp, y: ly });
+          return (
+            <G key={i}>
+              <Circle cx={cxp} cy={cyp} r={rad} fill={col} fillOpacity={0.7} />
+              <SvgText fontFamily="DMSans" x={cxp} y={ly} fontSize={5} fill={C.navy} textAnchor="middle">{r.name.split(' ')[0].slice(0, 10)}</SvgText>
+            </G>
+          );
+        })}
+        <SvgText fontFamily="DMSans" x={x0} y={y0 + ch + 14} fontSize={6} fill={C.muted}>X = revenue share %   Y = true contribution %   Bubble = revenue{useLog ? ' (log)' : ''}</SvgText>
+        {[['Strategic', C.teal], ['Grow', CHART_GREEN], ['Renegotiate', C.gold], ['Review', C.red]].map(([lab, col], i) => (
+          <G key={lab}><Rect x={x0 + i * 95} y={y0 + ch + 22} width={7} height={7} fill={col} /><SvgText fontFamily="DMSans" x={x0 + i * 95 + 11} y={y0 + ch + 28} fontSize={6.5} fill={C.muted}>{lab}</SvgText></G>
+        ))}
+      </G></Svg>
+    </View>
+  );
+};
+
+/* ── M4 adaptive: waterfall (destruction) or ranked bar (all-positive) ── */
+const M4WaterfallSvg = ({ m4 }) => {
+  if (m4?.renderPrimitive === 'ranked_bar') {
+    const d = [...(m4.results || [])].sort((a, b) => b.trueContrib - a.trueContrib);
+    if (!d.length) return null;
+    const W = 500, labelW = 140, barMaxW = W - labelW - 90, barH = 12, gap = 5, padT = 6;
+    const H = padT + d.length * (barH + gap) + 8;
+    const maxV = Math.max(...d.map((r) => r.trueContrib), 1);
+    return (
+      <View style={{ marginBottom: 8 }} wrap={false}>
+        <Svg width={W} height={H}><G>
+          {d.map((r, i) => {
+            const bw = (r.trueContrib / maxV) * barMaxW, y = padT + i * (barH + gap), col = M4C[r.classification] || C.muted;
+            return (
+              <G key={i}>
+                <SvgText fontFamily="DMSans" x={labelW - 4} y={y + barH - 3} fontSize={7} fill={C.navy} textAnchor="end">{r.name.length > 24 ? r.name.slice(0, 23) + '…' : r.name}</SvgText>
+                <Rect x={labelW} y={y} width={Math.max(2, bw)} height={barH} fill={col} rx={2} />
+                <SvgText fontFamily="DMSans" x={labelW + Math.max(2, bw) + 3} y={y + barH - 3} fontSize={6.5} fill={col} fontWeight={700}>{fmtN(r.trueContrib)}</SvgText>
+              </G>
+            );
+          })}
+        </G></Svg>
+      </View>
+    );
+  }
+  const wf = m4?.waterfall;
+  if (!wf?.length) return null;
+  const W = 500, x0 = 36, y0 = 10, cw = W - 56, ch = 150;
+  const cumVals = wf.map((w) => w.cumulative).concat([0, m4.portfolioTotal]);
+  const maxV = Math.max(...cumVals), minV = Math.min(...cumVals), span = (maxV - minV) || 1;
+  const py = (v) => y0 + ch - ((v - minV) / span) * ch;
+  const gap = cw / (wf.length + 1), bw = gap * 0.6;
+  let prev = 0; const bars = []; const pts = [];
+  wf.forEach((w, i) => {
+    const x = x0 + gap * i + gap * 0.2;
+    bars.push({ x, yTop: Math.min(py(prev), py(w.cumulative)), h: Math.max(1, Math.abs(py(w.cumulative) - py(prev))), col: M4C[w.classification] || C.muted, name: w.name });
+    pts.push(`${(x + bw / 2).toFixed(1)},${py(w.cumulative).toFixed(1)}`);
+    prev = w.cumulative;
+  });
+  const ax = x0 + gap * wf.length + gap * 0.2;
+  const H = y0 + ch + 40;
+  return (
+    <View style={{ marginBottom: 8 }} wrap={false}>
+      <Svg width={W} height={H}><G>
+        <Line x1={x0} y1={py(0)} x2={W - 16} y2={py(0)} stroke={C.rule} />
+        {bars.map((b, i) => (
+          <G key={i}>
+            <Rect x={b.x} y={b.yTop} width={bw} height={b.h} fill={b.col} fillOpacity={0.88} />
+            <SvgText fontFamily="DMSans" x={b.x + bw / 2} y={y0 + ch + 8} fontSize={4.5} fill={C.navy} textAnchor="middle">{b.name.split(' ')[0].slice(0, 8)}</SvgText>
+          </G>
+        ))}
+        <Rect x={ax} y={py(m4.portfolioTotal)} width={bw} height={py(0) - py(m4.portfolioTotal)} fill={C.navy} />
+        <SvgText fontFamily="DMSans" x={ax + bw / 2} y={py(m4.portfolioTotal) - 3} fontSize={6} fontWeight={700} fill={C.navy} textAnchor="middle">{fmtN(m4.portfolioTotal)}</SvgText>
+        <SvgText fontFamily="DMSans" x={ax + bw / 2} y={y0 + ch + 8} fontSize={4.5} fill={C.navy} textAnchor="middle">TOTAL</SvgText>
+        <Path d={`M ${pts.join(' L ')}`} stroke={C.navy} strokeWidth={1} fill="none" />
+        {[['Strategic', C.teal], ['Grow', CHART_GREEN], ['Renegotiate', C.gold], ['Review', C.red]].map(([lab, col], i) => (
+          <G key={lab}><Rect x={x0 + i * 95} y={y0 + ch + 22} width={7} height={7} fill={col} /><SvgText fontFamily="DMSans" x={x0 + i * 95 + 11} y={y0 + ch + 28} fontSize={6.5} fill={C.muted}>{lab}</SvgText></G>
+        ))}
+      </G></Svg>
+    </View>
+  );
+};
+
 const M1Page = ({ results, companyName, cfg }) => {
   const m1 = results?.m1;
   if (!m1?.results?.length) return null;
@@ -1281,30 +1477,9 @@ const M1Page = ({ results, companyName, cfg }) => {
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>{`M1 | ${cfg.unitName} Portfolio Rationalisation`}</Text>
-      <Text style={s.sectionSub}>
-        {`Portfolio avg margin: ${fmt(m1.portfolioAvgMarginPct, 'pctRaw')} | ${m1.dilutiveCount} dilutive ${cfg.unitPlural} | Margin at stake: ${fmt(m1.marginAtStake, 'nairaK')}`}
-      </Text>
-
-      <View style={s.kpiRow}>
-        <View style={s.kpiCard}>
-          <Text style={s.kpiLabel}>Avg Margin</Text>
-          <Text style={[s.kpiValue, { color: C.navy }]}>{fmt(m1.portfolioAvgMarginPct, 'pctRaw')}</Text>
-          <Text style={s.kpiSub}>Portfolio average</Text>
-        </View>
-        <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
-          <Text style={s.kpiLabel}>{`Dilutive ${cfg.unitPlural}`}</Text>
-          <Text style={[s.kpiValue, { color: C.red }]}>{m1.dilutiveCount}</Text>
-          <Text style={s.kpiSub}>Below average margin</Text>
-        </View>
-        <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
-          <Text style={s.kpiLabel}>Margin at Stake</Text>
-          <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(m1.marginAtStake, 'nairaK')}</Text>
-          <Text style={s.kpiSub}>{`From dilutive ${cfg.unitPlural}`}</Text>
-        </View>
-      </View>
-
-      <NarrativeBlock lines={getM1Narrative(results, cfg)} />
+      <FindingHeaderPdf finding={m1.finding} fallbackLabel="M1 · SKU PORTFOLIO RATIONALISATION" fallbackTitle={`${cfg.unitName} Portfolio Rationalisation`} />
+      <M1MarimekkoSvg m1={m1} />
+      <M1RankedBarSvg m1={m1} />
 
       <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '22%' }]}>{cfg.unitId}</Text>
@@ -1470,30 +1645,9 @@ const M4Page = ({ results, companyName, cfg }) => {
 
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>{`M4 | ${cfg.fields.partner} Performance Scorecard`}</Text>
-      <Text style={s.sectionSub}>
-        {`${m4.totalDistributors} ${cfg.fields.partner.toLowerCase()}s | Avg net contribution: ${fmt(m4.avgContPct, 'pctRaw')} | Credit financing cost: ${fmt(m4.totalCreditCost, 'nairaK')} /month`}
-      </Text>
-
-      <View style={s.kpiRow}>
-        <View style={s.kpiCard}>
-          <Text style={s.kpiLabel}>{cfg.fields.partner}s</Text>
-          <Text style={[s.kpiValue, { color: C.navy }]}>{m4.totalDistributors}</Text>
-          <Text style={s.kpiSub}>Active relationships</Text>
-        </View>
-        <View style={[s.kpiCard, { borderLeftColor: C.gold }]}>
-          <Text style={s.kpiLabel}>Avg Contribution</Text>
-          <Text style={[s.kpiValue, { color: C.gold }]}>{fmt(m4.avgContPct, 'pctRaw')}</Text>
-          <Text style={s.kpiSub}>True net %</Text>
-        </View>
-        <View style={[s.kpiCard, { borderLeftColor: C.red }]}>
-          <Text style={s.kpiLabel}>Credit Cost</Text>
-          <Text style={[s.kpiValue, { color: C.red }]}>{fmt(m4.totalCreditCost, 'nairaK')}</Text>
-          <Text style={s.kpiSub}>Hidden financing drag</Text>
-        </View>
-      </View>
-
-      <NarrativeBlock lines={getM4Narrative(results, cfg)} />
+      <FindingHeaderPdf finding={m4.finding} fallbackLabel="M4 · DISTRIBUTOR PERFORMANCE" fallbackTitle={`${cfg.fields.partner} Performance`} />
+      <M4BubbleSvg m4={m4} />
+      <M4WaterfallSvg m4={m4} />
 
       <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderCell, { width: '20%' }]}>{cfg.fields.partner}</Text>
