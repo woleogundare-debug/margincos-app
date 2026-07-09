@@ -8,10 +8,12 @@ import { Badge } from '../../components/ui/index';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { computeDeltas } from '../../lib/engine/delta';
-import M1QuadrantChart   from '../../components/charts/M1QuadrantChart';
+import M1MarimekkoChart  from '../../components/charts/M1MarimekkoChart';
+import M1RankedBarChart  from '../../components/charts/M1RankedBarChart';
 import M2ScenarioChart   from '../../components/charts/M2ScenarioChart';
 import M3TradeROIChart   from '../../components/charts/M3TradeROIChart';
-import M4DistributorChart from '../../components/charts/M4DistributorChart';
+import M4BubbleChart     from '../../components/charts/M4BubbleChart';
+import M4WaterfallChart  from '../../components/charts/M4WaterfallChart';
 import { fNAbs, fN } from '../../lib/formatters';
 import { getSectorConfig } from '../../lib/sectorConfig';
 import clsx from 'clsx';
@@ -64,7 +66,8 @@ function M1Module({ results, deltas, cfg, isConsolidated }) {
           <div className="v red">{m1.dilutiveCount}</div>
         </div>
       </div>
-      <M1QuadrantChart results={m1.results} portfolioAvgMarginPct={m1.portfolioAvgMarginPct} cfg={cfg} />
+      <M1MarimekkoChart results={m1.results} portfolioAvgMarginPct={m1.portfolioAvgMarginPct} finding={m1.finding} cfg={cfg} />
+      <M1RankedBarChart results={m1.results} note={m1.finding?.rankedBarNote} cfg={cfg} />
       <AnalysisTable
         headers={[cfg.unitId, ...(isConsolidated ? ['Division'] : []), 'Category', 'Margin %', 'Rev Share %', 'vs. Avg', cfg.fields.classification, cfg.fields.action]}
         rows={m1.results.sort((a, b) => b.skuMarginPct - a.skuMarginPct).map(r => [
@@ -248,7 +251,8 @@ function M4Module({ results, deltas, cfg }) {
           />
         </div>
       )}
-      <M4DistributorChart results={m4.results} cfg={cfg} />
+      <M4BubbleChart results={m4.results} finding={m4.finding} cfg={cfg} />
+      <M4WaterfallChart waterfall={m4.waterfall} portfolioTotal={m4.portfolioTotal} renderPrimitive={m4.renderPrimitive} results={m4.results} cfg={cfg} />
       <AnalysisTable
         headers={[cfg.fields.partner, 'Revenue /mo', 'True Contrib. /mo', 'Contrib. %', 'Rev Share %', cfg.fields.creditCost, cfg.fields.classification]}
         rows={m4.results.map(r => [
