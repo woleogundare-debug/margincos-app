@@ -555,137 +555,6 @@ const P4ChartPage = ({ results, companyName }) => {
   );
 };
 
-/* ── M1 Chart Page ────────────────────────────────────────── */
-const M1ChartPage = ({ results, companyName, cfg }) => {
-  if (!results?.m1?.results?.length) return null;
-  const m1 = results.m1;
-  const data = m1.results.map(r => ({
-    x:    r.revShare || 0,
-    y:    r.skuMarginPct || 0,
-    sku:  r.sku,
-    color: r.classColor || C.muted,
-    cls:  r.classification,
-  }));
-  const avgMargin = m1.portfolioAvgMarginPct || 0;
-  const W = 499; const H = 300;
-  const padL = 36; const padR = 20; const padT = 32; const padB = 40;
-  const iW = W - padL - padR; const iH = H - padT - padB;
-  const maxX = Math.max(...data.map(d => d.x)) + 2;
-  const maxY = Math.max(...data.map(d => d.y)) + 1;
-  const minY = Math.min(...data.map(d => d.y)) - 1;
-  const rangeY = maxY - minY || 1;
-  const tx = (v) => padL + (v / maxX) * iW;
-  const ty = (v) => padT + iH - ((v - minY) / rangeY) * iH;
-  const avgY = ty(avgMargin);
-  const refX = tx(5);
-  return (
-    <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>{`M1 · ${cfg.unitName} Portfolio Quadrant`}</Text>
-      <Text style={s.sectionSub}>{`Revenue share % vs ${cfg.unit} margin % · Reference lines at 5% share and portfolio average margin`}</Text>
-      <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans', marginBottom: 4, marginLeft: 36 }}>{`↑ ${cfg.unitName} Margin %`}</Text>
-      <Svg width={W} height={H}>
-        <G>
-          {/* grid lines */}
-          <Line x1={padL} y1={padT} x2={padL} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
-          <Line x1={padL} y1={padT + iH} x2={padL + iW} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
-          {/* reference lines */}
-          <Line x1={refX} y1={padT} x2={refX} y2={padT + iH} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans" x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>5% share</SvgText>
-          <Line x1={padL} y1={avgY} x2={padL + iW} y2={avgY} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans" x={padL + iW - 50} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgMargin.toFixed(1)}%</SvgText>
-          {/* dots */}
-          {data.map((d, i) => (
-            <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
-          ))}
-          {/* axis labels */}
-          <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-        </G>
-      </Svg>
-      {/* Classification legend */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 10 }}>
-        {[
-          { label: 'Protect', color: C.teal },
-          { label: 'Grow', color: '#27AE60' },
-          { label: 'Reprice', color: C.gold },
-          { label: 'Review', color: C.red },
-        ].map((item, idx) => (
-          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: item.color }} />
-            <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans' }}>{item.label}</Text>
-          </View>
-        ))}
-      </View>
-      <PageFooter companyName={companyName} />
-    </Page>
-  );
-};
-
-/* ── M4 Chart Page ────────────────────────────────────────── */
-const M4ChartPage = ({ results, companyName, cfg }) => {
-  if (!results?.m4?.results?.length) return null;
-  const m4 = results.m4;
-  const data = m4.results.map(r => ({
-    x:    r.revShare  || 0,
-    y:    r.contPct   || 0,
-    name: r.name,
-    color: (() => {
-      const cls = r.classification || '';
-      if (cls.includes('Strategic')) return C.teal;
-      if (cls.includes('Grow'))      return '#27AE60';
-      if (cls.includes('Renegotiate')) return C.gold;
-      return C.red;
-    })(),
-  }));
-  const avgCont = data.reduce((s, d) => s + d.y, 0) / (data.length || 1);
-  const W = 499; const H = 300;
-  const padL = 36; const padR = 20; const padT = 32; const padB = 40;
-  const iW = W - padL - padR; const iH = H - padT - padB;
-  const maxX = Math.max(...data.map(d => d.x)) + 2;
-  const maxY = Math.max(...data.map(d => d.y)) + 2;
-  const minY = Math.min(...data.map(d => d.y)) - 2;
-  const rangeY = maxY - minY || 1;
-  const tx = (v) => padL + (v / maxX) * iW;
-  const ty = (v) => padT + iH - ((v - minY) / rangeY) * iH;
-  const avgY = ty(avgCont);
-  const refX = tx(10);
-  return (
-    <Page size="A4" style={s.page}>
-      <Text style={s.sectionTitle}>{`M4 · ${cfg.fields.partner} Performance Matrix`}</Text>
-      <Text style={s.sectionSub}>Revenue share % vs true contribution % · Reference lines at 10% share and average contribution</Text>
-      <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans', marginBottom: 4, marginLeft: 36 }}>↑ True Contribution %</Text>
-      <Svg width={W} height={H}>
-        <G>
-          <Line x1={padL} y1={padT} x2={padL} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
-          <Line x1={padL} y1={padT + iH} x2={padL + iW} y2={padT + iH} stroke={C.rule} strokeWidth={1} />
-          <Line x1={refX} y1={padT} x2={refX} y2={padT + iH} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans" x={refX + 2} y={padT + 8} fontSize={6.5} fill={C.gold}>10% share</SvgText>
-          <Line x1={padL} y1={avgY} x2={padL + iW} y2={avgY} stroke={C.gold} strokeWidth={1} strokeDasharray="5 3" />
-          <SvgText fontFamily="DMSans" x={padL + iW - 60} y={avgY - 3} fontSize={6.5} fill={C.gold}>Avg {avgCont.toFixed(1)}%</SvgText>
-          {data.map((d, i) => (
-            <Circle key={i} cx={tx(d.x)} cy={ty(d.y)} r={5} fill={d.color} fillOpacity={0.85} />
-          ))}
-          <SvgText fontFamily="DMSans" x={padL + iW / 2} y={H - 4} fontSize={7.5} fill={C.muted} textAnchor="middle">Revenue Share %</SvgText>
-        </G>
-      </Svg>
-      {/* Classification legend */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 10 }}>
-        {[
-          { label: 'Strategic', color: C.teal },
-          { label: 'Grow', color: '#27AE60' },
-          { label: 'Renegotiate', color: C.gold },
-          { label: 'Review', color: C.red },
-        ].map((item, idx) => (
-          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: item.color }} />
-            <Text style={{ fontSize: 7, color: '#8896A7', fontFamily: 'DMSans' }}>{item.label}</Text>
-          </View>
-        ))}
-      </View>
-      <PageFooter companyName={companyName} />
-    </Page>
-  );
-};
-
 /* ══════════════════════════════════════════════════════════════
    NARRATIVE GENERATORS - P1 through P4
    ══════════════════════════════════════════════════════════════ */
@@ -2049,11 +1918,9 @@ export default function MarginCOSReport({ results, companyName, periodLabel, tie
       <TradePage results={results} companyName={companyName} cfg={cfg} />
       <P4ChartPage results={results} companyName={companyName} cfg={cfg} />
       {isEnterprise && <M1Page results={results} companyName={companyName} cfg={cfg} />}
-      {isEnterprise && <M1ChartPage results={results} companyName={companyName} cfg={cfg} />}
       {isEnterprise && <M2Page results={results} companyName={companyName} cfg={cfg} />}
       {isEnterprise && <M3Page results={results} companyName={companyName} cfg={cfg} />}
       {isEnterprise && <M4Page results={results} companyName={companyName} cfg={cfg} />}
-      {isEnterprise && <M4ChartPage results={results} companyName={companyName} cfg={cfg} />}
       <DisclaimerPage companyName={companyName} />
     </Document>
   );
